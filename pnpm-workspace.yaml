@@ -1,6 +1,9 @@
 packages:
   - packages/*
+
 onlyBuiltDependencies:
   - "@nestjs/core"
   - "@swc/core"
   - esbuild
+
+enablePrePostScripts: true
