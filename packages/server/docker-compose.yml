@@ -1,0 +1,43 @@
+services:
+  mongo1:
+    image: mongo:8
+    hostname: mongo1
+    ports:
+      - 27017:27017
+    entrypoint: ["mongod", "--replSet", "myReplicaSet", "--bind_ip", "localhost,mongo1"]
+
+  mongo2:
+    image: mongo:8
+    hostname: mongo2
+    ports:
+      - 27018:27017
+    entrypoint: ["mongod", "--replSet", "myReplicaSet", "--bind_ip", "localhost,mongo2"]
+
+  mongo3:
+    image: mongo:8
+    hostname: mongo3
+    ports:
+      - 27019:27017
+    entrypoint: ["mongod", "--replSet", "myReplicaSet", "--bind_ip", "localhost,mongo3"]
+
+  mongosetup:
+    image: mongo:8
+    restart: "no"
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    command: >
+      bash -c "
+        sleep 10;
+        mongosh --host mongo1:27017 --eval '
+          rs.initiate({
+            _id: \"myReplicaSet\",
+            members: [
+              { _id: 0, host: \"mongo1:27017\" },
+              { _id: 1, host: \"mongo2:27017\" },
+              { _id: 2, host: \"mongo3:27017\" }
+            ]
+          });
+        '
+      "

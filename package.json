@@ -7,6 +7,7 @@
     "server": "pnpm run --filter @tech-zone-store/server",
     "web": "pnpm run --filter @tech-zone-store/web",
     "desktop": "pnpm run --filter @tech-zone-store/desktop",
+    "docker": "pnpm run -r docker",
     "lint": "pnpm -r ts:check",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

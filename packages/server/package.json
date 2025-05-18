@@ -7,12 +7,14 @@
     "build": "nest build --env-file .env -b swc",
     "dev": "nest start --env-file .env -b swc --watch",
     "start": "node dist/main --env-file .env",
+    "docker": "docker compose",
     "ts:check": "tsc --noEmit"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
-    "@nestjs/platform-express": "^11.0.1"
+    "@nestjs/platform-express": "^11.0.1",
+    "@prisma/client": "^6.8.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
@@ -20,6 +22,7 @@
     "@swc/core": "^1.10.7",
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.7",
+    "prisma": "^6.8.2",
     "reflect-metadata": "^0.2.2",
     "typescript": "^5.7.3"
   }
