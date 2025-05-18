@@ -4,8 +4,8 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "nest build --env-file .env -b swc",
-    "dev": "nest start --env-file .env -b swc --watch",
+    "build": "nest build --env-file .env",
+    "dev": "nest start --env-file .env --watch",
     "start": "node dist/main --env-file .env",
     "docker": "docker compose",
     "ts:check": "tsc --noEmit"
