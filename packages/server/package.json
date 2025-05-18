@@ -4,9 +4,9 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "nest build -b swc",
-    "dev": "nest start -b swc --watch",
-    "start": "node dist/main",
+    "build": "nest build --env-file .env -b swc",
+    "dev": "nest start --env-file .env -b swc --watch",
+    "start": "node dist/main --env-file .env",
     "ts:check": "tsc --noEmit"
   },
   "dependencies": {
