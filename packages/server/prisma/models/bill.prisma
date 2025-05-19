@@ -1,0 +1,22 @@
+model Bill {
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  schemaVersion Int // version of the schema for migration
+  revision      Int        @default(1) // revision number for history tracking
+  customer      String?
+  customerPhone String?
+  items         BillItem[]
+  total         Int
+  paid          Int
+  remaining     Int
+  cashier       User       @relation(fields: [cashierId], references: [id])
+  cashierId     String     @db.ObjectId
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+type BillItem {
+  schemaVersion Int // version of the schema for migration
+  description   String
+  price         Int
+  quantity      Int
+}
