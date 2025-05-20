@@ -1,6 +1,7 @@
 model Transaction {
-  id            String @id @default(auto()) @map("_id") @db.ObjectId
   schemaVersion Int // version of the schema for migration
+
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
   amount Int
 

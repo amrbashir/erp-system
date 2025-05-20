@@ -1,7 +1,7 @@
 model User {
-  id            String @id @default(auto()) @map("_id") @db.ObjectId
   schemaVersion Int // version of the schema for migration
-  revision      Int    @default(1) // revision number for history tracking
+
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
   name     String
   username String @unique
