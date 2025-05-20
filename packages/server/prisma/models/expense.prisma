@@ -15,6 +15,6 @@ model Expense {
   transaction   Transaction @relation(fields: [transactionId], references: [id])
   transactionId String      @unique @db.ObjectId
 
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  organizationId String?       @db.ObjectId
+  store   Store?  @relation(fields: [storeId], references: [id])
+  storeId String? @db.ObjectId
 }

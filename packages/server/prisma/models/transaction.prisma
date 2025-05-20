@@ -13,6 +13,6 @@ model Transaction {
   cashier   User   @relation(fields: [cashierId], references: [id])
   cashierId String @db.ObjectId
 
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  organizationId String?       @db.ObjectId
+  store   Store?  @relation(fields: [storeId], references: [id])
+  storeId String? @db.ObjectId
 }
