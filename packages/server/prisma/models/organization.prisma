@@ -1,0 +1,18 @@
+model Organization {
+  schemaVersion Int // version of the schema for migration
+
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  name    String
+  slug    String @unique
+  balance Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users        User[]
+  invoices     Invoice[]
+  products     Product[]
+  expenses     Expense[]
+  transactions Transaction[]
+}

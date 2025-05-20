@@ -16,14 +16,17 @@ model Invoice {
   items InvoiceItem[]
   total Int
 
-  cashier   User   @relation(fields: [cashierId], references: [id])
-  cashierId String @db.ObjectId
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  cashier   User   @relation(fields: [cashierId], references: [id])
+  cashierId String @db.ObjectId
+
   transaction   Transaction @relation(fields: [transactionId], references: [id])
   transactionId String      @unique @db.ObjectId
+
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?       @db.ObjectId
 }
 
 type InvoiceItem {

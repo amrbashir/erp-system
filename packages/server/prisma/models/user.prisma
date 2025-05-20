@@ -1,3 +1,8 @@
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model User {
   schemaVersion Int // version of the schema for migration
 
@@ -7,6 +12,8 @@ model User {
   username String @unique
   password String
 
+  role UserRole @default(USER)
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -14,4 +21,7 @@ model User {
   invoices     Invoice[]
   expenses     Expense[]
   transactions Transaction[]
+
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?       @db.ObjectId
 }

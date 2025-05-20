@@ -5,11 +5,14 @@ model Transaction {
 
   amount Int
 
-  cashier   User   @relation(fields: [cashierId], references: [id])
-  cashierId String @db.ObjectId
-
   invoice Invoice?
   expense Expense?
 
   createdAt DateTime @default(now())
+
+  cashier   User   @relation(fields: [cashierId], references: [id])
+  cashierId String @db.ObjectId
+
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?       @db.ObjectId
 }
