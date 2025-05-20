@@ -1,9 +1,11 @@
 model Product {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
   schemaVersion Int // version of the schema for migration
-  description   String
-  price         Int
-  sku           String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+
+  description    String
+  price          Int
+  stock_quantity Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

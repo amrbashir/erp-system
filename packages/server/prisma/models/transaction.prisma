@@ -1,15 +1,14 @@
-model Expense {
+model Transaction {
   id            String @id @default(auto()) @map("_id") @db.ObjectId
   schemaVersion Int // version of the schema for migration
-  description   String
-  price         Int
+
+  amount Int
 
   cashier   User   @relation(fields: [cashierId], references: [id])
   cashierId String @db.ObjectId
 
-  transaction   Transaction @relation(fields: [transactionId], references: [id])
-  transactionId String      @unique @db.ObjectId
+  invoice Invoice?
+  expense Expense?
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }

@@ -1,13 +1,17 @@
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
   schemaVersion Int // version of the schema for migration
-  revision      Int       @default(1) // revision number for history tracking
-  name          String
-  username      String    @unique
-  password      String
-  bills         Bill[]
-  expenses      Expense[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
+  revision      Int    @default(1) // revision number for history tracking
+
+  name     String
+  username String @unique
+  password String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  invoices     Invoice[]
+  expenses     Expense[]
+  transactions Transaction[]
 }
