@@ -1,9 +1,11 @@
 packages:
   - packages/*
-
-onlyBuiltDependencies:
-  - "@nestjs/core"
-  - "@swc/core"
-  - esbuild
-
 enablePrePostScripts: true
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - '@prisma/client'
+  - '@prisma/engines'
+  - '@swc/core'
+  - argon2
+  - esbuild
+  - prisma
