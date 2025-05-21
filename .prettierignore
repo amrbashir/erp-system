@@ -4,5 +4,5 @@ node_modules
 target
 dist
 
-packages/server/src/prisma/generated
+packages/backend/src/prisma/generated
 packages/desktop/gen
