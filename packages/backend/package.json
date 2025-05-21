@@ -1,5 +1,5 @@
 {
-  "name": "@tech-zone-store/server",
+  "name": "@tech-zone-store/backend",
   "version": "0.0.0",
   "private": true,
   "license": "MIT",

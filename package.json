@@ -4,7 +4,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "server": "pnpm run --filter @tech-zone-store/server",
+    "backend": "pnpm run --filter @tech-zone-store/backend",
     "web": "pnpm run --filter @tech-zone-store/web",
     "desktop": "pnpm run --filter @tech-zone-store/desktop",
     "test": "pnpm -r test",
