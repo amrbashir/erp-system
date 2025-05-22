@@ -4,7 +4,8 @@ model Product {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
   description    String
-  price          Int
+  purchase_price Int
+  selling_price  Int
   stock_quantity Int
 
   createdAt DateTime @default(now())

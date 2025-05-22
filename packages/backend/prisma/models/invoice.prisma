@@ -32,7 +32,8 @@ model Invoice {
 type InvoiceItem {
   schemaVersion Int // version of the schema for migration
 
-  description String
-  price       Int
-  quantity    Int
+  description    String
+  purchase_price Int
+  selling_price  Int
+  quantity       Int
 }
