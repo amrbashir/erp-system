@@ -4,13 +4,14 @@
   "private": true,
   "license": "MIT",
   "scripts": {
+    "gen": "prisma generate",
     "build": "nest build --env-file .env",
     "dev": "nest start --env-file .env --watch",
     "start": "node dist/main --env-file .env",
     "test": "vitest run",
     "test:watch": "vitest",
     "docker": "docker compose",
-    "prets:check": "pnpm prisma generate",
+    "prets:check": "prisma generate",
     "ts:check": "tsc --noEmit"
   },
   "dependencies": {
