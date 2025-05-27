@@ -1,7 +1,8 @@
+import "dotenv/config";
 import path from "node:path";
 import type { PrismaConfig } from "prisma";
 
 export default {
   earlyAccess: true,
   schema: path.join("prisma"),
-} satisfies PrismaConfig;
+} satisfies PrismaConfig<{ DATABASE_URL: string }>;

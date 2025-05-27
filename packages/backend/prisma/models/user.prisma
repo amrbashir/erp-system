@@ -1,7 +1,5 @@
 model User {
-  schemaVersion Int // version of the schema for migration
-
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id Int @id @default(autoincrement())
 
   username String @unique
   password String
@@ -15,7 +13,7 @@ model User {
   transactions Transaction[]
 
   organization   Organization? @relation(fields: [organizationId], references: [id])
-  organizationId String?       @db.ObjectId
+  organizationId Int?
 
   @@map("users")
 }

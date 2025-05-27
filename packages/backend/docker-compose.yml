@@ -1,43 +1,20 @@
 services:
-  mongodb-1:
-    image: mongo:8
-    hostname: mongodb-1
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=prisma
     ports:
-      - 27017:27017
-    entrypoint: ["mongod", "--replSet", "myReplicaSet", "--bind_ip", "localhost,mongodb-1"]
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    command: postgres -c listen_addresses='*'
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
 
-  mongodb-2:
-    image: mongo:8
-    hostname: mongodb-2
-    ports:
-      - 27018:27017
-    entrypoint: ["mongod", "--replSet", "myReplicaSet", "--bind_ip", "localhost,mongodb-2"]
-
-  mongodb-3:
-    image: mongo:8
-    hostname: mongodb-3
-    ports:
-      - 27019:27017
-    entrypoint: ["mongod", "--replSet", "myReplicaSet", "--bind_ip", "localhost,mongodb-3"]
-
-  mongodb-replica-setup:
-    image: mongo:8
-    restart: "no"
-    depends_on:
-      - mongodb-1
-      - mongodb-2
-      - mongodb-3
-    command: >
-      bash -c "
-        sleep 10;
-        mongosh --host mongodb-1:27017 --eval '
-          rs.initiate({
-            _id: \"myReplicaSet\",
-            members: [
-              { _id: 0, host: \"mongodb-1:27017\" },
-              { _id: 1, host: \"mongodb-2:27017\" },
-              { _id: 2, host: \"mongodb-3:27017\" }
-            ]
-          });
-        '
-      "
+volumes:
+  postgres_data:

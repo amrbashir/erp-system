@@ -1,7 +1,5 @@
 model Transaction {
-  schemaVersion Int // version of the schema for migration
-
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id Int @id @default(autoincrement())
 
   amount Int
 
@@ -10,11 +8,11 @@ model Transaction {
 
   createdAt DateTime @default(now())
 
-  cashier   User   @relation(fields: [cashierId], references: [id])
-  cashierId String @db.ObjectId
+  cashier   User @relation(fields: [cashierId], references: [id])
+  cashierId Int
 
-  store   Store?  @relation(fields: [storeId], references: [id])
-  storeId String? @db.ObjectId
+  store   Store? @relation(fields: [storeId], references: [id])
+  storeId Int?
 
   @@map("transactions")
 }

@@ -1,0 +1,13 @@
+model InvoiceItem {
+  id Int @id @default(autoincrement())
+
+  description    String
+  purchase_price Int
+  selling_price  Int
+  quantity       Int
+
+  invoice   Invoice? @relation(fields: [invoiceId], references: [id])
+  invoiceId Int?
+
+  @@map("invoice_items")
+}

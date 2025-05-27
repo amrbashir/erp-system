@@ -4,9 +4,7 @@ enum InvoiceType {
 }
 
 model Invoice {
-  schemaVersion Int // version of the schema for migration
-
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id Int @id @default(autoincrement())
 
   type InvoiceType
 
@@ -19,23 +17,14 @@ model Invoice {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  cashier   User   @relation(fields: [cashierId], references: [id])
-  cashierId String @db.ObjectId
+  cashier   User @relation(fields: [cashierId], references: [id])
+  cashierId Int
 
   transaction   Transaction @relation(fields: [transactionId], references: [id])
-  transactionId String      @unique @db.ObjectId
+  transactionId Int         @unique
 
-  store   Store?  @relation(fields: [storeId], references: [id])
-  storeId String? @db.ObjectId
+  store   Store? @relation(fields: [storeId], references: [id])
+  storeId Int?
 
   @@map("invoices")
-}
-
-type InvoiceItem {
-  schemaVersion Int // version of the schema for migration
-
-  description    String
-  purchase_price Int
-  selling_price  Int
-  quantity       Int
 }

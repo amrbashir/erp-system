@@ -1,7 +1,5 @@
 model Store {
-  schemaVersion Int // version of the schema for migration
-
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id Int @id @default(autoincrement())
 
   name    String
   slug    String @unique
@@ -11,7 +9,7 @@ model Store {
   updatedAt DateTime @updatedAt
 
   organization   Organization? @relation(fields: [organizationId], references: [id])
-  organizationId String?       @db.ObjectId
+  organizationId Int?
 
   invoices     Invoice[]
   products     Product[]
