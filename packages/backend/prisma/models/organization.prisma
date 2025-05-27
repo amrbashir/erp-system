@@ -12,4 +12,6 @@ model Organization {
 
   users  User[]
   stores Store[]
+
+  @@map("organizations")
 }

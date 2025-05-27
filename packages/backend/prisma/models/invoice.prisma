@@ -27,6 +27,8 @@ model Invoice {
 
   store   Store?  @relation(fields: [storeId], references: [id])
   storeId String? @db.ObjectId
+
+  @@map("invoices")
 }
 
 type InvoiceItem {

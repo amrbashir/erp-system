@@ -17,4 +17,6 @@ model Store {
   products     Product[]
   expenses     Expense[]
   transactions Transaction[]
+
+  @@map("stores")
 }

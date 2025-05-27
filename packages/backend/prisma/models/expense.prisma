@@ -17,4 +17,6 @@ model Expense {
 
   store   Store?  @relation(fields: [storeId], references: [id])
   storeId String? @db.ObjectId
+
+  @@map("expenses")
 }

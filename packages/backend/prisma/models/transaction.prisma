@@ -15,4 +15,6 @@ model Transaction {
 
   store   Store?  @relation(fields: [storeId], references: [id])
   storeId String? @db.ObjectId
+
+  @@map("transactions")
 }
