@@ -17,6 +17,7 @@
   "dependencies": {
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/jwt": "^11.0.0",
     "@nestjs/platform-express": "^11.0.1",
     "@prisma/client": "^6.8.2",
     "argon2": "^0.43.0"
