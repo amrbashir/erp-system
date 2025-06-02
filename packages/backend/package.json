@@ -7,7 +7,7 @@
   "main": "dist/main.js",
   "scripts": {
     "build": "nest build",
-    "dev": "nest start --type-check --env-file .env --watch",
+    "dev": "nest start --type-check --env-file=.env.development --watch",
     "start": "node --env-file=.env dist/main",
     "pretest": "prisma generate && docker compose up -d",
     "test": "vitest run",
