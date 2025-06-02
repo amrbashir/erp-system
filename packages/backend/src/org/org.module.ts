@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
-import { OrgController } from "./org.controller";
-import { OrgService } from "./org.service";
-import { UserModule } from "../user/user.module";
+import { OrgController } from "./org.controller.ts";
+import { OrgService } from "./org.service.ts";
+import { UserModule } from "../user/user.module.ts";
 
 @Module({
   imports: [UserModule],

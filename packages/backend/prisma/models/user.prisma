@@ -4,7 +4,7 @@ enum UserRole {
 }
 
 model User {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
 
   username String @unique
   password String
@@ -19,8 +19,10 @@ model User {
   expenses     Expense[]
   transactions Transaction[]
 
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  organizationId Int?
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+
+  refreshToken String?
 
   @@map("users")
 }

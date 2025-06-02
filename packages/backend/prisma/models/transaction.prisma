@@ -1,5 +1,5 @@
 model Transaction {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
 
   amount Int
 
@@ -8,11 +8,11 @@ model Transaction {
 
   createdAt DateTime @default(now())
 
-  cashier   User @relation(fields: [cashierId], references: [id])
-  cashierId Int
+  cashier   User   @relation(fields: [cashierId], references: [id])
+  cashierId String
 
-  store   Store? @relation(fields: [storeId], references: [id])
-  storeId Int?
+  store   Store  @relation(fields: [storeId], references: [id])
+  storeId String
 
   @@map("transactions")
 }

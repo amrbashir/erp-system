@@ -1,19 +1,13 @@
 import {
-  CanActivate,
-  ExecutionContext,
+  type CanActivate,
+  type ExecutionContext,
   ForbiddenException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from "@nestjs/common";
-import { UserService } from "./user.service";
-import { UserRole } from "../prisma/generated";
-
-type JwtPayload = {
-  username: string;
-  sub: number; // User ID
-  organizationId: number; // Organization ID
-};
+import { UserService } from "./user.service.ts";
+import { UserRole } from "../prisma/generated/client.ts";
+import { type JwtPayload } from "../auth/auth.dto.ts";
 
 @Injectable()
 export class AdminGuard implements CanActivate {
@@ -22,8 +16,8 @@ export class AdminGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    const user = request["user"];
-    const maybeAdmin = await this.userService.findUniqueInOrg(user.username, user.organizationId);
+    const user = request["user"] as JwtPayload;
+    const maybeAdmin = await this.userService.findByIdinOrg(user.sub, user.organizationId);
 
     if (!maybeAdmin) throw new NotFoundException("User not found in organization");
 

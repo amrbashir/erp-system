@@ -1,13 +1,13 @@
 model InvoiceItem {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
 
   description    String
   purchase_price Int
   selling_price  Int
   quantity       Int
 
-  invoice   Invoice? @relation(fields: [invoiceId], references: [id])
-  invoiceId Int?
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+  invoiceId String
 
   @@map("invoice_items")
 }

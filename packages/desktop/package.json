@@ -1,6 +1,7 @@
 {
   "name": "@tech-zone-store/desktop",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "tauri dev",
     "build": "tauri build"

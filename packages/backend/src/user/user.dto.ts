@@ -1,4 +1,4 @@
-import { IsAlphanumeric, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsAlphanumeric, IsAscii, IsNotEmpty, IsString, IsUUID, MinLength } from "class-validator";
 
 export class CreateUserDto {
   @IsAlphanumeric()
@@ -6,16 +6,17 @@ export class CreateUserDto {
   @IsNotEmpty()
   username: string;
 
-  @IsAlphanumeric()
+  @IsAscii()
+  @MinLength(8)
   @IsString()
   @IsNotEmpty()
   password: string;
 
-  @IsNumber()
+  @IsUUID()
   @IsNotEmpty()
-  organizationId?: number;
+  organizationId: string;
 
-  constructor(username: string, password: string, organizationId?: number) {
+  constructor(username: string, password: string, organizationId: string) {
     this.username = username;
     this.password = password;
     this.organizationId = organizationId;

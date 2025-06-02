@@ -4,9 +4,9 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "backend": "pnpm run --filter @tech-zone-store/backend",
-    "web": "pnpm run --filter @tech-zone-store/web",
-    "desktop": "pnpm run --filter @tech-zone-store/desktop",
+    "backend": "pnpm run --filter @tech-zone-store/backend --",
+    "web": "pnpm run --filter @tech-zone-store/web --",
+    "desktop": "pnpm run --filter @tech-zone-store/desktop --",
     "test": "pnpm -r test",
     "lint": "pnpm -r ts:check",
     "format": "prettier --write .",

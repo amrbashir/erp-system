@@ -1,28 +1,16 @@
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
-  UseGuards,
-  Request,
-  UnauthorizedException,
-  NotFoundException,
-  ForbiddenException,
-} from "@nestjs/common";
-import { UserService } from "./user.service";
-import { CreateUserDto } from "./user.dto";
-import { AuthGuard } from "../auth/auth.guard";
-import { AdminGuard } from "./user.admin.guard";
+import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from "@nestjs/common";
+import { UserService } from "./user.service.ts";
+import { CreateUserDto } from "./user.dto.ts";
+import { AdminGuard } from "./user.admin.guard.ts";
 
 @Controller("user")
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(AuthGuard, AdminGuard)
+  @UseGuards(AdminGuard)
   @HttpCode(HttpStatus.CREATED)
   @Post("create")
-  async create(@Body() createUserDto: CreateUserDto, @Request() req: any) {
-    this.userService.createUser(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto): Promise<void> {
+    await this.userService.createUser(createUserDto);
   }
 }

@@ -1,26 +1,26 @@
-import { IsAlphanumeric, IsNotEmpty, IsString } from "class-validator";
+import { IsAlphanumeric, IsAscii, IsNotEmpty, IsString, MinLength } from "class-validator";
 
 export class CreateOrgDto {
-  @IsAlphanumeric()
+  @IsNotEmpty()
   @IsString()
   name: string;
 
-  @IsAlphanumeric()
+  @IsAscii()
   @IsString()
-  @IsNotEmpty()
-  slug: string;
+  slug?: string;
 
   @IsAlphanumeric()
   @IsString()
   @IsNotEmpty()
   username: string;
 
-  @IsAlphanumeric()
+  @IsAscii()
+  @MinLength(8)
   @IsString()
   @IsNotEmpty()
   password: string;
 
-  constructor(name: string, slug: string, username: string, password: string) {
+  constructor(name: string, username: string, password: string, slug?: string) {
     this.name = name;
     this.slug = slug;
     this.username = username;
