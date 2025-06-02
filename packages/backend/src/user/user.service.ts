@@ -27,7 +27,7 @@ export class UserService {
     });
   }
 
-  async findUniqueInOrg(username: string, organizationId?: string): Promise<User | null> {
+  async findByUsernameInOrg(username: string, organizationId?: string): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: { username, organizationId },
     });

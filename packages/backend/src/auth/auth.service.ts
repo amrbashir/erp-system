@@ -13,7 +13,7 @@ export class AuthService {
   ) {}
 
   async login(loginUserDto: LoginUserDto): Promise<JwtTokens> {
-    const user = await this.userService.findUniqueInOrg(
+    const user = await this.userService.findByUsernameInOrg(
       loginUserDto.username,
       loginUserDto.organizationId,
     );
