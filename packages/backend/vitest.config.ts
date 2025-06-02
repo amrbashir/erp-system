@@ -4,5 +4,8 @@ import { loadEnv } from "vite";
 
 export default defineConfig(({ mode }) => ({
   plugins: [swc.vite()],
-  test: { env: loadEnv(mode, process.cwd(), "") },
+  test: {
+    env: loadEnv(mode, process.cwd(), ""),
+    includeSource: ["src/**/*.ts"],
+  },
 }));
