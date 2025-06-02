@@ -20,7 +20,7 @@ export function generateRandomDb() {
     createDb: async function () {
       return execAsync(
         `docker compose exec postgres psql -U postgres -c "CREATE DATABASE ${randomDbName}"`,
-      ).then(() => execAsync("pnpm run prisma migrate reset --force"));
+      ).then(() => execAsync("pnpm prisma migrate reset --force"));
     },
 
     dropDb: async function (app: INestApplication) {
