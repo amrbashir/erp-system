@@ -9,7 +9,7 @@
     "build": "nest build",
     "dev": "nest start --type-check --env-file .env --watch",
     "start": "node --env-file=.env dist/main",
-    "pretest": "docer compose up -d",
+    "pretest": "prisma generate && docker compose up -d",
     "test": "vitest run",
     "test:watch": "vitest",
     "prets:check": "prisma generate",
