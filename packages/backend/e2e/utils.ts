@@ -1,8 +1,6 @@
 import { exec } from "node:child_process";
 import { promisify } from "node:util";
-import { PrismaService } from "../src/prisma/prisma.service.ts";
-import { type INestApplication } from "@nestjs/common";
-import { AppModule } from "../src/app.module.ts";
+import { AppModule } from "../src/app.module";
 import { Test } from "@nestjs/testing";
 
 const execAsync = promisify(exec);

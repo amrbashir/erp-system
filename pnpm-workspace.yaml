@@ -9,3 +9,5 @@ onlyBuiltDependencies:
   - argon2
   - esbuild
   - prisma
+overrides:
+  vite: npm:rolldown-vite@latest

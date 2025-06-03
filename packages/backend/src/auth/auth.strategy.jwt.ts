@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { AuthGuard, PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import { IS_PUBLIC_KEY } from "../public.decorator.ts";
+import { IS_PUBLIC_KEY } from "../public.decorator";
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {

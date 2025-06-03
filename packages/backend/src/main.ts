@@ -1,5 +1,5 @@
 import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module.ts";
+import { AppModule } from "./app.module";
 import { ValidationPipe, VersioningType } from "@nestjs/common";
 
 (async () => {
@@ -10,5 +10,6 @@ import { ValidationPipe, VersioningType } from "@nestjs/common";
 
   const port = process.env.NESTJS_SERVER_PORT ?? 3000;
   await app.listen(port);
-  console.log(`Server running on: http://localhost:${port}/v1`);
+
+  console.log(`Server running on: ${await app.getUrl()}`);
 })();

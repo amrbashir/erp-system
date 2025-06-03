@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from "@nestjs/common";
-import { UserService } from "./user.service.ts";
-import { CreateUserDto } from "./user.dto.ts";
-import { AdminGuard } from "./user.admin.guard.ts";
+import { UserService } from "./user.service";
+import { CreateUserDto } from "./user.dto";
+import { AdminGuard } from "./user.admin.guard";
 
 @Controller("user")
 export class UserController {

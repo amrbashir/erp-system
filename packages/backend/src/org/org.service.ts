@@ -1,8 +1,8 @@
 import { BadRequestException, ConflictException, Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service.ts";
-import { CreateOrgDto } from "./org.dto.ts";
-import { type Organization, UserRole } from "../prisma/generated/client.ts";
-import { isValidSlug, slugify } from "../utils.ts";
+import { PrismaService } from "../prisma/prisma.service";
+import { CreateOrgDto } from "./org.dto";
+import { type Organization, UserRole } from "../prisma/generated/client";
+import { isValidSlug, slugify } from "../utils";
 import * as argon2 from "argon2";
 
 @Injectable()
@@ -42,7 +42,7 @@ if (import.meta.vitest) {
     let service: OrgService;
     let prisma: PrismaService;
 
-    const { generateRandomDb } = await import("../../e2e/utils.ts");
+    const { generateRandomDb } = await import("../../e2e/utils");
     const { createDb, dropDb } = generateRandomDb();
 
     beforeEach(async () => {

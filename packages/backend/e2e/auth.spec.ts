@@ -1,6 +1,6 @@
 import { type INestApplication } from "@nestjs/common";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { generateRandomDb, generateTestingApp } from "./utils.ts";
+import { generateRandomDb, generateTestingApp } from "./utils";
 
 describe("Auth E2E", () => {
   let app: INestApplication;

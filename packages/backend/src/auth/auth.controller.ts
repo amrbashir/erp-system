@@ -9,10 +9,10 @@ import {
   Req,
   Res,
 } from "@nestjs/common";
-import { AuthService } from "./auth.service.ts";
-import { type JwtPayload, LoginUserDto } from "./auth.dto.ts";
-import { Public } from "../public.decorator.ts";
-import { JwtRefreshAuthGuard } from "./auth.strategy.jwt-refresh.ts";
+import { AuthService } from "./auth.service";
+import { type JwtPayload, LoginUserDto } from "./auth.dto";
+import { Public } from "../public.decorator";
+import { JwtRefreshAuthGuard } from "./auth.strategy.jwt-refresh";
 import { type Response } from "express";
 
 @Controller("auth")

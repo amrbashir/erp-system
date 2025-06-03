@@ -5,9 +5,9 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { UserService } from "./user.service.ts";
-import { UserRole } from "../prisma/generated/client.ts";
-import { type JwtPayload } from "../auth/auth.dto.ts";
+import { UserService } from "./user.service";
+import { UserRole } from "../prisma/generated/client";
+import { type JwtPayload } from "../auth/auth.dto";
 
 @Injectable()
 export class AdminGuard implements CanActivate {

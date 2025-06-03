@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
-import { CreateOrgDto } from "./org.dto.ts";
-import { OrgService } from "./org.service.ts";
-import { Public } from "../public.decorator.ts";
+import { CreateOrgDto } from "./org.dto";
+import { OrgService } from "./org.service";
+import { Public } from "../public.decorator";
 
 @Controller("org")
 export class OrgController {
