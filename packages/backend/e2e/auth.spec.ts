@@ -18,7 +18,7 @@ describe("Auth E2E", () => {
 
   afterAll(async () => {
     await app.close();
-    await dropDb(app);
+    await dropDb();
   });
 
   describe("Organization Creation", () => {

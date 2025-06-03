@@ -17,26 +17,19 @@ export function generateRandomDb() {
   );
 
   return {
-    createDb: async function () {
-      return execAsync(
+    createDb: async () => {
+      await execAsync(
         `docker compose exec postgres psql -U postgres -c "CREATE DATABASE ${randomDbName}"`,
-      ).then(() => execAsync("pnpm prisma migrate reset --force"));
+      );
+      await execAsync("pnpm prisma migrate reset --force");
     },
 
-    dropDb: async function (app: INestApplication) {
-      const prismaService = await app.resolve(PrismaService);
-      await prismaService.$disconnect();
-      await sleep(1000); // Wait for disconnect to complete
-
-      return execAsync(
-        `docker compose exec postgres psql -U postgres -c "DROP DATABASE ${randomDbName}"`,
+    dropDb: async () => {
+      await execAsync(
+        `docker compose exec postgres psql -U postgres -c "DROP DATABASE ${randomDbName} WITH (FORCE)"`,
       );
     },
   };
-}
-
-export function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export async function generateTestingApp() {
