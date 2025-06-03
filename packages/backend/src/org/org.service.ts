@@ -34,3 +34,75 @@ export class OrgService {
     });
   }
 }
+
+if (import.meta.vitest) {
+  const { it, expect, beforeEach, afterEach, describe } = import.meta.vitest;
+
+  describe("OrgService", async () => {
+    let service: OrgService;
+    let prisma: PrismaService;
+
+    const { generateRandomDb } = await import("../../e2e/utils.ts");
+    const { createDb, dropDb } = generateRandomDb();
+
+    beforeEach(async () => {
+      prisma = new PrismaService();
+      service = new OrgService(prisma);
+      await createDb();
+    });
+
+    afterEach(async () => {
+      await dropDb();
+    });
+
+    it("should create an organization with valid data", async () => {
+      const createOrgDto = {
+        name: "Test Org",
+        username: "admin",
+        password: "12345678",
+        slug: "test-org",
+      };
+      const org = await service.create(createOrgDto);
+      expect(org).toBeDefined();
+      expect(org!.name).toBe("Test Org");
+      expect(org!.slug).toBe("test-org");
+
+      const users = await prisma.user.findMany({
+        where: { organizationId: org!.id },
+      });
+      expect(users.length).toBe(1);
+      expect(users[0].username).toBe("admin");
+      expect(users[0].role).toBe(UserRole.ADMIN);
+      expect(await argon2.verify(users[0].password, "12345678")).toBe(true);
+    });
+
+    it("should throw BadRequestException for invalid slug", async () => {
+      const createOrgDto = {
+        name: "Test Org",
+        username: "admin",
+        password: "12345678",
+        slug: "invalid slug",
+      };
+      await expect(service.create(createOrgDto)).rejects.toThrow(BadRequestException);
+    });
+
+    it("should throw ConflictException for existing organization", async () => {
+      const createOrgDto = {
+        name: "Test Org",
+        username: "admin",
+        password: "12345678",
+        slug: "test-org",
+      };
+      await service.create(createOrgDto); // create for the first time
+      await expect(service.create(createOrgDto)).rejects.toThrow(ConflictException);
+    });
+
+    it("should create an organization without slug", async () => {
+      const createOrgDto = { name: "Another Org", username: "admin2", password: "12345678" };
+      const org = await service.create(createOrgDto);
+      expect(org).toBeDefined();
+      expect(org!.name).toBe("Another Org");
+      expect(org!.slug).toBe(slugify("Another Org"));
+    });
+  });
+}
