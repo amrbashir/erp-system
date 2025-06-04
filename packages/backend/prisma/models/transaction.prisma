@@ -6,6 +6,9 @@ model Transaction {
   invoice Invoice?
   expense Expense?
 
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?
+
   createdAt DateTime @default(now())
 
   cashier   User   @relation(fields: [cashierId], references: [id])

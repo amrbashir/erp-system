@@ -5,6 +5,20 @@ CREATE TYPE "InvoiceType" AS ENUM ('INVOICE', 'REFUND');
 CREATE TYPE "UserRole" AS ENUM ('USER', 'ADMIN');
 
 -- CreateTable
+CREATE TABLE "customers" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "email" TEXT,
+    "phone" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "organizationId" TEXT NOT NULL,
+
+    CONSTRAINT "customers_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "expenses" (
     "id" TEXT NOT NULL,
     "description" TEXT NOT NULL,
@@ -34,9 +48,8 @@ CREATE TABLE "invoice_items" (
 CREATE TABLE "invoices" (
     "id" TEXT NOT NULL,
     "type" "InvoiceType" NOT NULL,
-    "customer" TEXT,
-    "customerPhone" TEXT,
     "total" INTEGER NOT NULL,
+    "customerId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "cashierId" TEXT NOT NULL,
@@ -89,6 +102,7 @@ CREATE TABLE "stores" (
 CREATE TABLE "transactions" (
     "id" TEXT NOT NULL,
     "amount" INTEGER NOT NULL,
+    "customerId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "cashierId" TEXT NOT NULL,
     "storeId" TEXT NOT NULL,
@@ -112,6 +126,12 @@ CREATE TABLE "users" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "customers_email_key" ON "customers"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "customers_phone_key" ON "customers"("phone");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "expenses_transactionId_key" ON "expenses"("transactionId");
 
 -- CreateIndex
@@ -127,6 +147,9 @@ CREATE UNIQUE INDEX "stores_slug_key" ON "stores"("slug");
 CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- AddForeignKey
+ALTER TABLE "customers" ADD CONSTRAINT "customers_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "expenses" ADD CONSTRAINT "expenses_cashierId_fkey" FOREIGN KEY ("cashierId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -137,6 +160,9 @@ ALTER TABLE "expenses" ADD CONSTRAINT "expenses_storeId_fkey" FOREIGN KEY ("stor
 
 -- AddForeignKey
 ALTER TABLE "invoice_items" ADD CONSTRAINT "invoice_items_invoiceId_fkey" FOREIGN KEY ("invoiceId") REFERENCES "invoices"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "invoices" ADD CONSTRAINT "invoices_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "invoices" ADD CONSTRAINT "invoices_cashierId_fkey" FOREIGN KEY ("cashierId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -152,6 +178,9 @@ ALTER TABLE "products" ADD CONSTRAINT "products_storeId_fkey" FOREIGN KEY ("stor
 
 -- AddForeignKey
 ALTER TABLE "stores" ADD CONSTRAINT "stores_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "transactions" ADD CONSTRAINT "transactions_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_cashierId_fkey" FOREIGN KEY ("cashierId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

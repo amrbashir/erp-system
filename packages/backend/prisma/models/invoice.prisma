@@ -8,11 +8,11 @@ model Invoice {
 
   type InvoiceType
 
-  customer      String?
-  customerPhone String?
-
   items InvoiceItem[]
   total Int
+
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
