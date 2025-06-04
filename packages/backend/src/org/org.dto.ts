@@ -1,4 +1,11 @@
-import { IsAlphanumeric, IsAscii, IsNotEmpty, IsString, MinLength } from "class-validator";
+import {
+  IsAlphanumeric,
+  IsAscii,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from "class-validator";
 
 export class CreateOrgDto {
   @IsNotEmpty()
@@ -7,6 +14,7 @@ export class CreateOrgDto {
 
   @IsAscii()
   @IsString()
+  @IsOptional()
   slug?: string;
 
   @IsAlphanumeric()

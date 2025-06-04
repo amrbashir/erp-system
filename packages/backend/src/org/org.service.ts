@@ -42,18 +42,16 @@ if (import.meta.vitest) {
     let service: OrgService;
     let prisma: PrismaService;
 
-    const { generateRandomDb } = await import("../../e2e/utils");
-    const { createDb, dropDb } = generateRandomDb();
+    const { useRandomDatabase } = await import("../../e2e/utils");
+    const { createDatabase, dropDatabase } = useRandomDatabase();
 
     beforeEach(async () => {
+      await createDatabase();
       prisma = new PrismaService();
       service = new OrgService(prisma);
-      await createDb();
     });
 
-    afterEach(async () => {
-      await dropDb();
-    });
+    afterEach(async () => await dropDatabase());
 
     it("should create an organization with valid data", async () => {
       const createOrgDto = {

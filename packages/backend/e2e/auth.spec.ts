@@ -1,25 +1,14 @@
-import { type INestApplication } from "@nestjs/common";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { generateRandomDb, generateTestingApp } from "./utils";
+import { useTestingApp } from "./utils";
 
-describe("Auth E2E", () => {
-  let app: INestApplication;
-  let appUrl: string;
+describe("Auth E2E", async () => {
+  const { appUrl, runApp, closeApp } = await useTestingApp();
+  beforeAll(async () => await runApp());
+  afterAll(async () => await closeApp());
+
   let cookies: string[];
   let accessToken: string;
-
-  const { createDb, dropDb } = generateRandomDb();
-
-  beforeAll(async () => {
-    await createDb();
-    app = await generateTestingApp();
-    appUrl = await app.getUrl();
-  });
-
-  afterAll(async () => {
-    await app.close();
-    await dropDb();
-  });
+  let organizationId: string;
 
   describe("Organization Creation", () => {
     it("should create an organization successfully", async () => {
@@ -34,6 +23,12 @@ describe("Auth E2E", () => {
       });
 
       expect(response.status).toBe(201);
+
+      const data = (await response.json()) as { organizationId: string };
+      expect(data).toHaveProperty("organizationId");
+      expect(data.organizationId).toBeDefined();
+
+      organizationId = data.organizationId;
     });
   });
 
@@ -45,6 +40,7 @@ describe("Auth E2E", () => {
         body: JSON.stringify({
           username: "admin",
           password: "12345678",
+          organizationId,
         }),
       });
 
@@ -67,6 +63,7 @@ describe("Auth E2E", () => {
         body: JSON.stringify({
           username: "admin",
           password: "wrongpassword",
+          organizationId,
         }),
       });
     });

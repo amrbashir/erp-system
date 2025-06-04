@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
+import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import { CreateOrgDto } from "./org.dto";
 import { OrgService } from "./org.service";
 import { Public } from "../public.decorator";
@@ -10,7 +10,9 @@ export class OrgController {
   @Public()
   @HttpCode(HttpStatus.CREATED)
   @Post("create")
-  async create(@Body() createOrgDto: CreateOrgDto): Promise<void> {
-    await this.orgService.create(createOrgDto);
+  async create(@Body() createOrgDto: CreateOrgDto): Promise<{ organizationId: string }> {
+    const org = await this.orgService.create(createOrgDto);
+    if (!org) throw new BadRequestException("Organization creation failed");
+    return { organizationId: org.id };
   }
 }

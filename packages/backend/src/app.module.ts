@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Module, ValidationPipe, VersioningType, type INestApplication } from "@nestjs/common";
 import { PrismaModule } from "./prisma/prisma.module";
 import { OrgModule } from "./org/org.module";
 import { UserModule } from "./user/user.module";
@@ -16,3 +16,8 @@ import { JwtAuthGuard } from "./auth/auth.strategy.jwt";
   ],
 })
 export class AppModule {}
+
+export function setupApp(app: INestApplication) {
+  app.enableVersioning({ type: VersioningType.URI, defaultVersion: "1" });
+  app.useGlobalPipes(new ValidationPipe());
+}
