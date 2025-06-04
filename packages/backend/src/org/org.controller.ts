@@ -4,6 +4,7 @@ import { OrgService } from "./org.service";
 import { Public } from "../public.decorator";
 import { useRandomDatabase } from "../../e2e/utils";
 import { PrismaService } from "../prisma/prisma.service";
+import { Test } from "@nestjs/testing";
 
 @Controller("org")
 export class OrgController {
@@ -23,7 +24,6 @@ if (import.meta.vitest) {
   const { it, expect, describe, beforeEach, afterEach } = import.meta.vitest;
 
   describe("OrgController", async () => {
-    let prisma: PrismaService;
     let service: OrgService;
     let controller: OrgController;
 
@@ -31,9 +31,14 @@ if (import.meta.vitest) {
 
     beforeEach(async () => {
       await createDatabase();
-      prisma = new PrismaService();
-      service = new OrgService(prisma);
-      controller = new OrgController(service);
+
+      const moduleRef = await Test.createTestingModule({
+        controllers: [OrgController],
+        providers: [OrgService, PrismaService],
+      }).compile();
+
+      service = await moduleRef.resolve(OrgService);
+      controller = await moduleRef.resolve(OrgController);
     });
 
     afterEach(async () => await dropDatabase());

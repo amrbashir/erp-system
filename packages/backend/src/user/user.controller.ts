@@ -5,6 +5,7 @@ import { AdminGuard } from "./user.admin.guard";
 import { PrismaService } from "../prisma/prisma.service";
 import { OrgService } from "../org/org.service";
 import { useRandomDatabase } from "../../e2e/utils";
+import { Test } from "@nestjs/testing";
 
 @Controller("user")
 export class UserController {
@@ -22,7 +23,6 @@ if (import.meta.vitest) {
   const { it, expect, describe, beforeEach, afterEach } = import.meta.vitest;
 
   describe("UserController", async () => {
-    let prisma: PrismaService;
     let orgService: OrgService;
     let service: UserService;
     let controller: UserController;
@@ -31,10 +31,14 @@ if (import.meta.vitest) {
 
     beforeEach(async () => {
       await createDatabase();
-      prisma = new PrismaService();
-      orgService = new OrgService(prisma);
-      service = new UserService(prisma);
-      controller = new UserController(service);
+      const moduleRef = await Test.createTestingModule({
+        controllers: [UserController],
+        providers: [UserService, PrismaService, OrgService],
+      }).compile();
+
+      service = await moduleRef.resolve(UserService);
+      controller = await moduleRef.resolve(UserController);
+      orgService = await moduleRef.resolve(OrgService);
     });
 
     afterEach(async () => await dropDatabase());
@@ -52,6 +56,7 @@ if (import.meta.vitest) {
         password: "12345678",
         organizationId: org!.id,
       };
+
       await expect(controller.create(createUserDto)).resolves.toBeUndefined();
     });
   });
