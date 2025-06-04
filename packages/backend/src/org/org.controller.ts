@@ -2,6 +2,8 @@ import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Post } fro
 import { CreateOrgDto } from "./org.dto";
 import { OrgService } from "./org.service";
 import { Public } from "../public.decorator";
+import { useRandomDatabase } from "../../e2e/utils";
+import { PrismaService } from "../prisma/prisma.service";
 
 @Controller("org")
 export class OrgController {
@@ -21,13 +23,10 @@ if (import.meta.vitest) {
   const { it, expect, describe, beforeEach, afterEach } = import.meta.vitest;
 
   describe("OrgController", async () => {
-    const { PrismaService } = await import("../prisma/prisma.service");
-
-    let prisma;
+    let prisma: PrismaService;
     let service: OrgService;
     let controller: OrgController;
 
-    const { useRandomDatabase } = await import("../../e2e/utils");
     const { createDatabase, dropDatabase } = useRandomDatabase();
 
     beforeEach(async () => {

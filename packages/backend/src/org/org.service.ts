@@ -4,6 +4,7 @@ import { CreateOrgDto } from "./org.dto";
 import { type Organization, UserRole } from "../prisma/generated/client";
 import { isValidSlug, slugify } from "../utils";
 import * as argon2 from "argon2";
+import { useRandomDatabase } from "../../e2e/utils";
 
 @Injectable()
 export class OrgService {
@@ -42,7 +43,6 @@ if (import.meta.vitest) {
     let service: OrgService;
     let prisma: PrismaService;
 
-    const { useRandomDatabase } = await import("../../e2e/utils");
     const { createDatabase, dropDatabase } = useRandomDatabase();
 
     beforeEach(async () => {

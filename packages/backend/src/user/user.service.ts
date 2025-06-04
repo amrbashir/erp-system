@@ -3,6 +3,8 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateUserDto } from "./user.dto";
 import { UserRole, type User } from "../prisma/generated/client";
 import * as argon2 from "argon2";
+import { useRandomDatabase } from "../../e2e/utils";
+import { OrgService } from "../org/org.service";
 
 @Injectable()
 export class UserService {
@@ -39,4 +41,43 @@ export class UserService {
       data: { refreshToken },
     });
   }
+}
+
+if (import.meta.vitest) {
+  const { it, expect, beforeEach, afterEach, describe } = import.meta.vitest;
+
+  describe("UserService", async () => {
+    let service: UserService;
+    let orgService: OrgService;
+    let prisma: PrismaService;
+
+    const { createDatabase, dropDatabase } = useRandomDatabase();
+
+    beforeEach(async () => {
+      await createDatabase();
+      prisma = new PrismaService();
+      orgService = new OrgService(prisma);
+      service = new UserService(prisma);
+    });
+
+    afterEach(async () => await dropDatabase());
+
+    it("should create a user with valid data", async () => {
+      const org = await orgService.create({
+        name: "Test Org",
+        username: "admin",
+        password: "12345678",
+        slug: "test-org",
+      });
+
+      const createUserDto = {
+        username: "testuser",
+        password: "12345678",
+        organizationId: org!.id,
+      };
+      const user = await service.createUser(createUserDto);
+      expect(user).toBeDefined();
+      expect(user!.username).toBe(createUserDto.username);
+    });
+  });
 }
