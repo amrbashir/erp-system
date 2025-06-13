@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export type CreateUserDto = z.infer<typeof CreateUserDto>;
 export const CreateUserDto = z.object({
