@@ -9,8 +9,11 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  store   Store  @relation(fields: [storeId], references: [id])
-  storeId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+
+  store   Store?  @relation(fields: [storeId], references: [id])
+  storeId String?
 
   @@map("products")
 }

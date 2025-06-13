@@ -18,7 +18,7 @@ export class UserService {
         username: createUserDto.username,
         password: hashedPassword,
         organizationId: createUserDto.organizationId,
-        role: createUserDto.role || UserRole.USER, // Default to USER role if not provided
+        role: createUserDto.role,
       },
     });
   }
