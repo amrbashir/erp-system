@@ -7,7 +7,7 @@ import {
   Post,
   UsePipes,
 } from "@nestjs/common";
-import { type CreateOrgDto, createOrgSchema } from "./org.dto";
+import { CreateOrgDto } from "./org.dto";
 import { OrgService } from "./org.service";
 import { Public } from "../public.decorator";
 import { useRandomDatabase } from "../../e2e/utils";
@@ -22,7 +22,7 @@ export class OrgController {
   @Public()
   @HttpCode(HttpStatus.CREATED)
   @Post("create")
-  @UsePipes(new ZodValidationPipe(createOrgSchema))
+  @UsePipes(new ZodValidationPipe(CreateOrgDto))
   async create(@Body() createOrgDto: CreateOrgDto): Promise<{ organizationId: string }> {
     const org = await this.orgService.create(createOrgDto);
     if (!org) throw new BadRequestException("Organization creation failed");

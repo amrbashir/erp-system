@@ -1,6 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards, UsePipes } from "@nestjs/common";
 import { UserService } from "./user.service";
-import { type CreateUserDto, createUserSchema } from "./user.dto";
+import { CreateUserDto } from "./user.dto";
 import { AdminGuard } from "./user.admin.guard";
 import { PrismaService } from "../prisma/prisma.service";
 import { OrgService } from "../org/org.service";
@@ -15,7 +15,7 @@ export class UserController {
   @UseGuards(AdminGuard)
   @HttpCode(HttpStatus.CREATED)
   @Post("create")
-  @UsePipes(new ZodValidationPipe(createUserSchema))
+  @UsePipes(new ZodValidationPipe(CreateUserDto))
   async create(@Body() createUserDto: CreateUserDto): Promise<void> {
     await this.userService.createUser(createUserDto);
   }

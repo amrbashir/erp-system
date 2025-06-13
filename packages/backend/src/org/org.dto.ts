@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-export type CreateOrgDto = z.infer<typeof createOrgSchema>;
-export const createOrgSchema = z.object({
+export type CreateOrgDto = z.infer<typeof CreateOrgDto>;
+export const CreateOrgDto = z.object({
   name: z.string().nonempty(),
   slug: z
     .string()

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-export type CreateUserDto = z.infer<typeof createUserSchema>;
-export const createUserSchema = z.object({
+export type CreateUserDto = z.infer<typeof CreateUserDto>;
+export const CreateUserDto = z.object({
   username: z
     .string()
     .nonempty()
