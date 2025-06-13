@@ -1,11 +1,12 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards, UsePipes } from "@nestjs/common";
 import { UserService } from "./user.service";
-import { CreateUserDto } from "./user.dto";
+import { type CreateUserDto, createUserSchema } from "./user.dto";
 import { AdminGuard } from "./user.admin.guard";
 import { PrismaService } from "../prisma/prisma.service";
 import { OrgService } from "../org/org.service";
 import { useRandomDatabase } from "../../e2e/utils";
 import { Test } from "@nestjs/testing";
+import { ZodValidationPipe } from "../zod.pipe";
 
 @Controller("user")
 export class UserController {
@@ -14,6 +15,7 @@ export class UserController {
   @UseGuards(AdminGuard)
   @HttpCode(HttpStatus.CREATED)
   @Post("create")
+  @UsePipes(new ZodValidationPipe(createUserSchema))
   async create(@Body() createUserDto: CreateUserDto): Promise<void> {
     await this.userService.createUser(createUserDto);
   }
@@ -53,7 +55,7 @@ if (import.meta.vitest) {
 
       const createUserDto: CreateUserDto = {
         username: "testuser",
-        password: "12345678",
+        password: "1234567",
         organizationId: org!.id,
       };
 

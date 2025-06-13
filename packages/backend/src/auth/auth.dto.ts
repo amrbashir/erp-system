@@ -1,27 +1,18 @@
-import { IsAlphanumeric, IsAscii, IsNotEmpty, IsString, IsUUID, MinLength } from "class-validator";
+import { z } from "zod";
 
-export class LoginUserDto {
-  @IsAlphanumeric()
-  @IsString()
-  @IsNotEmpty()
-  username: string;
-
-  @IsAscii()
-  @MinLength(8)
-  @IsString()
-  @IsNotEmpty()
-  password: string;
-
-  @IsUUID()
-  @IsNotEmpty()
-  organizationId: string;
-
-  constructor(username: string, password: string, organizationId: string) {
-    this.username = username;
-    this.password = password;
-    this.organizationId = organizationId;
-  }
-}
+export type LoginUserDto = z.infer<typeof loginUserSchema>;
+export const loginUserSchema = z.object({
+  username: z
+    .string()
+    .nonempty()
+    .regex(/^[a-zA-Z0-9]+$/), // alphanumeric
+  password: z
+    .string()
+    .nonempty()
+    .min(8)
+    .regex(/^[\x00-\x7F]+$/), // ascii
+  organizationId: z.string().nonempty().uuid(),
+});
 
 export type JwtTokens = {
   accessToken: string;

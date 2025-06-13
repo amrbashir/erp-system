@@ -1,37 +1,19 @@
-import {
-  IsAlphanumeric,
-  IsAscii,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MinLength,
-} from "class-validator";
+import { z } from "zod";
 
-export class CreateOrgDto {
-  @IsNotEmpty()
-  @IsString()
-  name: string;
-
-  @IsAscii()
-  @IsString()
-  @IsOptional()
-  slug?: string;
-
-  @IsAlphanumeric()
-  @IsString()
-  @IsNotEmpty()
-  username: string;
-
-  @IsAscii()
-  @MinLength(8)
-  @IsString()
-  @IsNotEmpty()
-  password: string;
-
-  constructor(name: string, username: string, password: string, slug?: string) {
-    this.name = name;
-    this.slug = slug;
-    this.username = username;
-    this.password = password;
-  }
-}
+export type CreateOrgDto = z.infer<typeof createOrgSchema>;
+export const createOrgSchema = z.object({
+  name: z.string().nonempty(),
+  slug: z
+    .string()
+    .regex(/^[\x00-\x7F]+$/) // ascii
+    .optional(),
+  username: z
+    .string()
+    .nonempty()
+    .regex(/^[a-zA-Z0-9]+$/), // alphanumeric
+  password: z
+    .string()
+    .nonempty()
+    .min(8)
+    .regex(/^[\x00-\x7F]+$/), // ascii
+});
