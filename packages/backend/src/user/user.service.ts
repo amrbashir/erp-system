@@ -79,5 +79,24 @@ if (import.meta.vitest) {
       expect(user).toBeDefined();
       expect(user!.username).toBe(createUserDto.username);
     });
+
+    it("should throw an error when creating a user with an existing username", async () => {
+      const org = await orgService.create({
+        name: "Test Org",
+        username: "admin",
+        password: "12345678",
+        slug: "test-org",
+      });
+
+      const createUserDto = {
+        username: "testuser",
+        password: "12345678",
+        organizationId: org!.id,
+      };
+
+      await service.createUser(createUserDto);
+
+      await expect(service.createUser(createUserDto)).rejects.toThrow();
+    });
   });
 }

@@ -53,6 +53,9 @@ if (import.meta.vitest) {
         slug: "test-org",
       });
 
+      expect(org).toBeDefined();
+      expect(org!.id).toBeDefined();
+
       const createUserDto: CreateUserDto = {
         username: "testuser",
         password: "1234567",
