@@ -7,6 +7,7 @@
     "backend": "pnpm run --filter @tech-zone-store/backend --",
     "web": "pnpm run --filter @tech-zone-store/web --",
     "desktop": "pnpm run --filter @tech-zone-store/desktop --",
+    "sdk": "pnpm run --filter @tech-zone-store/sdk --",
     "test": "pnpm -r test",
     "lint": "pnpm -r ts:check",
     "format": "prettier --write .",

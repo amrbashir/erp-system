@@ -21,8 +21,8 @@ import { JwtAuthGuard } from "./auth.strategy.jwt";
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @HttpCode(HttpStatus.OK)
   @ApiBody({ schema: LoginUserDto.openapiSchema })
-  @ApiOperation({ operationId: "login" })
   @Post("login")
   async login(
     @Body() loginUserDto: LoginUserDto,
@@ -40,8 +40,8 @@ export class AuthController {
     return { accessToken: tokens.accessToken };
   }
 
+  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ operationId: "logout" })
   @Post("logout")
   async logout(@Req() req: any): Promise<void> {
     const user = req["user"] as JwtPayload;
@@ -49,7 +49,6 @@ export class AuthController {
   }
 
   @UseGuards(JwtRefreshAuthGuard)
-  @ApiOperation({ operationId: "refresh" })
   @Get("refresh")
   async refresh(@Req() req: any): Promise<{ accessToken: string }> {
     const user = req["user"] as JwtPayload;

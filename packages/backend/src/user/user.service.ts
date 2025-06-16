@@ -35,10 +35,18 @@ export class UserService {
     });
   }
 
-  async updateRefreshToken(userId: string, refreshToken?: string): Promise<User | null> {
-    return this.prisma.user.update({
+  async updateRefreshToken(userId: string, refreshToken?: string): Promise<void> {
+    this.prisma.user.update({
       where: { id: userId },
       data: { refreshToken },
+    });
+  }
+
+  async getAllUsers(): Promise<Omit<User, "password">[]> {
+    return this.prisma.user.findMany({
+      omit: {
+        password: true,
+      },
     });
   }
 }
@@ -97,6 +105,40 @@ if (import.meta.vitest) {
       await service.createUser(createUserDto);
 
       await expect(service.createUser(createUserDto)).rejects.toThrow();
+    });
+
+    it("getAllUsers should return all users without passwords", async () => {
+      const createOrgDto = {
+        name: "Test Org",
+        username: "admin",
+        password: "12345678",
+        slug: "test-org",
+      };
+
+      const org = await orgService.create(createOrgDto);
+
+      const user1 = await service.createUser({
+        username: "testuser",
+        password: "12345678",
+        organizationId: org!.id,
+      });
+
+      const user2 = await service.createUser({
+        username: "testuser2",
+        password: "12345678",
+        organizationId: org!.id,
+      });
+
+      const users = await service.getAllUsers();
+      expect(users).toHaveLength(3);
+      expect(users[1].username).toBe(user1!.username);
+      expect(users[2].username).toBe(user2!.username);
+      // @ts-expect-error getAllUsers omits password in the return type
+      expect(users[0].password).toBeUndefined();
+      // @ts-expect-error getAllUsers omits password in the return type
+      expect(users[1].password).toBeUndefined();
+      // @ts-expect-error getAllUsers omits password in the return type
+      expect(users[2].password).toBeUndefined();
     });
   });
 }

@@ -22,7 +22,7 @@ export class CustomerService {
 if (import.meta.vitest) {
   const { it, expect, beforeEach, afterEach, describe } = import.meta.vitest;
 
-  describe("OrgService", async () => {
+  describe("CustomerService", async () => {
     let service: CustomerService;
     let prisma: PrismaService;
     let orgService: OrgService;

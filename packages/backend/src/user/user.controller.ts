@@ -9,18 +9,22 @@ import { Test } from "@nestjs/testing";
 import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, AdminGuard)
 @ApiTags("user")
 @Controller("user")
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(AdminGuard)
   @ApiBody({ schema: CreateUserDto.openapiSchema })
-  @ApiOperation({ operationId: "createUser" })
   @Post("create")
   async create(@Body() createUserDto: CreateUserDto): Promise<void> {
     await this.userService.createUser(createUserDto);
+  }
+
+  @ApiBody({ schema: CreateUserDto.openapiSchema })
+  @Post("getAll")
+  async getAll(): Promise<void> {
+    await this.userService.getAllUsers();
   }
 }
 

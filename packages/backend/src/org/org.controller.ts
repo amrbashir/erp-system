@@ -12,7 +12,6 @@ export class OrgController {
   constructor(private readonly orgService: OrgService) {}
 
   @ApiBody({ schema: CreateOrgDto.openapiSchema })
-  @ApiOperation({ operationId: "createOrg" })
   @Post("create")
   async create(@Body() createOrgDto: CreateOrgDto): Promise<{ organizationId: string }> {
     const org = await this.orgService.create(createOrgDto);

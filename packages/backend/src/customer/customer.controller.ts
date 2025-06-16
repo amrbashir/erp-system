@@ -15,7 +15,6 @@ export class CustomerController {
   constructor(private readonly service: CustomerService) {}
 
   @ApiBody({ schema: CreateCustomerDto.openapiSchema })
-  @ApiOperation({ operationId: "createCustomer" })
   @Post("create")
   create(@Body() createCustomerDto: CreateCustomerDto) {
     return this.service.createCustomer(createCustomerDto);
