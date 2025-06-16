@@ -18,6 +18,10 @@ export class CustomerService {
 
     return this.prisma.customer.create({ data: createCustomerDto });
   }
+
+  async getAllCustomers(): Promise<Customer[]> {
+    return this.prisma.customer.findMany();
+  }
 }
 
 if (import.meta.vitest) {
@@ -60,6 +64,32 @@ if (import.meta.vitest) {
       expect(customer.email).toBe(createCustomerDto.email);
       expect(customer.phone).toBe(createCustomerDto.phone);
       expect(customer.organizationId).toBe(createCustomerDto.organizationId);
+    });
+
+    it("should return all customers", async () => {
+      const org = await orgService.create({
+        name: "Test Org",
+        username: "admin",
+        password: "12345678",
+      });
+
+      const customer1 = await service.createCustomer({
+        name: "Customer One",
+        organizationId: org!.id,
+      });
+
+      const customer2 = await service.createCustomer({
+        name: "Customer Two",
+        organizationId: org!.id,
+      });
+
+      const customers = await service.getAllCustomers();
+      expect(customers).toBeDefined();
+      expect(customers.length).toBeGreaterThanOrEqual(2);
+      expect(customers).toContainEqual(expect.objectContaining({ id: customer1.id }));
+      expect(customers).toContainEqual(expect.objectContaining({ id: customer2.id }));
+      expect(customers[0].organizationId).toBe(org!.id);
+      expect(customers[1].organizationId).toBe(org!.id);
     });
   });
 }

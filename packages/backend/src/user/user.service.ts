@@ -107,7 +107,7 @@ if (import.meta.vitest) {
       await expect(service.createUser(createUserDto)).rejects.toThrow();
     });
 
-    it("getAllUsers should return all users without passwords", async () => {
+    it("should return all users without passwords", async () => {
       const createOrgDto = {
         name: "Test Org",
         username: "admin",

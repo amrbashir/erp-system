@@ -15,4 +15,9 @@ export class CustomerController {
   create(@Body() createCustomerDto: CreateCustomerDto) {
     return this.service.createCustomer(createCustomerDto);
   }
+
+  @Post("create")
+  getAll() {
+    return this.service.getAllCustomers();
+  }
 }
