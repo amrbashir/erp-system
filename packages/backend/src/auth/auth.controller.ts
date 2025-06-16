@@ -13,7 +13,7 @@ import { AuthService } from "./auth.service";
 import { type JwtPayload, LoginUserDto } from "./auth.dto";
 import { JwtRefreshAuthGuard } from "./auth.strategy.jwt-refresh";
 import { type Response } from "express";
-import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "./auth.strategy.jwt";
 
 @ApiTags("auth")

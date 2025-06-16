@@ -10,7 +10,7 @@ import { useRandomDatabase } from "../../e2e/utils";
 export class OrgService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createOrgDto: CreateOrgDto): Promise<Organization | null> {
+  async create(createOrgDto: CreateOrgDto): Promise<Organization> {
     if (createOrgDto.slug && !isValidSlug(createOrgDto.slug)) {
       throw new BadRequestException("Invalid slug format");
     }

@@ -1,10 +1,10 @@
-import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
+import { Body, Controller, Post } from "@nestjs/common";
 import { CreateOrgDto } from "./org.dto";
 import { OrgService } from "./org.service";
 import { useRandomDatabase } from "../../e2e/utils";
 import { PrismaService } from "../prisma/prisma.service";
 import { Test } from "@nestjs/testing";
-import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiTags } from "@nestjs/swagger";
 
 @ApiTags("org")
 @Controller("org")
@@ -15,7 +15,6 @@ export class OrgController {
   @Post("create")
   async create(@Body() createOrgDto: CreateOrgDto): Promise<{ organizationId: string }> {
     const org = await this.orgService.create(createOrgDto);
-    if (!org) throw new BadRequestException("Organization creation failed");
     return { organizationId: org.id };
   }
 }

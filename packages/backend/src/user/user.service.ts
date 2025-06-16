@@ -10,7 +10,7 @@ import { OrgService } from "../org/org.service";
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createUser(createUserDto: CreateUserDto & { role?: UserRole }): Promise<User | null> {
+  async createUser(createUserDto: CreateUserDto & { role?: UserRole }): Promise<User> {
     const hashedPassword = await argon2.hash(createUserDto.password);
 
     return this.prisma.user.create({

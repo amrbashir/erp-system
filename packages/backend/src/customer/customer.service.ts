@@ -3,12 +3,13 @@ import { PrismaService } from "../prisma/prisma.service";
 import type { CreateCustomerDto } from "./customer.dto";
 import { useRandomDatabase } from "../../e2e/utils";
 import { OrgService } from "../org/org.service";
+import type { Customer } from "../prisma/generated";
 
 @Injectable()
 export class CustomerService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createCustomer(createCustomerDto: CreateCustomerDto) {
+  async createCustomer(createCustomerDto: CreateCustomerDto): Promise<Customer> {
     const existingCustomer = await this.prisma.customer.findUnique({
       where: { name: createCustomerDto.name },
     });
