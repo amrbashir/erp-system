@@ -8,14 +8,12 @@ import {
   UseGuards,
   Req,
   Res,
-  UsePipes,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { type JwtPayload, LoginUserDto } from "./auth.dto";
 import { Public } from "../public.decorator";
 import { JwtRefreshAuthGuard } from "./auth.strategy.jwt-refresh";
 import { type Response } from "express";
-import { ZodValidationPipe } from "../zod.pipe";
 
 @Controller("auth")
 export class AuthController {
@@ -24,7 +22,6 @@ export class AuthController {
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post("login")
-  @UsePipes(new ZodValidationPipe(LoginUserDto))
   async login(
     @Body() loginUserDto: LoginUserDto,
     @Res({ passthrough: true }) res: Response,

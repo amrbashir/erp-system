@@ -1,19 +1,10 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
-  UsePipes,
-} from "@nestjs/common";
+import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import { CreateOrgDto } from "./org.dto";
 import { OrgService } from "./org.service";
 import { Public } from "../public.decorator";
 import { useRandomDatabase } from "../../e2e/utils";
 import { PrismaService } from "../prisma/prisma.service";
 import { Test } from "@nestjs/testing";
-import { ZodValidationPipe } from "../zod.pipe";
 
 @Controller("org")
 export class OrgController {
@@ -22,7 +13,6 @@ export class OrgController {
   @Public()
   @HttpCode(HttpStatus.CREATED)
   @Post("create")
-  @UsePipes(new ZodValidationPipe(CreateOrgDto))
   async create(@Body() createOrgDto: CreateOrgDto): Promise<{ organizationId: string }> {
     const org = await this.orgService.create(createOrgDto);
     if (!org) throw new BadRequestException("Organization creation failed");

@@ -5,6 +5,8 @@ import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtAuthGuard } from "./auth/auth.strategy.jwt";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { ZodValidationPipe } from "./zod.pipe";
 
 @Module({
   imports: [PrismaModule, OrgModule, UserModule, AuthModule],
@@ -19,4 +21,5 @@ export class AppModule {}
 
 export function setupApp(app: INestApplication) {
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: "1" });
+  app.useGlobalPipes(new ZodValidationPipe());
 }

@@ -1,6 +1,5 @@
-import { Body, Controller, Get, Post, UsePipes } from "@nestjs/common";
+import { Body, Controller, Post } from "@nestjs/common";
 import { CreateCustomerDto } from "./customer.dto";
-import { ZodValidationPipe } from "../zod.pipe";
 import { CustomerService } from "./customer.service";
 import { Test } from "@nestjs/testing";
 import { PrismaService } from "../prisma/prisma.service";
@@ -12,7 +11,6 @@ export class CustomerController {
   constructor(private readonly service: CustomerService) {}
 
   @Post("create")
-  @UsePipes(new ZodValidationPipe(CreateCustomerDto))
   create(@Body() createCustomerDto: CreateCustomerDto) {
     return this.service.createCustomer(createCustomerDto);
   }

@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
+import { createZodDto } from "../zod.pipe";
 
-export type CreateOrgDto = z.infer<typeof CreateOrgDto>;
-export const CreateOrgDto = z.object({
+export const CreateOrgDtoSchema = z.object({
   name: z.string().nonempty(),
   slug: z
     .string()
@@ -17,3 +17,5 @@ export const CreateOrgDto = z.object({
     .min(8)
     .regex(/^[\x00-\x7F]+$/), // ascii
 });
+
+export class CreateOrgDto extends createZodDto(CreateOrgDtoSchema) {}

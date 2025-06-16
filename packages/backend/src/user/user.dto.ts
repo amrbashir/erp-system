@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
+import { createZodDto } from "../zod.pipe";
 
-export type CreateUserDto = z.infer<typeof CreateUserDto>;
-export const CreateUserDto = z.object({
+export const CreateUserSchema = z.object({
   username: z
     .string()
     .nonempty()
@@ -13,3 +13,5 @@ export const CreateUserDto = z.object({
     .regex(/^[\x00-\x7F]+$/), // ascii
   organizationId: z.string().nonempty().uuid(),
 });
+
+export class CreateUserDto extends createZodDto(CreateUserSchema) {}
