@@ -17,33 +17,36 @@
     "ts:check": "tsc --noEmit"
   },
   "dependencies": {
-    "@nestjs/common": "^11.1.2",
-    "@nestjs/core": "^11.1.2",
+    "@nestjs/common": "^11.1.3",
+    "@nestjs/core": "^11.1.3",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
-    "@nestjs/platform-express": "^11.1.2",
-    "@prisma/client": "^6.8.2",
+    "@nestjs/platform-express": "^11.1.3",
+    "@nestjs/swagger": "^11.2.0",
+    "@prisma/client": "^6.9.0",
     "argon2": "^0.43.0",
     "class-transformer": "^0.5.1",
     "express": "^5.1.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "zod": "^3.25.64",
+    "zod-openapi": "^4.2.4"
   },
   "devDependencies": {
-    "@nestjs/testing": "^11.1.2",
-    "@types/express": "^5.0.2",
-    "@types/node": "^22.15.29",
+    "@nestjs/testing": "^11.1.3",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.2",
     "@types/passport": "^1.0.17",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "dotenv": "^16.5.0",
-    "prisma": "^6.8.2",
-    "tsdown": "^0.12.6",
+    "prisma": "^6.9.0",
+    "tsdown": "^0.12.7",
     "typescript": "^5.8.3",
     "unplugin-swc": "^1.5.4",
     "vite": "^6.3.5",
-    "vitest": "^3.1.4"
+    "vitest": "^3.2.3"
   }
 }

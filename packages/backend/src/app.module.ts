@@ -22,4 +22,9 @@ export class AppModule {}
 export function setupApp(app: INestApplication) {
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: "1" });
   app.useGlobalPipes(new ZodValidationPipe());
+
+  // swagger
+  const config = new DocumentBuilder().setVersion("v1").setTitle("Tech Zone API").build();
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup("v1", app, documentFactory, { customSiteTitle: "Tech Zone API" });
 }

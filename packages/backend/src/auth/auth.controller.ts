@@ -14,13 +14,16 @@ import { type JwtPayload, LoginUserDto } from "./auth.dto";
 import { Public } from "../public.decorator";
 import { JwtRefreshAuthGuard } from "./auth.strategy.jwt-refresh";
 import { type Response } from "express";
+import { ApiBody, ApiTags } from "@nestjs/swagger";
 
+@ApiTags("auth")
 @Controller("auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
   @HttpCode(HttpStatus.OK)
+  @ApiBody({ schema: LoginUserDto.openApiSchema })
   @Post("login")
   async login(
     @Body() loginUserDto: LoginUserDto,

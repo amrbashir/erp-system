@@ -1,4 +1,4 @@
-import { z } from "zod/v4";
+import { z } from "zod";
 import { createZodDto } from "../zod.pipe";
 
 export const CreateUserSchema = z.object({
