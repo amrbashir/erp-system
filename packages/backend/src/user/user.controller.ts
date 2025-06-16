@@ -6,7 +6,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { OrgService } from "../org/org.service";
 import { useRandomDatabase } from "../../e2e/utils";
 import { Test } from "@nestjs/testing";
-import { ApiBody, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 @ApiTags("user")
 @Controller("user")
@@ -15,7 +15,8 @@ export class UserController {
 
   @UseGuards(AdminGuard)
   @HttpCode(HttpStatus.CREATED)
-  @ApiBody({ schema: CreateUserDto.openApiSchema })
+  @ApiBody({ schema: CreateUserDto.openapiSchema })
+  @ApiOperation({ operationId: "createUser" })
   @Post("create")
   async create(@Body() createUserDto: CreateUserDto): Promise<void> {
     await this.userService.createUser(createUserDto);

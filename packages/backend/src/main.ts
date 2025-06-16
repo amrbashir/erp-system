@@ -1,5 +1,6 @@
 import { NestFactory } from "@nestjs/core";
-import { AppModule, setupApp } from "./app.module";
+import { AppModule, generateOpenApiJson, setupApp } from "./app.module";
+import fs from "node:fs";
 
 export async function main() {
   const app = await NestFactory.create(AppModule);
@@ -11,4 +12,15 @@ export async function main() {
   console.log(`Server running on: ${await app.getUrl()}`);
 }
 
-main();
+const args = process.argv.slice(2);
+const mainCommand = args[0];
+
+switch (mainCommand) {
+  case "gen-openapi-json":
+    const app = await NestFactory.create(AppModule);
+    const openApiJson = generateOpenApiJson(app);
+    fs.writeFileSync("dist/openapi.json", openApiJson, "utf8");
+    break;
+  default:
+    main();
+}

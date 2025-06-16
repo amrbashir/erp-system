@@ -5,14 +5,15 @@ import { Test } from "@nestjs/testing";
 import { PrismaService } from "../prisma/prisma.service";
 import { useRandomDatabase } from "../../e2e/utils";
 import { OrgService } from "../org/org.service";
-import { ApiBody, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiTags, ApiOperation } from "@nestjs/swagger";
 
 @ApiTags("customer")
 @Controller("customer")
 export class CustomerController {
   constructor(private readonly service: CustomerService) {}
 
-  @ApiBody({ schema: CreateCustomerDto.openApiSchema })
+  @ApiBody({ schema: CreateCustomerDto.openapiSchema })
+  @ApiOperation({ operationId: "createCustomer" })
   @Post("create")
   create(@Body() createCustomerDto: CreateCustomerDto) {
     return this.service.createCustomer(createCustomerDto);

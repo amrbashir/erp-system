@@ -21,7 +21,7 @@ export interface ZodDto<T extends ZodType = ZodType> {
   new (): T["_output"];
   isZodDto: Symbol;
   schema: T;
-  openApiSchema: ExtractedSchemaType;
+  openapiSchema: ExtractedSchemaType;
   safeParse(input: unknown): SafeParseReturnType<T["_output"], T["_input"]>;
 }
 
@@ -32,7 +32,7 @@ export function createZodDto<T extends ZodType = ZodType>(schema: T): ZodDto<T> 
   class AugmentedZodDto {
     public static isZodDto = isZodDto;
     public static schema = schema;
-    public static openApiSchema = createSchema(schema).schema;
+    public static openapiSchema = createSchema(schema).schema;
 
     public static safeParse(input: unknown) {
       return this.schema.safeParse(input);

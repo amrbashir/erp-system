@@ -10,11 +10,10 @@
     "dev": "tsdown --watch --config tsdown.config.dev.ts",
     "start": "node --env-file=.env dist/main.js",
     "start:dev": "node --env-file=.env.dev dist/main.js",
-    "pretest": "prisma generate && docker compose up -d",
-    "test": "vitest run",
+    "gen:openapi-json": "pnpm build && node --env-file=.env dist/main.js gen-openapi-json",
+    "test": "prisma generate && docker compose up -d && vitest run",
     "test:watch": "vitest",
-    "prets:check": "prisma generate",
-    "ts:check": "tsc --noEmit"
+    "ts:check": "prisma generate && tsc --noEmit"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.3",
@@ -37,7 +36,7 @@
   "devDependencies": {
     "@nestjs/testing": "^11.1.3",
     "@types/express": "^5.0.3",
-    "@types/node": "^24.0.2",
+    "@types/node": "^24.0.3",
     "@types/passport": "^1.0.17",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",

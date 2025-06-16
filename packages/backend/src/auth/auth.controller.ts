@@ -14,7 +14,7 @@ import { type JwtPayload, LoginUserDto } from "./auth.dto";
 import { Public } from "../public.decorator";
 import { JwtRefreshAuthGuard } from "./auth.strategy.jwt-refresh";
 import { type Response } from "express";
-import { ApiBody, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 @ApiTags("auth")
 @Controller("auth")
@@ -23,7 +23,8 @@ export class AuthController {
 
   @Public()
   @HttpCode(HttpStatus.OK)
-  @ApiBody({ schema: LoginUserDto.openApiSchema })
+  @ApiBody({ schema: LoginUserDto.openapiSchema })
+  @ApiOperation({ operationId: "login" })
   @Post("login")
   async login(
     @Body() loginUserDto: LoginUserDto,
@@ -42,6 +43,7 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ operationId: "logout" })
   @Post("logout")
   async logout(@Req() req: any): Promise<void> {
     const user = req["user"] as JwtPayload;
@@ -51,6 +53,7 @@ export class AuthController {
   @Public()
   @UseGuards(JwtRefreshAuthGuard)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ operationId: "refresh" })
   @Get("refresh")
   async refresh(@Req() req: any): Promise<{ accessToken: string }> {
     const user = req["user"] as JwtPayload;

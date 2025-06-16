@@ -7,9 +7,10 @@ import { APP_GUARD } from "@nestjs/core";
 import { JwtAuthGuard } from "./auth/auth.strategy.jwt";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { ZodValidationPipe } from "./zod.pipe";
+import { CustomerModule } from "./customer/customer.module";
 
 @Module({
-  imports: [PrismaModule, OrgModule, UserModule, AuthModule],
+  imports: [PrismaModule, OrgModule, UserModule, AuthModule, CustomerModule],
   providers: [
     {
       provide: APP_GUARD,
@@ -19,12 +20,17 @@ import { ZodValidationPipe } from "./zod.pipe";
 })
 export class AppModule {}
 
+const swaggerConfig = new DocumentBuilder().setVersion("v1").setTitle("Tech Zone API").build();
+
 export function setupApp(app: INestApplication) {
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: "1" });
   app.useGlobalPipes(new ZodValidationPipe());
 
-  // swagger
-  const config = new DocumentBuilder().setVersion("v1").setTitle("Tech Zone API").build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  const documentFactory = () => SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup("v1", app, documentFactory, { customSiteTitle: "Tech Zone API" });
+}
+
+export function generateOpenApiJson(app: INestApplication): string {
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  return JSON.stringify(document, null, 2);
 }
