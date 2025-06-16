@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Post, UseGuards } from "@nestjs/common";
 import { CreateCustomerDto } from "./customer.dto";
 import { CustomerService } from "./customer.service";
 import { Test } from "@nestjs/testing";
@@ -6,7 +6,9 @@ import { PrismaService } from "../prisma/prisma.service";
 import { useRandomDatabase } from "../../e2e/utils";
 import { OrgService } from "../org/org.service";
 import { ApiBody, ApiTags, ApiOperation } from "@nestjs/swagger";
+import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
 
+@UseGuards(JwtAuthGuard)
 @ApiTags("customer")
 @Controller("customer")
 export class CustomerController {

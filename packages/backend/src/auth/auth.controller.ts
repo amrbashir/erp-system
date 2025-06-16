@@ -11,18 +11,16 @@ import {
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { type JwtPayload, LoginUserDto } from "./auth.dto";
-import { Public } from "../public.decorator";
 import { JwtRefreshAuthGuard } from "./auth.strategy.jwt-refresh";
 import { type Response } from "express";
 import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { JwtAuthGuard } from "./auth.strategy.jwt";
 
 @ApiTags("auth")
 @Controller("auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Public()
-  @HttpCode(HttpStatus.OK)
   @ApiBody({ schema: LoginUserDto.openapiSchema })
   @ApiOperation({ operationId: "login" })
   @Post("login")
@@ -42,7 +40,7 @@ export class AuthController {
     return { accessToken: tokens.accessToken };
   }
 
-  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ operationId: "logout" })
   @Post("logout")
   async logout(@Req() req: any): Promise<void> {
@@ -50,9 +48,7 @@ export class AuthController {
     this.authService.logout(user.sub);
   }
 
-  @Public()
   @UseGuards(JwtRefreshAuthGuard)
-  @HttpCode(HttpStatus.OK)
   @ApiOperation({ operationId: "refresh" })
   @Get("refresh")
   async refresh(@Req() req: any): Promise<{ accessToken: string }> {

@@ -7,14 +7,15 @@ import { OrgService } from "../org/org.service";
 import { useRandomDatabase } from "../../e2e/utils";
 import { Test } from "@nestjs/testing";
 import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
 
+@UseGuards(JwtAuthGuard)
 @ApiTags("user")
 @Controller("user")
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @UseGuards(AdminGuard)
-  @HttpCode(HttpStatus.CREATED)
   @ApiBody({ schema: CreateUserDto.openapiSchema })
   @ApiOperation({ operationId: "createUser" })
   @Post("create")

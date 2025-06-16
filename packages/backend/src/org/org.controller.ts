@@ -1,7 +1,6 @@
 import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import { CreateOrgDto } from "./org.dto";
 import { OrgService } from "./org.service";
-import { Public } from "../public.decorator";
 import { useRandomDatabase } from "../../e2e/utils";
 import { PrismaService } from "../prisma/prisma.service";
 import { Test } from "@nestjs/testing";
@@ -12,8 +11,6 @@ import { ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
 export class OrgController {
   constructor(private readonly orgService: OrgService) {}
 
-  @Public()
-  @HttpCode(HttpStatus.CREATED)
   @ApiBody({ schema: CreateOrgDto.openapiSchema })
   @ApiOperation({ operationId: "createOrg" })
   @Post("create")

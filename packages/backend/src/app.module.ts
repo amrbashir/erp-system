@@ -3,20 +3,12 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { OrgModule } from "./org/org.module";
 import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
-import { APP_GUARD } from "@nestjs/core";
-import { JwtAuthGuard } from "./auth/auth.strategy.jwt";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { ZodValidationPipe } from "./zod.pipe";
 import { CustomerModule } from "./customer/customer.module";
 
 @Module({
   imports: [PrismaModule, OrgModule, UserModule, AuthModule, CustomerModule],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-  ],
 })
 export class AppModule {}
 
