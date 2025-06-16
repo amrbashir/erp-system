@@ -27,7 +27,8 @@ CREATE TABLE "expenses" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "cashierId" TEXT NOT NULL,
     "transactionId" TEXT NOT NULL,
-    "storeId" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "storeId" TEXT,
 
     CONSTRAINT "expenses_pkey" PRIMARY KEY ("id")
 );
@@ -54,7 +55,8 @@ CREATE TABLE "invoices" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "cashierId" TEXT NOT NULL,
     "transactionId" TEXT NOT NULL,
-    "storeId" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "storeId" TEXT,
 
     CONSTRAINT "invoices_pkey" PRIMARY KEY ("id")
 );
@@ -80,7 +82,8 @@ CREATE TABLE "products" (
     "stock_quantity" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "storeId" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "storeId" TEXT,
 
     CONSTRAINT "products_pkey" PRIMARY KEY ("id")
 );
@@ -105,7 +108,8 @@ CREATE TABLE "transactions" (
     "customerId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "cashierId" TEXT NOT NULL,
-    "storeId" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
+    "storeId" TEXT,
 
     CONSTRAINT "transactions_pkey" PRIMARY KEY ("id")
 );
@@ -126,10 +130,7 @@ CREATE TABLE "users" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "customers_email_key" ON "customers"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "customers_phone_key" ON "customers"("phone");
+CREATE UNIQUE INDEX "customers_name_key" ON "customers"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "expenses_transactionId_key" ON "expenses"("transactionId");
@@ -156,7 +157,10 @@ ALTER TABLE "expenses" ADD CONSTRAINT "expenses_cashierId_fkey" FOREIGN KEY ("ca
 ALTER TABLE "expenses" ADD CONSTRAINT "expenses_transactionId_fkey" FOREIGN KEY ("transactionId") REFERENCES "transactions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "expenses" ADD CONSTRAINT "expenses_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "stores"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "expenses" ADD CONSTRAINT "expenses_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "expenses" ADD CONSTRAINT "expenses_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "stores"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "invoice_items" ADD CONSTRAINT "invoice_items_invoiceId_fkey" FOREIGN KEY ("invoiceId") REFERENCES "invoices"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -171,10 +175,16 @@ ALTER TABLE "invoices" ADD CONSTRAINT "invoices_cashierId_fkey" FOREIGN KEY ("ca
 ALTER TABLE "invoices" ADD CONSTRAINT "invoices_transactionId_fkey" FOREIGN KEY ("transactionId") REFERENCES "transactions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "invoices" ADD CONSTRAINT "invoices_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "stores"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "invoices" ADD CONSTRAINT "invoices_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "products" ADD CONSTRAINT "products_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "stores"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "invoices" ADD CONSTRAINT "invoices_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "stores"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "products" ADD CONSTRAINT "products_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "products" ADD CONSTRAINT "products_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "stores"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "stores" ADD CONSTRAINT "stores_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -186,7 +196,10 @@ ALTER TABLE "transactions" ADD CONSTRAINT "transactions_customerId_fkey" FOREIGN
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_cashierId_fkey" FOREIGN KEY ("cashierId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "transactions" ADD CONSTRAINT "transactions_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "stores"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "transactions" ADD CONSTRAINT "transactions_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "transactions" ADD CONSTRAINT "transactions_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "stores"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
