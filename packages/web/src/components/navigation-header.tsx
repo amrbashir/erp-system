@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ThemeModeToggle } from "@/components/theme-mode-toggle";
 
 function NavigationBreadCrumbs() {
   const { flatRoutes } = useRouter();
@@ -72,6 +73,8 @@ export function NavigationHeader() {
       <SidebarTrigger />
       <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
       <NavigationBreadCrumbs />
+      <div className="flex-1" />
+      <ThemeModeToggle />
     </header>
   );
 }

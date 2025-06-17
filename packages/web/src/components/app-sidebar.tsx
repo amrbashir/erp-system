@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import {
   Link,
+  useLocation,
   useRouter,
   type RegisteredRouter,
   type ValidateLinkOptions,
@@ -23,6 +24,7 @@ type Route = {
 
 export function AppSideBar() {
   const { flatRoutes } = useRouter();
+  const location = useLocation({ select: (state) => state.pathname });
 
   const routes: Route[] = [
     {
@@ -40,16 +42,18 @@ export function AppSideBar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild size={"lg"}>
-              <Link to="/">
-                <img src="/favicon.svg" className="size-10"></img>
-                <span>Tech Zone Store</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <SidebarGroup>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild size={"lg"}>
+                <Link to="/">
+                  <img src="/favicon.svg" className="size-10"></img>
+                  <span>Tech Zone Store</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
       </SidebarHeader>
 
       <SidebarContent>
@@ -58,7 +62,7 @@ export function AppSideBar() {
             <SidebarMenu>
               {routes.map((route) => (
                 <SidebarMenuItem key={route.url}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={route.url === location}>
                     <Link to={route.url}>
                       <route.icon />
                       <span>{route.title}</span>
