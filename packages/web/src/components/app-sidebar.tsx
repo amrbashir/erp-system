@@ -8,16 +8,11 @@ import {
   SidebarGroup,
   SidebarGroupContent,
 } from "@/components/ui/sidebar";
-import {
-  Link,
-  useLocation,
-  useRouter,
-  type RegisteredRouter,
-  type ValidateLinkOptions,
-} from "@tanstack/react-router";
+import type { FileRoutesByTo } from "@/routeTree.gen";
+import { Link, useLocation, useRouter } from "@tanstack/react-router";
 
 type Route = {
-  url: ValidateLinkOptions<RegisteredRouter, unknown>["to"];
+  url: keyof FileRoutesByTo;
   title: string;
   icon: React.ComponentType;
 };
@@ -29,13 +24,13 @@ export function AppSideBar() {
   const routes: Route[] = [
     {
       url: "/",
-      title: flatRoutes.find((route) => route.fullPath === "/")?.options.context().title,
-      icon: flatRoutes.find((route) => route.fullPath === "/")?.options.context().icon,
+      title: flatRoutes.find((route) => route.to === "/")?.options.context().title,
+      icon: flatRoutes.find((route) => route.to === "/")?.options.context().icon,
     },
     {
       url: "/about",
-      title: flatRoutes.find((route) => route.fullPath === "/about")?.options.context().title,
-      icon: flatRoutes.find((route) => route.fullPath === "/about")?.options.context().icon,
+      title: flatRoutes.find((route) => route.to === "/about")?.options.context().title,
+      icon: flatRoutes.find((route) => route.to === "/about")?.options.context().icon,
     },
   ];
 
