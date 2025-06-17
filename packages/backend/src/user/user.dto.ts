@@ -15,3 +15,9 @@ export const CreateUserSchema = z.object({
 });
 
 export class CreateUserDto extends createZodDto(CreateUserSchema) {}
+
+export const PaginationSchema = z.object({
+  skip: z.number().int().min(0).default(0),
+  take: z.number().int().min(1).max(100).default(30),
+});
+export class PaginationDto extends createZodDto(PaginationSchema) {}

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import type { CreateCustomerDto } from "./customer.dto";
+import type { CreateCustomerDto, PaginationDto } from "./customer.dto";
 import { useRandomDatabase } from "../../e2e/utils";
 import { OrgService } from "../org/org.service";
 import type { Customer } from "../prisma/generated";
@@ -19,8 +19,11 @@ export class CustomerService {
     return this.prisma.customer.create({ data: createCustomerDto });
   }
 
-  async getAllCustomers(): Promise<Customer[]> {
-    return this.prisma.customer.findMany();
+  async getAllCustomers(paginationDto?: PaginationDto): Promise<Customer[]> {
+    return this.prisma.customer.findMany({
+      skip: paginationDto?.skip,
+      take: paginationDto?.take,
+    });
   }
 }
 

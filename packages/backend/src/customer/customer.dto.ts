@@ -9,3 +9,9 @@ export const CreateCustomerSchema = z.object({
 });
 
 export class CreateCustomerDto extends createZodDto(CreateCustomerSchema) {}
+
+export const PaginationSchema = z.object({
+  skip: z.number().int().min(0).default(0),
+  take: z.number().int().min(1).max(100).default(30),
+});
+export class PaginationDto extends createZodDto(PaginationSchema) {}

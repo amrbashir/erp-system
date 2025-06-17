@@ -1,8 +1,9 @@
-import { Body, Controller, Post, UseGuards } from "@nestjs/common";
-import { CreateCustomerDto } from "./customer.dto";
+import { Body, Controller, Post, Query, UseGuards } from "@nestjs/common";
+import { CreateCustomerDto, PaginationDto } from "./customer.dto";
 import { CustomerService } from "./customer.service";
-import { ApiBody, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
+import type { Customer } from "../prisma/generated";
 
 @UseGuards(JwtAuthGuard)
 @ApiTags("customer")
@@ -16,8 +17,9 @@ export class CustomerController {
     return this.service.createCustomer(createCustomerDto);
   }
 
-  @Post("create")
-  getAll() {
-    return this.service.getAllCustomers();
+  @ApiQuery({ schema: PaginationDto.openapiSchema })
+  @Post("getAll")
+  async getAll(@Query() paginationDto: PaginationDto) {
+    return this.service.getAllCustomers(paginationDto);
   }
 }

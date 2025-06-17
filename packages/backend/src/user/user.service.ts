@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { type CreateUserDto } from "./user.dto";
+import { PaginationDto, type CreateUserDto } from "./user.dto";
 import { UserRole, type User } from "../prisma/generated/client";
 import * as argon2 from "argon2";
 import { useRandomDatabase } from "../../e2e/utils";
@@ -42,10 +42,21 @@ export class UserService {
     });
   }
 
-  async getAllUsers(): Promise<Omit<User, "password">[]> {
+  async getAllUsers(
+    paginationDto?: PaginationDto,
+    sort?: { field?: string; order?: "asc" | "desc" },
+  ): Promise<Omit<User, "password" | "refreshToken">[]> {
     return this.prisma.user.findMany({
+      skip: paginationDto?.skip,
+      take: paginationDto?.take,
+      orderBy: sort
+        ? {
+            [sort.field ?? "createdAt"]: sort.order ?? "asc",
+          }
+        : undefined,
       omit: {
         password: true,
+        refreshToken: true,
       },
     });
   }
@@ -139,6 +150,72 @@ if (import.meta.vitest) {
       expect(users[1].password).toBeUndefined();
       // @ts-expect-error getAllUsers omits password in the return type
       expect(users[2].password).toBeUndefined();
+      // @ts-expect-error getAllUsers omits refreshToken in the return type
+      expect(users[0].refreshToken).toBeUndefined();
+      // @ts-expect-error getAllUsers omits refreshToken in the return type
+      expect(users[1].refreshToken).toBeUndefined();
+      // @ts-expect-error getAllUsers omits refreshToken in the return type
+      expect(users[2].refreshToken).toBeUndefined();
+    });
+
+    it("should return users based on pagination", async () => {
+      const createOrgDto = {
+        name: "Test Org",
+        username: "admin",
+        password: "12345678",
+        slug: "test-org",
+      };
+
+      const org = await orgService.create(createOrgDto);
+
+      const user1 = await service.createUser({
+        username: "testuser",
+        password: "12345678",
+        organizationId: org!.id,
+      });
+      const user2 = await service.createUser({
+        username: "testuser2",
+        password: "12345678",
+        organizationId: org!.id,
+      });
+      const user3 = await service.createUser({
+        username: "testuser3",
+        password: "12345678",
+        organizationId: org!.id,
+      });
+
+      const sort = { field: "createdAt", order: "asc" } as const;
+
+      const users = await service.getAllUsers(
+        {
+          skip: 0,
+          take: 1,
+        },
+        sort,
+      );
+      expect(users).toHaveLength(1);
+      expect(users[0].username).toBe(createOrgDto.username);
+
+      const users2 = await service.getAllUsers(
+        {
+          skip: 1,
+          take: 1,
+        },
+        sort,
+      );
+      expect(users2).toHaveLength(1);
+      expect(users2[0].username).toBe(user1.username);
+
+      const users3 = await service.getAllUsers(
+        {
+          skip: 2,
+          take: 2,
+        },
+        sort,
+      );
+      expect(users3).toHaveLength(2);
+      expect(users3[0].username).toBe(user2!.username);
+      expect(users3[1].username).toBe(user3!.username);
     });
   });
 }
