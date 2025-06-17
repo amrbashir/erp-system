@@ -12,7 +12,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 type RouterContext = {
   title: string;
   icon: React.ComponentType;
-  breadCrumbTitle?: string;
 };
 
 export const Route = createRootRouteWithContext<RouterContext>()({

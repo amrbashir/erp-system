@@ -19,7 +19,7 @@ function NavigationBreadcrumbs() {
     .filter(({ context }) => context.title)
     .map(({ pathname, context }) => ({
       path: pathname,
-      title: context?.breadCrumbTitle ?? context?.title ?? "",
+      title: context?.title,
     }));
 
   const activeCrumb = breadcrumbs[breadcrumbs.length - 1];

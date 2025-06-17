@@ -3,7 +3,7 @@ import { Home } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: Index,
-  context: () => ({ title: "Home", icon: Home, breadCrumbTitle: "/" }),
+  context: () => ({ title: "Home", icon: Home }),
 });
 
 function Index() {
