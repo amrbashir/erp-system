@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Home } from "lucide-react";
 
-export const Route = createFileRoute("/")({ component: Index });
+export const Route = createFileRoute("/")({
+  component: Index,
+  context: () => ({ title: "Home", icon: Home, breadCrumb: "/" }),
+});
 
 function Index() {
-  return (
-    <div className="p-2">
-      <h3>Welcome Home!</h3>
-    </div>
-  );
+  return <div>Welcome Home!</div>;
 }

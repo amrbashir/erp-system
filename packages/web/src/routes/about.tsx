@@ -1,7 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Info } from "lucide-react";
 
-export const Route = createFileRoute("/about")({ component: About });
+export const Route = createFileRoute("/about")({
+  component: About,
+  context: () => ({ title: "About", icon: Info }),
+});
 
 function About() {
-  return <div className="p-2">Hello from About!</div>;
+  return <div>Hello from About!</div>;
 }
