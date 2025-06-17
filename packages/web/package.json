@@ -5,18 +5,23 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build",
-    "ts:check": "vue-tsc"
+    "build": "tsc -b && vite build",
+    "ts:check": "tsc -b"
   },
   "dependencies": {
-    "vue": "^3.5.13",
-    "@tech-zone-store/sdk": "workspace:^"
+    "@tailwindcss/vite": "^4.1.10",
+    "@tanstack/react-router": "^1.121.21",
+    "@tech-zone-store/sdk": "workspace:^",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.10"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.3",
-    "@vue/tsconfig": "^0.7.0",
+    "@tanstack/router-plugin": "^1.121.21",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.5.2",
     "typescript": "~5.8.3",
-    "vite": "^6.3.5",
-    "vue-tsc": "^2.2.8"
+    "vite": "^6.3.5"
   }
 }
