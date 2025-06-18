@@ -27,11 +27,6 @@ export function AppSideBar() {
       title: flatRoutes.find((route) => route.to === "/")?.options.loader().title,
       icon: flatRoutes.find((route) => route.to === "/")?.options.loader().icon,
     },
-    {
-      url: "/about",
-      title: flatRoutes.find((route) => route.to === "/about")?.options.loader().title,
-      icon: flatRoutes.find((route) => route.to === "/about")?.options.loader().icon,
-    },
   ];
 
   return (
@@ -43,7 +38,7 @@ export function AppSideBar() {
               <SidebarMenuButton asChild size={"lg"}>
                 <Link to="/">
                   <img src="/favicon.svg" className="size-10"></img>
-                  <span>Tech Zone Store</span>
+                  <span>Tech Zone</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

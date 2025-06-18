@@ -8,6 +8,7 @@ import {
 import { AppSideBar } from "@/components/app-sidebar";
 import { NavigationHeader } from "@/components/navigation-header";
 import { ThemeProvider } from "@/components/theme-provider";
+import { useTranslation } from "react-i18next";
 
 type RouterContext = {
   title: string;
@@ -24,11 +25,13 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     const matchWithTitle = [...matches].reverse().find((match) => match.loaderData?.title);
     const title = matchWithTitle?.loaderData?.title;
 
+    const { t } = useTranslation("translation");
+
     return (
       <>
         <head>
           <HeadContent />
-          <title>{title + " | Tech Zone Store"}</title>
+          <title>{title + " | " + t("tech_zone")}</title>
         </head>
 
         <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
