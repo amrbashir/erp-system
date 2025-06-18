@@ -8,7 +8,6 @@ describe("Auth E2E", async () => {
 
   let cookies: string[];
   let accessToken: string;
-  let organizationId: string;
 
   describe("Organization Creation", () => {
     it("should create an organization successfully", async () => {
@@ -27,8 +26,6 @@ describe("Auth E2E", async () => {
       const data = (await response.json()) as { organizationId: string };
       expect(data).toHaveProperty("organizationId");
       expect(data.organizationId).toBeDefined();
-
-      organizationId = data.organizationId;
     });
   });
 
@@ -40,7 +37,7 @@ describe("Auth E2E", async () => {
         body: JSON.stringify({
           username: "admin",
           password: "12345678",
-          organizationId,
+          organization: "test-organization",
         }),
       });
 
@@ -63,7 +60,7 @@ describe("Auth E2E", async () => {
         body: JSON.stringify({
           username: "admin",
           password: "wrongpassword",
-          organizationId,
+          organization: "test-organization",
         }),
       });
     });

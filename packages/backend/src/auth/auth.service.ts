@@ -15,7 +15,7 @@ export class AuthService {
   async login(loginUserDto: LoginUserDto): Promise<JwtTokens> {
     const user = await this.userService.findByUsernameInOrg(
       loginUserDto.username,
-      loginUserDto.organizationId,
+      loginUserDto.organization,
     );
 
     if (!user) throw new NotFoundException("Username or password is incorrect");
@@ -35,13 +35,13 @@ export class AuthService {
   }
 
   async logout(userId: string): Promise<void> {
-    const user = await this.userService.findByIdinOrg(userId);
+    const user = await this.userService.findById(userId);
     if (!user) throw new NotFoundException("User not found");
     await this.userService.updateRefreshToken(user.id, undefined);
   }
 
   async refreshAccessToken(userId: string): Promise<{ accessToken: string }> {
-    const user = await this.userService.findByIdinOrg(userId);
+    const user = await this.userService.findById(userId);
     if (!user) throw new NotFoundException("User not found");
     return { accessToken: await this.genAccessToken(user) };
   }

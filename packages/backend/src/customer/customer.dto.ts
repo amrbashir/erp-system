@@ -5,7 +5,7 @@ export const CreateCustomerSchema = z.object({
   name: z.string().nonempty(),
   email: z.string().email().optional(),
   phone: z.string().optional(),
-  organizationId: z.string().uuid().nonempty(),
+  organization: z.string().nonempty(),
 });
 
 export class CreateCustomerDto extends createZodDto(CreateCustomerSchema) {}

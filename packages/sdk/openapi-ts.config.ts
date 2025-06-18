@@ -11,9 +11,8 @@ export default defineConfig({
     { name: "zod", exportFromIndex: true },
     {
       name: "@hey-api/sdk",
-      asClass: true,
-      classNameBuilder: (o) => o.toLowerCase(),
-      methodNameBuilder: (o) => o.path.split("/")[o.path.split("/").length - 1],
+      methodNameBuilder: (o) => o.path.slice(1).replaceAll("/", "_"),
+      instance: true,
     },
   ],
 });

@@ -1,4 +1,3 @@
-import * as sdk from "./generated/sdk.gen";
-
-export { sdk };
-export default sdk;
+export { Sdk } from "./generated/sdk.gen";
+export { client as defaultClient } from "./generated/client.gen";
+export * from "./generated/client";

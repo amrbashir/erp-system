@@ -10,13 +10,25 @@ export class CustomerService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createCustomer(createCustomerDto: CreateCustomerDto): Promise<Customer> {
+    const org = await this.prisma.organization.findUnique({
+      where: { slug: createCustomerDto.organization },
+    });
+    if (!org) throw new Error("Organization with this slug does not exist");
+
     const existingCustomer = await this.prisma.customer.findUnique({
-      where: { name: createCustomerDto.name },
+      where: { name: createCustomerDto.name, organizationId: org.id },
     });
 
     if (existingCustomer) throw new Error("Customer with this name already exists");
 
-    return this.prisma.customer.create({ data: createCustomerDto });
+    return this.prisma.customer.create({
+      data: {
+        name: createCustomerDto.name,
+        email: createCustomerDto.email,
+        phone: createCustomerDto.phone,
+        organizationId: org.id,
+      },
+    });
   }
 
   async getAllCustomers(paginationDto?: PaginationDto): Promise<Customer[]> {
@@ -58,7 +70,7 @@ if (import.meta.vitest) {
         name: "Test Customer",
         email: "customer@email.com",
         phone: "1234567890",
-        organizationId: org!.id,
+        organization: "test-org",
       };
 
       const customer = await service.createCustomer(createCustomerDto);
@@ -66,7 +78,7 @@ if (import.meta.vitest) {
       expect(customer.name).toBe(createCustomerDto.name);
       expect(customer.email).toBe(createCustomerDto.email);
       expect(customer.phone).toBe(createCustomerDto.phone);
-      expect(customer.organizationId).toBe(createCustomerDto.organizationId);
+      expect(customer.organizationId).toBe(org.id);
     });
 
     it("should return all customers", async () => {
@@ -78,12 +90,12 @@ if (import.meta.vitest) {
 
       const customer1 = await service.createCustomer({
         name: "Customer One",
-        organizationId: org!.id,
+        organization: "test-org",
       });
 
       const customer2 = await service.createCustomer({
         name: "Customer Two",
-        organizationId: org!.id,
+        organization: "test-org",
       });
 
       const customers = await service.getAllCustomers();

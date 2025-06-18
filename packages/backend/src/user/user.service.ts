@@ -13,13 +13,24 @@ export class UserService {
   async createUser(createUserDto: CreateUserDto & { role?: UserRole }): Promise<User> {
     const hashedPassword = await argon2.hash(createUserDto.password);
 
+    const org = await this.prisma.organization.findUnique({
+      where: { slug: createUserDto.organization },
+    });
+    if (!org) throw new Error("Organization with this slug does not exist");
+
     return this.prisma.user.create({
       data: {
         username: createUserDto.username,
         password: hashedPassword,
-        organizationId: createUserDto.organizationId,
+        organizationId: org.id,
         role: createUserDto.role,
       },
+    });
+  }
+
+  async findById(userId: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { id: userId },
     });
   }
 
@@ -29,9 +40,15 @@ export class UserService {
     });
   }
 
-  async findByUsernameInOrg(username: string, organizationId?: string): Promise<User | null> {
+  async findByUsernameInOrg(username: string, orgSlug?: string): Promise<User | null> {
+    const org = await this.prisma.organization.findUnique({
+      where: { slug: orgSlug },
+    });
+
+    if (!org) throw new Error("Organization with this slug does not exist");
+
     return this.prisma.user.findUnique({
-      where: { username, organizationId },
+      where: { username, organizationId: org.id },
     });
   }
 
@@ -92,7 +109,7 @@ if (import.meta.vitest) {
       const createUserDto = {
         username: "testuser",
         password: "12345678",
-        organizationId: org!.id,
+        organization: "test-org",
       };
       const user = await service.createUser(createUserDto);
       expect(user).toBeDefined();
@@ -110,7 +127,7 @@ if (import.meta.vitest) {
       const createUserDto = {
         username: "testuser",
         password: "12345678",
-        organizationId: org!.id,
+        organization: "test-org",
       };
 
       await service.createUser(createUserDto);
@@ -131,13 +148,13 @@ if (import.meta.vitest) {
       const user1 = await service.createUser({
         username: "testuser",
         password: "12345678",
-        organizationId: org!.id,
+        organization: "test-org",
       });
 
       const user2 = await service.createUser({
         username: "testuser2",
         password: "12345678",
-        organizationId: org!.id,
+        organization: "test-org",
       });
 
       const users = await service.getAllUsers();
@@ -171,17 +188,17 @@ if (import.meta.vitest) {
       const user1 = await service.createUser({
         username: "testuser",
         password: "12345678",
-        organizationId: org!.id,
+        organization: "test-org",
       });
       const user2 = await service.createUser({
         username: "testuser2",
         password: "12345678",
-        organizationId: org!.id,
+        organization: "test-org",
       });
       const user3 = await service.createUser({
         username: "testuser3",
         password: "12345678",
-        organizationId: org!.id,
+        organization: "test-org",
       });
 
       const sort = { field: "createdAt", order: "asc" } as const;

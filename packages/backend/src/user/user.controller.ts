@@ -4,7 +4,6 @@ import { CreateUserDto, PaginationDto } from "./user.dto";
 import { AdminGuard } from "./user.admin.guard";
 import { ApiBody, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
-import type { User } from "../prisma/generated";
 
 @UseGuards(JwtAuthGuard, AdminGuard)
 @ApiTags("user")

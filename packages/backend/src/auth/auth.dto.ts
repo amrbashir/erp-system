@@ -11,7 +11,7 @@ export const LoginUserSchema = z.object({
     .nonempty()
     .min(8)
     .regex(/^[\x00-\x7F]+$/), // ascii
-  organizationId: z.string().nonempty().uuid(),
+  organization: z.string().nonempty(),
 });
 
 export class LoginUserDto extends createZodDto(LoginUserSchema) {}
