@@ -10,6 +10,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "verbatimModuleSyntax": true,
+    "strictPropertyInitialization": false,
     "noEmit": true,
     "types": ["vitest/importMeta"]
   }

@@ -13,7 +13,7 @@ import { AuthService } from "./auth.service";
 import { type JwtPayload, LoginUserDto } from "./auth.dto";
 import { JwtRefreshAuthGuard } from "./auth.strategy.jwt-refresh";
 import { type Response } from "express";
-import { ApiBody, ApiTags } from "@nestjs/swagger";
+import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "./auth.strategy.jwt";
 
 @ApiTags("auth")
@@ -22,7 +22,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @HttpCode(HttpStatus.OK)
-  @ApiBody({ schema: LoginUserDto.openapiSchema })
+  @ApiOkResponse({})
   @Post("login")
   async login(
     @Body() loginUserDto: LoginUserDto,

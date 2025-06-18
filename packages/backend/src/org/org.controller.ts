@@ -4,14 +4,13 @@ import { OrgService } from "./org.service";
 import { useRandomDatabase } from "../../e2e/utils";
 import { PrismaService } from "../prisma/prisma.service";
 import { Test } from "@nestjs/testing";
-import { ApiBody, ApiTags } from "@nestjs/swagger";
+import { ApiTags } from "@nestjs/swagger";
 
 @ApiTags("org")
 @Controller("org")
 export class OrgController {
   constructor(private readonly orgService: OrgService) {}
 
-  @ApiBody({ schema: CreateOrgDto.openapiSchema })
   @Post("create")
   async create(@Body() createOrgDto: CreateOrgDto): Promise<void> {
     await this.orgService.create(createOrgDto);

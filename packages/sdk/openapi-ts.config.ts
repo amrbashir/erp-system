@@ -7,6 +7,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   input: resolve(__dirname, "../backend/dist/openapi.json"),
   output: resolve(__dirname, "src/generated"),
+  logs: { file: false },
   plugins: [
     { name: "zod", exportFromIndex: true },
     {

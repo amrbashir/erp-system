@@ -1,20 +1,23 @@
-import { z } from "zod";
-import { createZodDto } from "../zod.pipe";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsAlphanumeric, IsAscii, IsNotEmpty, IsString, MinLength } from "class-validator";
 
-export const LoginUserSchema = z.object({
-  username: z
-    .string()
-    .nonempty()
-    .regex(/^[a-zA-Z0-9]+$/), // alphanumeric
-  password: z
-    .string()
-    .nonempty()
-    .min(8)
-    .regex(/^[\x00-\x7F]+$/), // ascii
-  organization: z.string().nonempty(),
-});
+export class LoginUserDto {
+  @ApiProperty()
+  @IsAlphanumeric()
+  @IsNotEmpty()
+  username: string;
 
-export class LoginUserDto extends createZodDto(LoginUserSchema) {}
+  @ApiProperty({ minLength: 8 })
+  @IsNotEmpty()
+  @IsAscii()
+  @MinLength(8)
+  password: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  organization: string;
+}
 
 export type JwtTokens = {
   accessToken: string;

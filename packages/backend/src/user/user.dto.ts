@@ -1,23 +1,53 @@
-import { z } from "zod";
-import { createZodDto } from "../zod.pipe";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import {
+  IsAlphanumeric,
+  IsAscii,
+  IsNotEmpty,
+  IsString,
+  Max,
+  Min,
+  MinLength,
+} from "class-validator";
+import type { User } from "../prisma/generated";
+import { UserRole } from "../prisma/generated/enums";
 
-export const CreateUserSchema = z.object({
-  username: z
-    .string()
-    .nonempty()
-    .regex(/^[a-zA-Z0-9]+$/), // alphanumeric
-  password: z
-    .string()
-    .nonempty()
-    .min(8)
-    .regex(/^[\x00-\x7F]+$/), // ascii
-  organization: z.string(),
-});
+export class CreateUserDto {
+  @ApiProperty()
+  @IsAlphanumeric()
+  @IsNotEmpty()
+  username: string;
 
-export class CreateUserDto extends createZodDto(CreateUserSchema) {}
+  @ApiProperty({ minLength: 8 })
+  @IsAscii()
+  @MinLength(8)
+  password: string;
 
-export const PaginationSchema = z.object({
-  skip: z.number().int().min(0).default(0),
-  take: z.number().int().min(1).max(100).default(30),
-});
-export class PaginationDto extends createZodDto(PaginationSchema) {}
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  organization: string;
+}
+
+export class PaginationDto {
+  @ApiProperty({ minimum: 0, default: 0 })
+  @Min(0)
+  skip: number = 0;
+
+  @ApiProperty({ minimum: 1, maximum: 100, default: 30 })
+  @Min(1)
+  @Max(100)
+  take: number = 30;
+}
+
+export class UserEntity implements Partial<User> {
+  @ApiProperty()
+  username: string;
+  @ApiProperty({ enum: UserRole })
+  role: UserRole;
+  @ApiProperty()
+  createdAt: Date;
+  @ApiProperty()
+  updatedAt: Date;
+  @ApiPropertyOptional()
+  deletedAt: Date;
+}

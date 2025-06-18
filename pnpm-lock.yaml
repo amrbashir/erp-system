@@ -41,6 +41,9 @@ importers:
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
+      class-validator:
+        specifier: ^0.14.2
+        version: 0.14.2
       express:
         specifier: ^5.1.0
         version: 5.1.0
@@ -56,12 +59,6 @@ importers:
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
-      zod:
-        specifier: ^3.25.64
-        version: 3.25.64
-      zod-openapi:
-        specifier: ^4.2.4
-        version: 4.2.4(zod@3.25.64)
     devDependencies:
       '@nestjs/testing':
         specifier: ^11.1.3
@@ -3122,12 +3119,6 @@ packages:
     engines: {node: '>= 14.6'}
     hasBin: true
 
-  zod-openapi@4.2.4:
-    resolution: {integrity: sha512-tsrQpbpqFCXqVXUzi3TPwFhuMtLN3oNZobOtYnK6/5VkXsNdnIgyNr4r8no4wmYluaxzN3F7iS+8xCW8BmMQ8g==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      zod: ^3.21.4
-
   zod@3.25.64:
     resolution: {integrity: sha512-hbP9FpSZf7pkS7hRVUrOjhwKJNyampPgtXKc3AN6DsWtoHsg2Sb4SQaS4Tcay380zSwd2VPo9G9180emBACp5g==}
 
@@ -4418,8 +4409,7 @@ snapshots:
       '@types/node': 24.0.3
       '@types/send': 0.17.5
 
-  '@types/validator@13.15.2':
-    optional: true
+  '@types/validator@13.15.2': {}
 
   '@vitejs/plugin-react@4.5.2(vite@6.3.5(@types/node@24.0.3)(jiti@2.4.2)(lightningcss@1.30.1)(tsx@4.20.3)(yaml@2.8.0))':
     dependencies:
@@ -4702,7 +4692,6 @@ snapshots:
       '@types/validator': 13.15.2
       libphonenumber-js: 1.12.9
       validator: 13.15.15
-    optional: true
 
   class-variance-authority@0.7.1:
     dependencies:
@@ -5109,8 +5098,7 @@ snapshots:
       jwa: 1.4.2
       safe-buffer: 5.2.1
 
-  libphonenumber-js@1.12.9:
-    optional: true
+  libphonenumber-js@1.12.9: {}
 
   lightningcss-darwin-arm64@1.30.1:
     optional: true
@@ -5823,8 +5811,7 @@ snapshots:
 
   utils-merge@1.0.1: {}
 
-  validator@13.15.15:
-    optional: true
+  validator@13.15.15: {}
 
   vary@1.1.2: {}
 
@@ -5946,9 +5933,5 @@ snapshots:
 
   yaml@2.8.0:
     optional: true
-
-  zod-openapi@4.2.4(zod@3.25.64):
-    dependencies:
-      zod: 3.25.64
 
   zod@3.25.64: {}
