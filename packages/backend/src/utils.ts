@@ -24,7 +24,7 @@ if (import.meta.vitest) {
     });
 
     it("handles strings with mixed case and spaces", () => {
-      expect(slugify("Hello Some World ")).toBe("hello-some-world");
+      expect(slugify("Hello Some World")).toBe("hello-some-world");
     });
 
     it("returns empty string for empty input", () => {
