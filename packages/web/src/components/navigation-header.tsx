@@ -55,7 +55,7 @@ export function NavigationHeader() {
       <SidebarTrigger />
       <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
       <NavigationBreadcrumbs />
-      <div className="flex-1" />
+      <div className="flex-1" /> {/* Spacer to push the theme toggle to the right */}
       <ThemeModeToggle />
     </header>
   );
