@@ -24,13 +24,13 @@ export function AppSideBar() {
   const routes: Route[] = [
     {
       url: "/",
-      title: flatRoutes.find((route) => route.to === "/")?.options.context().title,
-      icon: flatRoutes.find((route) => route.to === "/")?.options.context().icon,
+      title: flatRoutes.find((route) => route.to === "/")?.options.loader().title,
+      icon: flatRoutes.find((route) => route.to === "/")?.options.loader().icon,
     },
     {
       url: "/about",
-      title: flatRoutes.find((route) => route.to === "/about")?.options.context().title,
-      icon: flatRoutes.find((route) => route.to === "/about")?.options.context().icon,
+      title: flatRoutes.find((route) => route.to === "/about")?.options.loader().title,
+      icon: flatRoutes.find((route) => route.to === "/about")?.options.loader().icon,
     },
   ];
 

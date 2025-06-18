@@ -21,8 +21,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     const defaultOpen = sidebarState === "true";
 
     const matches = useMatches();
-    const matchWithTitle = [...matches].reverse().find((match) => match.context.title);
-    const title = matchWithTitle?.context.title;
+    const matchWithTitle = [...matches].reverse().find((match) => match.loaderData?.title);
+    const title = matchWithTitle?.loaderData?.title;
 
     return (
       <>

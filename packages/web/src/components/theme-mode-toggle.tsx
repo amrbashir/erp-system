@@ -1,6 +1,6 @@
 import { useTheme } from "@/components/theme-provider";
 import { Moon, Sun, Monitor } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { useMemo } from "react";
 
 export function ThemeModeToggle() {
@@ -21,8 +21,9 @@ export function ThemeModeToggle() {
 
   return (
     <Button
-      onClick={() => setTheme(nextTheme)}
       variant="outline"
+      size="icon"
+      onClick={() => setTheme(nextTheme)}
       aria-label={`Switch to ${nextTheme} mode`}
       title={`Switch to ${nextTheme} mode`}
     >

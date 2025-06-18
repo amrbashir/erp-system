@@ -11,15 +11,16 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeModeToggle } from "@/components/theme-mode-toggle";
+import { LanguageSelector } from "@/components/language-selector";
 
 function NavigationBreadcrumbs() {
   const matches = useMatches();
 
   const breadcrumbs = matches
-    .filter(({ context }) => context.title)
-    .map(({ pathname, context }) => ({
+    .filter(({ loaderData }) => loaderData?.title)
+    .map(({ pathname, loaderData }) => ({
       path: pathname,
-      title: context?.title,
+      title: loaderData?.title,
     }));
 
   const activeCrumb = breadcrumbs[breadcrumbs.length - 1];
@@ -55,7 +56,10 @@ export function NavigationHeader() {
       <SidebarTrigger />
       <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
       <NavigationBreadcrumbs />
-      <div className="flex-1" /> {/* Spacer to push the theme toggle to the right */}
+
+      <div className="flex-1" />
+
+      <LanguageSelector />
       <ThemeModeToggle />
     </header>
   );
