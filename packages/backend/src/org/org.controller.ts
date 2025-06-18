@@ -13,9 +13,8 @@ export class OrgController {
 
   @ApiBody({ schema: CreateOrgDto.openapiSchema })
   @Post("create")
-  async create(@Body() createOrgDto: CreateOrgDto): Promise<{ organizationId: string }> {
-    const org = await this.orgService.create(createOrgDto);
-    return { organizationId: org.id };
+  async create(@Body() createOrgDto: CreateOrgDto): Promise<void> {
+    await this.orgService.create(createOrgDto);
   }
 }
 
@@ -49,8 +48,8 @@ if (import.meta.vitest) {
         username: "admin",
         password: "12345678",
       };
-      const result = await controller.create(createOrgDto);
-      expect(result).toEqual({ organizationId: expect.any(String) });
+
+      expect(await controller.create(createOrgDto)).toBeUndefined();
     });
   });
 }

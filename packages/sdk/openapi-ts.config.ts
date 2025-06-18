@@ -13,6 +13,7 @@ export default defineConfig({
       name: "@hey-api/sdk",
       methodNameBuilder: (o) => o.path.slice(1).replaceAll("/", "_"),
       instance: true,
+      responseStyle: "data",
     },
   ],
 });

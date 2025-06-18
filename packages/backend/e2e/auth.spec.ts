@@ -22,10 +22,6 @@ describe("Auth E2E", async () => {
       });
 
       expect(response.status).toBe(201);
-
-      const data = (await response.json()) as { organizationId: string };
-      expect(data).toHaveProperty("organizationId");
-      expect(data.organizationId).toBeDefined();
     });
   });
 
