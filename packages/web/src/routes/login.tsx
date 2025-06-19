@@ -6,6 +6,7 @@ import { Label } from "@/shadcn/components/ui/label";
 import i18n from "@/i18n";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { Separator } from "@/shadcn/components/ui/separator";
 
 export const Route = createFileRoute("/login")({
   component: Login,
@@ -33,10 +34,13 @@ function Login() {
   }
 
   return (
-    <div className="flex items-center justify-center w-screen h-screen ">
+    <div className="flex items-center justify-center w-screen h-screen gap-20">
+      <img src="/logo.svg" alt="Logo" className="w-75 h-75" />
+
+      <Separator orientation="vertical" className="h-50!" />
+
       <Card className="w-full max-w-sm">
         <CardHeader className="flex flex-col items-center gap-10">
-          <img src="/favicon.svg" alt="Logo" className="w-16 h-16" />
           <CardTitle>{t("login_to_account")}</CardTitle>
         </CardHeader>
         <CardContent>

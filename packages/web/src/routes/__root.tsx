@@ -60,7 +60,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         <ThemeProvider>
           <SidebarProvider defaultOpen={defaultOpen}>
             {!hideUi && <AppSideBar />}
-            <main className="w-full h-full *:px-4 *:py-2">
+            <main className="w-screen *:px-4 *:py-2 bg-background rounded-2xl my-2">
               {!hideUi && <NavigationHeader />}
               <Outlet />
             </main>

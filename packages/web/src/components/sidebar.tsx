@@ -13,6 +13,7 @@ import {
 import type { FileRoutesByTo } from "@/routeTree.gen";
 import { Link, useLocation, useRouter } from "@tanstack/react-router";
 import { UserDropdown } from "@/components/user-dropdown";
+import { Label } from "@/shadcn/components/ui/label";
 
 type Route = {
   url: keyof FileRoutesByTo;
@@ -34,18 +35,12 @@ export function AppSideBar() {
   ];
 
   return (
-    <Sidebar collapsible="icon" className="asd">
+    <Sidebar collapsible="icon" className="border-0!">
       <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild size={"lg"}>
-              <Link to="/">
-                <img src="/favicon.svg" className={open ? "size-10" : "size-8"}></img>
-                <span>Tech Zone</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <Label className="my-2">
+          <img src="/favicon.svg" className={open ? "size-10" : "size-8"}></img>
+          {open && <span className="text-lg font-semibold">Tech Zone</span>}
+        </Label>
       </SidebarHeader>
 
       <SidebarContent>
