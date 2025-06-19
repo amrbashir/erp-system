@@ -3,19 +3,40 @@ import {
   createRootRouteWithContext,
   HeadContent,
   Outlet,
+  redirect,
   useMatches,
 } from "@tanstack/react-router";
 import { AppSideBar } from "@/components/app-sidebar";
 import { NavigationHeader } from "@/components/navigation-header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { useTranslation } from "react-i18next";
+import type { AuthContext } from "../auth";
 
-type RouterContext = {
-  title: string;
-  icon: React.ComponentType;
-};
+interface RouterContext {
+  auth: AuthContext;
+  hideUI?: boolean;
+}
 
 export const Route = createRootRouteWithContext<RouterContext>()({
+  beforeLoad: async ({ context, location }) => {
+    // redirect to login if not authenticated and trying to access a protected route
+    if (!context.auth.isAuthenticated && location.pathname !== "/login") {
+      throw redirect({
+        to: "/login",
+        search: {
+          redirect: location.href,
+        },
+      });
+    }
+
+    // redirect to home if authenticated and trying to access the login page
+    if (context.auth.isAuthenticated && location.pathname === "/login") {
+      throw redirect({
+        to: "/",
+      });
+    }
+  },
+
   component: () => {
     const cookies = document.cookie.split("; ");
     const sidebarState = cookies.find((c) => c.startsWith("sidebar_state="))?.split("=")[1];
@@ -27,6 +48,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
     const { t } = useTranslation("translation");
 
+    const hideUi = matches.some((match) => match.context?.hideUI);
+
     return (
       <>
         <head>
@@ -34,11 +57,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           <title>{title + " | " + t("tech_zone")}</title>
         </head>
 
-        <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
+        <ThemeProvider>
           <SidebarProvider defaultOpen={defaultOpen}>
-            <AppSideBar />
+            {!hideUi && <AppSideBar />}
             <main className="w-full h-full *:px-4 *:py-2">
-              <NavigationHeader />
+              {!hideUi && <NavigationHeader />}
               <Outlet />
             </main>
           </SidebarProvider>

@@ -1,6 +1,14 @@
+import { Monitor, Moon, Sun } from "lucide-react";
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "dark" | "light" | "system";
+export const themeVariants = [
+  { theme: "system", icon: Monitor },
+  { theme: "dark", icon: Moon },
+  { theme: "light", icon: Sun },
+] as const;
+
+export type Theme = (typeof themeVariants)[number]["theme"];
+export type ThemeIcon = (typeof themeVariants)[number]["icon"];
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -14,7 +22,7 @@ type ThemeProviderState = {
 };
 
 const initialState: ThemeProviderState = {
-  theme: "system",
+  theme: themeVariants[0].theme,
   setTheme: () => null,
 };
 
@@ -23,7 +31,7 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 export function ThemeProvider({
   children,
   defaultTheme = "system",
-  storageKey = "vite-ui-theme",
+  storageKey = "ui-theme",
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(
@@ -47,7 +55,7 @@ export function ThemeProvider({
     root.classList.add(theme);
   }, [theme]);
 
-  const value = {
+  const contextValue = {
     theme,
     setTheme: (theme: Theme) => {
       localStorage.setItem(storageKey, theme);
@@ -56,7 +64,7 @@ export function ThemeProvider({
   };
 
   return (
-    <ThemeProviderContext.Provider {...props} value={value}>
+    <ThemeProviderContext.Provider {...props} value={contextValue}>
       {children}
     </ThemeProviderContext.Provider>
   );

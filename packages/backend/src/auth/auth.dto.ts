@@ -19,6 +19,19 @@ export class LoginUserDto {
   organization: string;
 }
 
+export class LoginResponseDto {
+  @ApiProperty()
+  username: string;
+
+  @ApiProperty()
+  accessToken: string;
+}
+
+export class RefreshTokenResponseDto {
+  @ApiProperty()
+  accessToken: string;
+}
+
 export type JwtTokens = {
   accessToken: string;
   refreshToken: string;

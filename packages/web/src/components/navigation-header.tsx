@@ -10,8 +10,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { ThemeModeToggle } from "@/components/theme-mode-toggle";
-import { LanguageSelector } from "@/components/language-selector";
 
 function NavigationBreadcrumbs() {
   const matches = useMatches();
@@ -56,11 +54,6 @@ export function NavigationHeader() {
       <SidebarTrigger />
       <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
       <NavigationBreadcrumbs />
-
-      <div className="flex-1" />
-
-      <LanguageSelector />
-      <ThemeModeToggle />
     </header>
   );
 }

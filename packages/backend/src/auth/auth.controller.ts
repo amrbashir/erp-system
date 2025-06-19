@@ -10,7 +10,12 @@ import {
   Res,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { type JwtPayload, LoginUserDto } from "./auth.dto";
+import {
+  type JwtPayload,
+  LoginResponseDto,
+  LoginUserDto,
+  RefreshTokenResponseDto,
+} from "./auth.dto";
 import { JwtRefreshAuthGuard } from "./auth.strategy.jwt-refresh";
 import { type Response } from "express";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
@@ -22,13 +27,13 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({})
+  @ApiOkResponse({ type: LoginResponseDto })
   @Post("login")
   async login(
     @Body() loginUserDto: LoginUserDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<{ accessToken: string }> {
-    const tokens = await this.authService.login(loginUserDto);
+  ): Promise<LoginResponseDto> {
+    const { username, tokens } = await this.authService.login(loginUserDto);
 
     res.cookie("refreshToken", tokens.refreshToken, {
       httpOnly: true,
@@ -37,7 +42,7 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    return { accessToken: tokens.accessToken };
+    return { username, accessToken: tokens.accessToken };
   }
 
   @HttpCode(HttpStatus.OK)
@@ -49,9 +54,10 @@ export class AuthController {
   }
 
   @UseGuards(JwtRefreshAuthGuard)
+  @ApiOkResponse({ type: RefreshTokenResponseDto })
   @Get("refresh")
-  async refresh(@Req() req: any): Promise<{ accessToken: string }> {
+  async refresh(@Req() req: any): Promise<RefreshTokenResponseDto> {
     const user = req["user"] as JwtPayload;
-    return this.authService.refreshAccessToken(user.sub);
+    return await this.authService.refreshAccessToken(user.sub);
   }
 }

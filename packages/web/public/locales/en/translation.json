@@ -1,4 +1,23 @@
 {
   "tech_zone": "Tech Zone",
-  "home": "Home"
+  "home": "Home",
+  "language": "Language",
+
+  "login": "Login",
+  "logout": "Logout",
+  "login_to_account": "Login to your account",
+  "username": "Username",
+  "password": "Password",
+
+  "languages": {
+    "en": "English",
+    "ar": "Arabic"
+  },
+
+  "theme": "Theme",
+  "themes": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System (Light/Dark)"
+  }
 }

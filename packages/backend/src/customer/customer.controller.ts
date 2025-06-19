@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
 import { CreateCustomerDto, CustomerEntity, PaginationDto } from "./customer.dto";
 import { CustomerService } from "./customer.service";
 import { ApiCreatedResponse, ApiTags } from "@nestjs/swagger";
@@ -17,7 +17,7 @@ export class CustomerController {
     return this.service.createCustomer(createCustomerDto);
   }
 
-  @Post("getAll")
+  @Get("getAll")
   async getAll(@Query() paginationDto: PaginationDto): Promise<Customer[]> {
     return this.service.getAllCustomers(paginationDto);
   }

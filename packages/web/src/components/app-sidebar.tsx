@@ -8,9 +8,11 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   useSidebar,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
 import type { FileRoutesByTo } from "@/routeTree.gen";
 import { Link, useLocation, useRouter } from "@tanstack/react-router";
+import { UserDropdown } from "./user-dropdown";
 
 type Route = {
   url: keyof FileRoutesByTo;
@@ -64,6 +66,10 @@ export function AppSideBar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      <SidebarFooter>
+        <UserDropdown />
+      </SidebarFooter>
     </Sidebar>
   );
 }

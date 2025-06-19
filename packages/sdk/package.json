@@ -5,20 +5,20 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./types": "./dist/generated/types.gen.js",
-    "./zod": "./dist/generated/zod.gen.js"
+    ".": "./dist/index.js"
   },
   "scripts": {
-    "gen:openapi-json": "pnpm -w backend gen:openapi-json && openapi-ts",
+    "gen:openapi-json": "pnpm -w backend gen:openapi-json && openapi-typescript ../backend/dist/openapi.json -o src/types.gen.ts",
     "build": "pnpm gen:openapi-json && tsdown"
   },
   "dependencies": {
+    "openapi-fetch": "^0.14.0",
     "zod": "^3.25.64"
   },
   "devDependencies": {
-    "tsdown": "^0.12.7",
     "@types/node": "^24.0.3",
-    "@hey-api/openapi-ts": "^0.73.0"
+    "openapi-typescript": "^7.8.0",
+    "tsdown": "^0.12.7",
+    "typescript": "^5.8.3"
   }
 }

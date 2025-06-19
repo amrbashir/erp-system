@@ -1,10 +1,9 @@
-import { Body, Controller, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Post, Query, UseGuards, Get } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserDto, PaginationDto, UserEntity } from "./user.dto";
 import { AdminGuard } from "./user.admin.guard";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
-import type { User } from "../prisma/generated";
 
 @UseGuards(JwtAuthGuard, AdminGuard)
 @ApiTags("user")
@@ -17,7 +16,7 @@ export class UserController {
     await this.userService.createUser(createUserDto);
   }
 
-  @Post("getAll")
+  @Get("getAll")
   @ApiOkResponse({ type: [UserEntity] })
   async getAll(@Query() paginationDto: PaginationDto) {
     return await this.userService.getAllUsers(paginationDto);

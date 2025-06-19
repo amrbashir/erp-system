@@ -12,7 +12,10 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(loginUserDto: LoginUserDto): Promise<JwtTokens> {
+  async login(loginUserDto: LoginUserDto): Promise<{
+    username: string;
+    tokens: JwtTokens;
+  }> {
     const user = await this.userService.findByUsernameInOrg(
       loginUserDto.username,
       loginUserDto.organization,
@@ -29,8 +32,11 @@ export class AuthService {
     this.userService.updateRefreshToken(user.id, refreshToken);
 
     return {
-      accessToken,
-      refreshToken,
+      username: user.username,
+      tokens: {
+        accessToken,
+        refreshToken,
+      },
     };
   }
 

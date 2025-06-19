@@ -1,23 +1,24 @@
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
 import { Eu } from "@/components/flags/eu";
 import { Sa } from "@/components/flags/sa";
 import { useRouter } from "@tanstack/react-router";
 
 export function LanguageSelector() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const router = useRouter();
 
-  const languageFlags: Record<string, any> = {
-    en: <Eu />,
-    ar: <Sa />,
-  };
+  const languageFlags = {
+    en: Eu,
+    ar: Sa,
+  } as const;
+
+  const languages = Object.keys(languageFlags) as Array<keyof typeof languageFlags>;
 
   const changeLanguage = (lang: string) => {
     i18n.changeLanguage(lang);
@@ -25,21 +26,22 @@ export function LanguageSelector() {
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline">
-          {languageFlags[i18n.language]}
-          {i18n.language}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {i18n.languages.map((lang) => (
-          <DropdownMenuItem key={lang} onClick={() => changeLanguage(lang)}>
-            {languageFlags[lang]}
-            {lang}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <DropdownMenuSub>
+      <DropdownMenuSubTrigger>{t("language")}</DropdownMenuSubTrigger>
+      <DropdownMenuSubContent>
+        {languages.map((lang) => {
+          const Icon = languageFlags[lang];
+          return (
+            <DropdownMenuCheckboxItem
+              key={lang}
+              checked={i18n.language === lang}
+              onClick={() => changeLanguage(lang)}
+            >
+              <Icon /> {t(`languages.${lang}`)}
+            </DropdownMenuCheckboxItem>
+          );
+        })}
+      </DropdownMenuSubContent>
+    </DropdownMenuSub>
   );
 }

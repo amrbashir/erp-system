@@ -6,6 +6,6 @@ dist
 
 packages/backend/src/prisma/generated
 packages/desktop/gen
-packages/sdk/src/generated
+packages/sdk/src/types.gen.ts
 packages/web/src/routeTree.gen.ts
 
