@@ -13,7 +13,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["OrgController$1_create"];
+        /** Create an organization */
+        post: operations["createOrg"];
         delete?: never;
         options?: never;
         head?: never;
@@ -198,7 +199,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    OrgController$1_create: {
+    createOrg: {
         parameters: {
             query?: never;
             header?: never;
@@ -222,7 +223,9 @@ export interface operations {
     UserController$1_create: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                Authorization?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -246,7 +249,9 @@ export interface operations {
                 skip: number;
                 take: number;
             };
-            header?: never;
+            header?: {
+                Authorization?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -288,7 +293,9 @@ export interface operations {
     AuthController$1_logout: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                Authorization?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -324,7 +331,9 @@ export interface operations {
     CustomerController$1_create: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                Authorization?: string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -350,7 +359,9 @@ export interface operations {
                 skip: number;
                 take: number;
             };
-            header?: never;
+            header?: {
+                Authorization?: string;
+            };
             path?: never;
             cookie?: never;
         };

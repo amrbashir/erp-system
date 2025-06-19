@@ -1,6 +1,11 @@
-import createClient, { type ClientOptions } from "openapi-fetch";
-import type { paths } from "./types.gen";
+import type { paths } from "./schema";
+import _createFetchClient, { type ClientOptions } from "openapi-fetch";
+import _createReactQueryClient from "openapi-react-query";
 
-export function createApiClient(options?: ClientOptions) {
-  return createClient<paths>(options);
+export function createFetchClient(clientOptions?: ClientOptions) {
+  return _createFetchClient<paths>(clientOptions);
+}
+
+export function createReactQueryClient(clientOptions?: ClientOptions) {
+  return _createReactQueryClient(_createFetchClient<paths>(clientOptions));
 }

@@ -4,7 +4,7 @@ import { OrgService } from "./org.service";
 import { useRandomDatabase } from "../../e2e/utils";
 import { PrismaService } from "../prisma/prisma.service";
 import { Test } from "@nestjs/testing";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 
 @ApiTags("org")
 @Controller("org")

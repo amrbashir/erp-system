@@ -10,6 +10,7 @@
     "dev": "tsdown --watch --config tsdown.config.dev.ts",
     "start": "node --env-file=.env dist/main.js",
     "start:dev": "node --env-file=.env.dev dist/main.js",
+    "docker": "docker compose up -d",
     "gen:openapi-json": "pnpm build && node --env-file=.env dist/main.js gen-openapi-json",
     "test": "prisma generate && docker compose up -d && vitest run",
     "test:watch": "vitest",

@@ -1,6 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
-import { createApiClient } from "@tech-zone-store/sdk";
-import { useRouter } from "@tanstack/react-router";
+import { createFetchClient } from "@tech-zone-store/sdk";
 
 export interface AuthUser {
   username: string;
@@ -40,17 +39,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(getStoredUser());
   const isAuthenticated = !!user;
 
-  const client = createApiClient({
-    baseUrl: "/api/v1",
-  });
+  const client = createFetchClient({ baseUrl: "/api/v1" });
 
   const login = useCallback(async (username: string, password: string) => {
-    const { data: user } = await client.POST("/auth/login", {
-      body: {
-        organization: "tech-zone",
-        username,
-        password,
-      },
+    const { data: user } = await client.request("post", "/auth/login", {
+      body: { username, password, organization: "tech-zone" },
     });
 
     if (!user) throw new Error("Login failed");
@@ -60,11 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
-    await client.POST("/auth/logout", {
-      headers: {
-        Authorization: `Bearer ${user?.accessToken}`,
-      },
-    });
+    await client.request("post", "/auth/logout", {});
 
     setStoredUser(null);
     setUser(null);

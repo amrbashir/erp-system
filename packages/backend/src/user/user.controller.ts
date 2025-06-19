@@ -2,10 +2,11 @@ import { Body, Controller, Post, Query, UseGuards, Get } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserDto, PaginationDto, UserEntity } from "./user.dto";
 import { AdminGuard } from "./user.admin.guard";
-import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
 
 @UseGuards(JwtAuthGuard, AdminGuard)
+@ApiHeader({ name: "Authorization" })
 @ApiTags("user")
 @Controller("user")
 export class UserController {

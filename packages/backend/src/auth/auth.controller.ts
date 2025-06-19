@@ -18,7 +18,7 @@ import {
 } from "./auth.dto";
 import { JwtRefreshAuthGuard } from "./auth.strategy.jwt-refresh";
 import { type Response } from "express";
-import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "./auth.strategy.jwt";
 
 @ApiTags("auth")
@@ -47,6 +47,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
+  @ApiHeader({ name: "Authorization" })
   @Post("logout")
   async logout(@Req() req: any): Promise<void> {
     const user = req["user"] as JwtPayload;

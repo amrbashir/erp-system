@@ -5,15 +5,21 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./zod": "./dist/schema.zod.js"
   },
   "scripts": {
-    "gen:openapi-json": "pnpm -w backend gen:openapi-json && openapi-typescript ../backend/dist/openapi.json -o src/types.gen.ts",
-    "build": "pnpm gen:openapi-json && tsdown"
+    "gen:openapi-json": "pnpm -w backend gen:openapi-json",
+    "gen:openapi-ts-schema": "openapi-typescript ../backend/dist/openapi.json -o ./src/schema.d.ts",
+    "gen:openapi-zod-schema": "typed-openapi ../backend/dist/openapi.json -o ./src/schema.zod.ts -r zod --schemas-only",
+    "gen": "pnpm gen:openapi-json && pnpm gen:openapi-ts-schema && pnpm gen:openapi-zod-schema",
+    "build": "pnpm gen && tsdown"
   },
   "dependencies": {
     "openapi-fetch": "^0.14.0",
-    "zod": "^3.25.64"
+    "openapi-react-query": "^0.5.0",
+    "typed-openapi": "^1.5.0",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@types/node": "^24.0.3",
