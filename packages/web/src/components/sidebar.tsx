@@ -12,7 +12,7 @@ import {
 } from "@/shadcn/components/ui/sidebar";
 import type { FileRoutesByTo } from "@/routeTree.gen";
 import { Link, useLocation, useRouter } from "@tanstack/react-router";
-import { UserDropdown } from "./user-dropdown";
+import { UserDropdown } from "@/components/user-dropdown";
 
 type Route = {
   url: keyof FileRoutesByTo;

@@ -6,11 +6,11 @@ import {
   redirect,
   useMatches,
 } from "@tanstack/react-router";
-import { AppSideBar } from "@/components/app-sidebar";
+import { AppSideBar } from "@/components/sidebar";
 import { NavigationHeader } from "@/components/navigation-header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { useTranslation } from "react-i18next";
-import type { AuthContext } from "../auth";
+import type { AuthContext } from "@/auth";
 
 interface RouterContext {
   auth: AuthContext;
