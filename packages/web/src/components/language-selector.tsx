@@ -3,7 +3,7 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/shadcn/components/ui/dropdown-menu";
 import { useTranslation } from "react-i18next";
 import { Eu } from "@/components/flags/eu";
 import { Sa } from "@/components/flags/sa";

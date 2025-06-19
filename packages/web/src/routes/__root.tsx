@@ -1,4 +1,4 @@
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/shadcn/components/ui/sidebar";
 import {
   createRootRouteWithContext,
   HeadContent,

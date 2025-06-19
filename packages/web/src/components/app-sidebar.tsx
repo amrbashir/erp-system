@@ -9,7 +9,7 @@ import {
   SidebarGroupContent,
   useSidebar,
   SidebarFooter,
-} from "@/components/ui/sidebar";
+} from "@/shadcn/components/ui/sidebar";
 import type { FileRoutesByTo } from "@/routeTree.gen";
 import { Link, useLocation, useRouter } from "@tanstack/react-router";
 import { UserDropdown } from "./user-dropdown";

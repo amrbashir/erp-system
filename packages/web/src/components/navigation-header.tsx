@@ -7,9 +7,9 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+} from "@/shadcn/components/ui/breadcrumb";
+import { Separator } from "@/shadcn/components/ui/separator";
+import { SidebarTrigger } from "@/shadcn/components/ui/sidebar";
 
 function NavigationBreadcrumbs() {
   const matches = useMatches();
