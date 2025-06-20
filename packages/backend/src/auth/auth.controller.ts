@@ -18,7 +18,7 @@ import {
 } from "./auth.dto";
 import { JwtRefreshAuthGuard } from "./auth.strategy.jwt-refresh";
 import { type Response } from "express";
-import { ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiHeader, ApiCookieAuth, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "./auth.strategy.jwt";
 
 @ApiTags("auth")
@@ -47,6 +47,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiHeader({ name: "Authorization" })
   @Post("logout")
   async logout(@Req() req: any): Promise<void> {
@@ -54,6 +55,7 @@ export class AuthController {
     this.authService.logout(user.sub);
   }
 
+  @ApiCookieAuth()
   @UseGuards(JwtRefreshAuthGuard)
   @ApiOkResponse({ type: RefreshTokenResponseDto })
   @Get("refresh")

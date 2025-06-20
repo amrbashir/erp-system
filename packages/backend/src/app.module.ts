@@ -11,7 +11,12 @@ import { CustomerModule } from "./customer/customer.module";
 })
 export class AppModule {}
 
-const swaggerConfig = new DocumentBuilder().setVersion("v1").setTitle("Tech Zone API").build();
+const swaggerConfig = new DocumentBuilder()
+  .setVersion("v1")
+  .setTitle("Tech Zone API")
+  .addBearerAuth()
+  .addCookieAuth("refreshToken")
+  .build();
 
 export function setupApp(app: INestApplication) {
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: "1" });
