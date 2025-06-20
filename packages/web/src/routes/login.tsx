@@ -7,8 +7,9 @@ import i18n from "@/i18n";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Separator } from "@/shadcn/components/ui/separator";
-import { useForm } from "@tanstack/react-form";
+import { useForm, type AnyFieldApi } from "@tanstack/react-form";
 import { LoginUserDto } from "@tech-zone-store/sdk/zod";
+import { Loader2Icon } from "lucide-react";
 
 export const Route = createFileRoute("/login")({
   component: Login,
@@ -26,10 +27,9 @@ function Login() {
       password: "",
     },
     validators: {
-      onChange: LoginUserDto,
+      onSubmit: LoginUserDto.omit({ organization: true }),
     },
     onSubmit: async ({ value }) => {
-      console.log(value);
       const { username, password } = value;
       await auth.login(username, password);
 
@@ -52,6 +52,7 @@ function Login() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
+              e.stopPropagation();
               form.handleSubmit();
             }}
             className="flex flex-col gap-6"
@@ -66,15 +67,10 @@ function Login() {
                       <Input
                         id={field.name}
                         name={field.name}
-                        value={field.state.value as string}
-                        onBlur={field.handleBlur}
+                        value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                       />
-                      {!field.state.meta.isValid && (
-                        <em className="text-red-400">
-                          {field.state.meta.errorMap["onChange"]?.[0].message}
-                        </em>
-                      )}
+                      <FieldInfo field={field} />
                     </>
                   )}
                 />
@@ -88,28 +84,43 @@ function Login() {
                       <Input
                         id={field.name}
                         name={field.name}
-                        value={field.state.value as string}
-                        onBlur={field.handleBlur}
+                        value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                         type="password"
                       />
-                      {!field.state.meta.isValid && (
-                        <em className="text-red-400">
-                          {field.state.meta.errorMap["onChange"]?.[0].message}
-                        </em>
-                      )}
+                      <FieldInfo field={field} />
                     </>
                   )}
                 />
               </div>
             </div>
 
-            <Button type="submit" className="w-full">
-              {t("login")}
-            </Button>
+            <form.Subscribe
+              selector={(state) => [state.canSubmit, state.isSubmitting]}
+              children={([canSubmit, isSubmitting]) => (
+                <Button type="submit" className="w-full" disabled={!canSubmit}>
+                  {isSubmitting && <Loader2Icon className="animate-spin" />}
+                  {t("login")}
+                </Button>
+              )}
+            />
           </form>
         </CardContent>
       </Card>
     </div>
   );
+}
+
+function FieldInfo({ field }: { field: AnyFieldApi }) {
+  const { t } = useTranslation();
+
+  const error = field.state.meta.errorMap["onSubmit"]?.[0];
+
+  const fieldName = t(field.name as any);
+  const message = t(`error.${error?.code}`, {
+    field: fieldName,
+    ...error,
+  });
+
+  return !field.state.meta.isValid && <span className="text-red-400">{message}</span>;
 }

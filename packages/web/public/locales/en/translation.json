@@ -19,5 +19,9 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System (Light/Dark)"
+  },
+
+  "error": {
+    "too_small": "The {{field}} must be greater than {{minimum}} character"
   }
 }

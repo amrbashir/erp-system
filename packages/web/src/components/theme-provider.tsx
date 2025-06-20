@@ -1,10 +1,10 @@
-import { Monitor, Moon, Sun } from "lucide-react";
+import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { createContext, useContext, useEffect, useState } from "react";
 
 export const themeVariants = [
-  { theme: "system", icon: Monitor },
-  { theme: "dark", icon: Moon },
-  { theme: "light", icon: Sun },
+  { theme: "system", icon: MonitorIcon },
+  { theme: "dark", icon: MoonIcon },
+  { theme: "light", icon: SunIcon },
 ] as const;
 
 export type Theme = (typeof themeVariants)[number]["theme"];

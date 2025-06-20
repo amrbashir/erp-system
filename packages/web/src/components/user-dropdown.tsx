@@ -14,7 +14,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/shadcn/components/ui/sidebar";
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVerticalIcon } from "lucide-react";
 import { LanguageSelector } from "@/components/language-selector";
 import { ThemeSelector } from "@/components/theme-selector";
 import { useRouter } from "@tanstack/react-router";
@@ -51,7 +51,7 @@ export function UserDropdown() {
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user?.username}</span>
               </div>
-              <EllipsisVertical />
+              <EllipsisVerticalIcon />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
 
