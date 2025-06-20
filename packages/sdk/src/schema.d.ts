@@ -13,8 +13,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create an organization */
-        post: operations["createOrg"];
+        post: operations["OrgController$1_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -199,7 +198,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    createOrg: {
+    OrgController$1_create: {
         parameters: {
             query?: never;
             header?: never;

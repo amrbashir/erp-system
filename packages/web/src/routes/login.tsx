@@ -7,6 +7,8 @@ import i18n from "@/i18n";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Separator } from "@/shadcn/components/ui/separator";
+import { useForm } from "@tanstack/react-form";
+import { LoginUserDto } from "@tech-zone-store/sdk/zod";
 
 export const Route = createFileRoute("/login")({
   component: Login,
@@ -18,19 +20,23 @@ function Login() {
   const router = useRouter();
   const { t } = useTranslation();
 
-  async function login(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const form = useForm({
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+    validators: {
+      onChange: LoginUserDto,
+    },
+    onSubmit: async ({ value }) => {
+      console.log(value);
+      const { username, password } = value;
+      await auth.login(username, password);
 
-    const formData = new FormData(event.currentTarget);
-
-    const username = formData.get("username") as string;
-    const password = formData.get("password") as string;
-
-    await auth.login(username, password);
-
-    const search = router.state.location.search as { redirect?: string };
-    router.history.push(search.redirect || "/");
-  }
+      const search = router.state.location.search as { redirect?: string };
+      router.history.push(search.redirect || "/");
+    },
+  });
 
   return (
     <div className="flex items-center justify-center w-screen h-screen gap-20">
@@ -43,17 +49,58 @@ function Login() {
           <CardTitle>{t("login_to_account")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={login} className="flex flex-col gap-6">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              form.handleSubmit();
+            }}
+            className="flex flex-col gap-6"
+          >
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="username">{t("username")}</Label>
-                <Input id="username" name="username" required />
+                <form.Field
+                  name="username"
+                  children={(field) => (
+                    <>
+                      <Label htmlFor={field.name}>{t("username")}</Label>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value as string}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                      />
+                      {!field.state.meta.isValid && (
+                        <em className="text-red-400">
+                          {field.state.meta.errorMap["onChange"]?.[0].message}
+                        </em>
+                      )}
+                    </>
+                  )}
+                />
               </div>
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">{t("password")}</Label>
-                </div>
-                <Input id="password" name="password" type="password" required />
+                <form.Field
+                  name="password"
+                  children={(field) => (
+                    <>
+                      <Label htmlFor={field.name}>{t("password")}</Label>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value as string}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        type="password"
+                      />
+                      {!field.state.meta.isValid && (
+                        <em className="text-red-400">
+                          {field.state.meta.errorMap["onChange"]?.[0].message}
+                        </em>
+                      )}
+                    </>
+                  )}
+                />
               </div>
             </div>
 
