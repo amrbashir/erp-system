@@ -5,7 +5,12 @@ target
 dist
 
 packages/backend/src/prisma/generated
+
 packages/desktop/gen
-packages/sdk/src/types.gen.ts
+
+packages/sdk/src/schema.d.ts
+packages/sdk/src/schema.zod.ts
+packages/sdk/openapi-zod.hbs
+
 packages/web/src/routeTree.gen.ts
 
