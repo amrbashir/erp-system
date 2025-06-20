@@ -11,19 +11,19 @@
   "scripts": {
     "gen:openapi-json": "pnpm -w backend gen:openapi-json",
     "gen:openapi-ts-schema": "openapi-typescript ../backend/dist/openapi.json -o ./src/schema.d.ts",
-    "gen:openapi-zod-schema": "typed-openapi ../backend/dist/openapi.json -o ./src/schema.zod.ts -r zod --schemas-only",
+    "gen:openapi-zod-schema": "openapi-zod-client ../backend/dist/openapi.json -o ./src/schema.zod.ts -t openapi-zod.hbs",
     "gen": "pnpm gen:openapi-json && pnpm gen:openapi-ts-schema && pnpm gen:openapi-zod-schema",
     "build": "pnpm gen && tsdown"
   },
   "dependencies": {
     "openapi-fetch": "^0.14.0",
     "openapi-react-query": "^0.5.0",
-    "typed-openapi": "^1.5.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {
     "@types/node": "^24.0.3",
     "openapi-typescript": "^7.8.0",
+    "openapi-zod-client": "^1.18.3",
     "tsdown": "^0.12.7",
     "typescript": "^5.8.3"
   }
