@@ -11,10 +11,11 @@ import { NavigationHeader } from "@/components/navigation-header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { useTranslation } from "react-i18next";
 import type { AuthContext } from "@/auth";
+import { DirectionProvider } from "@radix-ui/react-direction";
+import { useEffect } from "react";
 
 interface RouterContext {
   auth: AuthContext;
-  hideUI?: boolean;
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -46,9 +47,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     const matchWithTitle = [...matches].reverse().find((match) => match.loaderData?.title);
     const title = matchWithTitle?.loaderData?.title;
 
-    const { t } = useTranslation("translation");
+    const { t, i18n } = useTranslation("translation");
+    useEffect(() => void (document.documentElement.dir = i18n.dir()), [i18n.language]);
 
-    const hideUi = matches.some((match) => match.context?.hideUI);
+    const hideUi = matches.some(
+      (match) => match.loaderData && "hideUI" in match.loaderData && match.loaderData?.hideUI,
+    );
 
     return (
       <>
@@ -57,15 +61,17 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           <title>{title + " | " + t("tech_zone")}</title>
         </head>
 
-        <ThemeProvider>
-          <SidebarProvider defaultOpen={defaultOpen}>
-            {!hideUi && <AppSideBar />}
-            <main className="w-screen *:px-4 *:py-2 bg-background rounded-2xl my-2">
-              {!hideUi && <NavigationHeader />}
-              <Outlet />
-            </main>
-          </SidebarProvider>
-        </ThemeProvider>
+        <DirectionProvider dir={i18n.dir()}>
+          <ThemeProvider>
+            <SidebarProvider defaultOpen={defaultOpen}>
+              {!hideUi && <AppSideBar />}
+              <main className="w-screen *:px-4 *:py-2 rounded-2xl m-2">
+                {!hideUi && <NavigationHeader />}
+                <Outlet />
+              </main>
+            </SidebarProvider>
+          </ThemeProvider>
+        </DirectionProvider>
       </>
     );
   },

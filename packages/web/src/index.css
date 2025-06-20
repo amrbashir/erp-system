@@ -126,3 +126,20 @@ body {
 .group\/sidebar-wrapper {
   @apply bg-sidebar;
 }
+
+main {
+  @apply bg-background;
+}
+
+/**
+ * A few fixed styles for shadcn-ui components to ensure proper RTL support.
+ *
+ * TODO: remove once this PR lands https://github.com/shadcn-ui/ui/pull/1638
+ */
+html[dir="rtl"] [data-slot="dropdown-menu-sub-trigger"] > svg {
+  @apply ml-0 mr-auto -scale-x-[1];
+}
+
+html[dir="rtl"] [data-slot="breadcrumb-separator"] > svg {
+  @apply -scale-x-[1];
+}

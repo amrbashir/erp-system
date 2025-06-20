@@ -14,28 +14,39 @@ import type { FileRoutesByTo } from "@/routeTree.gen";
 import { Link, useLocation, useRouter } from "@tanstack/react-router";
 import { UserDropdown } from "@/components/user-dropdown";
 import { Label } from "@/shadcn/components/ui/label";
+import { useTranslation } from "react-i18next";
 
-type Route = {
+type RouteData = {
   url: keyof FileRoutesByTo;
+  isActive: boolean;
   title: string;
-  icon: React.ComponentType;
+  icon?: React.ComponentType;
 };
 
 export function AppSideBar() {
+  const { open } = useSidebar();
+  const { i18n } = useTranslation();
+
   const { flatRoutes } = useRouter();
   const location = useLocation({ select: (state) => state.pathname });
-  const { open } = useSidebar();
 
-  const routes: Route[] = [
-    {
-      url: "/",
-      title: flatRoutes.find((route) => route.to === "/")?.options.loader().title,
-      icon: flatRoutes.find((route) => route.to === "/")?.options.loader().icon,
-    },
-  ];
+  const sidebarRoutes: (keyof FileRoutesByTo)[] = ["/"];
+  const sidebarRoutesData: RouteData[] = sidebarRoutes.map((r) => {
+    const route = flatRoutes.find((route) => route.to === r);
+    return {
+      url: route?.to,
+      isActive: route?.to === location,
+      title: route?.options.loader().title,
+      icon: route?.options.loader().icon,
+    };
+  });
 
   return (
-    <Sidebar collapsible="icon" className="border-0!">
+    <Sidebar
+      collapsible="icon"
+      className="border-0!"
+      side={i18n.dir() === "rtl" ? "right" : "left"}
+    >
       <SidebarHeader>
         <Label className="my-2">
           <img src="/favicon.svg" className={open ? "size-10" : "size-8"}></img>
@@ -47,12 +58,12 @@ export function AppSideBar() {
         <SidebarGroup>
           <SidebarGroupContent className="flex flex-col gap-2">
             <SidebarMenu>
-              {routes.map((route) => (
-                <SidebarMenuItem key={route.url}>
-                  <SidebarMenuButton asChild isActive={route.url === location}>
-                    <Link to={route.url}>
-                      <route.icon />
-                      <span>{route.title}</span>
+              {sidebarRoutesData.map(({ url, title, icon: RouteIcon, isActive }) => (
+                <SidebarMenuItem key={url}>
+                  <SidebarMenuButton asChild isActive={isActive}>
+                    <Link to={url}>
+                      {RouteIcon && <RouteIcon />}
+                      <span>{title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

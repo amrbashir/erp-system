@@ -1,6 +1,6 @@
 import { useAuth } from "@/auth";
 import { Button } from "@/shadcn/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shadcn/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/components/ui/card";
 import { Input } from "@/shadcn/components/ui/input";
 import { Label } from "@/shadcn/components/ui/label";
 import i18n from "@/i18n";
@@ -10,8 +10,7 @@ import { Separator } from "@/shadcn/components/ui/separator";
 
 export const Route = createFileRoute("/login")({
   component: Login,
-  loader: () => ({ title: i18n.t("login") }),
-  context: (c) => ({ hideUI: true }),
+  loader: () => ({ title: i18n.t("login"), hideUI: true }),
 });
 
 function Login() {
