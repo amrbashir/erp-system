@@ -21,7 +21,5 @@
     "system": "System (Light/Dark)"
   },
 
-  "error": {
-    "too_small": "The {{field}} must be greater than {{minimum}} character"
-  }
+  "Username or password is incorrect": "Username or password is incorrect"
 }

@@ -1,5 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
-import { createFetchClient } from "@tech-zone-store/sdk";
+import { apiClient } from "./api-client";
+import { useMutation } from "@tanstack/react-query";
+import { z } from "zod";
+import { LoginUserDto } from "@tech-zone-store/sdk/zod";
 
 export interface AuthUser {
   username: string;
@@ -10,6 +13,8 @@ export interface AuthContext {
   isAuthenticated: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  loginMutation: any;
+  logoutMutation: any;
   user: AuthUser | null;
 }
 
@@ -39,21 +44,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(getStoredUser());
   const isAuthenticated = !!user;
 
-  const client = createFetchClient({ baseUrl: "/api/v1" });
+  const loginMutation = useMutation({
+    mutationFn: async (value: z.input<typeof LoginUserDto>) => {
+      const { data, error } = await apiClient.request("post", "/auth/login", { body: value });
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const login = useCallback(async (username: string, password: string) => {
-    const { data: user } = await client.request("post", "/auth/login", {
-      body: { username, password, organization: "tech-zone" },
+    const user = await loginMutation.mutateAsync({
+      username,
+      password,
+      organization: "tech-zone",
     });
-
-    if (!user) throw new Error("Login failed");
 
     setStoredUser(user);
     setUser(user);
   }, []);
 
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await apiClient.request("post", "/auth/logout", {
+        headers: { Authorization: `Bearer ${user?.accessToken}` },
+      });
+      if (error) throw new Error(error);
+    },
+  });
+
   const logout = useCallback(async () => {
-    await client.request("post", "/auth/logout", {});
+    await logoutMutation.mutateAsync();
 
     setStoredUser(null);
     setUser(null);
@@ -62,7 +82,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => setUser(getStoredUser()), []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, user, login, logout, loginMutation, logoutMutation }}
+    >
       {children}
     </AuthContext.Provider>
   );

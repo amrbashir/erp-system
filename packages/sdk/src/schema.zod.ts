@@ -24,7 +24,7 @@ export const UserEntity = z
   .passthrough();
 
 export const LoginUserDto = z
-  .object({ username: z.string(), password: z.string().min(8), organization: z.string() })
+  .object({ username: z.string(), password: z.string(), organization: z.string() })
   .passthrough();
 
 export const LoginResponseDto = z

@@ -21,7 +21,5 @@
     "system": "نظامي  (فاتح/داكن)"
   },
 
-  "error": {
-    "too_small": "يجب أن يكون {{field}} أكبر من {{minimum}} حرف"
-  }
+  "Username or password is incorrect": "اسم المستخدم أو كلمة المرور غير صحيحة"
 }

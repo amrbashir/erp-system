@@ -7,8 +7,7 @@ import i18n from "@/i18n";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Separator } from "@/shadcn/components/ui/separator";
-import { useForm, type AnyFieldApi } from "@tanstack/react-form";
-import { LoginUserDto } from "@tech-zone-store/sdk/zod";
+import { useForm } from "@tanstack/react-form";
 import { Loader2Icon } from "lucide-react";
 
 export const Route = createFileRoute("/login")({
@@ -17,21 +16,20 @@ export const Route = createFileRoute("/login")({
 });
 
 function Login() {
-  const auth = useAuth();
   const router = useRouter();
   const { t } = useTranslation();
+  const { login, loginMutation } = useAuth();
+
+  const { error } = loginMutation;
 
   const form = useForm({
     defaultValues: {
       username: "",
       password: "",
     },
-    validators: {
-      onSubmit: LoginUserDto.omit({ organization: true }),
-    },
     onSubmit: async ({ value }) => {
       const { username, password } = value;
-      await auth.login(username, password);
+      await login(username, password);
 
       const search = router.state.location.search as { redirect?: string };
       router.history.push(search.redirect || "/");
@@ -70,7 +68,6 @@ function Login() {
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                       />
-                      <FieldInfo field={field} />
                     </>
                   )}
                 />
@@ -88,11 +85,16 @@ function Login() {
                         onChange={(e) => field.handleChange(e.target.value)}
                         type="password"
                       />
-                      <FieldInfo field={field} />
                     </>
                   )}
                 />
               </div>
+              {error &&
+                (Array.isArray(error.message) ? (
+                  error.message.map((e: any) => <p className="text-red-400">{t(e)}</p>)
+                ) : (
+                  <p className="text-red-400">{t(error.message)}</p>
+                ))}
             </div>
 
             <form.Subscribe
@@ -109,18 +111,4 @@ function Login() {
       </Card>
     </div>
   );
-}
-
-function FieldInfo({ field }: { field: AnyFieldApi }) {
-  const { t } = useTranslation();
-
-  const error = field.state.meta.errorMap["onSubmit"]?.[0];
-
-  const fieldName = t(field.name as any);
-  const message = t(`error.${error?.code}`, {
-    field: fieldName,
-    ...error,
-  });
-
-  return !field.state.meta.isValid && <span className="text-red-400">{message}</span>;
 }
