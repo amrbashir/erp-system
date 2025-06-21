@@ -13,8 +13,6 @@ export interface AuthContext {
   isAuthenticated: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  loginMutation: any;
-  logoutMutation: any;
   user: AuthUser | null;
 }
 
@@ -82,9 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => setUser(getStoredUser()), []);
 
   return (
-    <AuthContext.Provider
-      value={{ isAuthenticated, user, login, logout, loginMutation, logoutMutation }}
-    >
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

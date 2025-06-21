@@ -7,7 +7,7 @@ import i18n from "@/i18n";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Separator } from "@/shadcn/components/ui/separator";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { Loader2Icon } from "lucide-react";
 
 export const Route = createFileRoute("/login")({
@@ -18,23 +18,46 @@ export const Route = createFileRoute("/login")({
 function Login() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { login, loginMutation } = useAuth();
-
-  const { error } = loginMutation;
+  const { login } = useAuth();
 
   const form = useForm({
     defaultValues: {
       username: "",
       password: "",
     },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value, formApi }) => {
       const { username, password } = value;
-      await login(username, password);
 
-      const search = router.state.location.search as { redirect?: string };
-      router.history.push(search.redirect || "/");
+      try {
+        await login(username, password);
+        const search = router.state.location.search as { redirect?: string };
+        router.history.push(search.redirect || "/");
+      } catch (error: any) {
+        formApi.setErrorMap({ onSubmit: error.message });
+      }
     },
   });
+
+  type LoginForm = typeof form;
+
+  function FormErrors({ form }: { form: LoginForm }) {
+    const formErrorMap = useStore(form.store, (state) => state.errorMap);
+    const onSubmitError = formErrorMap.onSubmit as any;
+
+    if (!onSubmitError) return null;
+
+    if (Array.isArray(onSubmitError)) {
+      return (
+        <p className="text-red-400">
+          {onSubmitError.map((error, index) => (
+            <div key={index}>{t(error)}</div>
+          ))}
+        </p>
+      );
+    }
+
+    return <p className="text-red-400">{t(onSubmitError)}</p>;
+  }
 
   return (
     <div className="flex items-center justify-center w-screen h-screen gap-20">
@@ -89,12 +112,8 @@ function Login() {
                   )}
                 />
               </div>
-              {error &&
-                (Array.isArray(error.message) ? (
-                  error.message.map((e: any) => <p className="text-red-400">{t(e)}</p>)
-                ) : (
-                  <p className="text-red-400">{t(error.message)}</p>
-                ))}
+
+              <FormErrors form={form} />
             </div>
 
             <form.Subscribe
