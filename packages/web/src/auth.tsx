@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { error } = await apiClient.request("post", "/auth/logout", {
         headers: { Authorization: `Bearer ${user?.accessToken}` },
       });
-      if (error) throw new Error(error);
+      if (error) throw error;
     },
   });
 
