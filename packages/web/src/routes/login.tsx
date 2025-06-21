@@ -48,7 +48,7 @@ function Login() {
 
     if (Array.isArray(onSubmitError)) {
       return (
-        <p className="text-red-400">
+        <p className="text-destructive text-sm">
           {onSubmitError.map((error, index) => (
             <div key={index}>{t(error)}</div>
           ))}
@@ -56,7 +56,7 @@ function Login() {
       );
     }
 
-    return <p className="text-red-400">{t(onSubmitError)}</p>;
+    return <p className="text-destructive text-sm">{t(onSubmitError)}</p>;
   }
 
   return (
@@ -90,6 +90,7 @@ function Login() {
                         name={field.name}
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
+                        required
                       />
                     </>
                   )}
@@ -107,6 +108,7 @@ function Login() {
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                         type="password"
+                        required
                       />
                     </>
                   )}
