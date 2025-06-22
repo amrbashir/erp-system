@@ -10,12 +10,12 @@ import {
 } from "@/shadcn/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ContactIcon } from "lucide-react";
+import { UsersIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/customers")({
   component: Customers,
-  loader: () => ({ title: i18n.t("pages.customers"), icon: ContactIcon }),
+  loader: () => ({ title: i18n.t("pages.customers"), icon: UsersIcon }),
 });
 
 function Customers() {
