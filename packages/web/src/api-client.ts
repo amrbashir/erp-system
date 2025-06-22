@@ -24,7 +24,7 @@ export const apiClient = createClient({
       if (data) {
         // If the refresh was successful, update the stored user and set the new access token in the headers
         // and retry the original request with the new access token
-        setStoredUser({ username: user?.username, accessToken: data.accessToken });
+        setStoredUser({ ...user, accessToken: data.accessToken });
         input.headers.set("Authorization", `Bearer ${data.accessToken}`);
         return fetch(input);
       }
