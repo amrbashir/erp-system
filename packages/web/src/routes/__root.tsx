@@ -65,10 +65,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
           <ThemeProvider>
             <SidebarProvider defaultOpen={defaultOpen}>
               {!hideUi && <AppSideBar />}
-              <main className="w-screen *:px-4 *:py-2 rounded-2xl m-2">
+              <div id="outlet-container" className="w-screen *:px-4 *:py-2 rounded-2xl m-2">
                 {!hideUi && <NavigationHeader />}
                 <Outlet />
-              </main>
+              </div>
             </SidebarProvider>
           </ThemeProvider>
         </DirectionProvider>

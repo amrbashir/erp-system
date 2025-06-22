@@ -1,13 +1,26 @@
 {
   "tech_zone": "Tech Zone",
-  "home": "Home",
   "language": "Language",
+
+  "pages": {
+    "home": "Home",
+    "users": "Users"
+  },
 
   "login": "Login",
   "logout": "Logout",
   "login_to_account": "Login to your account",
   "username": "Username",
   "password": "Password",
+
+  "role": "Role",
+  "createdAt": "Created At",
+  "updatedAt": "Updated At",
+
+  "roles": {
+    "ADMIN": "Admin",
+    "USER": "User"
+  },
 
   "languages": {
     "en": "English",

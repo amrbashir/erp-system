@@ -30,7 +30,7 @@ export function AppSideBar() {
   const { flatRoutes } = useRouter();
   const location = useLocation({ select: (state) => state.pathname });
 
-  const sidebarRoutes: (keyof FileRoutesByTo)[] = ["/"];
+  const sidebarRoutes: (keyof FileRoutesByTo)[] = ["/", "/users"];
   const sidebarRoutesData: RouteData[] = sidebarRoutes.map((r) => {
     const route = flatRoutes.find((route) => route.to === r);
     return {

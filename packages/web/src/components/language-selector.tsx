@@ -5,7 +5,7 @@ import {
   DropdownMenuSubTrigger,
 } from "@/shadcn/components/ui/dropdown-menu";
 import { useTranslation } from "react-i18next";
-import { Eu } from "@/components/flags/eu";
+import { Uk } from "@/components/flags/uk";
 import { Sa } from "@/components/flags/sa";
 import { useRouter } from "@tanstack/react-router";
 
@@ -14,7 +14,7 @@ export function LanguageSelector() {
   const router = useRouter();
 
   const languageFlags = {
-    en: Eu,
+    en: Uk,
     ar: Sa,
   } as const;
 
