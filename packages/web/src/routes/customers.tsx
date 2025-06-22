@@ -10,21 +10,21 @@ import {
 } from "@/shadcn/components/ui/table";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { UsersIcon } from "lucide-react";
+import { ContactIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-export const Route = createFileRoute("/users")({
-  component: Users,
-  loader: () => ({ title: i18n.t("pages.users"), icon: UsersIcon }),
+export const Route = createFileRoute("/customers")({
+  component: Customers,
+  loader: () => ({ title: i18n.t("pages.customers"), icon: ContactIcon }),
 });
 
-function Users() {
+function Customers() {
   const { t, i18n } = useTranslation();
 
-  const { data: users } = useQuery({
-    queryKey: ["users"],
+  const { data: customers } = useQuery({
+    queryKey: ["customers"],
     queryFn: async () => {
-      const { data, error } = await apiClient.request("get", "/user/getAll");
+      const { data, error } = await apiClient.request("get", "/customer/getAll");
       if (error) throw error;
       return data;
     },
@@ -36,19 +36,21 @@ function Users() {
         <Table>
           <TableHeader>
             <TableRow className="bg-secondary">
-              <TableHead className="text-start font-bold">{t("username")}</TableHead>
-              <TableHead className="text-start font-bold">{t("role")}</TableHead>
+              <TableHead className="text-start font-bold">{t("name")}</TableHead>
+              <TableHead className="text-start font-bold">{t("email")}</TableHead>
+              <TableHead className="text-start font-bold">{t("phone")}</TableHead>
               <TableHead className="text-start font-bold">{t("createdAt")}</TableHead>
               <TableHead className="text-start font-bold">{t("updatedAt")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {(users ?? []).map((user) => (
-              <TableRow key={user.username}>
-                <TableCell>{user.username}</TableCell>
-                <TableCell>{t(`roles.${user.role}`)}</TableCell>
-                <TableCell>{toLocaleString(user.createdAt, i18n.language)}</TableCell>
-                <TableCell>{toLocaleString(user.updatedAt, i18n.language)}</TableCell>
+            {(customers ?? []).map((customer) => (
+              <TableRow key={customer.name}>
+                <TableCell>{customer.name}</TableCell>
+                <TableCell>{customer.email}</TableCell>
+                <TableCell>{customer.phone}</TableCell>
+                <TableCell>{toLocaleString(customer.createdAt, i18n.language)}</TableCell>
+                <TableCell>{toLocaleString(customer.updatedAt, i18n.language)}</TableCell>
               </TableRow>
             ))}
           </TableBody>

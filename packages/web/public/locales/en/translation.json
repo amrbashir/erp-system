@@ -1,10 +1,12 @@
 {
   "tech_zone": "Tech Zone",
+
   "language": "Language",
 
   "pages": {
     "home": "Home",
-    "users": "Users"
+    "users": "Users",
+    "customers": "Customers"
   },
 
   "login": "Login",
@@ -13,10 +15,13 @@
   "username": "Username",
   "password": "Password",
 
-  "role": "Role",
   "createdAt": "Created At",
   "updatedAt": "Updated At",
+  "name": "Name",
+  "email": "Email",
+  "phone": "Phone",
 
+  "role": "Role",
   "roles": {
     "ADMIN": "Admin",
     "USER": "User"

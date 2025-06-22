@@ -354,9 +354,9 @@ export interface operations {
     };
     CustomerController$1_getAll: {
         parameters: {
-            query: {
-                skip: number;
-                take: number;
+            query?: {
+                skip?: number;
+                take?: number;
             };
             header?: {
                 Authorization?: string;
@@ -370,7 +370,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["CustomerEntity"][];
+                };
             };
         };
     };
