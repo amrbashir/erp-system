@@ -10,10 +10,13 @@ import {
 import { apiClient } from "./api-client";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
-import { LoginUserDto } from "@tech-zone-store/sdk/zod";
+import { LoginUserDto, UserEntity } from "@tech-zone-store/sdk/zod";
+
+type UserRole = z.infer<typeof UserEntity>["role"];
 
 export interface AuthUser {
   username: string;
+  role: UserRole;
   accessToken: string;
 }
 
@@ -28,21 +31,25 @@ const AuthContext = createContext<AuthContext | null>(null);
 
 const authUserUsernameKey = "auth.user.username";
 const authUserAccessTokenKey = "auth.user.accessToken";
+const authUserRoleKey = "auth.user.role";
 
-export function getStoredUser() {
+export function getStoredUser(): AuthUser | null {
   const username = localStorage.getItem(authUserUsernameKey);
   const accessToken = localStorage.getItem(authUserAccessTokenKey);
-  if (username && accessToken) return { username, accessToken };
-  return null;
+  const role = localStorage.getItem(authUserRoleKey);
+  if (!username || !accessToken || !role) return null;
+  return { username, accessToken, role: role as UserRole };
 }
 
 export function setStoredUser(user: AuthUser | null) {
   if (user) {
     localStorage.setItem(authUserUsernameKey, user.username);
     localStorage.setItem(authUserAccessTokenKey, user.accessToken);
+    localStorage.setItem(authUserRoleKey, user.role);
   } else {
     localStorage.removeItem(authUserUsernameKey);
     localStorage.removeItem(authUserAccessTokenKey);
+    localStorage.removeItem(authUserRoleKey);
   }
 }
 
@@ -53,7 +60,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Handle storage changes to update the user state
   const storageChange = useCallback(
     (e: StorageEvent) => {
-      if (e.key === authUserUsernameKey || e.key === authUserAccessTokenKey) {
+      if (
+        e.key === authUserUsernameKey ||
+        e.key === authUserAccessTokenKey ||
+        e.key === authUserRoleKey
+      ) {
         // If the new value is set, update the user state
         if (e.newValue) {
           const storedUser = getStoredUser();

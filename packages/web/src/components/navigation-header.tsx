@@ -15,10 +15,10 @@ function NavigationBreadcrumbs() {
   const matches = useMatches();
 
   const breadcrumbs = matches
-    .filter(({ loaderData }) => loaderData?.title)
-    .map(({ pathname, loaderData }) => ({
+    .filter(({ context }) => context?.title)
+    .map(({ pathname, context }) => ({
       path: pathname,
-      title: loaderData?.title,
+      title: context?.title,
     }));
 
   const activeCrumb = breadcrumbs[breadcrumbs.length - 1];

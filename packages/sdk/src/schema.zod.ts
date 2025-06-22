@@ -28,7 +28,7 @@ export const LoginUserDto = z
   .passthrough();
 
 export const LoginResponseDto = z
-  .object({ username: z.string(), accessToken: z.string() })
+  .object({ username: z.string(), role: z.enum(["USER", "ADMIN"]), accessToken: z.string() })
   .passthrough();
 
 export const RefreshTokenResponseDto = z.object({ accessToken: z.string() }).passthrough();

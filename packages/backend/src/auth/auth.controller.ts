@@ -33,7 +33,7 @@ export class AuthController {
     @Body() loginUserDto: LoginUserDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<LoginResponseDto> {
-    const { username, tokens } = await this.authService.login(loginUserDto);
+    const { user, tokens } = await this.authService.login(loginUserDto);
 
     res.cookie("refreshToken", tokens.refreshToken, {
       httpOnly: true,
@@ -42,7 +42,7 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    return { username, accessToken: tokens.accessToken };
+    return { username: user.username, role: user.role, accessToken: tokens.accessToken };
   }
 
   @HttpCode(HttpStatus.OK)

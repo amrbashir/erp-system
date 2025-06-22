@@ -13,7 +13,7 @@ export class AuthService {
   ) {}
 
   async login(loginUserDto: LoginUserDto): Promise<{
-    username: string;
+    user: User;
     tokens: JwtTokens;
   }> {
     const user = await this.userService.findByUsernameInOrg(
@@ -32,7 +32,7 @@ export class AuthService {
     this.userService.updateRefreshToken(user.id, refreshToken);
 
     return {
-      username: user.username,
+      user,
       tokens: {
         accessToken,
         refreshToken,

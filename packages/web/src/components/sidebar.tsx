@@ -11,17 +11,10 @@ import {
   SidebarFooter,
 } from "@/shadcn/components/ui/sidebar";
 import type { FileRoutesByTo } from "@/routeTree.gen";
-import { Link, useLocation, useRouter } from "@tanstack/react-router";
+import { getRouteApi, Link, useLocation, useRouter } from "@tanstack/react-router";
 import { UserDropdown } from "@/components/user-dropdown";
 import { Label } from "@/shadcn/components/ui/label";
 import { useTranslation } from "react-i18next";
-
-type RouteData = {
-  url: keyof FileRoutesByTo;
-  isActive: boolean;
-  title: string;
-  icon?: React.ComponentType;
-};
 
 export function AppSideBar() {
   const { open } = useSidebar();
@@ -31,13 +24,14 @@ export function AppSideBar() {
   const location = useLocation({ select: (state) => state.pathname });
 
   const sidebarRoutes: (keyof FileRoutesByTo)[] = ["/", "/customers", "/users"];
-  const sidebarRoutesData: RouteData[] = sidebarRoutes.map((r) => {
+  const sidebarRoutesData = sidebarRoutes.map((r) => {
     const route = flatRoutes.find((route) => route.to === r);
+    const data = route?.options.context();
     return {
       url: route?.to,
       isActive: route?.to === location,
-      title: route?.options.loader().title,
-      icon: route?.options.loader().icon,
+      title: data.title,
+      icon: data.icon,
     };
   });
 

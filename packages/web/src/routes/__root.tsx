@@ -13,15 +13,25 @@ import { useTranslation } from "react-i18next";
 import type { AuthContext } from "@/auth";
 import { DirectionProvider } from "@radix-ui/react-direction";
 import { useEffect } from "react";
+import type { UserEntity } from "@tech-zone-store/sdk/zod";
+import { z } from "zod";
 
 interface RouterContext {
   auth: AuthContext;
+  title: string;
+  icon?: React.ComponentType;
+  requirement?: z.infer<typeof UserEntity>["role"];
+  hideUI?: boolean;
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async ({ context, location }) => {
     // redirect to login if not authenticated and trying to access a protected route
-    if (!context.auth.isAuthenticated && location.pathname !== "/login") {
+    if (
+      !context.auth.isAuthenticated &&
+      location.pathname !== "/login" &&
+      context.requirement !== null
+    ) {
       throw redirect({
         to: "/login",
         search: {
@@ -30,8 +40,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       });
     }
 
-    // redirect to home if authenticated and trying to access the login page
-    if (context.auth.isAuthenticated && location.pathname === "/login") {
+    if (
+      // redirect to home if authenticated and trying to access the login page
+      (context.auth.isAuthenticated && location.pathname === "/login") ||
+      // redirect to home if authenticated and trying to access a route that requires a different role
+      (context.requirement && context.auth.user?.role !== context.requirement)
+    ) {
       throw redirect({
         to: "/",
       });
@@ -44,14 +58,14 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     const defaultOpen = sidebarState === "true";
 
     const matches = useMatches();
-    const matchWithTitle = [...matches].reverse().find((match) => match.loaderData?.title);
-    const title = matchWithTitle?.loaderData?.title;
+    const matchWithTitle = [...matches].reverse().find((match) => match.context?.title);
+    const title = matchWithTitle?.context.title;
 
     const { t, i18n } = useTranslation("translation");
     useEffect(() => void (document.documentElement.dir = i18n.dir()), [i18n.language]);
 
     const hideUi = matches.some(
-      (match) => match.loaderData && "hideUI" in match.loaderData && match.loaderData?.hideUI,
+      (match) => match.context && "hideUI" in match.context && match.context?.hideUI,
     );
 
     return (

@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/users")({
   component: Users,
-  loader: () => ({ title: i18n.t("pages.users"), icon: ContactIcon }),
+  context: () => ({ title: i18n.t("pages.users"), icon: ContactIcon, requirement: "Admin" }),
 });
 
 function Users() {

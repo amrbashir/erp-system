@@ -12,7 +12,7 @@ import { Loader2Icon } from "lucide-react";
 
 export const Route = createFileRoute("/login")({
   component: Login,
-  loader: () => ({ title: i18n.t("login"), hideUI: true }),
+  context: () => ({ title: i18n.t("login"), hideUI: true }),
 });
 
 function Login() {

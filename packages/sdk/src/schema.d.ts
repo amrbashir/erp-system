@@ -165,6 +165,8 @@ export interface components {
         };
         LoginResponseDto: {
             username: string;
+            /** @enum {string} */
+            role: "USER" | "ADMIN";
             accessToken: string;
         };
         RefreshTokenResponseDto: {
