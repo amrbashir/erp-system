@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { apiClient } from "./api-client";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
@@ -21,14 +29,14 @@ const AuthContext = createContext<AuthContext | null>(null);
 const authUserUsernameKey = "auth.user.username";
 const authUserAccessTokenKey = "auth.user.accessToken";
 
-function getStoredUser() {
+export function getStoredUser() {
   const username = localStorage.getItem(authUserUsernameKey);
   const accessToken = localStorage.getItem(authUserAccessTokenKey);
   if (username && accessToken) return { username, accessToken };
   return null;
 }
 
-function setStoredUser(user: AuthUser | null) {
+export function setStoredUser(user: AuthUser | null) {
   if (user) {
     localStorage.setItem(authUserUsernameKey, user.username);
     localStorage.setItem(authUserAccessTokenKey, user.accessToken);
@@ -40,8 +48,31 @@ function setStoredUser(user: AuthUser | null) {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(getStoredUser());
-  const isAuthenticated = !!user;
+  const isAuthenticated = useMemo(() => !!user, [user]);
 
+  // Handle storage changes to update the user state
+  const storageChange = useCallback(
+    (e: StorageEvent) => {
+      if (e.key === authUserUsernameKey || e.key === authUserAccessTokenKey) {
+        // If the new value is set, update the user state
+        if (e.newValue) {
+          const storedUser = getStoredUser();
+          setUser(storedUser);
+        } else {
+          // If the new value is removed, clear the user state
+          setUser(null);
+        }
+      }
+    },
+    [setUser],
+  );
+
+  useEffect(() => {
+    window.addEventListener("storage", (e) => storageChange(e));
+    return () => window.removeEventListener("storage", (e) => storageChange(e));
+  }, [storageChange]);
+
+  // login
   const loginMutation = useMutation({
     mutationFn: async (value: z.input<typeof LoginUserDto>) => {
       const { data, error } = await apiClient.request("post", "/auth/login", { body: value });
@@ -61,6 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(user);
   }, []);
 
+  // logout
   const logoutMutation = useMutation({
     mutationFn: async () => {
       const { error } = await apiClient.request("post", "/auth/logout", {

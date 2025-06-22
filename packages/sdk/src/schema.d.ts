@@ -244,9 +244,9 @@ export interface operations {
     };
     UserController$1_getAll: {
         parameters: {
-            query: {
-                skip: number;
-                take: number;
+            query?: {
+                skip?: number;
+                take?: number;
             };
             header?: {
                 Authorization?: string;
