@@ -5,10 +5,17 @@ enum StatusCode {
   Unauthorized = 401,
 }
 
-const fallbackClient = createClient({ baseUrl: "/api/v1" });
+const clientOptions = {
+  baseUrl: "/api",
+  headers: {
+    "X-Api-Version": "1",
+  },
+};
+
+const fallbackClient = createClient(clientOptions);
 
 export const apiClient = createClient({
-  baseUrl: "/api/v1",
+  ...clientOptions,
   fetch: async (input) => {
     const user = getStoredUser();
 

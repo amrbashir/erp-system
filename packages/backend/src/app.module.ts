@@ -19,11 +19,15 @@ const swaggerConfig = new DocumentBuilder()
   .build();
 
 export function setupApp(app: INestApplication) {
-  app.enableVersioning({ type: VersioningType.URI, defaultVersion: "1" });
+  app.enableVersioning({
+    type: VersioningType.HEADER,
+    header: "X-Api-Version",
+    defaultVersion: "1",
+  });
   app.useGlobalPipes(new ValidationPipe());
 
   const documentFactory = () => SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup("v1", app, documentFactory, { customSiteTitle: "Tech Zone API" });
+  SwaggerModule.setup("api", app, documentFactory, { customSiteTitle: "Tech Zone API" });
 }
 
 export function generateOpenApiJson(app: INestApplication): string {
