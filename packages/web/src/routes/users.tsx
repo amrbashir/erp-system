@@ -71,6 +71,7 @@ function Users() {
               <TableHead className="text-start font-bold">{t("createdAt")}</TableHead>
               <TableHead className="text-start font-bold">{t("updatedAt")}</TableHead>
               <TableHead className="text-start font-bold">{t("deletedAt")}</TableHead>
+              <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
