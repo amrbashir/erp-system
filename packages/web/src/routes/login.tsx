@@ -50,13 +50,13 @@ function Login() {
       return (
         <p className="text-destructive text-sm">
           {onSubmitError.map((error, index) => (
-            <div key={index}>{t(error)}</div>
+            <div key={index}>{t(`errors.${error}` as any)}</div>
           ))}
         </p>
       );
     }
 
-    return <p className="text-destructive text-sm">{t(onSubmitError)}</p>;
+    return <p className="text-destructive text-sm">{t(`errors.${onSubmitError}` as any)}</p>;
   }
 
   return (

@@ -38,5 +38,10 @@
     "system": "نظامي  (فاتح/داكن)"
   },
 
-  "Username or password is incorrect": "اسم المستخدم أو كلمة المرور غير صحيحة"
+  "errors": {
+    "Username or password is incorrect": "اسم المستخدم أو كلمة المرور غير صحيحة",
+    "Cannot delete the last admin user in the organization": "لا يمكن حذف آخر مستخدم مدير في المؤسسة"
+  },
+
+  "delete": "حذف"
 }

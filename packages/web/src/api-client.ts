@@ -8,7 +8,7 @@ enum StatusCode {
 const clientOptions = {
   baseUrl: "/api",
   headers: {
-    "X-Api-Version": "1",
+    "X-Api-Version": "1.0.0",
   },
 };
 

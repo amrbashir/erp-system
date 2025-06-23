@@ -1,4 +1,10 @@
-import { Module, ValidationPipe, VersioningType, type INestApplication } from "@nestjs/common";
+import {
+  Module,
+  ValidationPipe,
+  VERSION_NEUTRAL,
+  VersioningType,
+  type INestApplication,
+} from "@nestjs/common";
 import { PrismaModule } from "./prisma/prisma.module";
 import { OrgModule } from "./org/org.module";
 import { UserModule } from "./user/user.module";
@@ -12,7 +18,7 @@ import { CustomerModule } from "./customer/customer.module";
 export class AppModule {}
 
 const swaggerConfig = new DocumentBuilder()
-  .setVersion("v1")
+  .setVersion("1.0.0")
   .setTitle("Tech Zone API")
   .addBearerAuth()
   .addCookieAuth("refreshToken")
@@ -22,7 +28,7 @@ export function setupApp(app: INestApplication) {
   app.enableVersioning({
     type: VersioningType.HEADER,
     header: "X-Api-Version",
-    defaultVersion: "1",
+    defaultVersion: [VERSION_NEUTRAL, "1.0.0"],
   });
   app.useGlobalPipes(new ValidationPipe());
 

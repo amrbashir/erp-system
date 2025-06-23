@@ -15,6 +15,7 @@ import { DirectionProvider } from "@radix-ui/react-direction";
 import { useEffect } from "react";
 import type { UserEntity } from "@tech-zone-store/sdk/zod";
 import { z } from "zod";
+import { Toaster } from "@/shadcn/components/ui/sonner";
 
 interface RouterContext {
   auth: AuthContext;
@@ -84,6 +85,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
                 <Outlet />
               </div>
             </SidebarProvider>
+
+            <Toaster />
           </ThemeProvider>
         </DirectionProvider>
       </>

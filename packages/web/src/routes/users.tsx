@@ -1,6 +1,12 @@
 import { apiClient } from "@/api-client";
 import i18n from "@/i18n";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shadcn/components/ui/dropdown-menu";
+import {
   Table,
   TableBody,
   TableCell,
@@ -8,10 +14,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/shadcn/components/ui/table";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ContactIcon } from "lucide-react";
+import { ContactIcon, EllipsisVerticalIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/users")({
   component: Users,
@@ -21,13 +28,27 @@ export const Route = createFileRoute("/users")({
 function Users() {
   const { t, i18n } = useTranslation();
 
-  const { data: users } = useQuery({
+  const { data: users, refetch: refetchUsers } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
       const { data, error } = await apiClient.request("get", "/user/getAll");
       if (error) throw error;
       return data;
     },
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: async (username: string) => {
+      const { data, error } = await apiClient.request("delete", "/user/delete", {
+        body: { username, organization: "tech-zone" },
+      });
+      if (error) {
+        toast.error(t(`errors.${(error as any).message}` as any));
+        throw error;
+      }
+      return data;
+    },
+    onSuccess: () => refetchUsers(),
   });
 
   return (
@@ -49,6 +70,24 @@ function Users() {
                 <TableCell>{t(`roles.${user.role}`)}</TableCell>
                 <TableCell>{toLocaleString(user.createdAt, i18n.language)}</TableCell>
                 <TableCell>{toLocaleString(user.updatedAt, i18n.language)}</TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      className="text-muted-foreground hover:text-primary"
+                      asChild
+                    >
+                      <EllipsisVerticalIcon />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onSelect={() => deleteUserMutation.mutate(user.username)}
+                      >
+                        {t("delete")}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

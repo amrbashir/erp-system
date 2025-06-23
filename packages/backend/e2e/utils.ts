@@ -44,7 +44,7 @@ function findAvailablePort() {
   });
 }
 
-export async function useTestingApp(version: string = "v1") {
+export async function useTestingApp() {
   const { createDatabase, dropDatabase } = useRandomDatabase();
 
   const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
@@ -52,7 +52,7 @@ export async function useTestingApp(version: string = "v1") {
   setupApp(app);
 
   const port = await findAvailablePort();
-  const appUrl = `http://localhost:${port}/${version}`;
+  const appUrl = `http://localhost:${port}`;
 
   const runApp = async () => {
     await createDatabase();

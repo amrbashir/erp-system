@@ -39,5 +39,10 @@
     "system": "System (Light/Dark)"
   },
 
-  "Username or password is incorrect": "Username or password is incorrect"
+  "errors": {
+    "Username or password is incorrect": "Username or password is incorrect",
+    "Cannot delete the last admin user in the organization": "Cannot delete the last admin user in the organization"
+  },
+
+  "delete": "Delete"
 }

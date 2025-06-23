@@ -28,6 +28,18 @@ export class CreateUserDto {
   organization: string;
 }
 
+export class DeleteUserDto {
+  @ApiProperty()
+  @IsAlphanumeric()
+  @IsNotEmpty()
+  username: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  organization: string;
+}
+
 export class PaginationDto {
   @ApiPropertyOptional({ minimum: 0, default: 0 })
   @Min(0)

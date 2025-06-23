@@ -13,6 +13,10 @@ export const CreateUserDto = z
   .object({ username: z.string(), password: z.string().min(8), organization: z.string() })
   .passthrough();
 
+export const DeleteUserDto = z
+  .object({ username: z.string(), organization: z.string() })
+  .passthrough();
+
 export const UserEntity = z
   .object({
     username: z.string(),

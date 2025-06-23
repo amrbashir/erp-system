@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { PaginationDto, type CreateUserDto } from "./user.dto";
+import { DeleteUserDto, PaginationDto, type CreateUserDto } from "./user.dto";
 import { UserRole, type User } from "../prisma/generated/client";
 import * as argon2 from "argon2";
 import { useRandomDatabase } from "../../e2e/utils";
@@ -16,7 +16,7 @@ export class UserService {
     const org = await this.prisma.organization.findUnique({
       where: { slug: createUserDto.organization },
     });
-    if (!org) throw new Error("Organization with this slug does not exist");
+    if (!org) throw new NotFoundException("Organization with this slug does not exist");
 
     return this.prisma.user.create({
       data: {
@@ -24,6 +24,36 @@ export class UserService {
         password: hashedPassword,
         organizationId: org.id,
         role: createUserDto.role,
+      },
+    });
+  }
+
+  async deleteUser(deleteUserDto: DeleteUserDto): Promise<void> {
+    const org = await this.prisma.organization.findUnique({
+      where: { slug: deleteUserDto.organization },
+      include: {
+        users: {
+          where: {
+            deletedAt: null, // Ensure we only consider non-deleted users
+            role: { equals: UserRole.ADMIN },
+          },
+        },
+      },
+    });
+
+    if (!org) throw new NotFoundException("Organization with this slug does not exist");
+
+    if (org.users.length === 1 && deleteUserDto.username === org.users[0].username) {
+      throw new ForbiddenException("Cannot delete the last admin user in the organization");
+    }
+
+    await this.prisma.user.update({
+      data: {
+        deletedAt: new Date(),
+      },
+      where: {
+        username: deleteUserDto.username,
+        organizationId: org.id,
       },
     });
   }
@@ -64,6 +94,9 @@ export class UserService {
     sort?: { field?: string; order?: "asc" | "desc" },
   ): Promise<Omit<User, "password" | "refreshToken">[]> {
     return this.prisma.user.findMany({
+      where: {
+        deletedAt: null, // Ensure we only get non-deleted users
+      },
       skip: paginationDto?.skip,
       take: paginationDto?.take,
       orderBy: sort
@@ -233,6 +266,62 @@ if (import.meta.vitest) {
       expect(users3).toHaveLength(2);
       expect(users3[0].username).toBe(user2!.username);
       expect(users3[1].username).toBe(user3!.username);
+    });
+
+    it("should delete a user", async () => {
+      const createOrgDto = {
+        name: "Test Org",
+        username: "admin",
+        password: "12345678",
+        slug: "test-org",
+      };
+
+      const org = await orgService.create(createOrgDto);
+
+      const user1 = await service.createUser({
+        username: "testuser",
+        password: "12345678",
+        organization: "test-org",
+      });
+      const user2 = await service.createUser({
+        username: "testuser2",
+        password: "12345678",
+        organization: "test-org",
+        role: UserRole.ADMIN,
+      });
+      const user3 = await service.createUser({
+        username: "testuser3",
+        password: "12345678",
+        organization: "test-org",
+      });
+
+      await service.deleteUser({
+        username: user1.username,
+        organization: "test-org",
+      });
+      let users = await service.getAllUsers();
+      expect(users).toHaveLength(3);
+
+      await service.deleteUser({
+        username: createOrgDto.username,
+        organization: "test-org",
+      });
+      users = await service.getAllUsers();
+      expect(users).toHaveLength(2);
+
+      expect(
+        service.deleteUser({
+          username: user2.username,
+          organization: "test-org",
+        }),
+      ).rejects.toThrow();
+
+      await service.deleteUser({
+        username: user3.username,
+        organization: "test-org",
+      });
+      users = await service.getAllUsers();
+      expect(users).toHaveLength(1);
     });
   });
 }

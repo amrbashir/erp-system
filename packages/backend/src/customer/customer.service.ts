@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import type { CreateCustomerDto, PaginationDto } from "./customer.dto";
 import { useRandomDatabase } from "../../e2e/utils";
@@ -13,13 +13,13 @@ export class CustomerService {
     const org = await this.prisma.organization.findUnique({
       where: { slug: createCustomerDto.organization },
     });
-    if (!org) throw new Error("Organization with this slug does not exist");
+    if (!org) throw new NotFoundException("Organization with this slug does not exist");
 
     const existingCustomer = await this.prisma.customer.findUnique({
       where: { name: createCustomerDto.name, organizationId: org.id },
     });
 
-    if (existingCustomer) throw new Error("Customer with this name already exists");
+    if (existingCustomer) throw new ConflictException("Customer with this name already exists");
 
     return this.prisma.customer.create({
       data: {
