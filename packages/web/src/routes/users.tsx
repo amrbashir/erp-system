@@ -35,7 +35,11 @@ function Users() {
     select: (res) => res.data,
   });
 
-  const deleteUserMutation = useMutation({
+  const {
+    error: deleteError,
+    isPending: isUserDeletePending,
+    mutateAsync: deleteUser,
+  } = useMutation({
     mutationFn: async (username: string) =>
       apiClient.request("delete", "/user/delete", {
         body: { username, organization: "tech-zone" },
@@ -44,10 +48,8 @@ function Users() {
   });
 
   useEffect(() => {
-    if (deleteUserMutation.isError) {
-      toast.error(t(`errors.${deleteUserMutation.error.message}` as any));
-    }
-  }, [deleteUserMutation.isError, deleteUserMutation.error, t]);
+    if (deleteError) toast.error(t(`errors.${deleteError.message}` as any));
+  }, [deleteError, t]);
 
   return (
     <main>
@@ -74,7 +76,7 @@ function Users() {
                       className="text-muted-foreground hover:text-primary"
                       asChild
                     >
-                      {deleteUserMutation.isPending ? (
+                      {isUserDeletePending ? (
                         <Loader2Icon className="animate-spin" />
                       ) : (
                         <EllipsisVerticalIcon />
@@ -83,7 +85,7 @@ function Users() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem
                         variant="destructive"
-                        onSelect={() => deleteUserMutation.mutate(user.username)}
+                        onSelect={() => deleteUser(user.username)}
                       >
                         {t("delete")}
                       </DropdownMenuItem>
