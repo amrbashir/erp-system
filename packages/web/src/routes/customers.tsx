@@ -27,11 +27,8 @@ function Customers() {
 
   const { data: customers } = useQuery({
     queryKey: ["customers"],
-    queryFn: async () => {
-      const { data, error } = await apiClient.request("get", "/customer/getAll");
-      if (error) throw error;
-      return data;
-    },
+    queryFn: async () => apiClient.request("get", "/customer/getAll"),
+    select: (res) => res.data,
   });
 
   return (

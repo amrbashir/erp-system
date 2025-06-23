@@ -1,4 +1,4 @@
-import { createClient } from "@tech-zone-store/sdk";
+import { createClient, createClient2 } from "@tech-zone-store/sdk";
 import { getStoredUser, setStoredUser } from "./auth";
 
 enum StatusCode {
@@ -14,7 +14,7 @@ const clientOptions = {
 
 const fallbackClient = createClient(clientOptions);
 
-export const apiClient = createClient({
+export const apiClient = createClient2({
   ...clientOptions,
   fetch: async (input) => {
     const user = getStoredUser();
@@ -26,11 +26,17 @@ export const apiClient = createClient({
 
     // If the response is unauthorized, try to refresh the access token
     if (result.status === StatusCode.Unauthorized && user) {
-      const { data } = await fallbackClient.request("get", "/auth/refresh");
+      const { data, error } = await fallbackClient.request("get", "/auth/refresh");
 
+      // If the refresh failed, clear the stored user
+      if (error) {
+        setStoredUser(null);
+        throw error;
+      }
+
+      // If the refresh was successful, update the stored user,
+      // set the new access token in the headers and retry the original request
       if (data) {
-        // If the refresh was successful, update the stored user and set the new access token in the headers
-        // and retry the original request with the new access token
         setStoredUser({ ...user, accessToken: data.accessToken });
         input.headers.set("Authorization", `Bearer ${data.accessToken}`);
         return fetch(input);

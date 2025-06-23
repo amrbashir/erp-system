@@ -10,3 +10,20 @@ export type ClientOptions = FetchClientOptions & {
 export function createClient(clientOptions?: ClientOptions) {
   return createFetchClient<paths>(clientOptions);
 }
+
+/**
+ * Same as `createClient`, but throws an error if the request fails.
+ */
+export function createClient2(clientOptions?: ClientOptions) {
+  const client = createFetchClient<paths, `${string}/${string}`>(clientOptions);
+
+  const originalRequest = client.request;
+  // @ts-ignore
+  client.request = async (method: any, path: any, options: any) => {
+    const res = await originalRequest(method, path, options);
+    if (res.error) throw res.error;
+    return res;
+  };
+
+  return client;
+}

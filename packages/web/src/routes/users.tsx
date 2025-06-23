@@ -30,24 +30,15 @@ function Users() {
 
   const { data: users, refetch: refetchUsers } = useQuery({
     queryKey: ["users"],
-    queryFn: async () => {
-      const { data, error } = await apiClient.request("get", "/user/getAll");
-      if (error) throw error;
-      return data;
-    },
+    queryFn: async () => apiClient.request("get", "/user/getAll"),
+    select: (res) => res.data,
   });
 
   const deleteUserMutation = useMutation({
-    mutationFn: async (username: string) => {
-      const { data, error } = await apiClient.request("delete", "/user/delete", {
+    mutationFn: async (username: string) =>
+      apiClient.request("delete", "/user/delete", {
         body: { username, organization: "tech-zone" },
-      });
-      if (error) {
-        toast.error(t(`errors.${(error as any).message}` as any));
-        throw error;
-      }
-      return data;
-    },
+      }),
     onSuccess: () => refetchUsers(),
   });
 
@@ -92,6 +83,8 @@ function Users() {
             ))}
           </TableBody>
         </Table>
+
+        {deleteUserMutation.error && <div className="p-4">{deleteUserMutation.error.message}</div>}
       </div>
     </main>
   );

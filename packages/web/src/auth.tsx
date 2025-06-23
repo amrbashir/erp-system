@@ -85,19 +85,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // login
   const loginMutation = useMutation({
-    mutationFn: async (value: z.input<typeof LoginUserDto>) => {
-      const { data, error } = await apiClient.request("post", "/auth/login", { body: value });
-      if (error) throw error;
-      return data;
-    },
+    mutationFn: async (value: z.input<typeof LoginUserDto>) =>
+      apiClient.request("post", "/auth/login", { body: value }),
   });
 
   const login = useCallback(async (username: string, password: string) => {
-    const user = await loginMutation.mutateAsync({
+    const { data: user, error } = await loginMutation.mutateAsync({
       username,
       password,
       organization: "tech-zone",
     });
+
+    if (!user) throw new Error(`Login failed: ${(error as any)?.message}`);
 
     setStoredUser(user);
     setUser(user);
@@ -105,12 +104,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // logout
   const logoutMutation = useMutation({
-    mutationFn: async () => {
-      const { error } = await apiClient.request("post", "/auth/logout", {
+    mutationFn: async () =>
+      await apiClient.request("post", "/auth/logout", {
         headers: { Authorization: `Bearer ${user?.accessToken}` },
-      });
-      if (error) throw error;
-    },
+      }),
   });
 
   const logout = useCallback(async () => {
