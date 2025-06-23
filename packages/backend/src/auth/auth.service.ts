@@ -21,7 +21,7 @@ export class AuthService {
       loginUserDto.organization,
     );
 
-    if (!user || user.deletedAt) throw new NotFoundException("Username or password is incorrect");
+    if (!user) throw new NotFoundException("Username or password is incorrect");
 
     const isPasswordValid = await argon2.verify(user.password, loginUserDto.password);
     if (!isPasswordValid) throw new NotFoundException("Username or password is incorrect");

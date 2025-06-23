@@ -74,13 +74,13 @@ export class UserService {
 
   async findById(userId: string): Promise<User | null> {
     return this.prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: userId, deletedAt: null },
     });
   }
 
   async findByIdinOrg(userId: string, organizationId?: string): Promise<User | null> {
     return this.prisma.user.findUnique({
-      where: { id: userId, organizationId },
+      where: { id: userId, organizationId, deletedAt: null },
     });
   }
 
@@ -92,7 +92,7 @@ export class UserService {
     if (!org) throw new Error("Organization with this slug does not exist");
 
     return this.prisma.user.findUnique({
-      where: { username, organizationId: org.id },
+      where: { username, organizationId: org.id, deletedAt: null },
     });
   }
 
