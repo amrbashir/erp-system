@@ -16,7 +16,8 @@ import {
 } from "@/shadcn/components/ui/table";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ContactIcon, EllipsisVerticalIcon } from "lucide-react";
+import { ContactIcon, EllipsisVerticalIcon, Loader2Icon } from "lucide-react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -41,6 +42,12 @@ function Users() {
       }),
     onSuccess: () => refetchUsers(),
   });
+
+  useEffect(() => {
+    if (deleteUserMutation.isError) {
+      toast.error(t(`errors.${deleteUserMutation.error.message}` as any));
+    }
+  }, [deleteUserMutation.isError, deleteUserMutation.error, t]);
 
   return (
     <main>
@@ -67,7 +74,11 @@ function Users() {
                       className="text-muted-foreground hover:text-primary"
                       asChild
                     >
-                      <EllipsisVerticalIcon />
+                      {deleteUserMutation.isPending ? (
+                        <Loader2Icon className="animate-spin" />
+                      ) : (
+                        <EllipsisVerticalIcon />
+                      )}
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem
@@ -83,8 +94,6 @@ function Users() {
             ))}
           </TableBody>
         </Table>
-
-        {deleteUserMutation.error && <div className="p-4">{deleteUserMutation.error.message}</div>}
       </div>
     </main>
   );
