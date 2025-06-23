@@ -86,7 +86,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
               </div>
             </SidebarProvider>
 
-            <Toaster />
+            <Toaster position={i18n.dir() === "rtl" ? "bottom-left" : "bottom-right"} />
           </ThemeProvider>
         </DirectionProvider>
       </>
