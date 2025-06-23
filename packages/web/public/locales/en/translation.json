@@ -17,6 +17,7 @@
 
   "createdAt": "Created At",
   "updatedAt": "Updated At",
+  "deletedAt": "Deleted At",
   "name": "Name",
   "email": "Email",
   "phone": "Phone",
@@ -41,8 +42,17 @@
 
   "errors": {
     "Username or password is incorrect": "Username or password is incorrect",
-    "Cannot delete the last admin user in the organization": "Cannot delete the last admin user in the organization"
+    "Cannot delete the last admin user in the organization": "Cannot delete the last admin user in the organization",
+    "User with this username already exists in the organization": "User with this username already exists in the organization"
   },
 
-  "delete": "Delete"
+  "delete": "Delete",
+  "add": "Add",
+  "cancel": "Cancel",
+
+  "validationErrors": {
+    "too_small": "{{field}} must contain at least {{minimum}} character(s)"
+  },
+
+  "addUserDescription": "You can add new users to the system. Please fill in the details below. "
 }

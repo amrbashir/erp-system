@@ -46,3 +46,5 @@ export const apiClient = createClient2({
     return result;
   },
 });
+
+export const apiRequest = apiClient.request.bind(apiClient);

@@ -143,3 +143,11 @@ html[dir="rtl"] [data-slot="dropdown-menu-sub-trigger"] > svg {
 html[dir="rtl"] [data-slot="breadcrumb-separator"] > svg {
   @apply -scale-x-[1];
 }
+
+html[dir="rtl"] [data-slot="dialog-header"] {
+  @apply text-start!;
+}
+
+html[dir="rtl"] [data-slot="dialog-close"] {
+  @apply left-4! right-[unset]!;
+}

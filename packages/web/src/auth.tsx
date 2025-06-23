@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { apiClient } from "./api-client";
+import { apiRequest } from "./api-client";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { LoginUserDto, UserEntity } from "@tech-zone-store/sdk/zod";
@@ -86,7 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // login
   const loginMutation = useMutation({
     mutationFn: async (value: z.input<typeof LoginUserDto>) =>
-      apiClient.request("post", "/auth/login", { body: value }),
+      apiRequest("post", "/auth/login", { body: value }),
   });
 
   const login = useCallback(async (username: string, password: string) => {
@@ -105,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // logout
   const logoutMutation = useMutation({
     mutationFn: async () =>
-      await apiClient.request("post", "/auth/logout", {
+      await apiRequest("post", "/auth/logout", {
         headers: { Authorization: `Bearer ${user?.accessToken}` },
       }),
   });

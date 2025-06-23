@@ -16,6 +16,7 @@
 
   "createdAt": "تاريخ الإنشاء",
   "updatedAt": "تاريخ التحديث",
+  "deletedAt": "تاريخ الحذف",
   "name": "الاسم",
   "email": "البريد الإلكتروني",
   "phone": "",
@@ -40,8 +41,17 @@
 
   "errors": {
     "Username or password is incorrect": "اسم المستخدم أو كلمة المرور غير صحيحة",
-    "Cannot delete the last admin user in the organization": "لا يمكن حذف آخر مستخدم مدير في المؤسسة"
+    "Cannot delete the last admin user in the organization": "لا يمكن حذف آخر مستخدم مدير في المؤسسة",
+    "User with this username already exists in the organization": "يوجد مستخدم بهذا الاسم في المؤسسة بالفعل"
   },
 
-  "delete": "حذف"
+  "delete": "حذف",
+  "add": "إضافة",
+  "cancel": "إلغاء",
+
+  "validationErrors": {
+    "too_small": "يجب أن يحتوي {{field}} على {{minimum}} حروف على الأقل"
+  },
+
+  "addUserDescription": "يمكنك إضافة مستخدمين جدد إلى النظام. يرجى ملء التفاصيل أدناه."
 }

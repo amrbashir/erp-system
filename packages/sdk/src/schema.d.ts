@@ -59,9 +59,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["UserController$1_getAll"];
+        get?: never;
         put?: never;
-        post?: never;
+        post: operations["UserController$1_getAll"];
         delete?: never;
         options?: never;
         head?: never;
@@ -165,6 +165,9 @@ export interface components {
         };
         DeleteUserDto: {
             username: string;
+            organization: string;
+        };
+        GetAllUsersDto: {
             organization: string;
         };
         UserEntity: {
@@ -299,7 +302,11 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GetAllUsersDto"];
+            };
+        };
         responses: {
             200: {
                 headers: {

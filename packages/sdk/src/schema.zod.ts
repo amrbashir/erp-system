@@ -17,6 +17,8 @@ export const DeleteUserDto = z
   .object({ username: z.string(), organization: z.string() })
   .passthrough();
 
+export const GetAllUsersDto = z.object({ organization: z.string() }).passthrough();
+
 export const UserEntity = z
   .object({
     username: z.string(),

@@ -63,3 +63,8 @@ export class UserEntity implements Partial<User> {
   @ApiPropertyOptional()
   deletedAt: Date;
 }
+
+export class GetAllUsersDto {
+  @ApiProperty()
+  organization: string;
+}

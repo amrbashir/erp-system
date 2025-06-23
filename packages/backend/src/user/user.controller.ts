@@ -1,6 +1,12 @@
 import { Body, Controller, Post, Query, UseGuards, Get, Delete } from "@nestjs/common";
 import { UserService } from "./user.service";
-import { CreateUserDto, DeleteUserDto, PaginationDto, UserEntity } from "./user.dto";
+import {
+  CreateUserDto,
+  DeleteUserDto,
+  GetAllUsersDto,
+  PaginationDto,
+  UserEntity,
+} from "./user.dto";
 import { AdminGuard } from "./user.admin.guard";
 import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
@@ -23,9 +29,9 @@ export class UserController {
     await this.userService.deleteUser(deleteUserDto);
   }
 
-  @Get("getAll")
+  @Post("getAll")
   @ApiOkResponse({ type: [UserEntity] })
-  async getAll(@Query() paginationDto: PaginationDto) {
-    return await this.userService.getAllUsers(paginationDto);
+  async getAll(@Query() pagination: PaginationDto, @Body() getAllUsersDto: GetAllUsersDto) {
+    return await this.userService.getAllUsers(getAllUsersDto.organization, { pagination });
   }
 }

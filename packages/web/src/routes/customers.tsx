@@ -1,4 +1,4 @@
-import { apiClient } from "@/api-client";
+import { apiRequest } from "@/api-client";
 import i18n from "@/i18n";
 import {
   Table,
@@ -27,7 +27,7 @@ function Customers() {
 
   const { data: customers } = useQuery({
     queryKey: ["customers"],
-    queryFn: async () => apiClient.request("get", "/customer/getAll"),
+    queryFn: async () => apiRequest("get", "/customer/getAll"),
     select: (res) => res.data,
   });
 

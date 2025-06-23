@@ -1,10 +1,16 @@
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { DeleteUserDto, PaginationDto, type CreateUserDto } from "./user.dto";
 import { UserRole, type User } from "../prisma/generated/client";
 import * as argon2 from "argon2";
 import { useRandomDatabase } from "../../e2e/utils";
 import { OrgService } from "../org/org.service";
+import type { UserWhereInput } from "../prisma/generated/models";
 
 @Injectable()
 export class UserService {
@@ -17,6 +23,14 @@ export class UserService {
       where: { slug: createUserDto.organization },
     });
     if (!org) throw new NotFoundException("Organization with this slug does not exist");
+
+    const existingUser = await this.prisma.user.findUnique({
+      where: { username: createUserDto.username, organizationId: org.id },
+    });
+
+    if (existingUser) {
+      throw new ConflictException("User with this username already exists in the organization");
+    }
 
     return this.prisma.user.create({
       data: {
@@ -90,18 +104,26 @@ export class UserService {
   }
 
   async getAllUsers(
-    paginationDto?: PaginationDto,
-    sort?: { field?: string; order?: "asc" | "desc" },
+    organization: string,
+    options?: {
+      pagination?: PaginationDto;
+      sort?: { field?: string; order?: "asc" | "desc" };
+      where?: UserWhereInput;
+    },
   ): Promise<Omit<User, "password" | "refreshToken">[]> {
+    const org = await this.prisma.organization.findUnique({
+      where: { slug: organization },
+    });
+
+    if (!org) throw new NotFoundException("Organization with this slug does not exist");
+
     return this.prisma.user.findMany({
-      where: {
-        deletedAt: null, // Ensure we only get non-deleted users
-      },
-      skip: paginationDto?.skip,
-      take: paginationDto?.take,
-      orderBy: sort
+      where: { ...options?.where, organizationId: org.id },
+      skip: options?.pagination?.skip,
+      take: options?.pagination?.take,
+      orderBy: options?.sort
         ? {
-            [sort.field ?? "createdAt"]: sort.order ?? "asc",
+            [options.sort.field ?? "createdAt"]: options.sort.order ?? "asc",
           }
         : undefined,
       omit: {
@@ -190,7 +212,7 @@ if (import.meta.vitest) {
         organization: "test-org",
       });
 
-      const users = await service.getAllUsers();
+      const users = await service.getAllUsers(org.slug);
       expect(users).toHaveLength(3);
       expect(users[1].username).toBe(user1!.username);
       expect(users[2].username).toBe(user2!.username);
@@ -236,33 +258,21 @@ if (import.meta.vitest) {
 
       const sort = { field: "createdAt", order: "asc" } as const;
 
-      const users = await service.getAllUsers(
-        {
-          skip: 0,
-          take: 1,
-        },
-        sort,
-      );
+      const users = await service.getAllUsers(org.slug, { sort, pagination: { skip: 0, take: 1 } });
       expect(users).toHaveLength(1);
       expect(users[0].username).toBe(createOrgDto.username);
 
-      const users2 = await service.getAllUsers(
-        {
-          skip: 1,
-          take: 1,
-        },
+      const users2 = await service.getAllUsers(org.slug, {
         sort,
-      );
+        pagination: { skip: 1, take: 1 },
+      });
       expect(users2).toHaveLength(1);
       expect(users2[0].username).toBe(user1.username);
 
-      const users3 = await service.getAllUsers(
-        {
-          skip: 2,
-          take: 2,
-        },
+      const users3 = await service.getAllUsers(org.slug, {
         sort,
-      );
+        pagination: { skip: 2, take: 2 },
+      });
       expect(users3).toHaveLength(2);
       expect(users3[0].username).toBe(user2!.username);
       expect(users3[1].username).toBe(user3!.username);
@@ -295,18 +305,20 @@ if (import.meta.vitest) {
         organization: "test-org",
       });
 
+      const where = { deletedAt: null } as const;
+
       await service.deleteUser({
         username: user1.username,
         organization: "test-org",
       });
-      let users = await service.getAllUsers();
+      let users = await service.getAllUsers(org.slug, { where });
       expect(users).toHaveLength(3);
 
       await service.deleteUser({
         username: createOrgDto.username,
         organization: "test-org",
       });
-      users = await service.getAllUsers();
+      users = await service.getAllUsers(org.slug, { where });
       expect(users).toHaveLength(2);
 
       expect(
@@ -320,7 +332,7 @@ if (import.meta.vitest) {
         username: user3.username,
         organization: "test-org",
       });
-      users = await service.getAllUsers();
+      users = await service.getAllUsers(org.slug, { where });
       expect(users).toHaveLength(1);
     });
   });
