@@ -1,4 +1,5 @@
 import { apiRequest } from "@/api-client";
+import { useAuth } from "@/auth";
 import { AddUserDialog } from "@/components/add-user";
 import i18n from "@/i18n";
 import {
@@ -26,14 +27,15 @@ import type z from "zod";
 
 export const Route = createFileRoute("/users")({
   component: Users,
-  context: () => ({ title: i18n.t("pages.users"), icon: ContactIcon, requirement: "Admin" }),
+  context: () => ({ title: i18n.t("pages.users"), icon: ContactIcon, roleRequirement: "Admin" }),
 });
 
 function Users() {
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
 
   const { data: users, refetch: refetchUsers } = useQuery({
-    queryKey: ["users"],
+    queryKey: ["users", user?.username],
     queryFn: async () =>
       apiRequest("post", "/user/getAll", {
         body: { organization: "tech-zone" },

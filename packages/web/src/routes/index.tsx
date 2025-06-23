@@ -7,7 +7,6 @@ export const Route = createFileRoute("/")({
   context: () => ({
     title: i18n.t("pages.home"),
     icon: HomeIcon,
-    requirement: "User",
   }),
 });
 

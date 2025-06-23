@@ -26,11 +26,13 @@ export const apiClient = createClient2({
 
     // If the response is unauthorized, try to refresh the access token
     if (result.status === StatusCode.Unauthorized && user) {
-      const { data, error } = await fallbackClient.request("get", "/auth/refresh");
+      const { data, error, response } = await fallbackClient.request("get", "/auth/refresh");
 
       // If the refresh failed, clear the stored user
-      if (error) {
+      if (response.status === StatusCode.Unauthorized) {
         setStoredUser(null);
+        // Redirect to login page
+        window.location.href = `/login?redirect=${encodeURIComponent(window.location.href)}`;
         throw error;
       }
 

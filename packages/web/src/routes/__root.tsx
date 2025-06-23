@@ -21,22 +21,24 @@ interface RouterContext {
   auth: AuthContext;
   title: string;
   icon?: React.ComponentType;
-  requirement?: z.infer<typeof UserEntity>["role"];
+  roleRequirement?: z.infer<typeof UserEntity>["role"];
   hideUI?: boolean;
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  beforeLoad: async ({ context, location }) => {
+  beforeLoad: async ({ context, location, search }) => {
     // redirect to login if not authenticated and trying to access a protected route
     if (
       !context.auth.isAuthenticated &&
       location.pathname !== "/login" &&
-      context.requirement !== null
+      context.roleRequirement !== null
     ) {
       throw redirect({
         to: "/login",
         search: {
-          redirect: location.href,
+          // if we have a redirect in the search params, use it,
+          // otherwise use the current location
+          redirect: "redirect" in search ? search.redirect : location.href,
         },
       });
     }
@@ -45,7 +47,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       // redirect to home if authenticated and trying to access the login page
       (context.auth.isAuthenticated && location.pathname === "/login") ||
       // redirect to home if authenticated and trying to access a route that requires a different role
-      (context.requirement && context.auth.user?.role !== context.requirement)
+      (context.roleRequirement && context.auth.user?.role !== context.roleRequirement)
     ) {
       throw redirect({
         to: "/",

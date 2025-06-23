@@ -18,7 +18,6 @@ export const Route = createFileRoute("/customers")({
   context: () => ({
     title: i18n.t("pages.customers"),
     icon: UsersIcon,
-    requirement: "User",
   }),
 });
 
