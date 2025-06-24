@@ -1,15 +1,16 @@
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import type { CreateCustomerDto, PaginationDto } from "./customer.dto";
+import type { CreateCustomerDto } from "./customer.dto";
 import type { Customer } from "../prisma/generated";
+import type { PaginationDto } from "../pagination.dto";
 
 @Injectable()
 export class CustomerService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createCustomer(createCustomerDto: CreateCustomerDto): Promise<Customer> {
+  async createCustomer(createCustomerDto: CreateCustomerDto, orgSlug: string): Promise<Customer> {
     const org = await this.prisma.organization.findUnique({
-      where: { slug: createCustomerDto.organization },
+      where: { slug: orgSlug },
     });
     if (!org) throw new NotFoundException("Organization with this slug does not exist");
 
@@ -29,8 +30,9 @@ export class CustomerService {
     });
   }
 
-  async getAllCustomers(paginationDto?: PaginationDto): Promise<Customer[]> {
+  async getAllCustomers(orgSlug: string, paginationDto?: PaginationDto): Promise<Customer[]> {
     return this.prisma.customer.findMany({
+      where: { organization: { slug: orgSlug } },
       skip: paginationDto?.skip,
       take: paginationDto?.take,
     });

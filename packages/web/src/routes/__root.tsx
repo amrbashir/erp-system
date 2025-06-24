@@ -1,21 +1,13 @@
-import { SidebarProvider } from "@/shadcn/components/ui/sidebar";
-import {
-  createRootRouteWithContext,
-  HeadContent,
-  Outlet,
-  redirect,
-  useMatches,
-} from "@tanstack/react-router";
-import { AppSideBar } from "@/components/sidebar";
-import { NavigationHeader } from "@/components/navigation-header";
+import { createRootRouteWithContext, HeadContent, Outlet } from "@tanstack/react-router";
 import { ThemeProvider } from "@/components/theme-provider";
 import { useTranslation } from "react-i18next";
-import type { AuthContext } from "@/auth";
+import type { AuthContext } from "@/auth/hook";
 import { DirectionProvider } from "@radix-ui/react-direction";
 import { useEffect } from "react";
 import type { UserEntity } from "@tech-zone-store/sdk/zod";
 import { z } from "zod";
 import { Toaster } from "@/shadcn/components/ui/sonner";
+import i18n from "@/i18n";
 
 interface RouterContext {
   auth: AuthContext;
@@ -26,72 +18,35 @@ interface RouterContext {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  beforeLoad: async ({ context, location, search }) => {
-    // redirect to login if not authenticated and trying to access a protected route
-    if (
-      !context.auth.isAuthenticated &&
-      location.pathname !== "/login" &&
-      context.roleRequirement !== null
-    ) {
-      throw redirect({
-        to: "/login",
-        search: {
-          // if we have a redirect in the search params, use it,
-          // otherwise use the current location
-          redirect: "redirect" in search ? search.redirect : location.href,
+  component: Root,
+  head: (c) => {
+    const currentMatch = c.matches[c.matches.length - 1];
+    const routeTitle = currentMatch.context.title ? currentMatch.context.title : "";
+    const orgSlug = "orgSlug" in c.params && c.params.orgSlug ? c.params.orgSlug : "";
+    const appTitle = i18n.t("tech_zone");
+    const title = [routeTitle, orgSlug, appTitle].filter(Boolean).join(" | ");
+
+    return {
+      meta: [
+        {
+          title,
         },
-      });
-    }
-
-    if (
-      // redirect to home if authenticated and trying to access the login page
-      (context.auth.isAuthenticated && location.pathname === "/login") ||
-      // redirect to home if authenticated and trying to access a route that requires a different role
-      (context.roleRequirement && context.auth.user?.role !== context.roleRequirement)
-    ) {
-      throw redirect({
-        to: "/",
-      });
-    }
-  },
-
-  component: () => {
-    const cookies = document.cookie.split("; ");
-    const sidebarState = cookies.find((c) => c.startsWith("sidebar_state="))?.split("=")[1];
-    const defaultOpen = sidebarState === "true";
-
-    const matches = useMatches();
-    const matchWithTitle = [...matches].reverse().find((match) => match.context?.title);
-    const title = matchWithTitle?.context.title;
-
-    const { t, i18n } = useTranslation("translation");
-    useEffect(() => void (document.documentElement.dir = i18n.dir()), [i18n.language]);
-
-    const hideUi = matches.some(
-      (match) => match.context && "hideUI" in match.context && match.context?.hideUI,
-    );
-
-    return (
-      <>
-        <head>
-          <HeadContent />
-          <title>{title + " | " + t("tech_zone")}</title>
-        </head>
-
-        <DirectionProvider dir={i18n.dir()}>
-          <ThemeProvider>
-            <SidebarProvider defaultOpen={defaultOpen}>
-              {!hideUi && <AppSideBar />}
-              <div id="outlet-container" className="w-screen *:px-4 *:py-2 rounded-2xl m-2">
-                {!hideUi && <NavigationHeader />}
-                <Outlet />
-              </div>
-            </SidebarProvider>
-
-            <Toaster position={i18n.dir() === "rtl" ? "bottom-left" : "bottom-right"} />
-          </ThemeProvider>
-        </DirectionProvider>
-      </>
-    );
+      ],
+    };
   },
 });
+
+function Root() {
+  const { i18n } = useTranslation("translation");
+  useEffect(() => void (document.documentElement.dir = i18n.dir()), [i18n.language]);
+
+  return (
+    <DirectionProvider dir={i18n.dir()}>
+      <ThemeProvider>
+        <HeadContent />
+        <Outlet />
+        <Toaster position={i18n.dir() === "rtl" ? "bottom-left" : "bottom-right"} />
+      </ThemeProvider>
+    </DirectionProvider>
+  );
+}

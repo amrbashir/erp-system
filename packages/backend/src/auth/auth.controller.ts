@@ -8,6 +8,7 @@ import {
   UseGuards,
   Req,
   Res,
+  Param,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import {
@@ -22,7 +23,7 @@ import { ApiBearerAuth, ApiHeader, ApiCookieAuth, ApiOkResponse, ApiTags } from 
 import { JwtAuthGuard } from "./auth.strategy.jwt";
 
 @ApiTags("auth")
-@Controller("auth")
+@Controller("/org/:orgSlug/auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -30,10 +31,11 @@ export class AuthController {
   @ApiOkResponse({ type: LoginResponseDto })
   @Post("login")
   async login(
+    @Param("orgSlug") orgSlug: string,
     @Body() loginUserDto: LoginUserDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<LoginResponseDto> {
-    const { user, tokens } = await this.authService.login(loginUserDto);
+    const { user, tokens } = await this.authService.login(loginUserDto, orgSlug);
 
     res.cookie("refreshToken", tokens.refreshToken, {
       httpOnly: true,
@@ -52,7 +54,7 @@ export class AuthController {
   @Post("logout")
   async logout(@Req() req: any): Promise<void> {
     const user = req["user"] as JwtPayload;
-    this.authService.logout(user.sub);
+    this.authService.logout(user.sub, user.organizationId);
   }
 
   @ApiCookieAuth()
@@ -61,6 +63,6 @@ export class AuthController {
   @Get("refresh")
   async refresh(@Req() req: any): Promise<RefreshTokenResponseDto> {
     const user = req["user"] as JwtPayload;
-    return await this.authService.refreshAccessToken(user.sub);
+    return await this.authService.refreshAccessToken(user.sub, user.organizationId);
   }
 }

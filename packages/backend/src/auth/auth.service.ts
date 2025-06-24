@@ -12,14 +12,14 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(loginUserDto: LoginUserDto): Promise<{
+  async login(
+    loginUserDto: LoginUserDto,
+    orgSlug: string,
+  ): Promise<{
     user: User;
     tokens: JwtTokens;
   }> {
-    const user = await this.userService.findByUsernameInOrg(
-      loginUserDto.username,
-      loginUserDto.organization,
-    );
+    const user = await this.userService.findByUsernameInOrg(loginUserDto.username, orgSlug);
 
     if (!user) throw new NotFoundException("Username or password is incorrect");
 
@@ -40,14 +40,14 @@ export class AuthService {
     };
   }
 
-  async logout(userId: string): Promise<void> {
-    const user = await this.userService.findById(userId);
+  async logout(userId: string, orgId: string): Promise<void> {
+    const user = await this.userService.findByIdinOrg(userId, orgId);
     if (!user) throw new NotFoundException("User not found");
     await this.userService.updateRefreshToken(user.id, undefined);
   }
 
-  async refreshAccessToken(userId: string): Promise<{ accessToken: string }> {
-    const user = await this.userService.findById(userId);
+  async refreshAccessToken(userId: string, orgId: string): Promise<{ accessToken: string }> {
+    const user = await this.userService.findByIdinOrg(userId, orgId);
     if (!user) throw new NotFoundException("User not found");
     return { accessToken: await this.genAccessToken(user) };
   }

@@ -21,11 +21,6 @@ export class CreateUserDto {
   @IsAscii()
   @MinLength(8)
   password: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  organization: string;
 }
 
 export class DeleteUserDto {
@@ -33,22 +28,6 @@ export class DeleteUserDto {
   @IsAlphanumeric()
   @IsNotEmpty()
   username: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  organization: string;
-}
-
-export class PaginationDto {
-  @ApiPropertyOptional({ minimum: 0, default: 0 })
-  @Min(0)
-  skip: number = 0;
-
-  @ApiPropertyOptional({ minimum: 1, maximum: 100, default: 30 })
-  @Min(1)
-  @Max(100)
-  take: number = 30;
 }
 
 export class UserEntity implements Partial<User> {
@@ -62,9 +41,4 @@ export class UserEntity implements Partial<User> {
   updatedAt: Date;
   @ApiPropertyOptional()
   deletedAt: Date;
-}
-
-export class GetAllUsersDto {
-  @ApiProperty()
-  organization: string;
 }

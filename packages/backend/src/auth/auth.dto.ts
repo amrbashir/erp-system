@@ -12,11 +12,6 @@ export class LoginUserDto {
   @IsNotEmpty()
   @IsAscii()
   password: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  organization: string;
 }
 
 export class LoginResponseDto {

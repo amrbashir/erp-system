@@ -8,6 +8,7 @@ describe("Auth E2E", async () => {
 
   let cookies: string[];
   let accessToken: string;
+  let organizationSlug: string = "test-organization";
 
   describe("Organization Creation", () => {
     it("should create an organization successfully", async () => {
@@ -27,13 +28,12 @@ describe("Auth E2E", async () => {
 
   describe("Login", () => {
     it("should login successfully with valid credentials", async () => {
-      const response = await fetch(appUrl + "/auth/login", {
+      const response = await fetch(appUrl + "/org/" + organizationSlug + "/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username: "admin",
           password: "12345678",
-          organization: "test-organization",
         }),
       });
 
@@ -50,13 +50,12 @@ describe("Auth E2E", async () => {
     });
 
     it("should fail with invalid credentials", async () => {
-      await fetch(appUrl + "/auth/login", {
+      await fetch(appUrl + "/org/" + organizationSlug + "/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username: "admin",
           password: "wrongpassword",
-          organization: "test-organization",
         }),
       });
     });
@@ -64,7 +63,7 @@ describe("Auth E2E", async () => {
 
   describe("Refresh Token", () => {
     it("should refresh access token with valid refresh token", async () => {
-      const response = await fetch(appUrl + "/auth/refresh", {
+      const response = await fetch(appUrl + "/org/" + organizationSlug + "/auth/refresh", {
         method: "GET",
         headers: { Cookie: cookies.join("; ") },
       });
@@ -80,7 +79,7 @@ describe("Auth E2E", async () => {
 
   describe("Logout", () => {
     it("should logout successfully with valid access token", async () => {
-      const response = await fetch(appUrl + "/auth/logout", {
+      const response = await fetch(appUrl + "/org/" + organizationSlug + "/auth/logout", {
         method: "POST",
         headers: { Authorization: `Bearer ${accessToken}` },
       });
@@ -88,7 +87,9 @@ describe("Auth E2E", async () => {
     });
 
     it("should fail to access logout due to missing tokens", async () => {
-      const response = await fetch(appUrl + "/auth/logout", { method: "POST" });
+      const response = await fetch(appUrl + "/org/" + organizationSlug + "/auth/logout", {
+        method: "POST",
+      });
       expect(response.status).toBe(401);
     });
   });

@@ -33,10 +33,9 @@ describe("CustomerService", async () => {
       name: "Test Customer",
       email: "customer@email.com",
       phone: "1234567890",
-      organization: "test-org",
     };
 
-    const customer = await service.createCustomer(createCustomerDto);
+    const customer = await service.createCustomer(createCustomerDto, org.slug);
     expect(customer).toBeDefined();
     expect(customer.name).toBe(createCustomerDto.name);
     expect(customer.email).toBe(createCustomerDto.email);
@@ -51,17 +50,11 @@ describe("CustomerService", async () => {
       password: "12345678",
     });
 
-    const customer1 = await service.createCustomer({
-      name: "Customer One",
-      organization: "test-org",
-    });
+    const customer1 = await service.createCustomer({ name: "Customer One" }, org.slug);
 
-    const customer2 = await service.createCustomer({
-      name: "Customer Two",
-      organization: "test-org",
-    });
+    const customer2 = await service.createCustomer({ name: "Customer Two" }, org.slug);
 
-    const customers = await service.getAllCustomers();
+    const customers = await service.getAllCustomers(org.slug);
     expect(customers).toBeDefined();
     expect(customers.length).toBeGreaterThanOrEqual(2);
     expect(customers).toContainEqual(expect.objectContaining({ id: customer1.id }));

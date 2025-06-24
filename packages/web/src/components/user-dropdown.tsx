@@ -1,4 +1,4 @@
-import { useAuth } from "@/auth";
+import { useAuth } from "@/auth/hook";
 import { Avatar, AvatarFallback } from "@/shadcn/components/ui/avatar";
 import {
   DropdownMenu,
@@ -17,21 +17,21 @@ import {
 import { EllipsisVerticalIcon } from "lucide-react";
 import { LanguageSelector } from "@/components/language-selector";
 import { ThemeSelector } from "@/components/theme-selector";
-import { useRouter } from "@tanstack/react-router";
+import { useParams, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
 export function UserDropdown() {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { orgSlug } = useParams({ strict: false });
 
   const { isMobile } = useSidebar();
-
-  const router = useRouter();
 
   const { user, logout: authLogout } = useAuth();
 
   async function logout() {
     await authLogout();
-    router.history.push("/login");
+    router.history.push(`/org/${orgSlug}/login`);
   }
 
   return (

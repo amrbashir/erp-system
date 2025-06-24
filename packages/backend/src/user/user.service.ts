@@ -5,20 +5,24 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { DeleteUserDto, PaginationDto, type CreateUserDto } from "./user.dto";
+import { DeleteUserDto, type CreateUserDto } from "./user.dto";
 import { UserRole, type User } from "../prisma/generated/client";
 import * as argon2 from "argon2";
 import type { UserWhereInput } from "../prisma/generated/models";
+import type { PaginationDto } from "../pagination.dto";
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createUser(createUserDto: CreateUserDto & { role?: UserRole }): Promise<User> {
+  async createUser(
+    createUserDto: CreateUserDto & { role?: UserRole },
+    orgSlug: string,
+  ): Promise<User> {
     const hashedPassword = await argon2.hash(createUserDto.password);
 
     const org = await this.prisma.organization.findUnique({
-      where: { slug: createUserDto.organization },
+      where: { slug: orgSlug },
     });
     if (!org) throw new NotFoundException("Organization with this slug does not exist");
 
@@ -40,9 +44,9 @@ export class UserService {
     });
   }
 
-  async deleteUser(deleteUserDto: DeleteUserDto): Promise<void> {
+  async deleteUser(deleteUserDto: DeleteUserDto, orgSlug: string): Promise<void> {
     const org = await this.prisma.organization.findUnique({
-      where: { slug: deleteUserDto.organization },
+      where: { slug: orgSlug },
       include: {
         users: {
           where: {
@@ -67,12 +71,6 @@ export class UserService {
         username: deleteUserDto.username,
         organizationId: org.id,
       },
-    });
-  }
-
-  async findById(userId: string): Promise<User | null> {
-    return this.prisma.user.findUnique({
-      where: { id: userId, deletedAt: null },
     });
   }
 

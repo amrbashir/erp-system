@@ -1,5 +1,5 @@
 import { createClient, createClient2 } from "@tech-zone-store/sdk";
-import { getStoredUser, setStoredUser } from "./auth";
+import { getStoredUser, setStoredUser } from "@/auth/user";
 
 enum StatusCode {
   Unauthorized = 401,
@@ -14,7 +14,7 @@ const clientOptions = {
 
 const fallbackClient = createClient(clientOptions);
 
-export const apiClient = createClient2({
+const client = createClient2({
   ...clientOptions,
   fetch: async (input) => {
     const user = getStoredUser();
@@ -24,15 +24,24 @@ export const apiClient = createClient2({
 
     const result = await fetch(input);
 
-    // If the response is unauthorized, try to refresh the access token
-    if (result.status === StatusCode.Unauthorized && user) {
-      const { data, error, response } = await fallbackClient.request("get", "/auth/refresh");
+    const orgSlug = input.url.match(/\/org\/([^/]+)/)?.[1];
+
+    // If the response is unauthorized, and requesting into specific org, try to refresh the access token
+    if (result.status === StatusCode.Unauthorized && user && orgSlug) {
+      const { data, error, response } = await fallbackClient.request(
+        "get",
+        "/org/{orgSlug}/auth/refresh",
+        {
+          // @ts-expect-error - incorrect type generation by openapi-typescript
+          params: { path: { orgSlug } },
+        },
+      );
 
       // If the refresh failed, clear the stored user
       if (response.status === StatusCode.Unauthorized) {
         setStoredUser(null);
         // Redirect to login page
-        window.location.href = `/login?redirect=${encodeURIComponent(window.location.href)}`;
+        window.location.href = `/org/${orgSlug}/login?redirect=${encodeURIComponent(window.location.href)}`;
         throw error;
       }
 
@@ -49,4 +58,12 @@ export const apiClient = createClient2({
   },
 });
 
-export const apiRequest = apiClient.request.bind(apiClient);
+// Export the API client with lowercase methods for convenience
+export const apiClient = {
+  get: client.GET.bind(client),
+  post: client.POST.bind(client),
+  put: client.PUT.bind(client),
+  patch: client.PATCH.bind(client),
+  delete: client.DELETE.bind(client),
+  request: client.request.bind(client),
+};

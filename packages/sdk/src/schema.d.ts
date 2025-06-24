@@ -20,7 +20,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/user/create": {
+    "/org/{orgSlug}/user/create": {
         parameters: {
             query?: never;
             header?: never;
@@ -36,7 +36,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/user/delete": {
+    "/org/{orgSlug}/user/delete": {
         parameters: {
             query?: never;
             header?: never;
@@ -52,23 +52,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/user/getAll": {
+    "/org/{orgSlug}/user/getAll": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        get: operations["UserController$1_getAll"];
         put?: never;
-        post: operations["UserController$1_getAll"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/auth/login": {
+    "/org/{orgSlug}/auth/login": {
         parameters: {
             query?: never;
             header?: never;
@@ -84,7 +84,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/logout": {
+    "/org/{orgSlug}/auth/logout": {
         parameters: {
             query?: never;
             header?: never;
@@ -100,7 +100,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/refresh": {
+    "/org/{orgSlug}/auth/refresh": {
         parameters: {
             query?: never;
             header?: never;
@@ -116,7 +116,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/customer/create": {
+    "/org/{orgSlug}/customer/create": {
         parameters: {
             query?: never;
             header?: never;
@@ -132,7 +132,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/customer/getAll": {
+    "/org/{orgSlug}/customer/getAll": {
         parameters: {
             query?: never;
             header?: never;
@@ -161,14 +161,9 @@ export interface components {
         CreateUserDto: {
             username: string;
             password: string;
-            organization: string;
         };
         DeleteUserDto: {
             username: string;
-            organization: string;
-        };
-        GetAllUsersDto: {
-            organization: string;
         };
         UserEntity: {
             username: string;
@@ -184,7 +179,6 @@ export interface components {
         LoginUserDto: {
             username: string;
             password: string;
-            organization: string;
         };
         LoginResponseDto: {
             username: string;
@@ -199,7 +193,6 @@ export interface components {
             name: string;
             email?: string;
             phone?: string;
-            organization: string;
         };
         CustomerEntity: {
             name: string;
@@ -250,7 +243,9 @@ export interface operations {
             header?: {
                 Authorization?: string;
             };
-            path?: never;
+            path: {
+                orgSlug: string;
+            };
             cookie?: never;
         };
         requestBody: {
@@ -273,7 +268,9 @@ export interface operations {
             header?: {
                 Authorization?: string;
             };
-            path?: never;
+            path: {
+                orgSlug: string;
+            };
             cookie?: never;
         };
         requestBody: {
@@ -292,21 +289,16 @@ export interface operations {
     };
     UserController$1_getAll: {
         parameters: {
-            query?: {
-                skip?: number;
-                take?: number;
-            };
+            query?: never;
             header?: {
                 Authorization?: string;
             };
-            path?: never;
+            path: {
+                orgSlug: string;
+            };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["GetAllUsersDto"];
-            };
-        };
+        requestBody?: never;
         responses: {
             200: {
                 headers: {
@@ -322,7 +314,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                orgSlug: string;
+            };
             cookie?: never;
         };
         requestBody: {
@@ -385,7 +379,9 @@ export interface operations {
             header?: {
                 Authorization?: string;
             };
-            path?: never;
+            path: {
+                orgSlug: string;
+            };
             cookie?: never;
         };
         requestBody: {
@@ -406,14 +402,13 @@ export interface operations {
     };
     CustomerController$1_getAll: {
         parameters: {
-            query?: {
-                skip?: number;
-                take?: number;
-            };
+            query?: never;
             header?: {
                 Authorization?: string;
             };
-            path?: never;
+            path: {
+                orgSlug: string;
+            };
             cookie?: never;
         };
         requestBody?: never;

@@ -9,24 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UsersRouteImport } from './routes/users'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as CustomersRouteImport } from './routes/customers'
+import { Route as OrgRouteImport } from './routes/org'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OrgOrgSlugIndexRouteImport } from './routes/org.$orgSlug.index'
+import { Route as OrgOrgSlugUsersRouteImport } from './routes/org.$orgSlug.users'
+import { Route as OrgOrgSlugLoginRouteImport } from './routes/org.$orgSlug.login'
+import { Route as OrgOrgSlugCustomersRouteImport } from './routes/org.$orgSlug.customers'
 
-const UsersRoute = UsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CustomersRoute = CustomersRouteImport.update({
-  id: '/customers',
-  path: '/customers',
+const OrgRoute = OrgRouteImport.update({
+  id: '/org',
+  path: '/org',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -34,62 +26,91 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrgOrgSlugIndexRoute = OrgOrgSlugIndexRouteImport.update({
+  id: '/$orgSlug/',
+  path: '/$orgSlug/',
+  getParentRoute: () => OrgRoute,
+} as any)
+const OrgOrgSlugUsersRoute = OrgOrgSlugUsersRouteImport.update({
+  id: '/$orgSlug/users',
+  path: '/$orgSlug/users',
+  getParentRoute: () => OrgRoute,
+} as any)
+const OrgOrgSlugLoginRoute = OrgOrgSlugLoginRouteImport.update({
+  id: '/$orgSlug/login',
+  path: '/$orgSlug/login',
+  getParentRoute: () => OrgRoute,
+} as any)
+const OrgOrgSlugCustomersRoute = OrgOrgSlugCustomersRouteImport.update({
+  id: '/$orgSlug/customers',
+  path: '/$orgSlug/customers',
+  getParentRoute: () => OrgRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/customers': typeof CustomersRoute
-  '/login': typeof LoginRoute
-  '/users': typeof UsersRoute
+  '/org': typeof OrgRouteWithChildren
+  '/org/$orgSlug/customers': typeof OrgOrgSlugCustomersRoute
+  '/org/$orgSlug/login': typeof OrgOrgSlugLoginRoute
+  '/org/$orgSlug/users': typeof OrgOrgSlugUsersRoute
+  '/org/$orgSlug': typeof OrgOrgSlugIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/customers': typeof CustomersRoute
-  '/login': typeof LoginRoute
-  '/users': typeof UsersRoute
+  '/org': typeof OrgRouteWithChildren
+  '/org/$orgSlug/customers': typeof OrgOrgSlugCustomersRoute
+  '/org/$orgSlug/login': typeof OrgOrgSlugLoginRoute
+  '/org/$orgSlug/users': typeof OrgOrgSlugUsersRoute
+  '/org/$orgSlug': typeof OrgOrgSlugIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/customers': typeof CustomersRoute
-  '/login': typeof LoginRoute
-  '/users': typeof UsersRoute
+  '/org': typeof OrgRouteWithChildren
+  '/org/$orgSlug/customers': typeof OrgOrgSlugCustomersRoute
+  '/org/$orgSlug/login': typeof OrgOrgSlugLoginRoute
+  '/org/$orgSlug/users': typeof OrgOrgSlugUsersRoute
+  '/org/$orgSlug/': typeof OrgOrgSlugIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/customers' | '/login' | '/users'
+  fullPaths:
+    | '/'
+    | '/org'
+    | '/org/$orgSlug/customers'
+    | '/org/$orgSlug/login'
+    | '/org/$orgSlug/users'
+    | '/org/$orgSlug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/customers' | '/login' | '/users'
-  id: '__root__' | '/' | '/customers' | '/login' | '/users'
+  to:
+    | '/'
+    | '/org'
+    | '/org/$orgSlug/customers'
+    | '/org/$orgSlug/login'
+    | '/org/$orgSlug/users'
+    | '/org/$orgSlug'
+  id:
+    | '__root__'
+    | '/'
+    | '/org'
+    | '/org/$orgSlug/customers'
+    | '/org/$orgSlug/login'
+    | '/org/$orgSlug/users'
+    | '/org/$orgSlug/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CustomersRoute: typeof CustomersRoute
-  LoginRoute: typeof LoginRoute
-  UsersRoute: typeof UsersRoute
+  OrgRoute: typeof OrgRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/users': {
-      id: '/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof UsersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/customers': {
-      id: '/customers'
-      path: '/customers'
-      fullPath: '/customers'
-      preLoaderRoute: typeof CustomersRouteImport
+    '/org': {
+      id: '/org'
+      path: '/org'
+      fullPath: '/org'
+      preLoaderRoute: typeof OrgRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -99,14 +120,56 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/org/$orgSlug/': {
+      id: '/org/$orgSlug/'
+      path: '/$orgSlug'
+      fullPath: '/org/$orgSlug'
+      preLoaderRoute: typeof OrgOrgSlugIndexRouteImport
+      parentRoute: typeof OrgRoute
+    }
+    '/org/$orgSlug/users': {
+      id: '/org/$orgSlug/users'
+      path: '/$orgSlug/users'
+      fullPath: '/org/$orgSlug/users'
+      preLoaderRoute: typeof OrgOrgSlugUsersRouteImport
+      parentRoute: typeof OrgRoute
+    }
+    '/org/$orgSlug/login': {
+      id: '/org/$orgSlug/login'
+      path: '/$orgSlug/login'
+      fullPath: '/org/$orgSlug/login'
+      preLoaderRoute: typeof OrgOrgSlugLoginRouteImport
+      parentRoute: typeof OrgRoute
+    }
+    '/org/$orgSlug/customers': {
+      id: '/org/$orgSlug/customers'
+      path: '/$orgSlug/customers'
+      fullPath: '/org/$orgSlug/customers'
+      preLoaderRoute: typeof OrgOrgSlugCustomersRouteImport
+      parentRoute: typeof OrgRoute
+    }
   }
 }
 
+interface OrgRouteChildren {
+  OrgOrgSlugCustomersRoute: typeof OrgOrgSlugCustomersRoute
+  OrgOrgSlugLoginRoute: typeof OrgOrgSlugLoginRoute
+  OrgOrgSlugUsersRoute: typeof OrgOrgSlugUsersRoute
+  OrgOrgSlugIndexRoute: typeof OrgOrgSlugIndexRoute
+}
+
+const OrgRouteChildren: OrgRouteChildren = {
+  OrgOrgSlugCustomersRoute: OrgOrgSlugCustomersRoute,
+  OrgOrgSlugLoginRoute: OrgOrgSlugLoginRoute,
+  OrgOrgSlugUsersRoute: OrgOrgSlugUsersRoute,
+  OrgOrgSlugIndexRoute: OrgOrgSlugIndexRoute,
+}
+
+const OrgRouteWithChildren = OrgRoute._addFileChildren(OrgRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CustomersRoute: CustomersRoute,
-  LoginRoute: LoginRoute,
-  UsersRoute: UsersRoute,
+  OrgRoute: OrgRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

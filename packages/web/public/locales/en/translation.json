@@ -54,5 +54,8 @@
     "too_small": "{{field}} must contain at least {{minimum}} character(s)"
   },
 
-  "addUserDescription": "You can add new users to the system. Please fill in the details below. "
+  "confirm": "Are you sure?",
+
+  "addUserDescription": "You can add new users to the system. Please fill in the details below.",
+  "deleteUserDescription": "You are about to delete the user '{{username}}'."
 }

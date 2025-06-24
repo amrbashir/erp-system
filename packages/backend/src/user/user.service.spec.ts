@@ -32,9 +32,8 @@ describe("UserService", async () => {
     const createUserDto = {
       username: "testuser",
       password: "12345678",
-      organization: "test-org",
     };
-    const user = await service.createUser(createUserDto);
+    const user = await service.createUser(createUserDto, org.slug);
     expect(user).toBeDefined();
     expect(user!.username).toBe(createUserDto.username);
   });
@@ -50,12 +49,11 @@ describe("UserService", async () => {
     const createUserDto = {
       username: "testuser",
       password: "12345678",
-      organization: "test-org",
     };
 
-    await service.createUser(createUserDto);
+    await service.createUser(createUserDto, org.slug);
 
-    await expect(service.createUser(createUserDto)).rejects.toThrow();
+    await expect(service.createUser(createUserDto, org.slug)).rejects.toThrow();
   });
 
   it("should return all users without passwords", async () => {
@@ -68,17 +66,21 @@ describe("UserService", async () => {
 
     const org = await orgService.create(createOrgDto);
 
-    const user1 = await service.createUser({
-      username: "testuser",
-      password: "12345678",
-      organization: "test-org",
-    });
+    const user1 = await service.createUser(
+      {
+        username: "testuser",
+        password: "12345678",
+      },
+      org.slug,
+    );
 
-    const user2 = await service.createUser({
-      username: "testuser2",
-      password: "12345678",
-      organization: "test-org",
-    });
+    const user2 = await service.createUser(
+      {
+        username: "testuser2",
+        password: "12345678",
+      },
+      org.slug,
+    );
 
     const users = await service.getAllUsers(org.slug);
     expect(users).toHaveLength(3);
@@ -108,21 +110,27 @@ describe("UserService", async () => {
 
     const org = await orgService.create(createOrgDto);
 
-    const user1 = await service.createUser({
-      username: "testuser",
-      password: "12345678",
-      organization: "test-org",
-    });
-    const user2 = await service.createUser({
-      username: "testuser2",
-      password: "12345678",
-      organization: "test-org",
-    });
-    const user3 = await service.createUser({
-      username: "testuser3",
-      password: "12345678",
-      organization: "test-org",
-    });
+    const user1 = await service.createUser(
+      {
+        username: "testuser",
+        password: "12345678",
+      },
+      org.slug,
+    );
+    const user2 = await service.createUser(
+      {
+        username: "testuser2",
+        password: "12345678",
+      },
+      org.slug,
+    );
+    const user3 = await service.createUser(
+      {
+        username: "testuser3",
+        password: "12345678",
+      },
+      org.slug,
+    );
 
     const sort = { field: "createdAt", order: "asc" } as const;
 
@@ -156,50 +164,42 @@ describe("UserService", async () => {
 
     const org = await orgService.create(createOrgDto);
 
-    const user1 = await service.createUser({
-      username: "testuser",
-      password: "12345678",
-      organization: "test-org",
-    });
-    const user2 = await service.createUser({
-      username: "testuser2",
-      password: "12345678",
-      organization: "test-org",
-      role: UserRole.ADMIN,
-    });
-    const user3 = await service.createUser({
-      username: "testuser3",
-      password: "12345678",
-      organization: "test-org",
-    });
+    const user1 = await service.createUser(
+      {
+        username: "testuser",
+        password: "12345678",
+      },
+      org.slug,
+    );
+    const user2 = await service.createUser(
+      {
+        username: "testuser2",
+        password: "12345678",
+        role: UserRole.ADMIN,
+      },
+      org.slug,
+    );
+    const user3 = await service.createUser(
+      {
+        username: "testuser3",
+        password: "12345678",
+      },
+      org.slug,
+    );
 
     const where = { deletedAt: null } as const;
 
-    await service.deleteUser({
-      username: user1.username,
-      organization: "test-org",
-    });
+    await service.deleteUser({ username: user1.username }, org.slug);
     let users = await service.getAllUsers(org.slug, { where });
     expect(users).toHaveLength(3);
 
-    await service.deleteUser({
-      username: createOrgDto.username,
-      organization: "test-org",
-    });
+    await service.deleteUser({ username: createOrgDto.username }, org.slug);
     users = await service.getAllUsers(org.slug, { where });
     expect(users).toHaveLength(2);
 
-    expect(
-      service.deleteUser({
-        username: user2.username,
-        organization: "test-org",
-      }),
-    ).rejects.toThrow();
+    expect(service.deleteUser({ username: user2.username }, org.slug)).rejects.toThrow();
 
-    await service.deleteUser({
-      username: user3.username,
-      organization: "test-org",
-    });
+    await service.deleteUser({ username: user3.username }, org.slug);
     users = await service.getAllUsers(org.slug, { where });
     expect(users).toHaveLength(1);
   });

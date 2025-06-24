@@ -10,14 +10,10 @@ export const CreateOrgDto = z
   .passthrough();
 
 export const CreateUserDto = z
-  .object({ username: z.string(), password: z.string().min(8), organization: z.string() })
+  .object({ username: z.string(), password: z.string().min(8) })
   .passthrough();
 
-export const DeleteUserDto = z
-  .object({ username: z.string(), organization: z.string() })
-  .passthrough();
-
-export const GetAllUsersDto = z.object({ organization: z.string() }).passthrough();
+export const DeleteUserDto = z.object({ username: z.string() }).passthrough();
 
 export const UserEntity = z
   .object({
@@ -29,9 +25,7 @@ export const UserEntity = z
   })
   .passthrough();
 
-export const LoginUserDto = z
-  .object({ username: z.string(), password: z.string(), organization: z.string() })
-  .passthrough();
+export const LoginUserDto = z.object({ username: z.string(), password: z.string() }).passthrough();
 
 export const LoginResponseDto = z
   .object({ username: z.string(), role: z.enum(["USER", "ADMIN"]), accessToken: z.string() })
@@ -40,12 +34,7 @@ export const LoginResponseDto = z
 export const RefreshTokenResponseDto = z.object({ accessToken: z.string() }).passthrough();
 
 export const CreateCustomerDto = z
-  .object({
-    name: z.string(),
-    email: z.string().optional(),
-    phone: z.string().optional(),
-    organization: z.string(),
-  })
+  .object({ name: z.string(), email: z.string().optional(), phone: z.string().optional() })
   .passthrough();
 
 export const CustomerEntity = z

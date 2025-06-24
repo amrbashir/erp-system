@@ -1,4 +1,4 @@
-import { useAuth } from "@/auth";
+import { useAuth } from "@/auth/hook";
 import { Button } from "@/shadcn/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/components/ui/card";
 import { Input } from "@/shadcn/components/ui/input";
@@ -10,7 +10,7 @@ import { Separator } from "@/shadcn/components/ui/separator";
 import { useForm, useStore } from "@tanstack/react-form";
 import { Loader2Icon } from "lucide-react";
 
-export const Route = createFileRoute("/login")({
+export const Route = createFileRoute("/org/$orgSlug/login")({
   component: Login,
   context: () => ({ title: i18n.t("login"), hideUI: true }),
 });
@@ -56,7 +56,7 @@ function Login() {
       );
     }
 
-    return <p className="text-destructive text-sm">{t(`errors.${onSubmitError}` as any)}</p>;
+    return <p className="text-destructive text-sm">{t("errors.${onSubmitError}" as any)}</p>;
   }
 
   return (

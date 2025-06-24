@@ -1,7 +1,14 @@
-import { apiRequest } from "@/api-client";
-import { useAuth } from "@/auth";
-import { AddUserDialog } from "@/components/add-user";
+import { apiClient } from "@/api-client";
+import { useAuth } from "@/auth/hook";
+import { AddUserDialog } from "@/components/add-user-dialog";
 import i18n from "@/i18n";
+import {
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shadcn/components/ui/alert-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,29 +23,38 @@ import {
   TableHeader,
   TableRow,
 } from "@/shadcn/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTrigger,
+} from "@/shadcn/components/ui/alert-dialog";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import type { CreateUserDto, DeleteUserDto } from "@tech-zone-store/sdk/zod";
+import type { DeleteUserDto } from "@tech-zone-store/sdk/zod";
 import { ContactIcon, EllipsisVerticalIcon, Loader2Icon } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import type z from "zod";
 
-export const Route = createFileRoute("/users")({
+export const Route = createFileRoute("/org/$orgSlug/users")({
   component: Users,
   context: () => ({ title: i18n.t("pages.users"), icon: ContactIcon, roleRequirement: "Admin" }),
 });
 
 function Users() {
+  const { orgSlug } = Route.useParams();
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
 
   const { data: users, refetch: refetchUsers } = useQuery({
     queryKey: ["users", user?.username],
     queryFn: async () =>
-      apiRequest("post", "/user/getAll", {
-        body: { organization: "tech-zone" },
+      apiClient.get("/org/{orgSlug}/user/getAll", {
+        params: {
+          path: { orgSlug },
+        },
       }),
     select: (res) => res.data,
   });
@@ -50,7 +66,12 @@ function Users() {
     mutateAsync: deleteUser,
   } = useMutation({
     mutationFn: async (body: z.infer<typeof DeleteUserDto>) =>
-      apiRequest("delete", "/user/delete", { body }),
+      apiClient.delete("/org/{orgSlug}/user/delete", {
+        body,
+        params: {
+          path: { orgSlug },
+        },
+      }),
     onSuccess: () => refetchUsers(),
   });
 
@@ -90,29 +111,42 @@ function Users() {
                   {user.deletedAt ? toLocaleString(user.deletedAt, i18n.language) : ""}
                 </TableCell>
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger
-                      className="text-muted-foreground hover:text-primary"
-                      asChild
-                    >
-                      {isUserDeletePending && deleteVariables.username === user.username ? (
-                        <Loader2Icon className="animate-spin" />
-                      ) : (
-                        <EllipsisVerticalIcon />
-                      )}
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        disabled={!!user.deletedAt}
-                        variant="destructive"
-                        onSelect={() =>
-                          deleteUser({ username: user.username, organization: "tech-zone" })
-                        }
+                  <AlertDialog>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        className="text-muted-foreground hover:text-primary"
+                        asChild
                       >
-                        {t("delete")}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                        {isUserDeletePending && deleteVariables.username === user.username ? (
+                          <Loader2Icon className="animate-spin" />
+                        ) : (
+                          <EllipsisVerticalIcon />
+                        )}
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <AlertDialogTrigger asChild>
+                          <DropdownMenuItem disabled={!!user.deletedAt} variant="destructive">
+                            {t("delete")}
+                          </DropdownMenuItem>
+                        </AlertDialogTrigger>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>{t("confirm")}</AlertDialogTitle>
+                      </AlertDialogHeader>
+                      <AlertDialogDescription>
+                        {t("deleteUserDescription", { username: user.username })}
+                      </AlertDialogDescription>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => deleteUser(user)}>
+                          {t("delete")}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </TableCell>
               </TableRow>
             ))}

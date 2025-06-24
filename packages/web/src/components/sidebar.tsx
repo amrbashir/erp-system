@@ -10,8 +10,8 @@ import {
   useSidebar,
   SidebarFooter,
 } from "@/shadcn/components/ui/sidebar";
-import type { FileRoutesByTo } from "@/routeTree.gen";
-import { getRouteApi, Link, useLocation, useRouter } from "@tanstack/react-router";
+import type { FileRoutesById } from "@/routeTree.gen";
+import { Link, useLocation, useParams, useRouter } from "@tanstack/react-router";
 import { UserDropdown } from "@/components/user-dropdown";
 import { Label } from "@/shadcn/components/ui/label";
 import { useTranslation } from "react-i18next";
@@ -19,17 +19,25 @@ import { useTranslation } from "react-i18next";
 export function AppSideBar() {
   const { open } = useSidebar();
   const { i18n } = useTranslation();
-
   const { flatRoutes } = useRouter();
-  const location = useLocation({ select: (state) => state.pathname });
+  const currentLocation = useLocation({ select: (state) => state.pathname });
+  const { orgSlug } = useParams({ strict: false });
 
-  const sidebarRoutes: (keyof FileRoutesByTo)[] = ["/", "/customers", "/users"];
+  const sidebarRoutes: (keyof FileRoutesById)[] = [
+    "/org/$orgSlug/",
+    "/org/$orgSlug/customers",
+    "/org/$orgSlug/users",
+  ];
   const sidebarRoutesData = sidebarRoutes.map((r) => {
     const route = flatRoutes.find((route) => route.to === r);
     const data = route?.options.context();
+    const location = route?.to.replace("$orgSlug", orgSlug);
+    const trimmedLocation = location.endsWith("/") ? location.slice(0, -1) : location;
+    const isActive = trimmedLocation === currentLocation;
+
     return {
       url: route?.to,
-      isActive: route?.to === location,
+      isActive,
       title: data.title,
       icon: data.icon,
     };

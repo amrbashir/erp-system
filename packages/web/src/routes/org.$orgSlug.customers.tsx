@@ -1,4 +1,4 @@
-import { apiRequest } from "@/api-client";
+import { apiClient } from "@/api-client";
 import i18n from "@/i18n";
 import {
   Table,
@@ -13,7 +13,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { UsersIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-export const Route = createFileRoute("/customers")({
+export const Route = createFileRoute("/org/$orgSlug/customers")({
   component: Customers,
   context: () => ({
     title: i18n.t("pages.customers"),
@@ -22,11 +22,18 @@ export const Route = createFileRoute("/customers")({
 });
 
 function Customers() {
+  const { orgSlug } = Route.useParams();
+
   const { t, i18n } = useTranslation();
 
   const { data: customers } = useQuery({
     queryKey: ["customers"],
-    queryFn: async () => apiRequest("get", "/customer/getAll"),
+    queryFn: async () =>
+      apiClient.get("/org/{orgSlug}/customer/getAll", {
+        params: {
+          path: { orgSlug },
+        },
+      }),
     select: (res) => res.data,
   });
 

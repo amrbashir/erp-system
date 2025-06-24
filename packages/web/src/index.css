@@ -144,7 +144,8 @@ html[dir="rtl"] [data-slot="breadcrumb-separator"] > svg {
   @apply -scale-x-[1];
 }
 
-html[dir="rtl"] [data-slot="dialog-header"] {
+html[dir="rtl"] [data-slot="dialog-header"],
+html[dir="rtl"] [data-slot="alert-dialog-header"] {
   @apply text-start!;
 }
 

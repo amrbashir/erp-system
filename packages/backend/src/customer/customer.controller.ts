@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
-import { CreateCustomerDto, CustomerEntity, PaginationDto } from "./customer.dto";
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
+import { CreateCustomerDto, CustomerEntity } from "./customer.dto";
 import { CustomerService } from "./customer.service";
 import {
   ApiCreatedResponse,
@@ -10,24 +10,31 @@ import {
 } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
 import type { Customer } from "../prisma/generated";
+import type { PaginationDto } from "../pagination.dto";
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 @ApiHeader({ name: "Authorization" })
 @ApiTags("customer")
-@Controller("customer")
+@Controller("/org/:orgSlug/customer")
 export class CustomerController {
   constructor(private readonly service: CustomerService) {}
 
   @Post("create")
   @ApiCreatedResponse({ type: CustomerEntity })
-  create(@Body() createCustomerDto: CreateCustomerDto): Promise<Customer> {
-    return this.service.createCustomer(createCustomerDto);
+  create(
+    @Param("orgSlug") orgSlug: string,
+    @Body() createCustomerDto: CreateCustomerDto,
+  ): Promise<Customer> {
+    return this.service.createCustomer(createCustomerDto, orgSlug);
   }
 
   @Get("getAll")
   @ApiOkResponse({ type: [CustomerEntity] })
-  async getAll(@Query() paginationDto: PaginationDto): Promise<Customer[]> {
-    return this.service.getAllCustomers(paginationDto);
+  async getAll(
+    @Param("orgSlug") orgSlug: string,
+    @Query() paginationDto: PaginationDto,
+  ): Promise<Customer[]> {
+    return this.service.getAllCustomers(orgSlug, paginationDto);
   }
 }

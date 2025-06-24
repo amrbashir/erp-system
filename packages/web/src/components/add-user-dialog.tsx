@@ -1,4 +1,4 @@
-import { apiRequest } from "@/api-client";
+import { apiClient } from "@/api-client";
 import { Button } from "@/shadcn/components/ui/button";
 import {
   Dialog,
@@ -15,14 +15,18 @@ import { Label } from "@/shadcn/components/ui/label";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { CreateUserDto } from "@tech-zone-store/sdk/zod";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FieldError } from "./form-field-error";
+import { FieldError } from "@/components/form-field-error";
 import { Loader2Icon } from "lucide-react";
+import { useParams } from "@tanstack/react-router";
 
 export function AddUserDialog() {
+  const { orgSlug } = useParams({ strict: false });
   const { t } = useTranslation();
   const client = useQueryClient();
+
+  const [open, setOpen] = useState(false);
 
   const addUserMessage = useMemo(() => t("add") + " " + t("roles.USER"), [t]);
 
@@ -32,27 +36,38 @@ export function AddUserDialog() {
       password: "",
     },
     validators: {
-      onSubmit: CreateUserDto.omit({ organization: true }),
+      onSubmit: CreateUserDto,
     },
     onSubmit: async ({ value, formApi }) => {
       const { username, password } = value;
-      try {
-        await apiRequest("post", "/user/create", {
-          body: {
-            username,
-            password,
-            organization: "tech-zone",
-          },
-        });
-        client.invalidateQueries({ queryKey: ["users"] });
-      } catch (error) {
+      const { error } = await apiClient.post("/org/{orgSlug}/user/create", {
+        body: {
+          username,
+          password,
+        },
+        params: {
+          path: { orgSlug: orgSlug! },
+        },
+      });
+
+      if (error) {
         formApi.state.errorMap["onSubmit"] = error as any;
+        return;
       }
+
+      client.invalidateQueries({ queryKey: ["users"] });
+      setOpen(false);
     },
   });
 
   return (
-    <Dialog onOpenChange={() => form.reset()}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        setOpen(open);
+        form.reset();
+      }}
+    >
       <DialogTrigger asChild>
         <Button>{addUserMessage}</Button>
       </DialogTrigger>
