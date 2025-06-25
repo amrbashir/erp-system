@@ -20,7 +20,7 @@ import { useOrg } from "@/components/org-provider";
 
 export const Route = createFileRoute("/org/$orgSlug/login")({
   component: Login,
-  context: () => ({ title: i18n.t("login"), hideUI: true }),
+  context: () => ({ title: i18n.t("login"), hasSidebar: false }),
 });
 
 function Login() {
@@ -49,7 +49,7 @@ function Login() {
   });
 
   return (
-    <div className="flex items-center justify-center w-screen h-screen gap-20">
+    <main className="flex items-center justify-center w-screen h-screen gap-20">
       <div>
         <img src="/logo.svg" alt="ERP System Logo" width={300} className="mb-10" />
         <h1 className="text-2xl font-semibold text-center">{t("welcomeToErpOrg", { orgSlug })}</h1>
@@ -116,6 +116,6 @@ function Login() {
           <Link to="/">{t("goBackHome")}</Link>
         </Button>
       </div>
-    </div>
+    </main>
   );
 }

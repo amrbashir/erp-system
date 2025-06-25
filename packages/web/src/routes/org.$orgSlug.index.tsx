@@ -17,12 +17,10 @@ function Index() {
   const { t } = useTranslation();
 
   return (
-    <div>
-      <div className="flex flex-col items-center justify-center min-h-svh p-6">
-        <HomeIcon className="w-50 h-50 mb-10 opacity-5" />
-        <h1 className="text-3xl font-semibold text-center">{t("welcomeToErpOrg", { orgSlug })}</h1>
-        <p className="text-lg text-center mt-2 text-gray-400">{t("welcomeToErpDescription")}</p>
-      </div>
-    </div>
+    <main className="flex-1 flex flex-col items-center justify-center">
+      <HomeIcon className="w-50 h-50 mb-10 opacity-5" />
+      <h1 className="text-3xl font-semibold text-center">{t("welcomeToErpOrg", { orgSlug })}</h1>
+      <p className="text-lg text-center mt-2 text-gray-400">{t("welcomeToErpDescription")}</p>
+    </main>
   );
 }

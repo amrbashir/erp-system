@@ -31,7 +31,7 @@ export function OrgProvider({ children, ...props }: ThemeProviderProps) {
   });
 
   return isLoading ? (
-    <div className="min-h-svh p-6 bg-black flex flex-col items-center justify-center gap-4">
+    <div className="min-h-svh p-6 flex flex-col items-center justify-center gap-4">
       <Loader2Icon className="animate-spin" />
       <p>{t("loadingOrganization")}</p>
     </div>
@@ -40,7 +40,7 @@ export function OrgProvider({ children, ...props }: ThemeProviderProps) {
       {children}
     </OrgProviderContext.Provider>
   ) : (
-    <div className="min-h-svh p-6 bg-black flex flex-col items-center justify-center gap-4">
+    <div className="min-h-svh p-6 flex flex-col items-center justify-center gap-4">
       <AlertCircleIcon />
       <p>{t("errors.organizationNotFound")}</p>
     </div>

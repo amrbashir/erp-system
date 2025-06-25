@@ -3,6 +3,7 @@ import { OrgProvider } from "@/components/org-provider";
 import { AppSideBar } from "@/components/sidebar";
 import { SidebarProvider } from "@/shadcn/components/ui/sidebar";
 import { createFileRoute, Outlet, redirect, useMatches } from "@tanstack/react-router";
+import clsx from "clsx";
 
 export const Route = createFileRoute("/org")({
   component: Org,
@@ -49,14 +50,19 @@ function Org() {
 
   const matches = useMatches();
 
-  const hideUi = matches.some((match) => match.context && match.context?.hideUI);
+  const route = matches[matches.length - 1];
+  const hasSidebar = route.context.hasSidebar ?? true;
+
   return (
     <>
       <OrgProvider>
         <SidebarProvider defaultOpen={defaultOpen}>
-          {!hideUi && <AppSideBar />}
-          <div id="outlet-container" className="w-screen *:px-4 *:py-2 rounded-2xl m-2">
-            {!hideUi && <NavigationHeader />}
+          {hasSidebar && <AppSideBar />}
+          <div
+            id="sidebar-view"
+            className={clsx("flex flex-col", hasSidebar && "w-svw rounded-2xl my-2")}
+          >
+            {hasSidebar && <NavigationHeader />}
             <Outlet />
           </div>
         </SidebarProvider>

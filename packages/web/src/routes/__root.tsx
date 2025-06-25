@@ -8,12 +8,14 @@ import type { UserEntity } from "@erp-system/sdk/zod";
 import { z } from "zod";
 import { Toaster } from "@/shadcn/components/ui/sonner";
 
+import { NonOrgHeader } from "@/components/non-org-header";
+
 interface RouterContext {
   auth: AuthProviderState;
   title: string;
   icon?: React.ComponentType;
   roleRequirement?: z.infer<typeof UserEntity>["role"];
-  hideUI?: boolean;
+  hasSidebar: boolean;
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
@@ -42,7 +44,10 @@ function Root() {
     <DirectionProvider dir={i18n.dir()}>
       <ThemeProvider>
         <HeadContent />
+
         <Outlet />
+
+        <NonOrgHeader />
         <Toaster position={i18n.dir() === "rtl" ? "bottom-left" : "bottom-right"} />
       </ThemeProvider>
     </DirectionProvider>

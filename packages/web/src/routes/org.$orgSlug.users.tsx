@@ -72,7 +72,7 @@ function Users() {
   }, [deleteError, t]);
 
   return (
-    <main className="flex flex-col gap-4">
+    <main className="p-4 flex flex-col gap-4">
       <div>
         <AddUserDialog />
       </div>

@@ -24,7 +24,7 @@ declare module "@tanstack/react-router" {
 
 function App() {
   const auth = useAuth();
-  return <RouterProvider router={router} context={{ auth }} />;
+  return <RouterProvider router={router} context={{ auth, hasSidebar: true }} />;
 }
 
 ReactDOM.createRoot(document.body).render(

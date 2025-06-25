@@ -1,36 +1,65 @@
 import {
   DropdownMenuCheckboxItem,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
   DropdownMenuSub,
-  DropdownMenuSubContent,
   DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/shadcn/components/ui/dropdown-menu";
 import { useTranslation } from "react-i18next";
 import { Uk } from "@/components/flags/uk";
 import { Sa } from "@/components/flags/sa";
 import { useRouter } from "@tanstack/react-router";
+import { Button } from "@/shadcn/components/ui/button";
+import { useMemo } from "react";
 
-export function LanguageSelector() {
+const LANGUAGE_FLAGS = {
+  en: Uk,
+  ar: Sa,
+} as const;
+
+type LanguageFlagKey = keyof typeof LANGUAGE_FLAGS;
+
+const LANGUAGES = Object.keys(LANGUAGE_FLAGS) as Array<LanguageFlagKey>;
+
+export function LanguageSelector({ asSubmenu = false }: { asSubmenu?: boolean }) {
   const { i18n, t } = useTranslation();
   const router = useRouter();
-
-  const languageFlags = {
-    en: Uk,
-    ar: Sa,
-  } as const;
-
-  const languages = Object.keys(languageFlags) as Array<keyof typeof languageFlags>;
 
   const changeLanguage = (lang: string) => {
     i18n.changeLanguage(lang);
     router.invalidate();
   };
 
+  const Menu = asSubmenu ? DropdownMenuSub : DropdownMenu;
+  const MenuTrigger = asSubmenu ? DropdownMenuSubTrigger : DropdownMenuTrigger;
+  const MenuContent = asSubmenu ? DropdownMenuSubContent : DropdownMenuContent;
+
+  const ActiveIcon = useMemo(
+    () => LANGUAGE_FLAGS[i18n.language as LanguageFlagKey],
+    [i18n.language, LANGUAGE_FLAGS],
+  );
+
   return (
-    <DropdownMenuSub>
-      <DropdownMenuSubTrigger>{t("language")}</DropdownMenuSubTrigger>
-      <DropdownMenuSubContent>
-        {languages.map((lang) => {
-          const Icon = languageFlags[lang];
+    <Menu>
+      <MenuTrigger asChild={!asSubmenu}>
+        {asSubmenu ? (
+          t("language")
+        ) : (
+          <Button variant={"outline"}>
+            {
+              <>
+                <ActiveIcon />
+                {t(`languages.${i18n.language}` as any)}
+              </>
+            }
+          </Button>
+        )}
+      </MenuTrigger>
+      <MenuContent>
+        {LANGUAGES.map((lang) => {
+          const Icon = LANGUAGE_FLAGS[lang];
           return (
             <DropdownMenuCheckboxItem
               key={lang}
@@ -41,7 +70,7 @@ export function LanguageSelector() {
             </DropdownMenuCheckboxItem>
           );
         })}
-      </DropdownMenuSubContent>
-    </DropdownMenuSub>
+      </MenuContent>
+    </Menu>
   );
 }

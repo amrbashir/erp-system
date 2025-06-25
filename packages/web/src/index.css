@@ -127,7 +127,8 @@ body {
   @apply bg-sidebar;
 }
 
-#outlet-container {
+#sidebar-view,
+main:not(#sidebar-view main) {
   @apply bg-background;
 }
 

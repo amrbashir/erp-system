@@ -35,7 +35,7 @@ function Customers() {
   });
 
   return (
-    <main>
+    <main className="p-4">
       <div className="rounded-lg overflow-hidden border">
         <Table>
           <TableHeader>

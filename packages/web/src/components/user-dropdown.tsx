@@ -84,7 +84,7 @@ export function UserDropdown() {
 
             <DropdownMenuSeparator />
 
-            <LanguageSelector />
+            <LanguageSelector asSubmenu={true} />
             <ThemeSelector />
 
             <DropdownMenuSeparator />

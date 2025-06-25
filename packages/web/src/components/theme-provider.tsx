@@ -1,5 +1,5 @@
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 export const THEME_VARIANTS = [
   { theme: "system", icon: MonitorIcon },
@@ -18,12 +18,16 @@ export type ThemeProviderProps = {
 
 export type ThemeProviderState = {
   theme: Theme;
+  ThemeIcon: React.ComponentType;
   setTheme: (theme: Theme) => void;
+  toggleTheme: () => void;
 };
 
 const initialState: ThemeProviderState = {
   theme: THEME_VARIANTS[0].theme,
+  ThemeIcon: THEME_VARIANTS[0].icon,
   setTheme: () => null,
+  toggleTheme: () => null,
 };
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
@@ -36,6 +40,11 @@ export function ThemeProvider({
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
+  );
+
+  const themeIcon = useMemo(
+    () => THEME_VARIANTS.find((v) => v.theme === theme)?.icon ?? THEME_VARIANTS[0].icon,
+    [theme],
   );
 
   useEffect(() => {
@@ -57,9 +66,15 @@ export function ThemeProvider({
 
   const contextValue = {
     theme,
+    ThemeIcon: themeIcon,
     setTheme: (theme: Theme) => {
       localStorage.setItem(storageKey, theme);
       setTheme(theme);
+    },
+    toggleTheme: () => {
+      const nextTheme = theme === "dark" ? "light" : theme === "light" ? "system" : "dark";
+      localStorage.setItem(storageKey, nextTheme);
+      setTheme(nextTheme);
     },
   };
 

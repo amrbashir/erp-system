@@ -18,15 +18,13 @@ import { Loader2Icon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { slugify } from "@erp-system/utils";
 
-export const Route = createFileRoute("/")({
-  component: Index,
-});
+export const Route = createFileRoute("/")({ component: Index });
 
 function Index() {
   const { t } = useTranslation();
 
   return (
-    <div className="min-h-svh p-6 bg-black grid place-items-center">
+    <main className="min-h-svh p-6  grid place-items-center">
       <div className="flex items-center justify-center w-full gap-20">
         <div className="flex flex-col items-center">
           <img src="/logo.svg" alt="ERP System Logo" width={300} className="mb-10" />
@@ -48,7 +46,7 @@ function Index() {
           <CreateNewOrganizationCard />
         </Card>
       </div>
-    </div>
+    </main>
   );
 }
 

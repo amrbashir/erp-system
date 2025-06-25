@@ -50,7 +50,7 @@ function NavigationBreadcrumbs() {
 
 export function NavigationHeader() {
   return (
-    <header className="flex items-center gap-1 w-full border-b">
+    <header className="flex items-center gap-1 w-full border-b px-4 py-2">
       <SidebarTrigger />
       <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
       <NavigationBreadcrumbs />
