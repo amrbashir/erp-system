@@ -42,19 +42,47 @@
   "errors": {
     "Username or password is incorrect": "اسم المستخدم أو كلمة المرور غير صحيحة",
     "Cannot delete the last admin user in the organization": "لا يمكن حذف آخر مستخدم مدير في المؤسسة",
-    "User with this username already exists in the organization": "يوجد مستخدم بهذا الاسم في المؤسسة بالفعل"
+    "User with this username already exists in the organization": "يوجد مستخدم بهذا الاسم في المؤسسة بالفعل",
+    "organizationNotFound": "المؤسسة غير موجودة",
+    "username must contain only letters and numbers": "يجب أن يحتوي اسم المستخدم على أحرف وأرقام فقط",
+    "Organization already exists": "المؤسسة بهذا المعرف موجودة بالفعل",
+    "Internal server error": "خطأ داخلي في الخادم",
+    "Organization with this slug does not exist": "المؤسسة بهذا المعرف غير موجودة"
   },
-
-  "delete": "حذف",
-  "add": "إضافة",
-  "cancel": "إلغاء",
 
   "validationErrors": {
     "too_small": "يجب أن يحتوي {{field}} على {{minimum}} حروف على الأقل"
   },
 
-  "confirm": "هل أنت متأكد؟",
+  "delete": "حذف",
+  "add": "إضافة",
+  "cancel": "إلغاء",
+  "create": "أنشىء",
+  "go": "اذهب",
 
-  "addUserDescription": "يمكنك إضافة مستخدمين جدد إلى النظام. يرجى ملء التفاصيل أدناه.",
-  "deleteUserDescription": "أنت على وشك حذف المستخدم '{{username}}'."
+  "or": "أو",
+
+  "org": {
+    "name": "اسم المؤسسة",
+    "slug": "معرف المؤسسة"
+  },
+  "createOrg": {
+    "name": "اسم المؤسسة",
+    "slug": "معرف المؤسسة",
+    "username": "اسم المستخدم (للمدير)",
+    "password": "كلمة المرور (للمدير)"
+  },
+
+  "areYouSure": "هل أنت متأكد؟",
+
+  "addUserDescription": "يمكنك إضافة مستخدمين جدد إلى النظام. يرجى ملء التفاصيل أدناه",
+  "deleteUserDescription": "أنت على وشك حذف المستخدم '{{username}}'",
+
+  "goToYourOrganization": "اذهب إلى مؤسستك",
+  "goToYourOrganizationDescription": "ادخل اسم المؤسسة الخاصة بك للمتابعة",
+
+  "createNewOrganization": "أنشىء مؤسسة جديدة",
+  "createNewOrganizationDescription": "قم بإعداد مؤسسة جديدة. يرجى ملء التفاصيل أدناه",
+
+  "goBackHome": "العودة إلى الصفحة الرئيسية"
 }

@@ -30,7 +30,7 @@ export function UserDropdown() {
   const { user, logout: authLogout } = useAuth();
 
   async function logout() {
-    await authLogout();
+    await authLogout(orgSlug!);
     router.history.push(`/org/${orgSlug}/login`);
   }
 

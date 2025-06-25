@@ -26,7 +26,7 @@ export class UserService {
     });
     if (!org) throw new NotFoundException("Organization with this slug does not exist");
 
-    const existingUser = await this.prisma.user.findUnique({
+    const existingUser = await this.prisma.user.findFirst({
       where: { username: createUserDto.username, organizationId: org.id },
     });
 
@@ -63,12 +63,23 @@ export class UserService {
       throw new ForbiddenException("Cannot delete the last admin user in the organization");
     }
 
+    const user = await this.prisma.user.findFirst({
+      where: {
+        username: deleteUserDto.username,
+        organizationId: org.id,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException("User with this username does not exist in the organization");
+    }
+
     await this.prisma.user.update({
       data: {
         deletedAt: new Date(),
       },
       where: {
-        username: deleteUserDto.username,
+        id: user.id,
         organizationId: org.id,
       },
     });
@@ -85,9 +96,9 @@ export class UserService {
       where: { slug: orgSlug },
     });
 
-    if (!org) throw new Error("Organization with this slug does not exist");
+    if (!org) throw new NotFoundException("Organization with this slug does not exist");
 
-    return this.prisma.user.findUnique({
+    return this.prisma.user.findFirst({
       where: { username, organizationId: org.id, deletedAt: null },
     });
   }

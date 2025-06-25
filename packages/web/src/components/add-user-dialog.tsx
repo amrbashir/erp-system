@@ -17,9 +17,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { CreateUserDto } from "@tech-zone-store/sdk/zod";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FieldError } from "@/components/form-field-error";
 import { Loader2Icon } from "lucide-react";
 import { useParams } from "@tanstack/react-router";
+import { FormFieldError, FormErrors } from "./form-errors";
 
 export function AddUserDialog() {
   const { orgSlug } = useParams({ strict: false });
@@ -51,7 +51,7 @@ export function AddUserDialog() {
       });
 
       if (error) {
-        formApi.state.errorMap["onSubmit"] = error as any;
+        formApi.setErrorMap({ onSubmit: error });
         return;
       }
 
@@ -79,56 +79,36 @@ export function AddUserDialog() {
         </DialogHeader>
 
         <form
-          className="grid gap-4"
+          className="flex flex-col gap-6"
           onSubmit={(e) => {
             e.preventDefault();
             e.stopPropagation();
             form.handleSubmit();
           }}
         >
-          <div className="grid gap-3">
-            <form.Field
-              name="username"
-              children={(field) => (
-                <>
-                  <Label htmlFor={field.name}>{t("username")}</Label>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    required
-                  />
-                  <FieldError field={field} />
-                </>
-              )}
-            />
-          </div>
-          <div className="grid gap-3">
-            <form.Field
-              name="password"
-              children={(field) => (
-                <>
-                  <Label htmlFor={field.name}>{t("password")}</Label>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    type="password"
-                    required
-                  />
-                  <FieldError field={field} />
-                </>
-              )}
-            />
-          </div>
+          {Object.keys(form.options.defaultValues ?? []).map((fieldName) => (
+            <div key={fieldName} className="flex flex-col gap-3">
+              <form.Field
+                name={fieldName as any}
+                children={(field) => (
+                  <>
+                    <Label htmlFor={field.name}>{t(field.name)}</Label>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      type={field.name === "password" ? "password" : "text"}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      required
+                    />
+                    <FormFieldError field={field} />
+                  </>
+                )}
+              />
+            </div>
+          ))}
 
-          {form.state.isFieldsValid && form.state.errorMap["onSubmit"] && (
-            <p className="text-destructive text-sm">
-              {t(`errors.${(form.state.errorMap["onSubmit"] as any).message}` as any)}
-            </p>
-          )}
+          <FormErrors formState={form.state} />
 
           <DialogFooter>
             <form.Subscribe

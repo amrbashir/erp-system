@@ -43,19 +43,47 @@
   "errors": {
     "Username or password is incorrect": "Username or password is incorrect",
     "Cannot delete the last admin user in the organization": "Cannot delete the last admin user in the organization",
-    "User with this username already exists in the organization": "User with this username already exists in the organization"
+    "User with this username already exists in the organization": "User with this username already exists in the organization",
+    "organizationNotFound": "Organization not found",
+    "username must contain only letters and numbers": "Username must contain only letters and numbers",
+    "Organization already exists": "Organization with this identifier already exists",
+    "Internal server error": "Internal server error",
+    "Organization with this slug does not exist": "Organization with this identifier does not exist"
   },
-
-  "delete": "Delete",
-  "add": "Add",
-  "cancel": "Cancel",
 
   "validationErrors": {
     "too_small": "{{field}} must contain at least {{minimum}} character(s)"
   },
 
-  "confirm": "Are you sure?",
+  "delete": "Delete",
+  "add": "Add",
+  "cancel": "Cancel",
+  "create": "Create",
+  "go": "Go",
 
-  "addUserDescription": "You can add new users to the system. Please fill in the details below.",
-  "deleteUserDescription": "You are about to delete the user '{{username}}'."
+  "or": "or",
+
+  "org": {
+    "name": "Organization Name",
+    "slug": "Organization Identifier"
+  },
+  "createOrg": {
+    "name": "Organization Name",
+    "slug": "Organization Identifier",
+    "username": "Username (for Admin)",
+    "password": "Password (for Admin)"
+  },
+
+  "areYouSure": "Are you sure?",
+
+  "addUserDescription": "You can add new users to the system. Please fill in the details below",
+  "deleteUserDescription": "You are about to delete the user '{{username}}'",
+
+  "goToYourOrganization": "Go to Your Organization",
+  "goToYourOrganizationDescription": "Enter your organization's unique identifier to access it",
+
+  "createNewOrganization": "Create New Organization",
+  "createNewOrganizationDescription": "Setup a new organization. Please fill in the details below",
+
+  "goBackHome": "Go Back Home"
 }

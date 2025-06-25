@@ -2,7 +2,7 @@ import { BadRequestException, ConflictException, Injectable } from "@nestjs/comm
 import { PrismaService } from "../prisma/prisma.service";
 import { type CreateOrgDto } from "./org.dto";
 import { type Organization, UserRole } from "../prisma/generated/client";
-import { isValidSlug, slugify } from "../utils";
+import { slugify, isValidSlug } from "@tech-zone-store/utils";
 import * as argon2 from "argon2";
 
 @Injectable()
@@ -38,5 +38,15 @@ export class OrgService {
         },
       },
     });
+  }
+
+  async exists(orgSlug: string): Promise<boolean> {
+    if (!isValidSlug(orgSlug)) throw new BadRequestException("Invalid slug format");
+
+    const org = await this.prisma.organization.findUnique({
+      where: { slug: orgSlug },
+    });
+
+    return !!org;
   }
 }

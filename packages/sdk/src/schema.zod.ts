@@ -9,6 +9,8 @@ export const CreateOrgDto = z
   })
   .passthrough();
 
+export const OrgExistsDto = z.object({ slug: z.string() }).passthrough();
+
 export const CreateUserDto = z
   .object({ username: z.string(), password: z.string().min(8) })
   .passthrough();

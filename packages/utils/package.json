@@ -1,0 +1,19 @@
+{
+  "name": "@tech-zone-store/utils",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "lint": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.3",
+    "tsdown": "^0.12.7",
+    "typescript": "^5.8.3"
+  }
+}

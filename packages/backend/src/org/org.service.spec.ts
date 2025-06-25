@@ -5,7 +5,7 @@ import { useRandomDatabase } from "../../e2e/utils";
 import { UserRole } from "../prisma/generated";
 import argon2 from "argon2";
 import { BadRequestException, ConflictException } from "@nestjs/common";
-import { slugify } from "../utils";
+import { slugify } from "@tech-zone-store/utils";
 
 describe("OrgService", async () => {
   let service: OrgService;
@@ -76,5 +76,40 @@ describe("OrgService", async () => {
     expect(org).toBeDefined();
     expect(org!.name).toBe("Another Org");
     expect(org!.slug).toBe(slugify("Another Org"));
+  });
+
+  it("should check if organization exists", async () => {
+    const createOrgDto = {
+      name: "Check Org",
+      username: "admin3",
+      password: "12345678",
+      slug: "check-org",
+    };
+    await service.create(createOrgDto);
+    const exists = await service.exists("check-org");
+    expect(exists).toBe(true);
+  });
+
+  it("should create multiple organizations with different slugs", async () => {
+    const org1 = await service.create({
+      name: "Org One",
+      username: "admin1",
+      password: "password1",
+      slug: "org-one",
+    });
+    expect(org1.slug).toBe("org-one");
+
+    const org2 = await service.create({
+      name: "Org Two",
+      username: "admin2",
+      password: "password2",
+      slug: "org-two",
+    });
+    expect(org2.slug).toBe("org-two");
+
+    const exists1 = await service.exists("org-one");
+    const exists2 = await service.exists("org-two");
+    expect(exists1).toBe(true);
+    expect(exists2).toBe(true);
   });
 });

@@ -134,7 +134,7 @@ function Users() {
 
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>{t("confirm")}</AlertDialogTitle>
+                        <AlertDialogTitle>{t("areYouSure")}</AlertDialogTitle>
                       </AlertDialogHeader>
                       <AlertDialogDescription>
                         {t("deleteUserDescription", { username: user.username })}

@@ -41,14 +41,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }),
   });
 
-  const login = useCallback(async (username: string, password: string) => {
+  const login = useCallback(async (username: string, password: string, orgSlug: string) => {
     const { data: user, error } = await loginMutation.mutateAsync({
       username,
       password,
-      orgSlug: "tech-zone",
+      orgSlug,
     });
 
-    if (!user) throw new Error(`Login failed: ${(error as any)?.message}`);
+    if (error) throw error;
 
     setStoredUser(user);
     setUser(user);
@@ -64,12 +64,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }),
   });
 
-  const logout = useCallback(async () => {
-    await logoutMutation.mutateAsync("tech-zone");
+  const logout = useCallback(
+    async (orgSlug: string) => {
+      await logoutMutation.mutateAsync(orgSlug);
 
-    setStoredUser(null);
-    setUser(null);
-  }, [user]);
+      setStoredUser(null);
+      setUser(null);
+    },
+    [user],
+  );
 
   useEffect(() => setUser(getStoredUser()), []);
 

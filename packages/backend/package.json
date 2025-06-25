@@ -22,7 +22,8 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.3",
     "@nestjs/swagger": "^11.2.0",
-    "@prisma/client": "^6.9.0",
+    "@prisma/client": "^6.10.1",
+    "@tech-zone-store/utils": "workspace:^",
     "argon2": "^0.43.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
@@ -35,16 +36,16 @@
   "devDependencies": {
     "@nestjs/testing": "^11.1.3",
     "@types/express": "^5.0.3",
-    "@types/node": "^24.0.3",
+    "@types/node": "^24.0.4",
     "@types/passport": "^1.0.17",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "dotenv": "^16.5.0",
-    "prisma": "^6.9.0",
-    "tsdown": "^0.12.7",
+    "prisma": "^6.10.1",
+    "tsdown": "^0.12.9",
     "typescript": "^5.8.3",
-    "unplugin-swc": "^1.5.4",
-    "vite": "^6.3.5",
-    "vitest": "^3.2.3"
+    "unplugin-swc": "^1.5.5",
+    "vite": "^7.0.0",
+    "vitest": "^3.2.4"
   }
 }

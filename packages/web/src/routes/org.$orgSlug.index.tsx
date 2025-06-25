@@ -11,11 +11,15 @@ export const Route = createFileRoute("/org/$orgSlug/")({
 });
 
 function Index() {
+  const { orgSlug } = Route.useParams();
+
   return (
     <div>
       <div className="flex flex-col items-center justify-center min-h-svh p-6">
         <div className="text-6xl font-bold mb-4">🏠</div>
-        <h1 className="text-3xl font-semibold text-center">Welcome to Tech Zone Store</h1>
+        <h1 className="text-3xl font-semibold text-center">
+          Welcome to <span className="text-blue-400">{orgSlug}</span>
+        </h1>
         <p className="text-lg text-center mt-2 text-gray-400">
           Your one-stop shop for all tech needs
         </p>

@@ -2,7 +2,7 @@ model Store {
   id String @id @default(uuid())
 
   name    String
-  slug    String @unique
+  slug    String
   balance Int    @default(0)
 
   createdAt DateTime @default(now())

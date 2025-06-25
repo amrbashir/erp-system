@@ -29,3 +29,10 @@ export class CreateOrgDto {
   @MinLength(8)
   password: string;
 }
+
+export class OrgExistsDto {
+  @ApiProperty()
+  @IsAscii()
+  @IsNotEmpty()
+  slug: string;
+}

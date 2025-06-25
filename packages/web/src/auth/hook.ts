@@ -3,8 +3,8 @@ import type { AuthUser } from "@/auth/user";
 
 export interface AuthContext {
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
+  login: (username: string, password: string, orgSlug: string) => Promise<void>;
+  logout: (orgSlug: string) => Promise<void>;
   user: AuthUser | null;
 }
 
