@@ -9,7 +9,7 @@ export const CreateOrgDto = z
   })
   .passthrough();
 
-export const OrgExistsDto = z.object({ slug: z.string() }).passthrough();
+export const OrganizationEntity = z.object({ name: z.string(), slug: z.string() }).passthrough();
 
 export const CreateUserDto = z
   .object({

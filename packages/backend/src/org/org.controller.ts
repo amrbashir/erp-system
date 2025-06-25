@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post } from "@nestjs/common";
-import { CreateOrgDto, OrgExistsDto } from "./org.dto";
+import { CreateOrgDto, OrganizationEntity } from "./org.dto";
 import { OrgService } from "./org.service";
-import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 @ApiTags("org")
 @Controller("org")
@@ -13,9 +13,9 @@ export class OrgController {
     await this.orgService.create(createOrgDto);
   }
 
-  @Post("exists")
-  @ApiOkResponse({ type: Boolean })
-  async exists(@Body() orgExistsDto: OrgExistsDto): Promise<boolean> {
-    return this.orgService.exists(orgExistsDto.slug);
+  @Get(":orgSlug")
+  @ApiOkResponse({ type: OrganizationEntity })
+  async getOrg(@Param("orgSlug") orgSlug: string) {
+    return this.orgService.findOrgBySlug(orgSlug);
   }
 }

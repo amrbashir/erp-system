@@ -89,5 +89,7 @@
   "createNewOrganization": "أنشىء مؤسسة جديدة",
   "createNewOrganizationDescription": "قم بإعداد مؤسسة جديدة. يرجى ملء التفاصيل أدناه",
 
-  "goBackHome": "العودة إلى الصفحة الرئيسية"
+  "goBackHome": "العودة إلى الصفحة الرئيسية",
+
+  "loadingOrganization": "جارٍ تحميل المؤسسة..."
 }

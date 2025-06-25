@@ -89,5 +89,7 @@
   "createNewOrganization": "Create New Organization",
   "createNewOrganizationDescription": "Setup a new organization. Please fill in the details below",
 
-  "goBackHome": "Go Back Home"
+  "goBackHome": "Go Back Home",
+
+  "loadingOrganization": "Loading organization..."
 }

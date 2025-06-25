@@ -1,16 +1,15 @@
 import { createRootRouteWithContext, HeadContent, Outlet } from "@tanstack/react-router";
 import { ThemeProvider } from "@/components/theme-provider";
 import { useTranslation } from "react-i18next";
-import type { AuthContext } from "@/auth/hook";
+import type { AuthProviderState } from "@/auth/provider";
 import { DirectionProvider } from "@radix-ui/react-direction";
 import { useEffect } from "react";
 import type { UserEntity } from "@erp-system/sdk/zod";
 import { z } from "zod";
 import { Toaster } from "@/shadcn/components/ui/sonner";
-import i18n from "@/i18n";
 
 interface RouterContext {
-  auth: AuthContext;
+  auth: AuthProviderState;
   title: string;
   icon?: React.ComponentType;
   roleRequirement?: z.infer<typeof UserEntity>["role"];

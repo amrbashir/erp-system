@@ -1,4 +1,5 @@
 import { NavigationHeader } from "@/components/navigation-header";
+import { OrgProvider } from "@/components/org-provider";
 import { AppSideBar } from "@/components/sidebar";
 import { SidebarProvider } from "@/shadcn/components/ui/sidebar";
 import { createFileRoute, Outlet, redirect, useMatches } from "@tanstack/react-router";
@@ -51,13 +52,15 @@ function Org() {
   const hideUi = matches.some((match) => match.context && match.context?.hideUI);
   return (
     <>
-      <SidebarProvider defaultOpen={defaultOpen}>
-        {!hideUi && <AppSideBar />}
-        <div id="outlet-container" className="w-screen *:px-4 *:py-2 rounded-2xl m-2">
-          {!hideUi && <NavigationHeader />}
-          <Outlet />
-        </div>
-      </SidebarProvider>
+      <OrgProvider>
+        <SidebarProvider defaultOpen={defaultOpen}>
+          {!hideUi && <AppSideBar />}
+          <div id="outlet-container" className="w-screen *:px-4 *:py-2 rounded-2xl m-2">
+            {!hideUi && <NavigationHeader />}
+            <Outlet />
+          </div>
+        </SidebarProvider>
+      </OrgProvider>
     </>
   );
 }

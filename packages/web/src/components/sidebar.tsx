@@ -11,17 +11,18 @@ import {
   SidebarFooter,
 } from "@/shadcn/components/ui/sidebar";
 import type { FileRoutesById } from "@/routeTree.gen";
-import { Link, useLocation, useParams, useRouter } from "@tanstack/react-router";
+import { Link, useLocation, useRouter } from "@tanstack/react-router";
 import { UserDropdown } from "@/components/user-dropdown";
 import { Label } from "@/shadcn/components/ui/label";
 import { useTranslation } from "react-i18next";
+import { useOrg } from "./org-provider";
 
 export function AppSideBar() {
   const { open } = useSidebar();
   const { i18n } = useTranslation();
   const { flatRoutes } = useRouter();
   const currentLocation = useLocation({ select: (state) => state.pathname });
-  const { orgSlug } = useParams({ strict: false });
+  const { slug: orgSlug } = useOrg();
 
   const sidebarRoutes: (keyof FileRoutesById)[] = [
     "/org/$orgSlug/",

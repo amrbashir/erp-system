@@ -1,5 +1,5 @@
 import { apiClient } from "@/api-client";
-import { useAuth } from "@/auth/hook";
+import { useAuth } from "@/auth/provider";
 import { AddUserDialog } from "@/components/add-user-dialog";
 import i18n from "@/i18n";
 import {
@@ -37,6 +37,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import type z from "zod";
+import { useOrg } from "@/components/org-provider";
 
 export const Route = createFileRoute("/org/$orgSlug/users")({
   component: Users,
@@ -44,18 +45,14 @@ export const Route = createFileRoute("/org/$orgSlug/users")({
 });
 
 function Users() {
-  const { orgSlug } = Route.useParams();
+  const { slug: orgSlug } = useOrg();
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
 
   const { data: users, refetch: refetchUsers } = useQuery({
     queryKey: ["users", user?.username],
     queryFn: async () =>
-      apiClient.get("/org/{orgSlug}/user/getAll", {
-        params: {
-          path: { orgSlug },
-        },
-      }),
+      apiClient.get("/org/{orgSlug}/user/getAll", { params: { path: { orgSlug } } }),
     select: (res) => res.data,
   });
 
@@ -66,12 +63,7 @@ function Users() {
     mutateAsync: deleteUser,
   } = useMutation({
     mutationFn: async (body: z.infer<typeof DeleteUserDto>) =>
-      apiClient.delete("/org/{orgSlug}/user/delete", {
-        body,
-        params: {
-          path: { orgSlug },
-        },
-      }),
+      apiClient.delete("/org/{orgSlug}/user/delete", { body, params: { path: { orgSlug } } }),
     onSuccess: () => refetchUsers(),
   });
 

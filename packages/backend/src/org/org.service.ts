@@ -40,13 +40,13 @@ export class OrgService {
     });
   }
 
-  async exists(orgSlug: string): Promise<boolean> {
-    if (!isValidSlug(orgSlug)) throw new BadRequestException("Invalid slug format");
-
-    const org = await this.prisma.organization.findUnique({
-      where: { slug: orgSlug },
+  async findOrgBySlug(slug: string): Promise<Pick<Organization, "name" | "slug"> | null> {
+    return this.prisma.organization.findUnique({
+      where: { slug },
+      select: {
+        name: true,
+        slug: true,
+      },
     });
-
-    return !!org;
   }
 }

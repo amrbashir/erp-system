@@ -4,7 +4,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@/shadcn/components/ui/dropdown-menu";
-import { useTheme, themeVariants } from "@/components/theme-provider";
+import { useTheme, THEME_VARIANTS } from "@/components/theme-provider";
 import { useTranslation } from "react-i18next";
 
 export function ThemeSelector() {
@@ -15,7 +15,7 @@ export function ThemeSelector() {
     <DropdownMenuSub>
       <DropdownMenuSubTrigger>{t("theme")}</DropdownMenuSubTrigger>
       <DropdownMenuSubContent>
-        {themeVariants.map(({ theme, icon: Icon }) => {
+        {THEME_VARIANTS.map(({ theme, icon: Icon }) => {
           return (
             <DropdownMenuCheckboxItem
               key={theme}

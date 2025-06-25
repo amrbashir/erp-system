@@ -1,10 +1,26 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { apiClient } from "@/api-client";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { LoginUserDto } from "@erp-system/sdk/zod";
 import { getStoredUser, isStorageKeyForUser, setStoredUser, type AuthUser } from "./user";
-import { AuthContext } from "./hook";
+
+export interface AuthProviderState {
+  isAuthenticated: boolean;
+  login: (username: string, password: string, orgSlug: string) => Promise<void>;
+  logout: (orgSlug: string) => Promise<void>;
+  user: AuthUser | null;
+}
+
+const AuthContext = createContext<AuthProviderState | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(getStoredUser());
@@ -82,3 +98,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     </AuthContext.Provider>
   );
 }
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
+  return context;
+};

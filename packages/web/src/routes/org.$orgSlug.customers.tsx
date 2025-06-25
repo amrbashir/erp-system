@@ -1,4 +1,5 @@
 import { apiClient } from "@/api-client";
+import { useOrg } from "@/components/org-provider";
 import i18n from "@/i18n";
 import {
   Table,
@@ -22,18 +23,14 @@ export const Route = createFileRoute("/org/$orgSlug/customers")({
 });
 
 function Customers() {
-  const { orgSlug } = Route.useParams();
+  const { slug: orgSlug } = useOrg();
 
   const { t, i18n } = useTranslation();
 
   const { data: customers } = useQuery({
     queryKey: ["customers"],
     queryFn: async () =>
-      apiClient.get("/org/{orgSlug}/customer/getAll", {
-        params: {
-          path: { orgSlug },
-        },
-      }),
+      apiClient.get("/org/{orgSlug}/customer/getAll", { params: { path: { orgSlug } } }),
     select: (res) => res.data,
   });
 

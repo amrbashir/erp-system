@@ -7,6 +7,7 @@ import {
   MinLength,
 } from "class-validator";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import type { Organization } from "../prisma/generated/client";
 
 export class CreateOrgDto {
   @ApiProperty()
@@ -30,9 +31,10 @@ export class CreateOrgDto {
   password: string;
 }
 
-export class OrgExistsDto {
+export class OrganizationEntity implements Partial<Organization> {
   @ApiProperty()
-  @IsAscii()
-  @IsNotEmpty()
+  name: string;
+
+  @ApiProperty()
   slug: string;
 }

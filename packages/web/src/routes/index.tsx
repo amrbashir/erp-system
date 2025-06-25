@@ -61,9 +61,8 @@ function GoToganizationCard() {
       slug: "",
     },
     onSubmit: async ({ value, formApi }) => {
-      const { slug } = value;
-      const { data: exists, error } = await apiClient.post("/org/exists", {
-        body: { slug },
+      const { data: org, error } = await apiClient.get("/org/{orgSlug}", {
+        params: { path: { orgSlug: value.slug } },
       });
 
       if (error) {
@@ -71,14 +70,14 @@ function GoToganizationCard() {
         return;
       }
 
-      if (!exists) {
+      if (!org) {
         formApi.setErrorMap({ onSubmit: "organizationNotFound" as any });
         return;
       }
 
       router.navigate({
         to: "/org/$orgSlug",
-        params: { orgSlug: slug },
+        params: { orgSlug: org.slug },
       });
     },
   });

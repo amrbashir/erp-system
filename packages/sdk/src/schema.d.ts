@@ -20,16 +20,16 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/org/exists": {
+    "/org/{orgSlug}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        get: operations["OrgController$1_getOrg"];
         put?: never;
-        post: operations["OrgController$1_exists"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -174,7 +174,8 @@ export interface components {
             username: string;
             password: string;
         };
-        OrgExistsDto: {
+        OrganizationEntity: {
+            name: string;
             slug: string;
         };
         CreateUserDto: {
@@ -258,25 +259,23 @@ export interface operations {
             };
         };
     };
-    OrgController$1_exists: {
+    OrgController$1_getOrg: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                orgSlug: string;
+            };
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["OrgExistsDto"];
-            };
-        };
+        requestBody?: never;
         responses: {
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": boolean;
+                    "application/json": components["schemas"]["OrganizationEntity"];
                 };
             };
         };

@@ -1,4 +1,4 @@
-import { useAuth } from "@/auth/hook";
+import { useAuth } from "@/auth/provider";
 import { Button } from "@/shadcn/components/ui/button";
 import {
   Card,
@@ -10,12 +10,13 @@ import {
 import { Input } from "@/shadcn/components/ui/input";
 import { Label } from "@/shadcn/components/ui/label";
 import i18n from "@/i18n";
-import { createFileRoute, useParams, useRouter, Link } from "@tanstack/react-router";
+import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Separator } from "@/shadcn/components/ui/separator";
 import { useForm } from "@tanstack/react-form";
 import { Loader2Icon } from "lucide-react";
 import { FormErrors } from "@/components/form-errors";
+import { useOrg } from "@/components/org-provider";
 
 export const Route = createFileRoute("/org/$orgSlug/login")({
   component: Login,
@@ -26,7 +27,8 @@ function Login() {
   const router = useRouter();
   const { t } = useTranslation();
   const { login } = useAuth();
-  const { orgSlug } = useParams({ strict: false });
+
+  const { slug: orgSlug } = useOrg();
 
   const form = useForm({
     defaultValues: {
@@ -37,7 +39,7 @@ function Login() {
       const { username, password } = value;
 
       try {
-        await login(username, password, orgSlug!);
+        await login(username, password, orgSlug);
         const search = router.state.location.search as { redirect?: string };
         router.history.push(search.redirect || "/org/" + orgSlug + "/");
       } catch (error: any) {

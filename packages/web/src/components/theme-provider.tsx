@@ -1,28 +1,28 @@
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { createContext, useContext, useEffect, useState } from "react";
 
-export const themeVariants = [
+export const THEME_VARIANTS = [
   { theme: "system", icon: MonitorIcon },
   { theme: "dark", icon: MoonIcon },
   { theme: "light", icon: SunIcon },
 ] as const;
 
-export type Theme = (typeof themeVariants)[number]["theme"];
-export type ThemeIcon = (typeof themeVariants)[number]["icon"];
+export type Theme = (typeof THEME_VARIANTS)[number]["theme"];
+export type ThemeIcon = (typeof THEME_VARIANTS)[number]["icon"];
 
-type ThemeProviderProps = {
+export type ThemeProviderProps = {
   children: React.ReactNode;
   defaultTheme?: Theme;
   storageKey?: string;
 };
 
-type ThemeProviderState = {
+export type ThemeProviderState = {
   theme: Theme;
   setTheme: (theme: Theme) => void;
 };
 
 const initialState: ThemeProviderState = {
-  theme: themeVariants[0].theme,
+  theme: THEME_VARIANTS[0].theme,
   setTheme: () => null,
 };
 
@@ -72,6 +72,6 @@ export function ThemeProvider({
 
 export const useTheme = () => {
   const context = useContext(ThemeProviderContext);
-  if (context === undefined) throw new Error("useTheme must be used within a ThemeProvider");
+  if (!context) throw new Error("useTheme must be used within a ThemeProvider");
   return context;
 };

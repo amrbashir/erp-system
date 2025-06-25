@@ -25,13 +25,12 @@ import { CreateUserDto } from "@erp-system/sdk/zod";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Loader2Icon } from "lucide-react";
-import { useParams } from "@tanstack/react-router";
 import { FormFieldError, FormErrors } from "./form-errors";
-import type { z } from "zod";
 import type { UserRole } from "@/auth/user";
+import { useOrg } from "./org-provider";
 
 export function AddUserDialog() {
-  const { orgSlug } = useParams({ strict: false });
+  const { slug: orgSlug } = useOrg();
   const { t } = useTranslation();
   const client = useQueryClient();
 
@@ -51,14 +50,8 @@ export function AddUserDialog() {
     onSubmit: async ({ value, formApi }) => {
       const { username, password, role } = value;
       const { error } = await apiClient.post("/org/{orgSlug}/user/create", {
-        body: {
-          username,
-          password,
-          role,
-        },
-        params: {
-          path: { orgSlug: orgSlug! },
-        },
+        body: { username, password, role },
+        params: { path: { orgSlug: orgSlug! } },
       });
 
       if (error) {

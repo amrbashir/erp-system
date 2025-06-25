@@ -1,4 +1,4 @@
-import { useAuth } from "@/auth/hook";
+import { useAuth } from "@/auth/provider";
 import { Avatar, AvatarFallback } from "@/shadcn/components/ui/avatar";
 import {
   DropdownMenu,
@@ -17,24 +17,25 @@ import {
 import { EllipsisVerticalIcon } from "lucide-react";
 import { LanguageSelector } from "@/components/language-selector";
 import { ThemeSelector } from "@/components/theme-selector";
-import { useLocation, useParams, useRouter } from "@tanstack/react-router";
+import { useLocation, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { useOrg } from "./org-provider";
 
 export function UserDropdown() {
   const { t } = useTranslation();
   const router = useRouter();
   const location = useLocation();
-  const { orgSlug } = useParams({ strict: false });
+  const { slug: orgSlug } = useOrg();
 
   const { isMobile } = useSidebar();
 
   const { user, logout: authLogout } = useAuth();
 
   async function logout() {
-    await authLogout(orgSlug!);
+    await authLogout(orgSlug);
     router.navigate({
       to: "/org/$orgSlug/login",
-      params: { orgSlug: orgSlug! },
+      params: { orgSlug },
       search: {
         redirect: "redirect" in location.search ? location.search.redirect : location.href,
       },
