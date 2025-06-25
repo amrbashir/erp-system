@@ -8,8 +8,9 @@
     "web": "pnpm run --filter @tech-zone-store/web --",
     "sdk": "pnpm run --filter @tech-zone-store/sdk --",
     "utils": "pnpm run --filter @tech-zone-store/utils --",
-    "test": "pnpm -r build && pnpm -r test",
-    "lint": "pnpm -r build && pnpm -r lint",
+    "build": "pnpm utils build && pnpm backend build && pnpm sdk build && pnpm web build",
+    "test": "pnpm build && pnpm -r test",
+    "lint": "pnpm build && pnpm -r lint",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
