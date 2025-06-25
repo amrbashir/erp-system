@@ -1,11 +1,12 @@
-import { it, expect, beforeEach, afterEach, describe } from "vitest";
-import { OrgService } from "./org.service";
-import { PrismaService } from "../prisma/prisma.service";
+import { slugify } from "@erp-system/utils";
+import { BadRequestException, ConflictException } from "@nestjs/common";
+import argon2 from "argon2";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
 import { useRandomDatabase } from "../../e2e/utils";
 import { UserRole } from "../prisma/generated/client";
-import argon2 from "argon2";
-import { BadRequestException, ConflictException } from "@nestjs/common";
-import { slugify } from "@erp-system/utils";
+import { PrismaService } from "../prisma/prisma.service";
+import { OrgService } from "./org.service";
 
 describe("OrgService", async () => {
   let service: OrgService;

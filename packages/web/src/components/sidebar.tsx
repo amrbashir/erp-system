@@ -1,21 +1,23 @@
+import { Link, useLocation, useRouter } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
+import { Label } from "@/shadcn/components/ui/label";
 import {
   Sidebar,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   useSidebar,
-  SidebarFooter,
 } from "@/shadcn/components/ui/sidebar";
+
 import type { FileRoutesById } from "@/routeTree.gen";
-import { Link, useLocation, useRouter } from "@tanstack/react-router";
+
+import { useOrg } from "@/components/org-provider";
 import { UserDropdown } from "@/components/user-dropdown";
-import { Label } from "@/shadcn/components/ui/label";
-import { useTranslation } from "react-i18next";
-import { useOrg } from "./org-provider";
 
 export function AppSideBar() {
   const { open } = useSidebar();

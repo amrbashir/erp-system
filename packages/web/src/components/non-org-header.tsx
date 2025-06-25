@@ -1,14 +1,16 @@
-import { Button } from "@/shadcn/components/ui/button";
 import { useMatches } from "@tanstack/react-router";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
-import { useTheme } from "@/components/theme-provider";
-import { LanguageSelector } from "./language-selector";
+import { Button } from "@/shadcn/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/shadcn/components/ui/dropdown-menu";
+
+import { useTheme } from "@/components/theme-provider";
+
+import { LanguageSelector } from "./language-selector";
 
 export function NonOrgHeader() {
   const { i18n } = useTranslation();

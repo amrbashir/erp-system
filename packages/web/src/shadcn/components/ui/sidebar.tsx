@@ -1,10 +1,7 @@
-import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { PanelLeftIcon } from "lucide-react";
-
-import { useIsMobile } from "@/shadcn/hooks/use-mobile";
-import { cn } from "@/shadcn/lib/utils";
+import * as React from "react";
 import { Button } from "@/shadcn/components/ui/button";
 import { Input } from "@/shadcn/components/ui/input";
 import { Separator } from "@/shadcn/components/ui/separator";
@@ -22,6 +19,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/shadcn/components/ui/tooltip";
+import { useIsMobile } from "@/shadcn/hooks/use-mobile";
+import { cn } from "@/shadcn/lib/utils";
+
+import type { VariantProps } from "class-variance-authority";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;

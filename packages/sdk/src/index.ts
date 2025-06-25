@@ -1,5 +1,7 @@
+import createFetchClient from "openapi-fetch";
+
 import type { paths } from "./schema";
-import createFetchClient, { type ClientOptions as FetchClientOptions } from "openapi-fetch";
+import type { ClientOptions as FetchClientOptions } from "openapi-fetch";
 
 export type ClientOptions = FetchClientOptions & {
   headers?: {

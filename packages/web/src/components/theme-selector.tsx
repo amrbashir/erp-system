@@ -1,11 +1,12 @@
+import { useTranslation } from "react-i18next";
 import {
   DropdownMenuCheckboxItem,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
 } from "@/shadcn/components/ui/dropdown-menu";
-import { useTheme, THEME_VARIANTS } from "@/components/theme-provider";
-import { useTranslation } from "react-i18next";
+
+import { THEME_VARIANTS, useTheme } from "@/components/theme-provider";
 
 export function ThemeSelector() {
   const { t } = useTranslation();

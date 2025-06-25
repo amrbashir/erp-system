@@ -1,10 +1,12 @@
-import { it, expect, describe, beforeEach, afterEach } from "vitest";
-import { OrgService } from "./org.service";
-import { OrgController } from "./org.controller";
+import { Test } from "@nestjs/testing";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
+import type { CreateOrgDto } from "./org.dto";
+
 import { useRandomDatabase } from "../../e2e/utils";
 import { PrismaService } from "../prisma/prisma.service";
-import { Test } from "@nestjs/testing";
-import type { CreateOrgDto } from "./org.dto";
+import { OrgController } from "./org.controller";
+import { OrgService } from "./org.service";
 
 describe("OrgController", async () => {
   let service: OrgService;

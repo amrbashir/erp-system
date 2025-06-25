@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { cn } from "@/shadcn/lib/utils";
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {

@@ -1,9 +1,10 @@
+import { createFileRoute, Outlet, redirect, useMatches } from "@tanstack/react-router";
+import clsx from "clsx";
+import { SidebarProvider } from "@/shadcn/components/ui/sidebar";
+
 import { NavigationHeader } from "@/components/navigation-header";
 import { OrgProvider } from "@/components/org-provider";
 import { AppSideBar } from "@/components/sidebar";
-import { SidebarProvider } from "@/shadcn/components/ui/sidebar";
-import { createFileRoute, Outlet, redirect, useMatches } from "@tanstack/react-router";
-import clsx from "clsx";
 
 export const Route = createFileRoute("/org")({
   component: Org,

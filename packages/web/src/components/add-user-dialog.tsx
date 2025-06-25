@@ -1,16 +1,22 @@
-import { apiClient } from "@/api-client";
+import { CreateUserDto } from "@erp-system/sdk/zod";
+import { useForm } from "@tanstack/react-form";
+import { useQueryClient } from "@tanstack/react-query";
+import { Loader2Icon } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
 import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogDescription,
 } from "@/shadcn/components/ui/dialog";
 import { Input } from "@/shadcn/components/ui/input";
+import { Label } from "@/shadcn/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -18,16 +24,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shadcn/components/ui/select";
-import { Label } from "@/shadcn/components/ui/label";
-import { useForm } from "@tanstack/react-form";
-import { useQueryClient } from "@tanstack/react-query";
-import { CreateUserDto } from "@erp-system/sdk/zod";
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Loader2Icon } from "lucide-react";
-import { FormFieldError, FormErrors } from "./form-errors";
+
 import type { UserRole } from "@/auth/user";
-import { useOrg } from "./org-provider";
+
+import { apiClient } from "@/api-client";
+import { FormErrors, FormFieldError } from "@/components/form-errors";
+import { useOrg } from "@/components/org-provider";
 
 export function AddUserDialog() {
   const { slug: orgSlug } = useOrg();

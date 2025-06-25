@@ -1,5 +1,6 @@
-import { it, expect, describe } from "vitest";
-import { slugify, isValidSlug } from "./slug";
+import { describe, expect, it } from "vitest";
+
+import { isValidSlug, slugify } from "./slug";
 
 describe("slugify", () => {
   it("converts string to lowercase", () => {

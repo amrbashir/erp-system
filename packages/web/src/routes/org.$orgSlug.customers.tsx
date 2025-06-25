@@ -1,6 +1,7 @@
-import { apiClient } from "@/api-client";
-import { useOrg } from "@/components/org-provider";
-import i18n from "@/i18n";
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { UsersIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   Table,
   TableBody,
@@ -9,10 +10,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/shadcn/components/ui/table";
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
-import { UsersIcon } from "lucide-react";
-import { useTranslation } from "react-i18next";
+
+import { apiClient } from "@/api-client";
+import { useOrg } from "@/components/org-provider";
+import i18n from "@/i18n";
 
 export const Route = createFileRoute("/org/$orgSlug/customers")({
   component: Customers,

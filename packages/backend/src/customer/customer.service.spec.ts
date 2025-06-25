@@ -1,9 +1,11 @@
-import { it, expect, beforeEach, afterEach, describe } from "vitest";
-import { CustomerService } from "./customer.service";
-import { PrismaService } from "../prisma/prisma.service";
-import { OrgService } from "../org/org.service";
-import { useRandomDatabase } from "../../e2e/utils";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
 import type { CreateCustomerDto } from "./customer.dto";
+
+import { useRandomDatabase } from "../../e2e/utils";
+import { OrgService } from "../org/org.service";
+import { PrismaService } from "../prisma/prisma.service";
+import { CustomerService } from "./customer.service";
 
 describe("CustomerService", async () => {
   let service: CustomerService;

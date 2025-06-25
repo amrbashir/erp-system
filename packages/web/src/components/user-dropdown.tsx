@@ -1,4 +1,6 @@
-import { useAuth } from "@/auth/provider";
+import { useLocation, useRouter } from "@tanstack/react-router";
+import { EllipsisVerticalIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback } from "@/shadcn/components/ui/avatar";
 import {
   DropdownMenu,
@@ -14,12 +16,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/shadcn/components/ui/sidebar";
-import { EllipsisVerticalIcon } from "lucide-react";
+
+import { useAuth } from "@/auth/provider";
 import { LanguageSelector } from "@/components/language-selector";
+import { useOrg } from "@/components/org-provider";
 import { ThemeSelector } from "@/components/theme-selector";
-import { useLocation, useRouter } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
-import { useOrg } from "./org-provider";
 
 export function UserDropdown() {
   const { t } = useTranslation();

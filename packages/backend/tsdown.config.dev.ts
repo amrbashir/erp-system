@@ -1,5 +1,9 @@
-import { type ChildProcess, spawn } from "node:child_process";
+import { spawn } from "node:child_process";
+
 import { defineConfig } from "tsdown/config";
+
+import type { ChildProcess } from "node:child_process";
+
 import baseConfig from "./tsdown.config";
 
 let devProcess: ChildProcess | undefined;

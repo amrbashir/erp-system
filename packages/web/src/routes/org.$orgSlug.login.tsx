@@ -1,4 +1,7 @@
-import { useAuth } from "@/auth/provider";
+import { useForm } from "@tanstack/react-form";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { Loader2Icon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
 import {
   Card,
@@ -9,14 +12,12 @@ import {
 } from "@/shadcn/components/ui/card";
 import { Input } from "@/shadcn/components/ui/input";
 import { Label } from "@/shadcn/components/ui/label";
-import i18n from "@/i18n";
-import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 import { Separator } from "@/shadcn/components/ui/separator";
-import { useForm } from "@tanstack/react-form";
-import { Loader2Icon } from "lucide-react";
+
+import { useAuth } from "@/auth/provider";
 import { FormErrors } from "@/components/form-errors";
 import { useOrg } from "@/components/org-provider";
+import i18n from "@/i18n";
 
 export const Route = createFileRoute("/org/$orgSlug/login")({
   component: Login,

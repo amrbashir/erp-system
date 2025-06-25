@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+
 import { useTestingApp } from "./utils";
 
 describe("Auth E2E", async () => {

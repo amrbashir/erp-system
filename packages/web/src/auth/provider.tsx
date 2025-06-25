@@ -1,17 +1,13 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
-import { apiClient } from "@/api-client";
-import { useMutation } from "@tanstack/react-query";
-import { z } from "zod";
 import { LoginUserDto } from "@erp-system/sdk/zod";
-import { getStoredUser, isStorageKeyForUser, setStoredUser, type AuthUser } from "./user";
+import { useMutation } from "@tanstack/react-query";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { z } from "zod";
+
+import type { AuthUser } from "@/auth/user";
+import type { ReactNode } from "react";
+
+import { apiClient } from "@/api-client";
+import { getStoredUser, isStorageKeyForUser, setStoredUser } from "@/auth/user";
 
 export interface AuthProviderState {
   isAuthenticated: boolean;

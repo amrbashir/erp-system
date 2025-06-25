@@ -1,6 +1,8 @@
-import { NestFactory } from "@nestjs/core";
-import { AppModule, generateOpenApiJson, setupApp } from "./app.module";
 import fs from "node:fs";
+
+import { NestFactory } from "@nestjs/core";
+
+import { AppModule, generateOpenApiJson, setupApp } from "./app.module";
 
 export async function main() {
   const app = await NestFactory.create(AppModule);

@@ -1,8 +1,10 @@
 import { exec } from "node:child_process";
-import { promisify } from "node:util";
-import { AppModule, setupApp } from "../src/app.module";
-import { Test } from "@nestjs/testing";
 import { createServer } from "node:net";
+import { promisify } from "node:util";
+
+import { Test } from "@nestjs/testing";
+
+import { AppModule, setupApp } from "../src/app.module";
 
 const execAsync = promisify(exec);
 
