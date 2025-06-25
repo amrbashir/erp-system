@@ -78,16 +78,18 @@ describe("OrgService", async () => {
     expect(org!.slug).toBe(slugify("Another Org"));
   });
 
-  it("should check if organization exists", async () => {
+  it("should get organization  if exists", async () => {
     const createOrgDto = {
       name: "Check Org",
       username: "admin3",
       password: "12345678",
       slug: "check-org",
     };
-    await service.create(createOrgDto);
-    const exists = await service.exists("check-org");
-    expect(exists).toBe(true);
+    const org = await service.create(createOrgDto);
+
+    const retrieved = await service.findOrgBySlug("check-org");
+
+    expect(org).toBe(retrieved);
   });
 
   it("should create multiple organizations with different slugs", async () => {
@@ -107,9 +109,10 @@ describe("OrgService", async () => {
     });
     expect(org2.slug).toBe("org-two");
 
-    const exists1 = await service.exists("org-one");
-    const exists2 = await service.exists("org-two");
-    expect(exists1).toBe(true);
-    expect(exists2).toBe(true);
+    const retrieved1 = await service.findOrgBySlug("org-one");
+    const retrieved2 = await service.findOrgBySlug("org-two");
+
+    expect(retrieved1).toBe(true);
+    expect(retrieved2).toBe(true);
   });
 });
