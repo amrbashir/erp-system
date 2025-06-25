@@ -33,7 +33,7 @@ function Login() {
       try {
         await login(username, password, orgSlug!);
         const search = router.state.location.search as { redirect?: string };
-        router.history.push(search.redirect || "/");
+        router.history.push(search.redirect || "/org/" + orgSlug + "/");
       } catch (error: any) {
         formApi.setErrorMap({ onSubmit: error });
       }

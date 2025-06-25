@@ -11,6 +11,13 @@ import {
   DialogDescription,
 } from "@/shadcn/components/ui/dialog";
 import { Input } from "@/shadcn/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shadcn/components/ui/select";
 import { Label } from "@/shadcn/components/ui/label";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
@@ -20,6 +27,8 @@ import { useTranslation } from "react-i18next";
 import { Loader2Icon } from "lucide-react";
 import { useParams } from "@tanstack/react-router";
 import { FormFieldError, FormErrors } from "./form-errors";
+import type { z } from "zod";
+import type { UserRole } from "@/auth/user";
 
 export function AddUserDialog() {
   const { orgSlug } = useParams({ strict: false });
@@ -34,16 +43,18 @@ export function AddUserDialog() {
     defaultValues: {
       username: "",
       password: "",
+      role: "USER" as UserRole,
     },
     validators: {
-      onSubmit: CreateUserDto,
+      onSubmit: CreateUserDto.required(),
     },
     onSubmit: async ({ value, formApi }) => {
-      const { username, password } = value;
+      const { username, password, role } = value;
       const { error } = await apiClient.post("/org/{orgSlug}/user/create", {
         body: {
           username,
           password,
+          role,
         },
         params: {
           path: { orgSlug: orgSlug! },
@@ -93,15 +104,37 @@ export function AddUserDialog() {
                 children={(field) => (
                   <>
                     <Label htmlFor={field.name}>{t(field.name)}</Label>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      type={field.name === "password" ? "password" : "text"}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      required
-                    />
-                    <FormFieldError field={field} />
+                    {field.name === "role" ? (
+                      <>
+                        <Select
+                          onValueChange={(e) => field.handleChange(e)}
+                          defaultValue={field.state.value}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {["USER", "ADMIN"].map((r) => (
+                              <SelectItem key={r} value={r}>
+                                {r}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </>
+                    ) : (
+                      <>
+                        <Input
+                          id={field.name}
+                          name={field.name}
+                          value={field.state.value}
+                          type={field.name === "password" ? "password" : "text"}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          required
+                        />
+                        <FormFieldError field={field} />
+                      </>
+                    )}
                   </>
                 )}
               />

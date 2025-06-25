@@ -17,12 +17,13 @@ import {
 import { EllipsisVerticalIcon } from "lucide-react";
 import { LanguageSelector } from "@/components/language-selector";
 import { ThemeSelector } from "@/components/theme-selector";
-import { useParams, useRouter } from "@tanstack/react-router";
+import { useLocation, useParams, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
 export function UserDropdown() {
   const { t } = useTranslation();
   const router = useRouter();
+  const location = useLocation();
   const { orgSlug } = useParams({ strict: false });
 
   const { isMobile } = useSidebar();
@@ -31,7 +32,13 @@ export function UserDropdown() {
 
   async function logout() {
     await authLogout(orgSlug!);
-    router.history.push(`/org/${orgSlug}/login`);
+    router.navigate({
+      to: "/org/$orgSlug/login",
+      params: { orgSlug: orgSlug! },
+      search: {
+        redirect: "redirect" in location.search ? location.search.redirect : location.href,
+      },
+    });
   }
 
   return (

@@ -12,7 +12,11 @@ export const CreateOrgDto = z
 export const OrgExistsDto = z.object({ slug: z.string() }).passthrough();
 
 export const CreateUserDto = z
-  .object({ username: z.string(), password: z.string().min(8) })
+  .object({
+    username: z.string(),
+    password: z.string().min(8),
+    role: z.enum(["USER", "ADMIN"]).optional(),
+  })
   .passthrough();
 
 export const DeleteUserDto = z.object({ username: z.string() }).passthrough();

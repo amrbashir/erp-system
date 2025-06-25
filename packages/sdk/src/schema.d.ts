@@ -180,6 +180,8 @@ export interface components {
         CreateUserDto: {
             username: string;
             password: string;
+            /** @enum {string} */
+            role?: "USER" | "ADMIN";
         };
         DeleteUserDto: {
             username: string;
