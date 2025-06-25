@@ -11,7 +11,7 @@
     "start": "node --env-file=.env dist/main.js",
     "start:dev": "node --env-file=.env.dev dist/main.js",
     "gen:openapi-json": "node --env-file=.env.dev dist/main.js gen-openapi-json",
-    "test": "vitest run",
+    "test": "docker compose up -d && vitest run",
     "test:watch": "vitest",
     "lint": "tsc --noEmit"
   },
