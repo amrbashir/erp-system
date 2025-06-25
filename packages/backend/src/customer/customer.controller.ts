@@ -9,7 +9,7 @@ import {
   ApiOkResponse,
 } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
-import type { Customer } from "../prisma/generated";
+import type { Customer } from "../prisma/generated/client";
 import type { PaginationDto } from "../pagination.dto";
 
 @UseGuards(JwtAuthGuard)

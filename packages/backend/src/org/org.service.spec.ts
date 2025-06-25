@@ -2,7 +2,7 @@ import { it, expect, beforeEach, afterEach, describe } from "vitest";
 import { OrgService } from "./org.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { useRandomDatabase } from "../../e2e/utils";
-import { UserRole } from "../prisma/generated";
+import { UserRole } from "../prisma/generated/client";
 import argon2 from "argon2";
 import { BadRequestException, ConflictException } from "@nestjs/common";
 import { slugify } from "@tech-zone-store/utils";

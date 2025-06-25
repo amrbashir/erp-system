@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty, IsOptional, IsString, Max, Min } from "class-validator";
-import type { Customer } from "../prisma/generated";
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import type { Customer } from "../prisma/generated/client";
 
 export class CreateCustomerDto {
   @ApiProperty()

@@ -3,7 +3,7 @@ import { UserService } from "./user.service";
 import { OrgService } from "../org/org.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { useRandomDatabase } from "../../e2e/utils";
-import { UserRole } from "../prisma/generated";
+import { UserRole } from "../prisma/generated/client";
 
 describe("UserService", async () => {
   let service: UserService;
