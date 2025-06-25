@@ -9,7 +9,7 @@
     "./zod": "./dist/schema.zod.js"
   },
   "scripts": {
-    "gen:openapi-json": "pnpm -w backend gen:openapi-json",
+    "gen:openapi-json": "pnpm -w backend build && pnpm -w backend gen:openapi-json",
     "gen:openapi-ts-schema": "openapi-typescript ../backend/dist/openapi.json -o ./src/schema.d.ts",
     "gen:openapi-zod-schema": "openapi-zod-client ../backend/dist/openapi.json -o ./src/schema.zod.ts -t openapi-zod.hbs",
     "gen": "pnpm gen:openapi-json && pnpm gen:openapi-ts-schema && pnpm gen:openapi-zod-schema",

@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "pnpm -w sdk build && tsc -b"
+    "build": "vite build",
+    "lint": "tsc -b"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.14",

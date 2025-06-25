@@ -10,10 +10,10 @@
     "dev": "docker compose up -d && tsdown --watch --config tsdown.config.dev.ts",
     "start": "node --env-file=.env dist/main.js",
     "start:dev": "node --env-file=.env.dev dist/main.js",
-    "gen:openapi-json": "pnpm build && node --env-file=.env.dev dist/main.js gen-openapi-json",
-    "test": "pnpm -w utils build && prisma generate && docker compose up -d && vitest run",
+    "gen:openapi-json": "node --env-file=.env.dev dist/main.js gen-openapi-json",
+    "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "prisma generate && tsc --noEmit"
+    "lint": "tsc --noEmit"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.3",

@@ -9,8 +9,8 @@
     "desktop": "pnpm run --filter @tech-zone-store/desktop --",
     "sdk": "pnpm run --filter @tech-zone-store/sdk --",
     "utils": "pnpm run --filter @tech-zone-store/utils --",
-    "test": "pnpm -r test",
-    "lint": "pnpm -r lint",
+    "test": "pnpm -r build && pnpm -r test",
+    "lint": "pnpm -r build && pnpm -r lint",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
