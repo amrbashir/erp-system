@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { DeleteUserDto, type CreateUserDto } from "./user.dto";
-import { UserRole, type User } from "../prisma/generated/client";
+import { UserRole, type User } from "../prisma/generated/";
 import * as argon2 from "argon2";
 import type { UserWhereInput } from "../prisma/generated/models";
 import type { PaginationDto } from "../pagination.dto";
@@ -15,10 +15,7 @@ import type { PaginationDto } from "../pagination.dto";
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createUser(
-    createUserDto: CreateUserDto & { role?: UserRole },
-    orgSlug: string,
-  ): Promise<User> {
+  async createUser(createUserDto: CreateUserDto, orgSlug: string): Promise<User> {
     const hashedPassword = await argon2.hash(createUserDto.password);
 
     const org = await this.prisma.organization.findUnique({

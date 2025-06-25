@@ -8,6 +8,7 @@
     "web": "pnpm run --filter @tech-zone-store/web --",
     "desktop": "pnpm run --filter @tech-zone-store/desktop --",
     "sdk": "pnpm run --filter @tech-zone-store/sdk --",
+    "utils": "pnpm run --filter @tech-zone-store/utils --",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "format": "prettier --write .",

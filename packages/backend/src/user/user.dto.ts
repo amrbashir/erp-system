@@ -15,7 +15,7 @@ export class CreateUserDto {
   password: string;
 
   @ApiPropertyOptional({ enum: UserRole })
-  role: UserRole = UserRole.USER;
+  role?: UserRole = UserRole.USER;
 }
 
 export class DeleteUserDto {

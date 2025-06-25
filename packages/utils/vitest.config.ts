@@ -1,7 +1,7 @@
 import { defineConfig } from "vitest/config";
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   test: {
     includeSource: ["src/**/*.ts"],
   },
-}));
+});

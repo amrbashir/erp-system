@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
-import { UserRole } from "../prisma/generated/client";
+import { UserRole } from "../prisma/generated";
 import { type JwtPayload } from "../auth/auth.dto";
 
 @Injectable()

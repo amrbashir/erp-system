@@ -11,7 +11,7 @@
     "start": "node --env-file=.env dist/main.js",
     "start:dev": "node --env-file=.env.dev dist/main.js",
     "gen:openapi-json": "pnpm build && node --env-file=.env.dev dist/main.js gen-openapi-json",
-    "test": "prisma generate && docker compose up -d && vitest run",
+    "test": "pnpm -w utils build && prisma generate && docker compose up -d && vitest run",
     "test:watch": "vitest",
     "lint": "prisma generate && tsc --noEmit"
   },
@@ -45,7 +45,7 @@
     "tsdown": "^0.12.9",
     "typescript": "^5.8.3",
     "unplugin-swc": "^1.5.5",
-    "vite": "^7.0.0",
+    "vite": "^6.3.5",
     "vitest": "^3.2.4"
   }
 }
