@@ -1,3 +1,0 @@
-[workspace]
-members = ["packages/desktop"]
-resolver = "3"

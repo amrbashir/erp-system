@@ -13,10 +13,10 @@ import { Label } from "@/shadcn/components/ui/label";
 import { Separator } from "@/shadcn/components/ui/separator";
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { CreateOrgDto } from "@tech-zone-store/sdk/zod";
+import { CreateOrgDto } from "@erp-system/sdk/zod";
 import { Loader2Icon } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { slugify } from "@tech-zone-store/utils";
+import { slugify } from "@erp-system/utils";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -29,11 +29,9 @@ function Index() {
     <div className="min-h-svh p-6 bg-black grid place-items-center">
       <div className="flex items-center justify-center w-full gap-20">
         <div className="flex flex-col items-center">
-          <div className="text-6xl font-bold mb-4">🏠</div>
-          <h1 className="text-3xl font-semibold text-center">Welcome to Tech Zone</h1>
-          <p className="text-lg text-center mt-2 text-gray-400">
-            Your one-stop shop for all tech needs
-          </p>
+          <img src="/logo.svg" alt="ERP System Logo" width={300} className="mb-10" />
+          <h1 className="text-3xl font-semibold text-center">{t("welcomeToErp")}</h1>
+          <p className="text-lg text-center mt-2 text-gray-400">{t("welcomeToErpDescription")}</p>
         </div>
 
         <Separator orientation="vertical" className="h-50!" />

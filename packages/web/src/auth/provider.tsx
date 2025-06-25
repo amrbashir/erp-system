@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react
 import { apiClient } from "@/api-client";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
-import { LoginUserDto } from "@tech-zone-store/sdk/zod";
+import { LoginUserDto } from "@erp-system/sdk/zod";
 import { getStoredUser, isStorageKeyForUser, setStoredUser, type AuthUser } from "./user";
 import { AuthContext } from "./hook";
 

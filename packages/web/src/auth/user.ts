@@ -1,4 +1,4 @@
-import type { UserEntity } from "@tech-zone-store/sdk/zod";
+import type { UserEntity } from "@erp-system/sdk/zod";
 import type z from "zod";
 
 const authUserUsernameKey = "auth.user.username";

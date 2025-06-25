@@ -1,3 +1,3 @@
-# Tech Zone Store
+# erp-system
 
-Building an ERP system for Tech Zone Store in public.
+Building an ERP system for a local store in public.

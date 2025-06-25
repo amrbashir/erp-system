@@ -31,7 +31,7 @@ import {
 } from "@/shadcn/components/ui/alert-dialog";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import type { DeleteUserDto } from "@tech-zone-store/sdk/zod";
+import type { DeleteUserDto } from "@erp-system/sdk/zod";
 import { ContactIcon, EllipsisVerticalIcon, Loader2Icon } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";

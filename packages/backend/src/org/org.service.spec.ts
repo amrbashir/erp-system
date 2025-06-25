@@ -5,7 +5,7 @@ import { useRandomDatabase } from "../../e2e/utils";
 import { UserRole } from "../prisma/generated/client";
 import argon2 from "argon2";
 import { BadRequestException, ConflictException } from "@nestjs/common";
-import { slugify } from "@tech-zone-store/utils";
+import { slugify } from "@erp-system/utils";
 
 describe("OrgService", async () => {
   let service: OrgService;

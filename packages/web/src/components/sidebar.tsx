@@ -51,8 +51,8 @@ export function AppSideBar() {
     >
       <SidebarHeader>
         <Label className="my-2">
-          <img src="/favicon.svg" className={open ? "size-10" : "size-8"}></img>
-          {open && <span className="text-lg font-semibold">Tech Zone</span>}
+          <img src="/favicon.svg" className="size-8"></img>
+          {open && <span className="text-lg font-semibold">{orgSlug}</span>}
         </Label>
       </SidebarHeader>
 

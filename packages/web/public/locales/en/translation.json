@@ -1,5 +1,7 @@
 {
-  "tech_zone": "Tech Zone",
+  "welcomeToErp": "Welcome to erp-system",
+  "welcomeToErpOrg": "Welcome to {{orgSlug}}",
+  "welcomeToErpDescription": "Your one-stop system for all ERP needs",
 
   "language": "Language",
 

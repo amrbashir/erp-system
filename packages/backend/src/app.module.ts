@@ -19,7 +19,7 @@ export class AppModule {}
 
 const swaggerConfig = new DocumentBuilder()
   .setVersion("1.0.0")
-  .setTitle("Tech Zone API")
+  .setTitle("erp-system api")
   .addBearerAuth()
   .addCookieAuth("refreshToken")
   .build();
@@ -32,8 +32,10 @@ export function setupApp(app: INestApplication) {
   });
   app.useGlobalPipes(new ValidationPipe());
 
-  const documentFactory = () => SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup("api", app, documentFactory, { customSiteTitle: "Tech Zone API" });
+  if (process.env.NODE_ENV === "development") {
+    const documentFactory = () => SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup("api", app, documentFactory, { customSiteTitle: "erp-system api" });
+  }
 }
 
 export function generateOpenApiJson(app: INestApplication): string {

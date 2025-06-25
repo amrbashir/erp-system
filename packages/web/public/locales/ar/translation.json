@@ -1,5 +1,8 @@
 {
-  "tech_zone": "تيك زون",
+  "welcomeToErp": "مرحبًا بك في نظام ERP",
+  "welcomeToErpOrg": "مرحبًا بك في {{orgSlug}}",
+  "welcomeToErpDescription": "محطتك الشاملة لجميع احتياجات ال ERP",
+
   "language": "اللغة",
 
   "pages": {

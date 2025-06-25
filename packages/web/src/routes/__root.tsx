@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import type { AuthContext } from "@/auth/hook";
 import { DirectionProvider } from "@radix-ui/react-direction";
 import { useEffect } from "react";
-import type { UserEntity } from "@tech-zone-store/sdk/zod";
+import type { UserEntity } from "@erp-system/sdk/zod";
 import { z } from "zod";
 import { Toaster } from "@/shadcn/components/ui/sonner";
 import i18n from "@/i18n";
@@ -23,8 +23,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     const currentMatch = c.matches[c.matches.length - 1];
     const routeTitle = currentMatch.context.title ? currentMatch.context.title : "";
     const orgSlug = "orgSlug" in c.params && c.params.orgSlug ? c.params.orgSlug : "";
-    const appTitle = i18n.t("tech_zone");
-    const title = [routeTitle, orgSlug, appTitle].filter(Boolean).join(" | ");
+    const title = [routeTitle, orgSlug, "erp-system"].filter(Boolean).join(" | ");
 
     return {
       meta: [

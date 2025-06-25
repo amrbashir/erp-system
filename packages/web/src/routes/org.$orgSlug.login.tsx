@@ -42,7 +42,11 @@ function Login() {
 
   return (
     <div className="flex items-center justify-center w-screen h-screen gap-20">
-      <img src="/logo.svg" alt="Logo" className="w-75 h-75" />
+      <div>
+        <img src="/logo.svg" alt="ERP System Logo" width={300} className="mb-10" />
+        <h1 className="text-2xl font-semibold text-center">{t("welcomeToErpOrg", { orgSlug })}</h1>
+        <p className="text-lg text-center mt-2 text-gray-400">{t("welcomeToErpDescription")}</p>
+      </div>
 
       <Separator orientation="vertical" className="h-50!" />
 

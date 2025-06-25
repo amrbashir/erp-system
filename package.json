@@ -1,13 +1,13 @@
 {
-  "name": "tech-zone-store",
+  "name": "erp-system",
   "private": true,
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "backend": "pnpm run --filter @tech-zone-store/backend --",
-    "web": "pnpm run --filter @tech-zone-store/web --",
-    "sdk": "pnpm run --filter @tech-zone-store/sdk --",
-    "utils": "pnpm run --filter @tech-zone-store/utils --",
+    "backend": "pnpm run --filter @erp-system/backend --",
+    "web": "pnpm run --filter @erp-system/web --",
+    "sdk": "pnpm run --filter @erp-system/sdk --",
+    "utils": "pnpm run --filter @erp-system/utils --",
     "build": "pnpm utils build && pnpm backend build && pnpm sdk build && pnpm web build",
     "test": "pnpm build && pnpm -r test",
     "lint": "pnpm build && pnpm -r lint",

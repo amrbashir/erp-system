@@ -21,7 +21,7 @@ import {
 import { Label } from "@/shadcn/components/ui/label";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { CreateUserDto } from "@tech-zone-store/sdk/zod";
+import { CreateUserDto } from "@erp-system/sdk/zod";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Loader2Icon } from "lucide-react";

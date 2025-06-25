@@ -2,7 +2,7 @@ import { BadRequestException, ConflictException, Injectable } from "@nestjs/comm
 import { PrismaService } from "../prisma/prisma.service";
 import { type CreateOrgDto } from "./org.dto";
 import { type Organization, UserRole } from "../prisma/generated/client";
-import { slugify, isValidSlug } from "@tech-zone-store/utils";
+import { slugify, isValidSlug } from "@erp-system/utils";
 import * as argon2 from "argon2";
 
 @Injectable()
