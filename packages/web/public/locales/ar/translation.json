@@ -11,9 +11,11 @@
     "customers": "العملاء"
   },
 
+  "login_to_account": "تسجيل الدخول إلى حسابك",
+  "login_to_account_description": "يرجى إدخال بيانات حسابك للوصول إلى ",
+
   "login": "تسجيل الدخول",
   "logout": "تسجيل الخروج",
-  "login_to_account": "تسجيل الدخول إلى حسابك",
   "username": "اسم المستخدم",
   "password": "كلمة المرور",
 

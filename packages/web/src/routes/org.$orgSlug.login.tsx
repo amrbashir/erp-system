@@ -1,6 +1,12 @@
 import { useAuth } from "@/auth/hook";
 import { Button } from "@/shadcn/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/shadcn/components/ui/card";
 import { Input } from "@/shadcn/components/ui/input";
 import { Label } from "@/shadcn/components/ui/label";
 import i18n from "@/i18n";
@@ -54,6 +60,10 @@ function Login() {
         <Card className="w-full max-w-sm">
           <CardHeader className="flex flex-col items-center gap-10">
             <CardTitle>{t("login_to_account")}</CardTitle>
+            <CardDescription>
+              {t("login_to_account_description")}
+              <span className="text-primary font-bold">{orgSlug}</span>
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form
@@ -64,11 +74,6 @@ function Login() {
                 form.handleSubmit();
               }}
             >
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="orgSlug">{t("org.slug")}</Label>
-                <Input id="orgSlug" value={orgSlug} disabled={true} />
-              </div>
-
               {Object.keys(form.options.defaultValues ?? []).map((fieldName) => (
                 <div key={fieldName} className="flex flex-col gap-2">
                   <form.Field
