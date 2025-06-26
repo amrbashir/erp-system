@@ -25,7 +25,7 @@ function Index() {
   const { t } = useTranslation();
 
   return (
-    <main className="h-screen flex flex-col items-center justify-center gap-10 pt-[50%]">
+    <main className="h-screen flex flex-col items-center justify-center gap-10 pt-[40%]">
       <div className="w-full flex items-center justify-center gap-20">
         <div className="flex flex-col items-center">
           <img src="/logo.svg" alt="ERP System Logo" width={300} className="mb-10" />
