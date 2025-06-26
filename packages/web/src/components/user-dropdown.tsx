@@ -17,10 +17,10 @@ import {
   useSidebar,
 } from "@/shadcn/components/ui/sidebar";
 
-import { useAuth } from "@/auth/provider";
 import { LanguageSelector } from "@/components/language-selector";
-import { useOrg } from "@/components/org-provider";
 import { ThemeSelector } from "@/components/theme-selector";
+import { useAuth } from "@/providers/auth-provider";
+import { useOrg } from "@/providers/org-provider";
 
 export function UserDropdown() {
   const { t } = useTranslation();

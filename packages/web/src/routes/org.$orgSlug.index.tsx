@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { HomeIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { useOrg } from "@/components/org-provider";
 import i18n from "@/i18n";
+import { useOrg } from "@/providers/org-provider";
 
 export const Route = createFileRoute("/org/$orgSlug/")({
   component: Index,

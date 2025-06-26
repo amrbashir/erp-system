@@ -12,8 +12,8 @@ import {
 } from "@/shadcn/components/ui/table";
 
 import { apiClient } from "@/api-client";
-import { useOrg } from "@/components/org-provider";
 import i18n from "@/i18n";
+import { useOrg } from "@/providers/org-provider";
 
 export const Route = createFileRoute("/org/$orgSlug/customers")({
   component: Customers,

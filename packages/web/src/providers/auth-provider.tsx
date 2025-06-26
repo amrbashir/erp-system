@@ -5,9 +5,9 @@ import { z } from "zod";
 
 import type { ReactNode } from "react";
 
-import type { AuthUser } from "@/auth/user";
+import type { AuthUser } from "@/user";
 import { apiClient } from "@/api-client";
-import { getStoredUser, isStorageKeyForUser, setStoredUser } from "@/auth/user";
+import { getStoredUser, isStorageKeyForUser, setStoredUser } from "@/user";
 
 export interface AuthProviderState {
   isAuthenticated: boolean;

@@ -27,10 +27,10 @@ import {
 
 import type { AnyFieldApi } from "@tanstack/react-form";
 
-import type { UserRole } from "@/auth/user";
+import type { UserRole } from "@/user";
 import { apiClient } from "@/api-client";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
-import { useOrg } from "@/components/org-provider";
+import { useOrg } from "@/providers/org-provider";
 
 export function AddUserDialog() {
   const { slug: orgSlug } = useOrg();

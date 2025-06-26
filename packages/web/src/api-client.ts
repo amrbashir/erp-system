@@ -1,6 +1,6 @@
 import { createClient, createClient2 } from "@erp-system/sdk";
 
-import { getStoredUser, setStoredUser } from "@/auth/user";
+import { getStoredUser, setStoredUser } from "@/user";
 
 enum StatusCode {
   Unauthorized = 401,

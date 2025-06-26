@@ -2,8 +2,8 @@ import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { SidebarProvider } from "@/shadcn/components/ui/sidebar";
 
 import { NavigationHeader } from "@/components/navigation-header";
-import { OrgProvider } from "@/components/org-provider";
 import { AppSideBar } from "@/components/sidebar";
+import { OrgProvider } from "@/providers/org-provider";
 
 interface OrgSearch {
   redirect?: string;

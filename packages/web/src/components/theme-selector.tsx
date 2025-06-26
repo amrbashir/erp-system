@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/shadcn/components/ui/dropdown-menu";
 
-import { THEME_VARIANTS, useTheme } from "@/components/theme-provider";
+import { THEME_VARIANTS, useTheme } from "@/providers/theme-provider";
 
 export function ThemeSelector({ asSubmenu = false }: { asSubmenu?: boolean }) {
   const { t } = useTranslation();

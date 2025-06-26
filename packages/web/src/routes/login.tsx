@@ -14,9 +14,9 @@ import { Input } from "@/shadcn/components/ui/input";
 import { Label } from "@/shadcn/components/ui/label";
 import { Separator } from "@/shadcn/components/ui/separator";
 
-import { useAuth } from "@/auth/provider";
 import { FormErrors } from "@/components/form-errors";
 import i18n from "@/i18n";
+import { useAuth } from "@/providers/auth-provider";
 
 interface LoginSearch {
   redirect?: string;
