@@ -3,9 +3,9 @@ import { useMutation } from "@tanstack/react-query";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 
-import type { AuthUser } from "@/auth/user";
 import type { ReactNode } from "react";
 
+import type { AuthUser } from "@/auth/user";
 import { apiClient } from "@/api-client";
 import { getStoredUser, isStorageKeyForUser, setStoredUser } from "@/auth/user";
 

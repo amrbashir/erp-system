@@ -15,7 +15,6 @@ import {
 } from "@/shadcn/components/ui/sidebar";
 
 import type { FileRoutesById } from "@/routeTree.gen";
-
 import { useOrg } from "@/components/org-provider";
 import { UserDropdown } from "@/components/user-dropdown";
 

@@ -5,9 +5,9 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { Toaster } from "@/shadcn/components/ui/sonner";
 
-import type { AuthProviderState } from "@/auth/provider";
 import type { UserEntity } from "@erp-system/sdk/zod";
 
+import type { AuthProviderState } from "@/auth/provider";
 import { NonOrgHeader } from "@/components/non-org-header";
 import { ThemeProvider } from "@/components/theme-provider";
 

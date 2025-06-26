@@ -2,7 +2,6 @@ import { Test } from "@nestjs/testing";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { CreateOrgDto } from "./org.dto";
-
 import { useRandomDatabase } from "../../e2e/utils";
 import { PrismaService } from "../prisma/prisma.service";
 import { OrgController } from "./org.controller";
