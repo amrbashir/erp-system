@@ -120,15 +120,14 @@
 }
 
 body {
-  @apply bg-transparent;
+  @apply bg-background;
 }
 
 .group\/sidebar-wrapper {
   @apply bg-sidebar;
 }
 
-#sidebar-view,
-main:not(#sidebar-view main) {
+#sidebar-view {
   @apply bg-background;
 }
 
