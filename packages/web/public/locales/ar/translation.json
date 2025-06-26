@@ -52,11 +52,11 @@
     "Username or password is incorrect": "اسم المستخدم أو كلمة المرور غير صحيحة",
     "Cannot delete the last admin user in the organization": "لا يمكن حذف آخر مستخدم مدير في المؤسسة",
     "User with this username already exists in the organization": "يوجد مستخدم بهذا الاسم في المؤسسة بالفعل",
-    "organizationNotFound": "المؤسسة غير موجودة",
+    "organizationNotFound": "المؤسسة بهذا المعرف غير موجودة",
     "username must contain only letters and numbers": "يجب أن يحتوي اسم المستخدم على أحرف وأرقام فقط",
-    "Organization already exists": "المؤسسة بهذا المعرف موجودة بالفعل",
+    "Organization with this slug already exists": "المؤسسة بهذا المعرف موجودة بالفعل",
     "Internal server error": "خطأ داخلي في الخادم",
-    "Organization with this slug does not exist": "المؤسسة بهذا المعرف غير موجودة"
+    "Organization with this slug does not exist": "$(organizationNotFound)"
   },
 
   "validationErrors": {

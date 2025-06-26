@@ -11,6 +11,8 @@ import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { CustomerModule } from "./customer/customer.module";
+import { HttpAdapterHost } from "@nestjs/core";
+import { PrismaClientExceptionFilter } from "./prisma/prisma-client-exception.filter";
 
 @Module({
   imports: [PrismaModule, OrgModule, UserModule, AuthModule, CustomerModule],
@@ -30,7 +32,11 @@ export function setupApp(app: INestApplication) {
     header: "X-Api-Version",
     defaultVersion: [VERSION_NEUTRAL, "1.0.0"],
   });
+
   app.useGlobalPipes(new ValidationPipe());
+
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
   if (process.env.NODE_ENV === "development") {
     const documentFactory = () => SwaggerModule.createDocument(app, swaggerConfig);

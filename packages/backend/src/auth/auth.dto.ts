@@ -37,5 +37,6 @@ export type JwtTokens = {
 
 export type JwtPayload = {
   sub: string; // User ID
-  organizationId: string; // Organization ID
+  username: string;
+  organizationId: string;
 };

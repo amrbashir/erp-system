@@ -16,28 +16,33 @@ export class OrgService {
 
     const slug = createOrgDto.slug || slugify(createOrgDto.name);
 
-    const org = await this.prisma.organization.findUnique({ where: { slug } });
-    if (org) throw new ConflictException("Organization already exists");
+    try {
+      return this.prisma.organization.create({
+        data: {
+          name: createOrgDto.name,
+          slug,
+          users: {
+            create: {
+              username: createOrgDto.username,
+              password: await argon2.hash(createOrgDto.password),
+              role: UserRole.ADMIN,
+            },
+          },
+          stores: {
+            create: {
+              name: "Default",
+              slug: "default",
+            },
+          },
+        },
+      });
+    } catch (error: any) {
+      if (error.code === "P2002" && error.meta?.target?.includes("slug")) {
+        throw new ConflictException("Organization with this slug already exists");
+      }
 
-    return this.prisma.organization.create({
-      data: {
-        name: createOrgDto.name,
-        slug,
-        users: {
-          create: {
-            username: createOrgDto.username,
-            password: await argon2.hash(createOrgDto.password),
-            role: UserRole.ADMIN,
-          },
-        },
-        stores: {
-          create: {
-            name: "Default",
-            slug: "default",
-          },
-        },
-      },
-    });
+      throw error; // Re-throw other errors
+    }
   }
 
   async findOrgBySlug(slug: string): Promise<Pick<Organization, "name" | "slug"> | null> {

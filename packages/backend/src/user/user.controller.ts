@@ -1,10 +1,22 @@
-import { Body, Controller, Post, Query, UseGuards, Get, Delete, Param } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Post,
+  Query,
+  UseGuards,
+  Get,
+  Delete,
+  Param,
+  Req,
+  ForbiddenException,
+} from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserDto, DeleteUserDto, UserEntity } from "./user.dto";
 import { AdminGuard } from "./user.admin.guard";
 import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
 import type { PaginationDto } from "../pagination.dto";
+import type { JwtPayload } from "../auth/auth.dto";
 
 @UseGuards(JwtAuthGuard, AdminGuard)
 @ApiBearerAuth()
@@ -26,7 +38,14 @@ export class UserController {
   async delete(
     @Param("orgSlug") orgSlug: string,
     @Body() deleteUserDto: DeleteUserDto,
+    @Req() req: any,
   ): Promise<void> {
+    const currentUser = req["user"] as JwtPayload;
+
+    if (currentUser.username === deleteUserDto.username) {
+      throw new ForbiddenException("You cannot delete your own account");
+    }
+
     await this.userService.deleteUser(deleteUserDto, orgSlug);
   }
 

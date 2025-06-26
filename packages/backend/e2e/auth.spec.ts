@@ -4,8 +4,8 @@ import { useTestingApp } from "./utils";
 
 describe("Auth E2E", async () => {
   const { appUrl, runApp, closeApp } = await useTestingApp();
-  beforeAll(async () => await runApp());
-  afterAll(async () => await closeApp());
+  beforeAll(runApp);
+  afterAll(closeApp);
 
   let cookies: string[];
   let accessToken: string;

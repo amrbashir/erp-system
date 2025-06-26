@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import * as argon2 from "argon2";
 import { JwtService } from "@nestjs/jwt";
-import { type JwtTokens, type LoginUserDto } from "./auth.dto";
+import { type JwtPayload, type JwtTokens, type LoginUserDto } from "./auth.dto";
 import { UserService } from "../user/user.service";
 import { type User } from "../prisma/generated/client";
 
@@ -20,7 +20,6 @@ export class AuthService {
     tokens: JwtTokens;
   }> {
     const user = await this.userService.findByUsernameInOrg(loginUserDto.username, orgSlug);
-
     if (!user) throw new NotFoundException("Username or password is incorrect");
 
     const isPasswordValid = await argon2.verify(user.password, loginUserDto.password);
@@ -53,7 +52,12 @@ export class AuthService {
   }
 
   async genAccessToken(user: User): Promise<string> {
-    const payload = { sub: user.id, organizationId: user.organizationId };
+    const payload: JwtPayload = {
+      sub: user.id,
+      username: user.username,
+      organizationId: user.organizationId,
+    };
+
     return this.jwtService.signAsync(payload, {
       expiresIn: "15m",
       secret: process.env.JWT_ACCESS_SECRET,
@@ -61,7 +65,12 @@ export class AuthService {
   }
 
   async genRefreshToken(user: User): Promise<string> {
-    const payload = { sub: user.id, organizationId: user.organizationId };
+    const payload: JwtPayload = {
+      sub: user.id,
+      username: user.username,
+      organizationId: user.organizationId,
+    };
+
     return this.jwtService.signAsync(payload, {
       expiresIn: "7d",
       secret: process.env.JWT_REFRESH_SECRET,

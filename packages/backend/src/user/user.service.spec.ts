@@ -1,3 +1,4 @@
+import { ConflictException } from "@nestjs/common";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { useRandomDatabase } from "../../e2e/utils";
@@ -54,7 +55,7 @@ describe("UserService", async () => {
 
     await service.createUser(createUserDto, org.slug);
 
-    await expect(service.createUser(createUserDto, org.slug)).rejects.toThrow();
+    await expect(service.createUser(createUserDto, org.slug)).rejects.toThrow(ConflictException);
   });
 
   it("should return all users without passwords", async () => {

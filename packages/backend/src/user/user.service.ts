@@ -16,69 +16,71 @@ export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createUser(createUserDto: CreateUserDto, orgSlug: string): Promise<User> {
-    const hashedPassword = await argon2.hash(createUserDto.password);
+    try {
+      return this.prisma.$transaction(async (prisma) => {
+        const existingUser = await prisma.user.findFirst({
+          where: { username: createUserDto.username },
+        });
 
-    const org = await this.prisma.organization.findUnique({
-      where: { slug: orgSlug },
-    });
-    if (!org) throw new NotFoundException("Organization with this slug does not exist");
+        if (existingUser)
+          throw new ConflictException("User with this username already exists in the organization");
 
-    const existingUser = await this.prisma.user.findFirst({
-      where: { username: createUserDto.username, organizationId: org.id },
-    });
+        return prisma.user.create({
+          data: {
+            username: createUserDto.username,
+            password: await argon2.hash(createUserDto.password),
+            organization: { connect: { slug: orgSlug } },
+            role: createUserDto.role,
+          },
+        });
+      });
+    } catch (error: any) {
+      if (error.code === "P2002" && error.meta?.target?.includes("username")) {
+        throw new ConflictException("User with this username already exists in the organization");
+      }
+      if (error.code === "P2025") {
+        throw new NotFoundException("Organization with this slug does not exist");
+      }
 
-    if (existingUser) {
-      throw new ConflictException("User with this username already exists in the organization");
+      throw error; // Re-throw other errors
     }
-
-    return this.prisma.user.create({
-      data: {
-        username: createUserDto.username,
-        password: hashedPassword,
-        organizationId: org.id,
-        role: createUserDto.role,
-      },
-    });
   }
 
   async deleteUser(deleteUserDto: DeleteUserDto, orgSlug: string): Promise<void> {
-    const org = await this.prisma.organization.findUnique({
-      where: { slug: orgSlug },
-      include: {
-        users: {
-          where: {
-            deletedAt: null, // Ensure we only consider non-deleted users
-            role: { equals: UserRole.ADMIN },
+    await this.prisma.$transaction(async (prisma) => {
+      const org = await prisma.organization.findUnique({
+        where: { slug: orgSlug },
+        include: {
+          users: {
+            where: {
+              deletedAt: null, // Ensure we only consider non-deleted users
+              role: { equals: UserRole.ADMIN },
+            },
           },
         },
-      },
-    });
+      });
 
-    if (!org) throw new NotFoundException("Organization with this slug does not exist");
+      if (!org) throw new NotFoundException("Organization with this slug does not exist");
 
-    if (org.users.length === 1 && deleteUserDto.username === org.users[0].username) {
-      throw new ForbiddenException("Cannot delete the last admin user in the organization");
-    }
+      if (org.users.length === 1 && deleteUserDto.username === org.users[0].username) {
+        throw new ForbiddenException("Cannot delete the last admin user in the organization");
+      }
 
-    const user = await this.prisma.user.findFirst({
-      where: {
-        username: deleteUserDto.username,
-        organizationId: org.id,
-      },
-    });
+      const user = await this.prisma.user.findFirst({
+        where: {
+          username: deleteUserDto.username,
+          organizationId: org.id,
+        },
+      });
 
-    if (!user) {
-      throw new NotFoundException("User with this username does not exist in the organization");
-    }
+      if (!user) {
+        throw new NotFoundException("User with this username does not exist in the organization");
+      }
 
-    await this.prisma.user.update({
-      data: {
-        deletedAt: new Date(),
-      },
-      where: {
-        id: user.id,
-        organizationId: org.id,
-      },
+      await this.prisma.user.update({
+        data: { deletedAt: new Date() },
+        where: { id: user.id, organizationId: org.id },
+      });
     });
   }
 
@@ -89,51 +91,63 @@ export class UserService {
   }
 
   async findByUsernameInOrg(username: string, orgSlug?: string): Promise<User | null> {
-    const org = await this.prisma.organization.findUnique({
-      where: { slug: orgSlug },
-    });
+    try {
+      return this.prisma.user.findFirst({
+        where: { username, deletedAt: null, organization: { slug: orgSlug } },
+      });
+    } catch (error: any) {
+      if (error.code === "P2025") {
+        throw new NotFoundException("Organization with this slug does not exist");
+      }
 
-    if (!org) throw new NotFoundException("Organization with this slug does not exist");
-
-    return this.prisma.user.findFirst({
-      where: { username, organizationId: org.id, deletedAt: null },
-    });
+      throw error; // Re-throw other errors
+    }
   }
 
   async updateRefreshToken(userId: string, refreshToken?: string): Promise<void> {
-    this.prisma.user.update({
-      where: { id: userId },
-      data: { refreshToken },
-    });
+    try {
+      this.prisma.user.update({
+        where: { id: userId },
+        data: { refreshToken },
+      });
+    } catch (error: any) {
+      if (error.code === "P2025") {
+        throw new NotFoundException("User with this ID does not exist");
+      }
+
+      throw error; // Re-throw other errors
+    }
   }
 
   async getAllUsers(
-    organization: string,
+    orgSlug: string,
     options?: {
       pagination?: PaginationDto;
       sort?: { field?: string; order?: "asc" | "desc" };
       where?: UserWhereInput;
     },
   ): Promise<Omit<User, "password" | "refreshToken">[]> {
-    const org = await this.prisma.organization.findUnique({
-      where: { slug: organization },
-    });
+    try {
+      return this.prisma.user.findMany({
+        where: { ...options?.where, organization: { slug: orgSlug } },
+        skip: options?.pagination?.skip,
+        take: options?.pagination?.take,
+        orderBy: options?.sort
+          ? {
+              [options.sort.field ?? "createdAt"]: options.sort.order ?? "asc",
+            }
+          : undefined,
+        omit: {
+          password: true,
+          refreshToken: true,
+        },
+      });
+    } catch (error: any) {
+      if (error.code === "P2025") {
+        throw new NotFoundException("Organization with this slug does not exist");
+      }
 
-    if (!org) throw new NotFoundException("Organization with this slug does not exist");
-
-    return this.prisma.user.findMany({
-      where: { ...options?.where, organizationId: org.id },
-      skip: options?.pagination?.skip,
-      take: options?.pagination?.take,
-      orderBy: options?.sort
-        ? {
-            [options.sort.field ?? "createdAt"]: options.sort.order ?? "asc",
-          }
-        : undefined,
-      omit: {
-        password: true,
-        refreshToken: true,
-      },
-    });
+      throw error; // Re-throw other errors
+    }
   }
 }

@@ -52,11 +52,11 @@
     "Username or password is incorrect": "Username or password is incorrect",
     "Cannot delete the last admin user in the organization": "Cannot delete the last admin user in the organization",
     "User with this username already exists in the organization": "User with this username already exists in the organization",
-    "organizationNotFound": "Organization not found",
+    "organizationNotFound": "Organization with this identifier does not exist",
     "username must contain only letters and numbers": "Username must contain only letters and numbers",
-    "Organization already exists": "Organization with this identifier already exists",
+    "Organization with this slug already exists": "Organization with this identifier already exists",
     "Internal server error": "Internal server error",
-    "Organization with this slug does not exist": "Organization with this identifier does not exist"
+    "Organization with this slug does not exist": "$(organizationNotFound)"
   },
 
   "validationErrors": {
