@@ -1,4 +1,4 @@
-import { CreateUserDto } from "@erp-system/sdk/zod";
+import { CreateUserDto, UserEntity } from "@erp-system/sdk/zod";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon } from "lucide-react";
@@ -26,11 +26,13 @@ import {
 } from "@/shadcn/components/ui/select";
 
 import type { AnyFieldApi } from "@tanstack/react-form";
+import type z from "zod";
 
-import type { UserRole } from "@/user";
 import { apiClient } from "@/api-client";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
 import { useOrg } from "@/providers/org-provider";
+
+type UserRole = z.infer<typeof UserEntity>["role"];
 
 export function AddUserDialog() {
   const { slug: orgSlug } = useOrg();
