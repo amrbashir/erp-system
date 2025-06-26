@@ -12,15 +12,21 @@ interface OrgSearch {
 export const Route = createFileRoute("/org")({
   component: Org,
   validateSearch: ({ search }) => search as OrgSearch,
-  beforeLoad: async ({ context, location, search }) => {
+  beforeLoad: async ({ context, location, search, params }) => {
     // redirect to login if not authenticated and not on the login page
-    if (!context.auth.isAuthenticated && location.pathname !== `/login`) {
+    if (
+      !context.auth.isAuthenticated &&
+      location.pathname !== `/login` &&
+      "orgSlug" in params &&
+      typeof params.orgSlug === "string"
+    ) {
       throw redirect({
         to: "/login",
         search: {
           // if we have a redirect in the search params, use it,
           // otherwise use the current location
           redirect: "redirect" in search ? search.redirect : location.href,
+          orgSlug: params.orgSlug,
         },
       });
     }

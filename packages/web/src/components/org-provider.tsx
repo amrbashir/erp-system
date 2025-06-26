@@ -2,7 +2,7 @@ import { OrganizationEntity } from "@erp-system/sdk/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { AlertCircleIcon, Loader2Icon } from "lucide-react";
-import { createContext, use, useContext, useState } from "react";
+import { createContext, use, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type z from "zod";
