@@ -25,21 +25,19 @@ function Index() {
   const { t } = useTranslation();
 
   return (
-    <main className="h-screen flex flex-col items-center justify-center gap-10 pt-[40%]">
-      <div className="w-full flex items-center justify-center gap-20">
-        <div className="flex flex-col items-center">
-          <img src="/logo.svg" alt="ERP System Logo" width={300} className="mb-10" />
-          <h1 className="text-3xl font-semibold text-center">{t("welcomeToErp")}</h1>
-          <p className="text-lg text-center mt-2 text-gray-400">{t("welcomeToErpDescription")}</p>
-        </div>
-
-        <Separator orientation="vertical" className="h-50!" />
-
-        <GoToganizationCard className="w-full max-w-sm" />
+    <main className="h-screen w-screen flex items-center justify-center gap-20">
+      <div className="flex flex-col items-center">
+        <img src="/logo.svg" alt="ERP System Logo" width={300} className="mb-10" />
+        <h1 className="text-3xl font-semibold text-center">{t("welcomeToErp")}</h1>
+        <p className="text-lg text-center mt-2 text-gray-400">{t("welcomeToErpDescription")}</p>
       </div>
 
-      <div className="flex flex-col items-center gap-10 w-full">
-        <div className="flex-1/2 flex items-center gap-2">
+      <Separator orientation="vertical" className="h-50!" />
+
+      <div className="flex flex-col items-center gap-10 min-w-sm">
+        <GoToganizationCard className="w-full max-w-sm" />
+
+        <div className="flex items-center gap-2">
           <Separator className="w-35!" />
           <p>{t("or")}</p>
           <Separator className="w-35!" />
