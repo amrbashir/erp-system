@@ -25,8 +25,8 @@ function Index() {
   const { t } = useTranslation();
 
   return (
-    <main className="min-h-svh p-6  grid place-items-center">
-      <div className="flex items-center justify-center w-full gap-20">
+    <main className="h-screen flex flex-col items-center justify-center gap-10 pt-[50%]">
+      <div className="w-full flex items-center justify-center gap-20">
         <div className="flex flex-col items-center">
           <img src="/logo.svg" alt="ERP System Logo" width={300} className="mb-10" />
           <h1 className="text-3xl font-semibold text-center">{t("welcomeToErp")}</h1>
@@ -35,33 +35,33 @@ function Index() {
 
         <Separator orientation="vertical" className="h-50!" />
 
-        <Card className="w-full max-w-sm">
-          <GoToganizationCard />
+        <GoToganizationCard className="w-full max-w-sm" />
+      </div>
 
-          <div className="flex items-center">
-            <Separator className="flex-1" />
-            <p>{t("or")}</p>
-            <Separator className="flex-1" />
-          </div>
+      <div className="flex flex-col items-center gap-10 w-full">
+        <div className="flex-1/2 flex items-center gap-2">
+          <Separator className="w-35!" />
+          <p>{t("or")}</p>
+          <Separator className="w-35!" />
+        </div>
 
-          <CreateNewOrganizationCard />
-        </Card>
+        <CreateNewOrganizationCard className="w-full max-w-sm" />
       </div>
     </main>
   );
 }
 
-function GoToganizationCard() {
+function GoToganizationCard(props: React.ComponentProps<"div">) {
   const { t } = useTranslation();
   const router = useRouter();
 
   const form = useForm({
     defaultValues: {
-      slug: "",
+      orgSlug: "",
     },
     onSubmit: async ({ value, formApi }) => {
       const { data: org, error } = await apiClient.get("/org/{orgSlug}", {
-        params: { path: { orgSlug: value.slug } },
+        params: { path: { orgSlug: value.orgSlug } },
       });
 
       if (error) {
@@ -82,7 +82,7 @@ function GoToganizationCard() {
   });
 
   return (
-    <>
+    <Card {...props}>
       <CardHeader>
         <CardTitle>{t("goToYourOrganization")}</CardTitle>
         <CardDescription>{t("goToYourOrganizationDescription")}</CardDescription>
@@ -96,25 +96,23 @@ function GoToganizationCard() {
             form.handleSubmit();
           }}
         >
-          {Object.keys(form.options.defaultValues ?? []).map((fieldName) => (
-            <div key={fieldName} className="flex flex-col gap-2">
-              <form.Field
-                name={fieldName as any}
-                children={(field) => (
-                  <>
-                    <Label htmlFor={field.name}>{t(`org.${field.name}`)}</Label>
-                    <Input
-                      id={field.name}
-                      required
-                      name={field.name}
-                      value={field.state.value}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                    />
-                  </>
-                )}
-              ></form.Field>
-            </div>
-          ))}
+          <div className="flex flex-col gap-2">
+            <form.Field
+              name="orgSlug"
+              children={(field) => (
+                <>
+                  <Label htmlFor={field.name}>{t(field.name)}</Label>
+                  <Input
+                    id={field.name}
+                    required
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                </>
+              )}
+            ></form.Field>
+          </div>
 
           <FormErrors formState={form.state} />
 
@@ -129,11 +127,11 @@ function GoToganizationCard() {
           />
         </form>
       </CardContent>
-    </>
+    </Card>
   );
 }
 
-function CreateNewOrganizationCard() {
+function CreateNewOrganizationCard(props: React.ComponentProps<"div">) {
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -171,7 +169,7 @@ function CreateNewOrganizationCard() {
   });
 
   return (
-    <>
+    <Card {...props}>
       <CardHeader>
         <CardTitle>{t("createNewOrganization")}</CardTitle>
         <CardDescription>{t("createNewOrganizationDescription")}</CardDescription>
@@ -219,6 +217,6 @@ function CreateNewOrganizationCard() {
           />
         </form>
       </CardContent>
-    </>
+    </Card>
   );
 }

@@ -1,21 +1,43 @@
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/shadcn/components/ui/button";
 import {
+  DropdownMenu,
   DropdownMenuCheckboxItem,
+  DropdownMenuContent,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from "@/shadcn/components/ui/dropdown-menu";
 
 import { THEME_VARIANTS, useTheme } from "@/components/theme-provider";
 
-export function ThemeSelector() {
+export function ThemeSelector({ asSubmenu = false }: { asSubmenu?: boolean }) {
   const { t } = useTranslation();
-  const { setTheme, theme: currentTheme } = useTheme();
+  const { setTheme, theme: currentTheme, ThemeIcon } = useTheme();
+
+  const Menu = asSubmenu ? DropdownMenuSub : DropdownMenu;
+  const MenuTrigger = asSubmenu ? DropdownMenuSubTrigger : DropdownMenuTrigger;
+  const MenuContent = asSubmenu ? DropdownMenuSubContent : DropdownMenuContent;
 
   return (
-    <DropdownMenuSub>
-      <DropdownMenuSubTrigger>{t("theme")}</DropdownMenuSubTrigger>
-      <DropdownMenuSubContent>
+    <Menu>
+      <MenuTrigger asChild={!asSubmenu}>
+        {asSubmenu ? (
+          t("theme")
+        ) : (
+          <Button variant={"outline"}>
+            {
+              <>
+                <ThemeIcon />
+                {t(`themes.${currentTheme}`)}
+              </>
+            }
+          </Button>
+        )}
+      </MenuTrigger>
+      <MenuContent>
         {THEME_VARIANTS.map(({ theme, icon: Icon }) => {
           return (
             <DropdownMenuCheckboxItem
@@ -27,7 +49,7 @@ export function ThemeSelector() {
             </DropdownMenuCheckboxItem>
           );
         })}
-      </DropdownMenuSubContent>
-    </DropdownMenuSub>
+      </MenuContent>
+    </Menu>
   );
 }

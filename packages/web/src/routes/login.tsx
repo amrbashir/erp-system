@@ -1,5 +1,5 @@
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useRouter } from "@tanstack/react-router";
 import { Loader2Icon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
@@ -16,12 +16,17 @@ import { Separator } from "@/shadcn/components/ui/separator";
 
 import { useAuth } from "@/auth/provider";
 import { FormErrors } from "@/components/form-errors";
-import { useOrg } from "@/components/org-provider";
 import i18n from "@/i18n";
 
-export const Route = createFileRoute("/org/$orgSlug/login")({
+interface LoginSearch {
+  redirect?: string;
+  orgSlug?: string;
+}
+
+export const Route = createFileRoute("/login")({
   component: Login,
   context: () => ({ title: i18n.t("login"), hasSidebar: false }),
+  validateSearch: ({ search }) => search as LoginSearch,
 });
 
 function Login() {
@@ -29,20 +34,20 @@ function Login() {
   const { t } = useTranslation();
   const { login } = useAuth();
 
-  const { slug: orgSlug } = useOrg();
+  const { orgSlug, redirect } = Route.useSearch();
 
   const form = useForm({
     defaultValues: {
+      orgSlug: orgSlug || "",
       username: "",
       password: "",
     },
     onSubmit: async ({ value, formApi }) => {
-      const { username, password } = value;
+      const { username, password, orgSlug } = value;
 
       try {
         await login(username, password, orgSlug);
-        const search = router.state.location.search as { redirect?: string };
-        router.history.push(search.redirect || "/org/" + orgSlug + "/");
+        router.history.push(redirect || "/org/" + orgSlug + "/");
       } catch (error: any) {
         formApi.setErrorMap({ onSubmit: error });
       }
@@ -53,7 +58,14 @@ function Login() {
     <main className="flex items-center justify-center w-screen h-screen gap-20">
       <div>
         <img src="/logo.svg" alt="ERP System Logo" width={300} className="mb-10" />
-        <h1 className="text-2xl font-semibold text-center">{t("welcomeToErpOrg", { orgSlug })}</h1>
+        <h1 className="text-2xl font-semibold text-center">
+          {t("welcomeToErpOrg", {
+            orgSlug: orgSlug ?? "$t(yourorganization)",
+            interpolation: {
+              skipOnVariables: false,
+            },
+          })}
+        </h1>
         <p className="text-lg text-center mt-2 text-gray-400">{t("welcomeToErpDescription")}</p>
       </div>
 
@@ -65,7 +77,7 @@ function Login() {
             <CardTitle>{t("login_to_account")}</CardTitle>
             <CardDescription>
               {t("login_to_account_description")}
-              <span className="text-primary font-bold">{orgSlug}</span>
+              <span className="text-primary font-bold">{orgSlug ?? t("yourorganization")}</span>
             </CardDescription>
           </CardHeader>
           <CardContent>

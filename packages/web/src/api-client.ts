@@ -42,7 +42,7 @@ const client = createClient2({
       if (response.status === StatusCode.Unauthorized) {
         setStoredUser(null);
         // Redirect to login page
-        window.location.href = `/org/${orgSlug}/login?redirect=${encodeURIComponent(window.location.href)}`;
+        window.location.href = `/login?orgSlug=${orgSlug}&redirect=${encodeURIComponent(window.location.href)}`;
         throw error;
       }
 

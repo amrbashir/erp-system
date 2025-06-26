@@ -16,8 +16,12 @@
 
   "login": "Login",
   "logout": "Logout",
+
+  "yourorganization": "your organization",
+
   "username": "Username",
   "password": "Password",
+  "orgSlug": "Organization Identifier",
 
   "createdAt": "Created At",
   "updatedAt": "Updated At",
@@ -67,10 +71,6 @@
 
   "or": "or",
 
-  "org": {
-    "name": "Organization Name",
-    "slug": "Organization Identifier"
-  },
   "createOrg": {
     "name": "Organization Name",
     "slug": "Organization Identifier",

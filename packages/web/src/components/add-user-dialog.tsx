@@ -25,6 +25,8 @@ import {
   SelectValue,
 } from "@/shadcn/components/ui/select";
 
+import type { AnyFieldApi } from "@tanstack/react-form";
+
 import type { UserRole } from "@/auth/user";
 import { apiClient } from "@/api-client";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
@@ -99,35 +101,9 @@ export function AddUserDialog() {
                   <>
                     <Label htmlFor={field.name}>{t(field.name)}</Label>
                     {field.name === "role" ? (
-                      <>
-                        <Select
-                          onValueChange={(e) => field.handleChange(e)}
-                          defaultValue={field.state.value}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {["USER", "ADMIN"].map((r) => (
-                              <SelectItem key={r} value={r}>
-                                {r}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </>
+                      <SelectInput field={field} options={["USER", "ADMIN"] as UserRole[]} />
                     ) : (
-                      <>
-                        <Input
-                          id={field.name}
-                          name={field.name}
-                          value={field.state.value}
-                          type={field.name === "password" ? "password" : "text"}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          required
-                        />
-                        <FormFieldError field={field} />
-                      </>
+                      <InputField field={field} />
                     )}
                   </>
                 )}
@@ -158,5 +134,38 @@ export function AddUserDialog() {
         </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function InputField({ field }: { field: AnyFieldApi }) {
+  return (
+    <>
+      <Input
+        id={field.name}
+        name={field.name}
+        value={field.state.value}
+        type={field.name === "password" ? "password" : "text"}
+        onChange={(e) => field.handleChange(e.target.value)}
+        required
+      />
+      <FormFieldError field={field} />
+    </>
+  );
+}
+
+function SelectInput({ field, options }: { field: AnyFieldApi; options: string[] }) {
+  return (
+    <Select onValueChange={(e) => field.handleChange(e)} defaultValue={field.state.value}>
+      <SelectTrigger>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {options.map((r) => (
+          <SelectItem key={r} value={r}>
+            {r}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

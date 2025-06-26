@@ -1,27 +1,19 @@
 import { useMatches } from "@tanstack/react-router";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/shadcn/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/shadcn/components/ui/dropdown-menu";
-
-import { useTheme } from "@/components/theme-provider";
 
 import { LanguageSelector } from "./language-selector";
+import { ThemeSelector } from "./theme-selector";
 
 export function NonOrgHeader() {
   const { i18n } = useTranslation();
-  const { ThemeIcon, toggleTheme } = useTheme();
 
   const matches = useMatches();
-  const route = matches[matches.length - 1];
+  const currentMatch = matches[matches.length - 1];
 
-  const hasSidebar = route.context?.hasSidebar;
+  const isOrg = currentMatch?.fullPath.startsWith("/org");
 
-  if (hasSidebar) return null;
+  if (isOrg) return null;
 
   return (
     <div
@@ -30,10 +22,7 @@ export function NonOrgHeader() {
         i18n.dir() === "rtl" ? "left-4" : "right-4",
       )}
     >
-      <Button variant="outline" onClick={toggleTheme}>
-        <ThemeIcon />
-      </Button>
-
+      <ThemeSelector />
       <LanguageSelector />
     </div>
   );

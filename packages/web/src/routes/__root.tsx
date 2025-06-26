@@ -16,7 +16,6 @@ interface RouterContext {
   title: string;
   icon?: React.ComponentType;
   roleRequirement?: z.infer<typeof UserEntity>["role"];
-  hasSidebar: boolean;
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({

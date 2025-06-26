@@ -33,11 +33,11 @@ export function UserDropdown() {
   const { user, logout: authLogout } = useAuth();
 
   async function logout() {
-    await authLogout(orgSlug);
+    authLogout(orgSlug);
     router.navigate({
-      to: "/org/$orgSlug/login",
-      params: { orgSlug },
+      to: "/login",
       search: {
+        orgSlug,
         redirect: "redirect" in location.search ? location.search.redirect : location.href,
       },
     });
@@ -86,7 +86,7 @@ export function UserDropdown() {
             <DropdownMenuSeparator />
 
             <LanguageSelector asSubmenu={true} />
-            <ThemeSelector />
+            <ThemeSelector asSubmenu={true} />
 
             <DropdownMenuSeparator />
 
