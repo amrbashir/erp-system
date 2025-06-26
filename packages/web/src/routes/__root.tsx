@@ -23,7 +23,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   head: (c) => {
     const currentMatch = c.matches[c.matches.length - 1];
     const routeTitle = currentMatch.context.title ? currentMatch.context.title : "";
-    const orgSlug = "orgSlug" in c.params && c.params.orgSlug ? c.params.orgSlug : "";
+    const paramOrgSlug = "orgSlug" in c.params && c.params.orgSlug ? c.params.orgSlug : "";
+    const searchParamsOrgSlug =
+      "orgSlug" in c.match.search && c.match.search.orgSlug ? c.match.search.orgSlug : "";
+    const orgSlug = paramOrgSlug || searchParamsOrgSlug;
     const title = [routeTitle, orgSlug, "erp-system"].filter(Boolean).join(" | ");
 
     return {

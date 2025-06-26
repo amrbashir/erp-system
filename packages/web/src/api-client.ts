@@ -59,7 +59,7 @@ const client = createClient2({
   },
 });
 
-// Export the API client with lowercase methods for convenience
+// Export the API client with lowercase methods as I don't like the uppercase ones
 export const apiClient = {
   get: client.GET.bind(client),
   post: client.POST.bind(client),
