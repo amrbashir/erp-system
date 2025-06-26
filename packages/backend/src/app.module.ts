@@ -1,18 +1,15 @@
-import {
-  Module,
-  ValidationPipe,
-  VERSION_NEUTRAL,
-  VersioningType,
-  type INestApplication,
-} from "@nestjs/common";
-import { PrismaModule } from "./prisma/prisma.module";
-import { OrgModule } from "./org/org.module";
-import { UserModule } from "./user/user.module";
-import { AuthModule } from "./auth/auth.module";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { CustomerModule } from "./customer/customer.module";
+import { Module, ValidationPipe, VERSION_NEUTRAL, VersioningType } from "@nestjs/common";
 import { HttpAdapterHost } from "@nestjs/core";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+
+import type { INestApplication } from "@nestjs/common";
+
+import { AuthModule } from "./auth/auth.module";
+import { CustomerModule } from "./customer/customer.module";
+import { OrgModule } from "./org/org.module";
 import { PrismaClientExceptionFilter } from "./prisma/prisma-client-exception.filter";
+import { PrismaModule } from "./prisma/prisma.module";
+import { UserModule } from "./user/user.module";
 
 @Module({
   imports: [PrismaModule, OrgModule, UserModule, AuthModule, CustomerModule],

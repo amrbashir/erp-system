@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   IsAlphanumeric,
   IsAscii,
@@ -6,7 +7,7 @@ import {
   IsString,
   MinLength,
 } from "class-validator";
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+
 import type { Organization } from "../prisma/generated/client";
 
 export class CreateOrgDto {

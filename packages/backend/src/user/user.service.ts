@@ -4,12 +4,15 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
-import { DeleteUserDto, type CreateUserDto } from "./user.dto";
-import { UserRole, type User } from "../prisma/generated/client";
-import type { UserWhereInput } from "../prisma/generated/models";
 import * as argon2 from "argon2";
+
 import type { PaginationDto } from "../pagination.dto";
+import type { User } from "../prisma/generated/client";
+import type { UserWhereInput } from "../prisma/generated/models";
+import type { CreateUserDto } from "./user.dto";
+import { UserRole } from "../prisma/generated/client";
+import { PrismaService } from "../prisma/prisma.service";
+import { DeleteUserDto } from "./user.dto";
 
 @Injectable()
 export class UserService {

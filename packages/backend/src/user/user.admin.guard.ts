@@ -1,13 +1,10 @@
-import {
-  type CanActivate,
-  type ExecutionContext,
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
-import { UserService } from "./user.service";
-import { UserRole } from "../prisma/generated/client";
+import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+
+import type { CanActivate, ExecutionContext } from "@nestjs/common";
+
 import { type JwtPayload } from "../auth/auth.dto";
+import { UserRole } from "../prisma/generated/client";
+import { UserService } from "./user.service";
 
 @Injectable()
 export class AdminGuard implements CanActivate {

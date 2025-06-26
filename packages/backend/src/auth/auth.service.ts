@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import * as argon2 from "argon2";
 import { JwtService } from "@nestjs/jwt";
-import { type JwtPayload, type JwtTokens, type LoginUserDto } from "./auth.dto";
-import { UserService } from "../user/user.service";
+import * as argon2 from "argon2";
+
 import { type User } from "../prisma/generated/client";
+import { UserService } from "../user/user.service";
+import { type JwtPayload, type JwtTokens, type LoginUserDto } from "./auth.dto";
 
 @Injectable()
 export class AuthService {

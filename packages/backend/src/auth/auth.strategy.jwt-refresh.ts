@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { AuthGuard, PassportStrategy } from "@nestjs/passport";
-import { Strategy } from "passport-jwt";
 import { type Request } from "express";
+import { Strategy } from "passport-jwt";
 
 function extractJwtFromCookie(req: Request): string | null {
   const cookies = req.headers.cookie;

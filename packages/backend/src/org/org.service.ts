@@ -1,9 +1,11 @@
+import { isValidSlug, slugify } from "@erp-system/utils";
 import { BadRequestException, ConflictException, Injectable } from "@nestjs/common";
+import * as argon2 from "argon2";
+
+import type { Organization } from "../prisma/generated/client";
+import { UserRole } from "../prisma/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { type CreateOrgDto } from "./org.dto";
-import { type Organization, UserRole } from "../prisma/generated/client";
-import { slugify, isValidSlug } from "@erp-system/utils";
-import * as argon2 from "argon2";
 
 @Injectable()
 export class OrgService {

@@ -1,16 +1,17 @@
 import { Body, Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiHeader,
+  ApiOkResponse,
+  ApiTags,
+} from "@nestjs/swagger";
+
+import type { PaginationDto } from "../pagination.dto";
+import type { Customer } from "../prisma/generated/client";
+import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
 import { CreateCustomerDto, CustomerEntity } from "./customer.dto";
 import { CustomerService } from "./customer.service";
-import {
-  ApiCreatedResponse,
-  ApiBearerAuth,
-  ApiHeader,
-  ApiTags,
-  ApiOkResponse,
-} from "@nestjs/swagger";
-import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
-import type { Customer } from "../prisma/generated/client";
-import type { PaginationDto } from "../pagination.dto";
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()

@@ -4,23 +4,20 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
-  UseGuards,
   Req,
   Res,
-  Param,
+  UseGuards,
 } from "@nestjs/common";
-import { AuthService } from "./auth.service";
-import {
-  type JwtPayload,
-  LoginResponseDto,
-  LoginUserDto,
-  RefreshTokenResponseDto,
-} from "./auth.dto";
-import { JwtRefreshAuthGuard } from "./auth.strategy.jwt-refresh";
+import { ApiBearerAuth, ApiCookieAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { type Response } from "express";
-import { ApiBearerAuth, ApiHeader, ApiCookieAuth, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+
+import type { JwtPayload } from "./auth.dto";
+import { LoginResponseDto, LoginUserDto, RefreshTokenResponseDto } from "./auth.dto";
+import { AuthService } from "./auth.service";
 import { JwtAuthGuard } from "./auth.strategy.jwt";
+import { JwtRefreshAuthGuard } from "./auth.strategy.jwt-refresh";
 
 @ApiTags("auth")
 @Controller("/org/:orgSlug/auth")

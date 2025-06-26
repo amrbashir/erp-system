@@ -1,22 +1,23 @@
 import {
   Body,
   Controller,
+  Delete,
+  ForbiddenException,
+  Get,
+  Param,
   Post,
   Query,
-  UseGuards,
-  Get,
-  Delete,
-  Param,
   Req,
-  ForbiddenException,
+  UseGuards,
 } from "@nestjs/common";
-import { UserService } from "./user.service";
-import { CreateUserDto, DeleteUserDto, UserEntity } from "./user.dto";
-import { AdminGuard } from "./user.admin.guard";
 import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
-import type { PaginationDto } from "../pagination.dto";
+
 import type { JwtPayload } from "../auth/auth.dto";
+import type { PaginationDto } from "../pagination.dto";
+import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
+import { AdminGuard } from "./user.admin.guard";
+import { CreateUserDto, DeleteUserDto, UserEntity } from "./user.dto";
+import { UserService } from "./user.service";
 
 @UseGuards(JwtAuthGuard, AdminGuard)
 @ApiBearerAuth()
