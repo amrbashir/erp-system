@@ -4,18 +4,18 @@ Building an ERP system for a local store in public.
 
 ## Archeticture
 
-### Frontend
+### `packages/backend`
 
-- **Framework**: React.js with TypeScript
-- **UI Components**: Shadcn UI and Tailwind CSS
+A RESTful API using Node.js, Nest.js, PostgresSQL (through Prisma)
 
-### Backend
+### `packages/web`
 
-- **API**: Node.js with NestJS
-- **Database**: PostgreSQL for relational data
-- **Authentication**: JWT-based auth system
+A web application built using Vite, React, shadcn/ui, Tailwind CSS, Tanstack Router, Tanstack Query and Tanstack Form
 
-### Infrastructure
+### `packages/sdk`
 
-- **Deployment**: AWS
-- **CI/CD**: GitHub Actions
+A typed and fetch-based client to communicate with the backend, generated from the openapi spec provided by NestJS swagger integration.
+
+### `packages/utils`
+
+A common set of utilities between the backend and frontend.
