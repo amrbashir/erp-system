@@ -2,8 +2,8 @@ import { useMatches } from "@tanstack/react-router";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
-import { LanguageSelector } from "./language-selector";
-import { ThemeSelector } from "./theme-selector";
+import { LanguageSelector } from "@/components/language-selector";
+import { ThemeSelector } from "@/components/theme-selector";
 
 export function NonOrgHeader() {
   const { i18n } = useTranslation();

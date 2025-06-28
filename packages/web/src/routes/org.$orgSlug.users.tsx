@@ -150,14 +150,5 @@ function Users() {
 }
 
 function toLocaleString(date: string, lang: string) {
-  switch (lang) {
-    case "ar":
-      lang = "ar-EG"; // Arabic (Egypt)
-      break;
-    case "en":
-      lang = "en-GB"; // English (United Kingdom)
-      break;
-  }
-
   return new Date(date).toLocaleString(lang);
 }

@@ -91,5 +91,7 @@
 
   "goBackHome": "العودة إلى الصفحة الرئيسية",
 
-  "loadingOrganization": "جارٍ تحميل المؤسسة..."
+  "loadingOrganization": "جارٍ تحميل المؤسسة...",
+
+  "notFound": "الصفحة غير موجودة"
 }

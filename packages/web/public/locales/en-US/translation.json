@@ -91,5 +91,7 @@
 
   "goBackHome": "Go Back Home",
 
-  "loadingOrganization": "Loading organization..."
+  "loadingOrganization": "Loading organization...",
+
+  "notFound": "Page not found"
 }
