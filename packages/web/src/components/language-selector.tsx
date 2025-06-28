@@ -16,8 +16,8 @@ import { Sa } from "@/components/flags/sa";
 import { Uk } from "@/components/flags/uk";
 
 const LANGUAGE_FLAGS = {
-  en: Uk,
-  ar: Sa,
+  "en-US": Uk,
+  "ar-EG": Sa,
 } as const;
 
 type LanguageFlagKey = keyof typeof LANGUAGE_FLAGS;
@@ -37,10 +37,9 @@ export function LanguageSelector({ asSubmenu = false }: { asSubmenu?: boolean })
   const MenuTrigger = asSubmenu ? DropdownMenuSubTrigger : DropdownMenuTrigger;
   const MenuContent = asSubmenu ? DropdownMenuSubContent : DropdownMenuContent;
 
-  const ActiveIcon = useMemo(
-    () => LANGUAGE_FLAGS[i18n.language as LanguageFlagKey],
-    [i18n.language, LANGUAGE_FLAGS],
-  );
+  console.log("LanguageSelector rendered", i18n.language);
+
+  const ActiveIcon = LANGUAGE_FLAGS[i18n.language as LanguageFlagKey];
 
   return (
     <Menu>
@@ -48,13 +47,11 @@ export function LanguageSelector({ asSubmenu = false }: { asSubmenu?: boolean })
         {asSubmenu ? (
           t("language")
         ) : (
-          <Button variant={"outline"}>
-            {
-              <>
-                <ActiveIcon />
-                {t(`languages.${i18n.language}` as any)}
-              </>
-            }
+          <Button variant="outline">
+            <>
+              <ActiveIcon />
+              {t(`languages.${i18n.language}`)}
+            </>
           </Button>
         )}
       </MenuTrigger>

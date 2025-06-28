@@ -27,7 +27,7 @@ export function ThemeSelector({ asSubmenu = false }: { asSubmenu?: boolean }) {
         {asSubmenu ? (
           t("theme")
         ) : (
-          <Button variant={"outline"}>
+          <Button variant="outline">
             {
               <>
                 <ThemeIcon />

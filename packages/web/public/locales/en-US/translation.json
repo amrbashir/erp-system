@@ -37,8 +37,8 @@
   },
 
   "languages": {
-    "en": "English",
-    "ar": "Arabic"
+    "en-US": "English",
+    "ar-EG": "العربية"
   },
 
   "theme": "Theme",
