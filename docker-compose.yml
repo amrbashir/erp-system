@@ -36,10 +36,10 @@ services:
     image: erp-system-node-pnpm
     command: pnpm prisma migrate dev
     working_dir: /app/packages/backend
-    environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres_db:5432/postgres
     volumes:
       - .:/app
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres_db:5432/postgres
 
   build_packages:
     depends_on:
@@ -58,6 +58,11 @@ services:
     working_dir: /app
     volumes:
       - .:/app
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres_db:5432/postgres
+    ports:
+      - "3000:3000"
+
   web:
     depends_on:
       - pnpm_install
@@ -65,9 +70,12 @@ services:
     command: pnpm web dev --host
     environment:
       - DOCKER=true
+      - BACKEND_HOST=http://backend
     working_dir: /app
     volumes:
       - .:/app
+    ports:
+      - "1420:1420"
 
 volumes:
   postgres_db_data:

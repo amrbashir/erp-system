@@ -40,7 +40,7 @@ export default defineConfig(({ mode }) => {
 
       proxy: {
         "/api": {
-          target: `http://localhost:${env.NESTJS_SERVER_PORT}`,
+          target: `${env.BACKEND_HOST || "http://localhost"}:${env.NESTJS_SERVER_PORT}`,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ""),
         },
