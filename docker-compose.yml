@@ -58,19 +58,16 @@ services:
     working_dir: /app
     volumes:
       - .:/app
-    ports:
-      - "3000:3000"
-
   web:
     depends_on:
       - pnpm_install
     image: erp-system-node-pnpm
-    command: pnpm web dev:docker
+    command: pnpm web dev --host
+    environment:
+      - DOCKER=true
     working_dir: /app
     volumes:
       - .:/app
-    ports:
-      - "1420:1420"
 
 volumes:
   postgres_db_data:
