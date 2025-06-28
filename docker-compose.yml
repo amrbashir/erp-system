@@ -1,0 +1,63 @@
+services:
+  node-pnpm-builder:
+    build:
+      context: .
+      dockerfile: .docker/node-pnpm.DockerFile
+    image: erp-system-node-pnpm
+
+  postgres_db:
+    image: postgres:15
+    restart: always
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_db_data:/var/lib/postgresql/data
+    command: postgres -c listen_addresses='*'
+
+  pnpm_install:
+    depends_on:
+      - node-pnpm-builder
+    image: erp-system-node-pnpm
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: pnpm install
+
+  build_packages:
+    depends_on:
+      - pnpm_install
+    image: erp-system-node-pnpm
+    command: pnpm utils build && pnpm sdk build
+    working_dir: /app
+    volumes:
+      - .:/app
+
+  backend:
+    depends_on:
+      - postgres_db
+      - pnpm_install
+    image: erp-system-node-pnpm
+    command: pnpm backend dev
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+
+  web:
+    depends_on:
+      - pnpm_install
+    image: erp-system-node-pnpm
+    command: pnpm web dev:docker
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "1420:1420"
+
+volumes:
+  postgres_db_data:

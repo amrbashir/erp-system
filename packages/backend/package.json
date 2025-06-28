@@ -7,11 +7,11 @@
   "main": "dist/main.js",
   "scripts": {
     "build": "prisma generate && tsdown",
-    "dev": "docker compose up -d && prisma generate && tsdown --watch --config tsdown.config.dev.ts",
+    "dev": "prisma generate && tsdown --watch --config tsdown.config.dev.ts",
     "start": "node --env-file=.env dist/main.js",
     "start:dev": "node --env-file=.env.dev dist/main.js",
     "gen:openapi-json": "node --env-file=.env.dev dist/main.js gen-openapi-json",
-    "test": "docker compose up -d && vitest run",
+    "test": "docker compose up -d postgres_db && vitest run",
     "test:watch": "vitest",
     "lint": "tsc --noEmit"
   },

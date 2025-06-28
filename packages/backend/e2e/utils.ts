@@ -16,13 +16,13 @@ export function useRandomDatabase() {
   process.env.DATABASE_URL = randomDBUrl;
 
   const createDatabase = async () => {
-    const createDbCommand = `docker compose exec postgres psql -U postgres -c "CREATE DATABASE ${randomDBName}"`;
+    const createDbCommand = `docker compose exec postgres_db psql -U postgres -c "CREATE DATABASE ${randomDBName}"`;
     await execAsync(createDbCommand);
     await execAsync("pnpm prisma migrate reset --force");
   };
 
   const dropDatabase = async () => {
-    const dropDbCommand = `docker compose exec postgres psql -U postgres -c "DROP DATABASE ${randomDBName} with (FORCE)"`;
+    const dropDbCommand = `docker compose exec postgres_db psql -U postgres -c "DROP DATABASE ${randomDBName} with (FORCE)"`;
     await execAsync(dropDbCommand);
   };
 

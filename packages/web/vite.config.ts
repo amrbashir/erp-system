@@ -29,10 +29,14 @@ export default defineConfig(({ mode }) => {
       },
     },
 
-    clearScreen: false, // don't clear the console, for Tauri]
+    clearScreen: false, // don't clear the console
     server: {
       port: Number(env.VITE_DEV_PORT),
-      strictPort: true, // for Tauri
+      strictPort: true,
+
+      watch: {
+        usePolling: !!process.env.DOCKER,
+      },
 
       proxy: {
         "/api": {

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:docker": "DOCKER=true vite --host",
     "build": "vite build",
     "lint": "tsc -b"
   },
