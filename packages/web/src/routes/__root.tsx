@@ -47,10 +47,10 @@ function Root() {
     <DirectionProvider dir={i18n.dir()}>
       <ThemeProvider>
         <HeadContent />
+        <NonOrgHeader />
 
         <Outlet />
 
-        <NonOrgHeader />
         <Toaster position={i18n.dir() === "rtl" ? "bottom-left" : "bottom-right"} />
       </ThemeProvider>
     </DirectionProvider>

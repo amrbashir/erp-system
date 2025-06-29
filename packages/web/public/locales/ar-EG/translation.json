@@ -4,6 +4,7 @@
   "welcomeToErpDescription": "محطتك الشاملة لجميع احتياجات ال ERP",
 
   "language": "اللغة",
+  "changeLanguage": "تغيير اللغة",
 
   "pages": {
     "home": "الصفحة الرئيسية",
@@ -37,6 +38,7 @@
   },
 
   "theme": "المظهر",
+  "changeTheme": "تغيير المظهر",
   "themes": {
     "light": "فاتح",
     "dark": "داكن",

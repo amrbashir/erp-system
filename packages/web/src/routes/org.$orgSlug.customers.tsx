@@ -54,8 +54,8 @@ function Customers() {
                 <TableCell>{customer.name}</TableCell>
                 <TableCell>{customer.email}</TableCell>
                 <TableCell>{customer.phone}</TableCell>
-                <TableCell>{toLocaleString(customer.createdAt, i18n.language)}</TableCell>
-                <TableCell>{toLocaleString(customer.updatedAt, i18n.language)}</TableCell>
+                <TableCell>{new Date(customer.createdAt).toLocaleString(i18n.language)}</TableCell>
+                <TableCell>{new Date(customer.updatedAt).toLocaleString(i18n.language)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -63,17 +63,4 @@ function Customers() {
       </div>
     </main>
   );
-}
-
-function toLocaleString(date: string, lang: string) {
-  switch (lang) {
-    case "ar":
-      lang = "ar-EG"; // Arabic (Egypt)
-      break;
-    case "en":
-      lang = "en-GB"; // English (United Kingdom)
-      break;
-  }
-
-  return new Date(date).toLocaleString(lang);
 }

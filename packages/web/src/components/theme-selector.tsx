@@ -27,11 +27,11 @@ export function ThemeSelector({ asSubmenu = false }: { asSubmenu?: boolean }) {
         {asSubmenu ? (
           t("theme")
         ) : (
-          <Button variant="outline">
+          <Button title={t("changeTheme")} variant="outline">
             {
               <>
                 <ThemeIcon />
-                {t(`themes.${currentTheme}`)}
+                <span className="hidden md:inline">{t(`themes.${currentTheme}`)}</span>
               </>
             }
           </Button>

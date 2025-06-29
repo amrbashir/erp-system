@@ -48,12 +48,14 @@ function NavigationBreadcrumbs() {
   );
 }
 
-export function NavigationHeader() {
+export function OrgHeader() {
   return (
-    <header className="flex items-center gap-1 w-full border-b px-4 py-2">
+    <header className="sticky top-0 z-49 flex items-center gap-2 w-full bg-background/50 backdrop-blur-sm border-b px-4 py-2 md:rounded-t-lg">
       <SidebarTrigger />
       <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
-      <NavigationBreadcrumbs />
+      <nav>
+        <NavigationBreadcrumbs />
+      </nav>
     </header>
   );
 }

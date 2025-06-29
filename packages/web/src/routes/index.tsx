@@ -17,7 +17,9 @@ import { Label } from "@/shadcn/components/ui/label";
 import { Separator } from "@/shadcn/components/ui/separator";
 
 import { apiClient } from "@/api-client";
+import { Footer } from "@/components/footer";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
+import { Welcome } from "@/components/welcome";
 
 export const Route = createFileRoute("/")({ component: Index });
 
@@ -25,29 +27,30 @@ function Index() {
   const { t } = useTranslation();
 
   return (
-    <main className="h-screen w-screen grid place-items-center">
-      <div className="flex items-center justify-center gap-20 p-20">
-        <div className="flex flex-col items-center">
-          <img src="/logo.svg" alt="ERP System Logo" width={300} className="mb-10" />
-          <h1 className="text-3xl font-semibold text-center">{t("welcomeToErp")}</h1>
-          <p className="text-lg text-center mt-2 text-gray-400">{t("welcomeToErpDescription")}</p>
-        </div>
+    <>
+      <main className="w-full *:p-5 *:md:p-20">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-10">
+          <Welcome />
 
-        <Separator orientation="vertical" className="h-50!" />
+          <Separator className="md:hidden" />
+          <Separator orientation="vertical" className="hidden md:block md:h-75!" />
 
-        <div className="flex flex-col items-center gap-10 min-w-sm">
-          <GoToganizationCard className="w-full max-w-sm" />
+          <div className="flex flex-col items-center gap-10 w-full *:w-full md:w-auto *:md:w-auto md:min-w-sm *:md:min-w-sm">
+            <GoToganizationCard />
 
-          <div className="flex items-center gap-2">
-            <Separator className="w-35!" />
-            <p>{t("or")}</p>
-            <Separator className="w-35!" />
+            <div className="flex items-center">
+              <Separator className="flex-2" />
+              <p className="flex-1 text-center">{t("or")}</p>
+              <Separator className="flex-2" />
+            </div>
+
+            <CreateNewOrganizationCard />
           </div>
-
-          <CreateNewOrganizationCard className="w-full max-w-sm" />
         </div>
-      </div>
-    </main>
+      </main>
+
+      <Footer />
+    </>
   );
 }
 

@@ -37,8 +37,6 @@ export function LanguageSelector({ asSubmenu = false }: { asSubmenu?: boolean })
   const MenuTrigger = asSubmenu ? DropdownMenuSubTrigger : DropdownMenuTrigger;
   const MenuContent = asSubmenu ? DropdownMenuSubContent : DropdownMenuContent;
 
-  console.log("LanguageSelector rendered", i18n.language);
-
   const ActiveIcon = LANGUAGE_FLAGS[i18n.language as LanguageFlagKey];
 
   return (
@@ -47,10 +45,10 @@ export function LanguageSelector({ asSubmenu = false }: { asSubmenu?: boolean })
         {asSubmenu ? (
           t("language")
         ) : (
-          <Button variant="outline">
+          <Button title={t("changeLanguage")} variant="outline">
             <>
               <ActiveIcon />
-              {t(`languages.${i18n.language}`)}
+              <span className="hidden md:inline">{t(`languages.${i18n.language}`)}</span>
             </>
           </Button>
         )}

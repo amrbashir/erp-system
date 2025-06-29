@@ -1,5 +1,4 @@
 import { useMatches } from "@tanstack/react-router";
-import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 
 import { LanguageSelector } from "@/components/language-selector";
@@ -16,14 +15,10 @@ export function NonOrgHeader() {
   if (isOrg) return null;
 
   return (
-    <div
-      className={clsx(
-        "flex items-center absolute top-4 gap-2",
-        i18n.dir() === "rtl" ? "left-4" : "right-4",
-      )}
-    >
-      <ThemeSelector />
+    <nav className="sticky top-0 z-49 w-screen h-20 p-4 flex items-center gap-2 backdrop-blur-sm bg-background/80 border-b border-border">
+      <div className="flex-1" />
       <LanguageSelector />
-    </div>
+      <ThemeSelector />
+    </nav>
   );
 }

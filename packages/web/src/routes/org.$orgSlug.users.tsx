@@ -97,10 +97,10 @@ function Users() {
               >
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{t(`roles.${user.role}`)}</TableCell>
-                <TableCell>{toLocaleString(user.createdAt, i18n.language)}</TableCell>
-                <TableCell>{toLocaleString(user.updatedAt, i18n.language)}</TableCell>
+                <TableCell>{new Date(user.createdAt).toLocaleString(i18n.language)}</TableCell>
+                <TableCell>{new Date(user.updatedAt).toLocaleString(i18n.language)}</TableCell>
                 <TableCell>
-                  {user.deletedAt ? toLocaleString(user.deletedAt, i18n.language) : ""}
+                  {user.deletedAt ? new Date(user.deletedAt).toLocaleString(i18n.language) : ""}
                 </TableCell>
                 <TableCell>
                   <AlertDialog>
@@ -147,8 +147,4 @@ function Users() {
       </div>
     </main>
   );
-}
-
-function toLocaleString(date: string, lang: string) {
-  return new Date(date).toLocaleString(lang);
 }

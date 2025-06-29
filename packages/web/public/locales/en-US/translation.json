@@ -4,6 +4,11 @@
   "welcomeToErpDescription": "Your one-stop system for all ERP needs",
 
   "language": "Language",
+  "changeLanguage": "Change Language",
+  "languages": {
+    "en-US": "English",
+    "ar-EG": "العربية"
+  },
 
   "pages": {
     "home": "Home",
@@ -36,12 +41,8 @@
     "USER": "User"
   },
 
-  "languages": {
-    "en-US": "English",
-    "ar-EG": "العربية"
-  },
-
   "theme": "Theme",
+  "changeTheme": "Change Theme",
   "themes": {
     "light": "Light",
     "dark": "Dark",

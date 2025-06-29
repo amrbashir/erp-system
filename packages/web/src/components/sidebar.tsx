@@ -54,7 +54,8 @@ export function AppSideBar() {
       <SidebarHeader>
         <Label className="my-2">
           <img src="/favicon.svg" className="size-8"></img>
-          {open && <span className="text-lg font-semibold">{orgSlug}</span>}
+          <span className="md:hidden text-lg font-semibold">{orgSlug}</span>
+          {open && <span className="hidden md:inline-block text-lg font-semibold">{orgSlug}</span>}
         </Label>
       </SidebarHeader>
 
