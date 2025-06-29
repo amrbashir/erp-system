@@ -33,15 +33,14 @@ const client = createClient2({
         "get",
         "/org/{orgSlug}/auth/refresh",
         {
-          // @ts-expect-error - incorrect type generation by openapi-typescript
+          // @ts-expect-error - for some reason, incorrect type generation by openapi-typescript
           params: { path: { orgSlug } },
         },
       );
 
-      // If the refresh failed, clear the stored user
-      if (response.status === StatusCode.Unauthorized) {
+      // If the refresh failed, clear the stored user and redirect to the login page
+      if (response.ok === false) {
         setStoredUser(null);
-        // Redirect to login page
         window.location.href = `/login?orgSlug=${orgSlug}&redirect=${encodeURIComponent(window.location.href)}`;
         throw error;
       }
