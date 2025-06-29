@@ -10,7 +10,7 @@ const execAsync = promisify(exec);
 
 export function useRandomDatabase() {
   const randomDBName = `test_db_${Math.random().toString(36).substring(2, 15)}`;
-  const randomDBUrl = process.env.DATABASE_URL?.replace(/(.*\/)(.*)(\?.*)/, `$1${randomDBName}$3`);
+  const randomDBUrl = process.env.DATABASE_URL?.replace(/(.*\/)(.*)$/, `$1${randomDBName}`);
 
   // Set the environment variable for the database URL
   process.env.DATABASE_URL = randomDBUrl;
