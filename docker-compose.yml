@@ -5,7 +5,7 @@ services:
       dockerfile: .docker/node-pnpm.DockerFile
     image: erp-system-node-pnpm
 
-  postgres_db:
+  postgres-db:
     image: postgres:15
     restart: always
     environment:
@@ -17,10 +17,10 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
     volumes:
-      - postgres_db_data:/var/lib/postgresql/data
+      - postgres-db-data:/var/lib/postgresql/data
     command: postgres -c listen_addresses='*'
 
-  pnpm_install:
+  pnpm-install:
     depends_on:
       - node-pnpm-builder
     image: erp-system-node-pnpm
@@ -29,21 +29,21 @@ services:
       - .:/app
     command: pnpm install
 
-  postgres_db_migrate:
+  postgres-db-migrate:
     depends_on:
-      - postgres_db
-      - pnpm_install
+      - postgres-db
+      - pnpm-install
     image: erp-system-node-pnpm
     command: pnpm prisma migrate dev
     working_dir: /app/packages/backend
     volumes:
       - .:/app
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres_db:5432/postgres
+      - DATABASE_URL=postgresql://postgres:postgres@postgres-db:5432/postgres
 
-  build_packages:
+  build-packages:
     depends_on:
-      - pnpm_install
+      - pnpm-install
     image: erp-system-node-pnpm
     command: sh -c "pnpm utils build && pnpm sdk build"
     working_dir: /app
@@ -52,20 +52,22 @@ services:
 
   backend:
     depends_on:
-      - postgres_db_migrate
+      - postgres-db-migrate
+      - build-packages
     image: erp-system-node-pnpm
     command: pnpm backend dev
     working_dir: /app
     volumes:
       - .:/app
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres_db:5432/postgres
+      - DATABASE_URL=postgresql://postgres:postgres@postgres-db:5432/postgres
     ports:
       - "3000:3000"
 
   web:
     depends_on:
-      - pnpm_install
+      - pnpm-install
+      - build-packages
     image: erp-system-node-pnpm
     command: pnpm web dev --host
     environment:
@@ -78,4 +80,4 @@ services:
       - "1420:1420"
 
 volumes:
-  postgres_db_data:
+  postgres-db-data:
