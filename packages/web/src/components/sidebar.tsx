@@ -16,6 +16,7 @@ import {
 
 import type { FileRoutesById } from "@/routeTree.gen";
 import { UserDropdown } from "@/components/user-dropdown";
+import { useAuth } from "@/providers/auth-provider";
 import { useOrg } from "@/providers/org-provider";
 
 export function AppSideBar() {
@@ -24,13 +25,15 @@ export function AppSideBar() {
   const { flatRoutes } = useRouter();
   const currentLocation = useLocation({ select: (state) => state.pathname });
   const { slug: orgSlug } = useOrg();
+  const { user } = useAuth();
 
-  const sidebarRoutes: (keyof FileRoutesById)[] = [
+  const sidebarRoutes: (keyof FileRoutesById | undefined)[] = [
     "/org/$orgSlug/",
     "/org/$orgSlug/customers",
-    "/org/$orgSlug/users",
+    user?.role === "ADMIN" ? "/org/$orgSlug/users" : undefined,
   ];
-  const sidebarRoutesData = sidebarRoutes.map((r) => {
+
+  const sidebarRoutesData = sidebarRoutes.filter(Boolean).map((r) => {
     const route = flatRoutes.find((route) => route.to === r);
     const data = route?.options.context();
     const location = route?.to.replace("$orgSlug", orgSlug);

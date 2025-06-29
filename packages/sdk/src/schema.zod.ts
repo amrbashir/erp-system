@@ -27,7 +27,7 @@ export const UserEntity = z
     role: z.enum(["USER", "ADMIN"]),
     createdAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true }),
-    deletedAt: z.string().datetime({ offset: true }).optional(),
+    deletedAt: z.object({}).partial().passthrough().optional(),
   })
   .passthrough();
 

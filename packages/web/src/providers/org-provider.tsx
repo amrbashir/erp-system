@@ -2,21 +2,18 @@ import { OrganizationEntity } from "@erp-system/sdk/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import { AlertCircleIcon, Loader2Icon } from "lucide-react";
-import { createContext, use, useContext, useEffect, useState } from "react";
+import { createContext, useContext } from "react";
 import { useTranslation } from "react-i18next";
 
 import type z from "zod";
 
 import { apiClient } from "@/api-client";
 
-const OrganizationEntityStrict = OrganizationEntity.strict();
-export type Organization = z.infer<typeof OrganizationEntityStrict>;
-
 export type ThemeProviderProps = {
   children: React.ReactNode;
 };
 
-const OrgProviderContext = createContext<Organization | null>(null);
+const OrgProviderContext = createContext<z.infer<typeof OrganizationEntity> | null>(null);
 
 export function OrgProvider({ children, ...props }: ThemeProviderProps) {
   const { t } = useTranslation();

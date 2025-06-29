@@ -36,5 +36,5 @@ export class UserEntity implements Partial<User> {
   @ApiProperty()
   updatedAt: Date;
   @ApiPropertyOptional()
-  deletedAt: Date;
+  deletedAt?: Date | null;
 }
