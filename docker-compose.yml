@@ -25,40 +25,48 @@ services:
       - node-pnpm-builder
     image: erp-system-node-pnpm
     working_dir: /app
-    volumes:
+    volumes: &node-volumes
+      - pnpm-store:/app/.pnpm-store
+      - root-node-modules:/app/node_modules
+      - sdk-node-modules:/app/packages/sdk/node_modules
+      - utils-node-modules:/app/packages/sdk/node_modules
+      - backend-node-modules:/app/packages/backend/node_modules
+      - web-node-modules:/app/packages/web/node_modules
       - .:/app
     command: pnpm install
 
   postgres-db-migrate:
     depends_on:
-      - postgres-db
-      - pnpm-install
+      postgres-db:
+        condition: service_healthy
+      pnpm-install:
+        condition: service_completed_successfully
     image: erp-system-node-pnpm
     command: pnpm prisma migrate dev
     working_dir: /app/packages/backend
-    volumes:
-      - .:/app
+    volumes: *node-volumes
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres-db:5432/postgres
 
   build-packages:
     depends_on:
-      - pnpm-install
+      pnpm-install:
+        condition: service_completed_successfully
     image: erp-system-node-pnpm
-    command: sh -c "pnpm utils build && pnpm sdk build"
+    command: sh -c "pnpm utils build && pnpm backend build && pnpm sdk build"
     working_dir: /app
-    volumes:
-      - .:/app
+    volumes: *node-volumes
 
   backend:
     depends_on:
-      - postgres-db-migrate
-      - build-packages
+      pnpm-install:
+        condition: service_completed_successfully
+      build-packages:
+        condition: service_completed_successfully
     image: erp-system-node-pnpm
     command: pnpm backend dev
     working_dir: /app
-    volumes:
-      - .:/app
+    volumes: *node-volumes
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres-db:5432/postgres
     ports:
@@ -66,18 +74,25 @@ services:
 
   web:
     depends_on:
-      - pnpm-install
-      - build-packages
+      pnpm-install:
+        condition: service_completed_successfully
+      build-packages:
+        condition: service_completed_successfully
     image: erp-system-node-pnpm
     command: pnpm web dev --host
     environment:
       - DOCKER=true
       - BACKEND_HOST=http://backend
     working_dir: /app
-    volumes:
-      - .:/app
+    volumes: *node-volumes
     ports:
       - "1420:1420"
 
 volumes:
   postgres-db-data:
+  pnpm-store:
+  root-node-modules:
+  utils-node-modules:
+  sdk-node-modules:
+  backend-node-modules:
+  web-node-modules:
