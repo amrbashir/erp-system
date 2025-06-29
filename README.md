@@ -11,8 +11,9 @@ Building an ERP system for a local store in public.
 
 ### Developing using Docker
 
-1. Run the containers: `docker compose up -d`
-2. Inspect logs: `docker compose logs -f web backend`
+1. Install dependencies: `pnpm install`
+2. Run the containers: `docker compose up -d`
+3. Inspect logs: `docker compose logs -f web backend`
 
 > On Windows and WSL2, File System Watchers may not work correctly with Docker.
 > However, the web application will hot-reload on changes thanks to polling based detection.
