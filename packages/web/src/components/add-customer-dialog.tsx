@@ -17,13 +17,6 @@ import {
 } from "@/shadcn/components/ui/dialog";
 import { Input } from "@/shadcn/components/ui/input";
 import { Label } from "@/shadcn/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shadcn/components/ui/select";
 
 import type { AnyFieldApi } from "@tanstack/react-form";
 import type z from "zod";

@@ -1,5 +1,5 @@
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 export const THEME_VARIANTS = [
   { theme: "system", icon: MonitorIcon },
@@ -40,10 +40,7 @@ export function ThemeProvider({
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
   );
 
-  const themeIcon = useMemo(
-    () => THEME_VARIANTS.find((v) => v.theme === theme)?.icon ?? THEME_VARIANTS[0].icon,
-    [theme],
-  );
+  const themeIcon = THEME_VARIANTS.find((v) => v.theme === theme)?.icon ?? THEME_VARIANTS[0].icon;
 
   useEffect(() => {
     const root = window.document.documentElement;

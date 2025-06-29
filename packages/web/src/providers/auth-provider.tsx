@@ -20,7 +20,7 @@ const AuthContext = createContext<AuthProviderState | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(getStoredUser());
-  const isAuthenticated = useMemo(() => !!user, [user]);
+  const isAuthenticated = !!user;
 
   // Handle storage changes to update the user state
   const storageChange = useCallback(
