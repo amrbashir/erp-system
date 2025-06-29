@@ -14,6 +14,9 @@ import { Input } from "@/shadcn/components/ui/input";
 import { Label } from "@/shadcn/components/ui/label";
 import { Separator } from "@/shadcn/components/ui/separator";
 
+import type { LoginUserDto } from "@erp-system/sdk/zod";
+import type { z } from "zod";
+
 import { Footer } from "@/components/footer";
 import { FormErrors } from "@/components/form-errors";
 import { Welcome } from "@/components/welcome";
@@ -43,7 +46,7 @@ function Login() {
       orgSlug: orgSlug || "",
       username: "",
       password: "",
-    },
+    } as z.infer<ReturnType<(typeof LoginUserDto)["strict"]>> & { orgSlug: string },
     onSubmit: async ({ value, formApi }) => {
       const { username, password, orgSlug } = value;
 

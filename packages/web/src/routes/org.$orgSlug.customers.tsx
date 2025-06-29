@@ -12,6 +12,7 @@ import {
 } from "@/shadcn/components/ui/table";
 
 import { apiClient } from "@/api-client";
+import { AddCustomerDialog } from "@/components/add-customer-dialog";
 import i18n from "@/i18n";
 import { useOrg } from "@/providers/org-provider";
 
@@ -36,7 +37,11 @@ function Customers() {
   });
 
   return (
-    <main className="p-4">
+    <main className="p-4 flex flex-col gap-4">
+      <div>
+        <AddCustomerDialog />
+      </div>
+
       <div className="rounded-lg overflow-hidden border">
         <Table>
           <TableHeader>

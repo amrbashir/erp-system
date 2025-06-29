@@ -9,7 +9,7 @@ export class CreateCustomerDto {
   @IsString()
   name: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ format: "email" })
   @IsEmail()
   @IsOptional()
   email?: string;

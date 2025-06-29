@@ -12,19 +12,24 @@ export class CustomerService {
 
   async createCustomer(createCustomerDto: CreateCustomerDto, orgSlug: string): Promise<Customer> {
     try {
-      return this.prisma.customer.create({
-        data: {
-          name: createCustomerDto.name,
-          email: createCustomerDto.email,
-          phone: createCustomerDto.phone,
+      return this.prisma.$transaction(async (prisma) => {
+        const existingCustoemr = await prisma.customer.findFirst({
+          where: { name: createCustomerDto.name, organization: { slug: orgSlug } },
+        });
 
-          organization: { connect: { slug: orgSlug } },
-        },
+        if (existingCustoemr) throw new ConflictException("Customer with this name already exists");
+
+        return this.prisma.customer.create({
+          data: {
+            name: createCustomerDto.name,
+            email: createCustomerDto.email,
+            phone: createCustomerDto.phone,
+
+            organization: { connect: { slug: orgSlug } },
+          },
+        });
       });
     } catch (error: any) {
-      if (error.code === "P2002" && error.meta?.target?.includes("name")) {
-        throw new ConflictException("Customer with this name already exists");
-      }
       if (error.code === "P2025") {
         throw new NotFoundException("Organization with this slug does not exist");
       }

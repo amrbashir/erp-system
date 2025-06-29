@@ -41,6 +41,8 @@
     "USER": "User"
   },
 
+  "customer": "Customer",
+
   "theme": "Theme",
   "changeTheme": "Change Theme",
   "themes": {

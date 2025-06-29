@@ -22,7 +22,7 @@ export class UserService {
     try {
       return this.prisma.$transaction(async (prisma) => {
         const existingUser = await prisma.user.findFirst({
-          where: { username: createUserDto.username },
+          where: { username: createUserDto.username, organization: { slug: orgSlug } },
         });
 
         if (existingUser)
@@ -38,9 +38,6 @@ export class UserService {
         });
       });
     } catch (error: any) {
-      if (error.code === "P2002" && error.meta?.target?.includes("username")) {
-        throw new ConflictException("User with this username already exists in the organization");
-      }
       if (error.code === "P2025") {
         throw new NotFoundException("Organization with this slug does not exist");
       }

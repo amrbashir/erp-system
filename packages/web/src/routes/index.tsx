@@ -16,6 +16,8 @@ import { Input } from "@/shadcn/components/ui/input";
 import { Label } from "@/shadcn/components/ui/label";
 import { Separator } from "@/shadcn/components/ui/separator";
 
+import type z from "zod";
+
 import { apiClient } from "@/api-client";
 import { Footer } from "@/components/footer";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
@@ -144,12 +146,12 @@ function CreateNewOrganizationCard(props: React.ComponentProps<"div">) {
       slug: "",
       username: "",
       password: "",
-    },
+    } as z.infer<ReturnType<(typeof CreateOrgDto)["strict"]>>,
     validators: {
-      onSubmit: CreateOrgDto.required(),
-      onChange: ({ formApi }) => {
+      onSubmit: CreateOrgDto,
+      onChange: ({ value, formApi }) => {
         if (formApi.getFieldMeta("slug")?.isPristine) {
-          const slug = slugify(formApi.getFieldValue("name"));
+          const slug = slugify(value.name);
           formApi.setFieldValue("slug", slug, { dontUpdateMeta: true });
         }
       },
@@ -164,10 +166,12 @@ function CreateNewOrganizationCard(props: React.ComponentProps<"div">) {
         return;
       }
 
-      router.navigate({
-        to: "/org/$orgSlug",
-        params: { orgSlug: value.slug },
-      });
+      if (value.slug) {
+        router.navigate({
+          to: "/org/$orgSlug",
+          params: { orgSlug: value.slug },
+        });
+      }
     },
   });
 

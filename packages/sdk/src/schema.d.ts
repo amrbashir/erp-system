@@ -213,6 +213,7 @@ export interface components {
         };
         CreateCustomerDto: {
             name: string;
+            /** Format: email */
             email?: string;
             phone?: string;
         };

@@ -40,7 +40,7 @@ export const LoginResponseDto = z
 export const RefreshTokenResponseDto = z.object({ accessToken: z.string() }).passthrough();
 
 export const CreateCustomerDto = z
-  .object({ name: z.string(), email: z.string().optional(), phone: z.string().optional() })
+  .object({ name: z.string(), email: z.string().email().optional(), phone: z.string().optional() })
   .passthrough();
 
 export const CustomerEntity = z

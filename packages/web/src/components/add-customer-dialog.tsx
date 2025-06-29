@@ -1,4 +1,4 @@
-import { CreateUserDto, UserEntity } from "@erp-system/sdk/zod";
+import { CreateCustomerDto } from "@erp-system/sdk/zod";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon } from "lucide-react";
@@ -32,30 +32,27 @@ import { apiClient } from "@/api-client";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
 import { useOrg } from "@/providers/org-provider";
 
-type UserRole = z.infer<typeof UserEntity>["role"];
-
-export function AddUserDialog() {
+export function AddCustomerDialog() {
   const { slug: orgSlug } = useOrg();
   const { t } = useTranslation();
   const client = useQueryClient();
 
   const [open, setOpen] = useState(false);
 
-  const addUserMessage = useMemo(() => t("add") + " " + t("roles.USER"), [t]);
+  const addUserMessage = useMemo(() => t("add") + " " + t("customer"), [t]);
 
   const form = useForm({
     defaultValues: {
-      username: "",
-      password: "",
-      role: "USER" as UserRole,
-    } as z.infer<typeof CreateUserDto>,
+      name: "",
+      email: undefined,
+      phone: undefined,
+    } as z.infer<typeof CreateCustomerDto>,
     validators: {
-      onSubmit: CreateUserDto,
+      onSubmit: CreateCustomerDto,
     },
     onSubmit: async ({ value, formApi }) => {
-      const { username, password, role } = value;
-      const { error } = await apiClient.post("/org/{orgSlug}/user/create", {
-        body: { username, password, role },
+      const { error } = await apiClient.post("/org/{orgSlug}/customer/create", {
+        body: value,
         params: { path: { orgSlug: orgSlug! } },
       });
 
@@ -64,7 +61,7 @@ export function AddUserDialog() {
         return;
       }
 
-      client.invalidateQueries({ queryKey: ["users"] });
+      client.invalidateQueries({ queryKey: ["customers"] });
       setOpen(false);
     },
   });
@@ -102,11 +99,7 @@ export function AddUserDialog() {
                 children={(field) => (
                   <>
                     <Label htmlFor={field.name}>{t(field.name)}</Label>
-                    {field.name === "role" ? (
-                      <SelectInput field={field} options={["USER", "ADMIN"] as UserRole[]} />
-                    ) : (
-                      <InputField field={field} />
-                    )}
+                    <InputField field={field} />
                   </>
                 )}
               />
@@ -146,28 +139,11 @@ function InputField({ field }: { field: AnyFieldApi }) {
         id={field.name}
         name={field.name}
         value={field.state.value}
-        type={field.name === "password" ? "password" : "text"}
+        type={field.name === "email" ? "email" : "text"}
+        placeholder={field.name === "email" ? "email@example.com" : ""}
         onChange={(e) => field.handleChange(e.target.value)}
-        required
       />
       <FormFieldError field={field} />
     </>
-  );
-}
-
-function SelectInput({ field, options }: { field: AnyFieldApi; options: string[] }) {
-  return (
-    <Select onValueChange={(e) => field.handleChange(e)} defaultValue={field.state.value}>
-      <SelectTrigger>
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map((r) => (
-          <SelectItem key={r} value={r}>
-            {r}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
   );
 }
