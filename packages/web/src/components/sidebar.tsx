@@ -35,8 +35,8 @@ export function AppSideBar() {
 
   const userRoutes: (keyof FileRoutesById)[] = [
     "/org/$orgSlug/",
-    "/org/$orgSlug/customers",
     "/org/$orgSlug/products",
+    "/org/$orgSlug/customers",
   ];
 
   const adminRoutes: (keyof FileRoutesById)[] =
