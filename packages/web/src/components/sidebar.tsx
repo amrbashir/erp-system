@@ -18,6 +18,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
   useSidebar,
 } from "@/shadcn/components/ui/sidebar";
 
@@ -33,8 +34,9 @@ export function AppSideBar() {
   const { slug: orgSlug } = useOrg();
   const { user } = useAuth();
 
+  const topRoutes: (keyof FileRoutesById)[] = ["/org/$orgSlug/"];
+
   const userRoutes: (keyof FileRoutesById)[] = [
-    "/org/$orgSlug/",
     "/org/$orgSlug/products",
     "/org/$orgSlug/customers",
   ];
@@ -57,11 +59,14 @@ export function AppSideBar() {
       </SidebarHeader>
 
       <SidebarContent>
+        <RoutesGroup routes={topRoutes} />
+        <SidebarSeparator className="w-[calc(100%_-_var(--spacing)_*_4)]!" />
         <RoutesGroup routes={userRoutes} />
         <RoutesGroup label={t("adminSection")} routes={adminRoutes} />
       </SidebarContent>
 
       <SidebarFooter>
+        <SidebarSeparator className="w-[calc(100%_-_var(--spacing)_*_2)]!" />
         <UserDropdown />
       </SidebarFooter>
     </Sidebar>
