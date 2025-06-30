@@ -1,5 +1,11 @@
 import { Link, useLocation, useRouter } from "@tanstack/react-router";
+import { ChevronDownIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/shadcn/components/ui/collapsible";
 import { Label } from "@/shadcn/components/ui/label";
 import {
   Sidebar,
@@ -7,6 +13,7 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -20,34 +27,20 @@ import { useAuth } from "@/providers/auth-provider";
 import { useOrg } from "@/providers/org-provider";
 
 export function AppSideBar() {
+  const { t } = useTranslation();
   const { open } = useSidebar();
   const { i18n } = useTranslation();
-  const { flatRoutes } = useRouter();
-  const currentLocation = useLocation({ select: (state) => state.pathname });
   const { slug: orgSlug } = useOrg();
   const { user } = useAuth();
 
-  const sidebarRoutes: (keyof FileRoutesById | undefined)[] = [
+  const userRoutes: (keyof FileRoutesById)[] = [
     "/org/$orgSlug/",
     "/org/$orgSlug/customers",
     "/org/$orgSlug/products",
-    user?.role === "ADMIN" ? "/org/$orgSlug/users" : undefined,
   ];
 
-  const sidebarRoutesData = sidebarRoutes.filter(Boolean).map((r) => {
-    const route = flatRoutes.find((route) => route.to === r);
-    const data = route?.options.context();
-    const location = route?.to.replace("$orgSlug", orgSlug);
-    const trimmedLocation = location.endsWith("/") ? location.slice(0, -1) : location;
-    const isActive = trimmedLocation === currentLocation;
-
-    return {
-      url: route?.to,
-      isActive,
-      title: data.title,
-      icon: data.icon,
-    };
-  });
+  const adminRoutes: (keyof FileRoutesById)[] =
+    user?.role === "ADMIN" ? ["/org/$orgSlug/transactions", "/org/$orgSlug/users"] : [];
 
   return (
     <Sidebar
@@ -64,10 +57,61 @@ export function AppSideBar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
+        <RoutesGroup routes={userRoutes} />
+        <RoutesGroup label={t("adminSection")} routes={adminRoutes} />
+      </SidebarContent>
+
+      <SidebarFooter>
+        <UserDropdown />
+      </SidebarFooter>
+    </Sidebar>
+  );
+}
+
+function RoutesGroup({
+  routes,
+  label,
+  ...props
+}: React.ComponentProps<"div"> & {
+  label?: string;
+  routes: (keyof FileRoutesById)[];
+}) {
+  if (routes.length === 0) return null;
+
+  const { flatRoutes } = useRouter();
+  const currentLocation = useLocation({ select: (state) => state.pathname });
+  const { slug: orgSlug } = useOrg();
+
+  const routesData = routes.map((r) => {
+    const route = flatRoutes.find((route) => route.to === r);
+    const data = route?.options.context();
+    const location = route?.to.replace("$orgSlug", orgSlug);
+    const trimmedLocation = location.endsWith("/") ? location.slice(0, -1) : location;
+    const isActive = trimmedLocation === currentLocation;
+
+    return {
+      url: route?.to,
+      isActive,
+      title: data.title,
+      icon: data.icon,
+    };
+  });
+
+  return (
+    <Collapsible defaultOpen className="group/collapsible">
+      <SidebarGroup {...props}>
+        {label && (
+          <SidebarGroupLabel asChild>
+            <CollapsibleTrigger className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground mb-1">
+              {label}
+              <ChevronDownIcon className="ms-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+            </CollapsibleTrigger>
+          </SidebarGroupLabel>
+        )}
+        <CollapsibleContent>
           <SidebarGroupContent className="flex flex-col gap-2">
             <SidebarMenu>
-              {sidebarRoutesData.map(({ url, title, icon: RouteIcon, isActive }) => (
+              {routesData.map(({ url, title, icon: RouteIcon, isActive }) => (
                 <SidebarMenuItem key={url}>
                   <SidebarMenuButton asChild isActive={isActive}>
                     <Link to={url}>
@@ -79,12 +123,8 @@ export function AppSideBar() {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-
-      <SidebarFooter>
-        <UserDropdown />
-      </SidebarFooter>
-    </Sidebar>
+        </CollapsibleContent>
+      </SidebarGroup>
+    </Collapsible>
   );
 }

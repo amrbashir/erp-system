@@ -28,11 +28,10 @@ import {
 import type { AnyFieldApi } from "@tanstack/react-form";
 import type z from "zod";
 
+import type { UserRole } from "@/user";
 import { apiClient } from "@/api-client";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
 import { useOrg } from "@/providers/org-provider";
-
-type UserRole = z.infer<typeof UserEntity>["role"];
 
 export function AddUserDialog() {
   const { slug: orgSlug } = useOrg();
@@ -40,8 +39,6 @@ export function AddUserDialog() {
   const client = useQueryClient();
 
   const [open, setOpen] = useState(false);
-
-  const addUserMessage = useMemo(() => t("add") + " " + t("roles.USER"), [t]);
 
   const form = useForm({
     defaultValues: {
@@ -78,12 +75,12 @@ export function AddUserDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button>{addUserMessage}</Button>
+        <Button>{t("addUser")}</Button>
       </DialogTrigger>
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{addUserMessage}</DialogTitle>
+          <DialogTitle>{t("addUser")}</DialogTitle>
           <DialogDescription>{t("addUserDescription")}</DialogDescription>
         </DialogHeader>
 

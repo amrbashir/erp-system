@@ -10,7 +10,8 @@
     "home": "الصفحة الرئيسية",
     "users": "المستخدمون",
     "customers": "العملاء",
-    "products": "المنتجات"
+    "products": "المنتجات",
+    "transactions": "المعاملات"
   },
 
   "login_to_account": "تسجيل الدخول إلى حسابك",
@@ -44,7 +45,13 @@
     "USER": "مستخدم"
   },
 
-  "customer": "عميل",
+  "adminSection": "قسم الإدارة",
+
+  "addCustomer": "إضافة عميل",
+  "addUser": "إضافة مستخدم",
+
+  "moneyAmount": "المبلغ",
+  "customerName": "اسم العميل",
 
   "theme": "المظهر",
   "changeTheme": "تغيير المظهر",
@@ -99,5 +106,6 @@
 
   "loadingOrganization": "جارٍ تحميل المؤسسة...",
 
-  "notFound": "الصفحة غير موجودة"
+  "noDataFound": "لا توجد بيانات",
+  "noDataFoundDescription": "لا توجد بيانات لعرضها في هذا القسم"
 }

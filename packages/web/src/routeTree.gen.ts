@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OrgOrgSlugIndexRouteImport } from './routes/org.$orgSlug.index'
 import { Route as OrgOrgSlugUsersRouteImport } from './routes/org.$orgSlug.users'
+import { Route as OrgOrgSlugTransactionsRouteImport } from './routes/org.$orgSlug.transactions'
 import { Route as OrgOrgSlugProductsRouteImport } from './routes/org.$orgSlug.products'
 import { Route as OrgOrgSlugCustomersRouteImport } from './routes/org.$orgSlug.customers'
 
@@ -42,6 +43,11 @@ const OrgOrgSlugUsersRoute = OrgOrgSlugUsersRouteImport.update({
   path: '/$orgSlug/users',
   getParentRoute: () => OrgRoute,
 } as any)
+const OrgOrgSlugTransactionsRoute = OrgOrgSlugTransactionsRouteImport.update({
+  id: '/$orgSlug/transactions',
+  path: '/$orgSlug/transactions',
+  getParentRoute: () => OrgRoute,
+} as any)
 const OrgOrgSlugProductsRoute = OrgOrgSlugProductsRouteImport.update({
   id: '/$orgSlug/products',
   path: '/$orgSlug/products',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/org': typeof OrgRouteWithChildren
   '/org/$orgSlug/customers': typeof OrgOrgSlugCustomersRoute
   '/org/$orgSlug/products': typeof OrgOrgSlugProductsRoute
+  '/org/$orgSlug/transactions': typeof OrgOrgSlugTransactionsRoute
   '/org/$orgSlug/users': typeof OrgOrgSlugUsersRoute
   '/org/$orgSlug': typeof OrgOrgSlugIndexRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/org': typeof OrgRouteWithChildren
   '/org/$orgSlug/customers': typeof OrgOrgSlugCustomersRoute
   '/org/$orgSlug/products': typeof OrgOrgSlugProductsRoute
+  '/org/$orgSlug/transactions': typeof OrgOrgSlugTransactionsRoute
   '/org/$orgSlug/users': typeof OrgOrgSlugUsersRoute
   '/org/$orgSlug': typeof OrgOrgSlugIndexRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/org': typeof OrgRouteWithChildren
   '/org/$orgSlug/customers': typeof OrgOrgSlugCustomersRoute
   '/org/$orgSlug/products': typeof OrgOrgSlugProductsRoute
+  '/org/$orgSlug/transactions': typeof OrgOrgSlugTransactionsRoute
   '/org/$orgSlug/users': typeof OrgOrgSlugUsersRoute
   '/org/$orgSlug/': typeof OrgOrgSlugIndexRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/org'
     | '/org/$orgSlug/customers'
     | '/org/$orgSlug/products'
+    | '/org/$orgSlug/transactions'
     | '/org/$orgSlug/users'
     | '/org/$orgSlug'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/org'
     | '/org/$orgSlug/customers'
     | '/org/$orgSlug/products'
+    | '/org/$orgSlug/transactions'
     | '/org/$orgSlug/users'
     | '/org/$orgSlug'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/org'
     | '/org/$orgSlug/customers'
     | '/org/$orgSlug/products'
+    | '/org/$orgSlug/transactions'
     | '/org/$orgSlug/users'
     | '/org/$orgSlug/'
   fileRoutesById: FileRoutesById
@@ -154,6 +166,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgOrgSlugUsersRouteImport
       parentRoute: typeof OrgRoute
     }
+    '/org/$orgSlug/transactions': {
+      id: '/org/$orgSlug/transactions'
+      path: '/$orgSlug/transactions'
+      fullPath: '/org/$orgSlug/transactions'
+      preLoaderRoute: typeof OrgOrgSlugTransactionsRouteImport
+      parentRoute: typeof OrgRoute
+    }
     '/org/$orgSlug/products': {
       id: '/org/$orgSlug/products'
       path: '/$orgSlug/products'
@@ -174,6 +193,7 @@ declare module '@tanstack/react-router' {
 interface OrgRouteChildren {
   OrgOrgSlugCustomersRoute: typeof OrgOrgSlugCustomersRoute
   OrgOrgSlugProductsRoute: typeof OrgOrgSlugProductsRoute
+  OrgOrgSlugTransactionsRoute: typeof OrgOrgSlugTransactionsRoute
   OrgOrgSlugUsersRoute: typeof OrgOrgSlugUsersRoute
   OrgOrgSlugIndexRoute: typeof OrgOrgSlugIndexRoute
 }
@@ -181,6 +201,7 @@ interface OrgRouteChildren {
 const OrgRouteChildren: OrgRouteChildren = {
   OrgOrgSlugCustomersRoute: OrgOrgSlugCustomersRoute,
   OrgOrgSlugProductsRoute: OrgOrgSlugProductsRoute,
+  OrgOrgSlugTransactionsRoute: OrgOrgSlugTransactionsRoute,
   OrgOrgSlugUsersRoute: OrgOrgSlugUsersRoute,
   OrgOrgSlugIndexRoute: OrgOrgSlugIndexRoute,
 }

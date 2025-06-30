@@ -32,8 +32,6 @@ export function AddCustomerDialog() {
 
   const [open, setOpen] = useState(false);
 
-  const addUserMessage = useMemo(() => t("add") + " " + t("customer"), [t]);
-
   const form = useForm({
     defaultValues: {
       name: "",
@@ -68,12 +66,12 @@ export function AddCustomerDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button>{addUserMessage}</Button>
+        <Button>{t("addCustomer")}</Button>
       </DialogTrigger>
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{addUserMessage}</DialogTitle>
+          <DialogTitle>{t("addCustomer")}</DialogTitle>
           <DialogDescription>{t("addUserDescription")}</DialogDescription>
         </DialogHeader>
 

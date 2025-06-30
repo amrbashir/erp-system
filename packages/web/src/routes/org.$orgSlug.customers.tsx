@@ -13,6 +13,7 @@ import {
 
 import { apiClient } from "@/api-client";
 import { AddCustomerDialog } from "@/components/add-customer-dialog";
+import { EmptyTable } from "@/components/empty-table";
 import i18n from "@/i18n";
 import { useOrg } from "@/providers/org-provider";
 
@@ -42,32 +43,40 @@ function Customers() {
         <AddCustomerDialog />
       </div>
 
-      <div className="rounded-lg overflow-hidden border">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-card">
-              <TableHead></TableHead>
-              <TableHead className="min-w-[50%]">{t("name")}</TableHead>
-              <TableHead>{t("email")}</TableHead>
-              <TableHead>{t("phone")}</TableHead>
-              <TableHead>{t("createdAt")}</TableHead>
-              <TableHead>{t("updatedAt")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {(customers ?? []).map((customer, index) => (
-              <TableRow key={index}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{customer.name}</TableCell>
-                <TableCell>{customer.email}</TableCell>
-                <TableCell>{customer.phone}</TableCell>
-                <TableCell>{new Date(customer.createdAt).toLocaleString(i18n.language)}</TableCell>
-                <TableCell>{new Date(customer.updatedAt).toLocaleString(i18n.language)}</TableCell>
+      {customers?.length && customers.length === 0 ? (
+        <div className="rounded-lg overflow-hidden border">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-card">
+                <TableHead></TableHead>
+                <TableHead className="min-w-[50%]">{t("name")}</TableHead>
+                <TableHead>{t("email")}</TableHead>
+                <TableHead>{t("phone")}</TableHead>
+                <TableHead>{t("createdAt")}</TableHead>
+                <TableHead>{t("updatedAt")}</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {(customers ?? []).map((customer, index) => (
+                <TableRow key={index}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{customer.name}</TableCell>
+                  <TableCell>{customer.email}</TableCell>
+                  <TableCell>{customer.phone}</TableCell>
+                  <TableCell>
+                    {new Date(customer.createdAt).toLocaleString(i18n.language)}
+                  </TableCell>
+                  <TableCell>
+                    {new Date(customer.updatedAt).toLocaleString(i18n.language)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      ) : (
+        <EmptyTable />
+      )}
     </main>
   );
 }
