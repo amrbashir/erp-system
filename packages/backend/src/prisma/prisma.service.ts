@@ -1,9 +1,11 @@
 import { Injectable } from "@nestjs/common";
 
+import type { OnModuleInit } from "@nestjs/common";
+
 import { PrismaClient } from "./generated/client";
 
 @Injectable()
-export class PrismaService extends PrismaClient {
+export class PrismaService extends PrismaClient implements OnModuleInit {
   constructor() {
     super({
       datasources: {
@@ -12,5 +14,9 @@ export class PrismaService extends PrismaClient {
         },
       },
     });
+  }
+
+  async onModuleInit() {
+    await this.$connect();
   }
 }

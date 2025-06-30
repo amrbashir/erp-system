@@ -6,6 +6,7 @@ import type { INestApplication } from "@nestjs/common";
 
 import { AuthModule } from "./auth/auth.module";
 import { CustomerModule } from "./customer/customer.module";
+import { HealthModule } from "./health/health.module";
 import { OrgModule } from "./org/org.module";
 import { PrismaClientExceptionFilter } from "./prisma/prisma-client-exception.filter";
 import { PrismaModule } from "./prisma/prisma.module";
@@ -13,7 +14,15 @@ import { ProductModule } from "./product/product.module";
 import { UserModule } from "./user/user.module";
 
 @Module({
-  imports: [PrismaModule, OrgModule, UserModule, AuthModule, CustomerModule, ProductModule],
+  imports: [
+    PrismaModule,
+    OrgModule,
+    UserModule,
+    AuthModule,
+    CustomerModule,
+    ProductModule,
+    HealthModule,
+  ],
 })
 export class AppModule {}
 
@@ -40,6 +49,8 @@ export function setupApp(app: INestApplication) {
     const documentFactory = () => SwaggerModule.createDocument(app, swaggerConfig);
     SwaggerModule.setup("api", app, documentFactory, { customSiteTitle: "erp-system api" });
   }
+
+  app.enableShutdownHooks();
 }
 
 export function generateOpenApiJson(app: INestApplication): string {
