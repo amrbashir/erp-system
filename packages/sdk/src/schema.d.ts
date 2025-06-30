@@ -180,6 +180,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/org/{orgSlug}/product/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ProductController$1_createProduct"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -274,6 +290,13 @@ export interface components {
             updatedAt: string;
             organizationId: string;
             storeId?: Record<string, never>;
+        };
+        CreateProductDto: {
+            description: string;
+            purchase_price: number;
+            selling_price: number;
+            stock_quantity: number;
+            storeId?: string;
         };
     };
     responses: never;
@@ -531,6 +554,33 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductEntity"][];
+                };
+            };
+        };
+    };
+    ProductController$1_createProduct: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateProductDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductEntity"];
                 };
             };
         };

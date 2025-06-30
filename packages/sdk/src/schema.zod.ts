@@ -69,3 +69,13 @@ export const ProductEntity = z
     storeId: z.object({}).partial().passthrough().optional(),
   })
   .passthrough();
+
+export const CreateProductDto = z
+  .object({
+    description: z.string(),
+    purchase_price: z.number(),
+    selling_price: z.number(),
+    stock_quantity: z.number(),
+    storeId: z.string().optional(),
+  })
+  .passthrough();
