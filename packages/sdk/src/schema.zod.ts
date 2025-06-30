@@ -78,3 +78,13 @@ export const ProductEntity = z
     updatedAt: z.string().datetime({ offset: true }),
   })
   .passthrough();
+
+export const TransactionEntity = z
+  .object({
+    id: z.string(),
+    amount: z.number(),
+    createdAt: z.string().datetime({ offset: true }),
+    username: z.string(),
+    customerName: z.string().optional(),
+  })
+  .passthrough();

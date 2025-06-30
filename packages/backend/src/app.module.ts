@@ -11,6 +11,7 @@ import { OrgModule } from "./org/org.module";
 import { PrismaClientExceptionFilter } from "./prisma/prisma-client-exception.filter";
 import { PrismaModule } from "./prisma/prisma.module";
 import { ProductModule } from "./product/product.module";
+import { TransactionModule } from "./transaction/transaction.module";
 import { UserModule } from "./user/user.module";
 
 @Module({
@@ -21,6 +22,7 @@ import { UserModule } from "./user/user.module";
     AuthModule,
     CustomerModule,
     ProductModule,
+    TransactionModule,
     HealthModule,
   ],
 })

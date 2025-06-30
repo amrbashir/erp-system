@@ -196,6 +196,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/org/{orgSlug}/transaction/getAll": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["TransactionController$1_getAll"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -295,6 +311,14 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
+        };
+        TransactionEntity: {
+            id: string;
+            amount: number;
+            /** Format: date-time */
+            createdAt: string;
+            username: string;
+            customerName?: string;
         };
     };
     responses: never;
@@ -579,6 +603,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductEntity"][];
+                };
+            };
+        };
+    };
+    TransactionController$1_getAll: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransactionEntity"][];
                 };
             };
         };
