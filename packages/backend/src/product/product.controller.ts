@@ -10,7 +10,7 @@ import {
 import type { PaginationDto } from "../pagination.dto";
 import type { Product } from "../prisma/generated/client";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
-import { ProductEntity } from "./product.dto";
+import { CreateProductDto, ProductEntity } from "./product.dto";
 import { ProductService } from "./product.service";
 
 @UseGuards(JwtAuthGuard)
@@ -28,5 +28,14 @@ export class ProductController {
     @Query() paginationDto: PaginationDto,
   ): Promise<Product[]> {
     return this.service.getAllProducts(orgSlug, paginationDto);
+  }
+
+  @Post("create")
+  @ApiCreatedResponse({ type: ProductEntity })
+  async createProduct(
+    @Param("orgSlug") orgSlug: string,
+    @Body() createProductDto: CreateProductDto,
+  ): Promise<Product> {
+    return this.service.createProduct(orgSlug, createProductDto);
   }
 }

@@ -20,7 +20,7 @@ export class UserService {
 
   async createUser(createUserDto: CreateUserDto, orgSlug: string): Promise<User> {
     try {
-      return this.prisma.$transaction(async (prisma) => {
+      return await this.prisma.$transaction(async (prisma) => {
         const existingUser = await prisma.user.findFirst({
           where: { username: createUserDto.username, organization: { slug: orgSlug } },
         });
@@ -32,8 +32,8 @@ export class UserService {
           data: {
             username: createUserDto.username,
             password: await argon2.hash(createUserDto.password),
-            organization: { connect: { slug: orgSlug } },
             role: createUserDto.role,
+            organization: { connect: { slug: orgSlug } },
           },
         });
       });
@@ -66,7 +66,7 @@ export class UserService {
         throw new ForbiddenException("Cannot delete the last admin user in the organization");
       }
 
-      const user = await this.prisma.user.findFirst({
+      const user = await prisma.user.findFirst({
         where: {
           username: deleteUserDto.username,
           organizationId: org.id,
@@ -77,7 +77,7 @@ export class UserService {
         throw new NotFoundException("User with this username does not exist in the organization");
       }
 
-      await this.prisma.user.update({
+      await prisma.user.update({
         data: { deletedAt: new Date() },
         where: { id: user.id, organizationId: org.id },
       });
@@ -92,7 +92,7 @@ export class UserService {
 
   async findByUsernameInOrg(username: string, orgSlug?: string): Promise<User | null> {
     try {
-      return this.prisma.user.findFirst({
+      return await this.prisma.user.findFirst({
         where: { username, deletedAt: null, organization: { slug: orgSlug } },
       });
     } catch (error: any) {
@@ -106,7 +106,7 @@ export class UserService {
 
   async updateRefreshToken(userId: string, refreshToken?: string): Promise<void> {
     try {
-      this.prisma.user.update({
+      await this.prisma.user.update({
         where: { id: userId },
         data: { refreshToken },
       });
@@ -128,7 +128,7 @@ export class UserService {
     },
   ): Promise<Omit<User, "password" | "refreshToken">[]> {
     try {
-      return this.prisma.user.findMany({
+      return await this.prisma.user.findMany({
         where: { ...options?.where, organization: { slug: orgSlug } },
         skip: options?.pagination?.skip,
         take: options?.pagination?.take,

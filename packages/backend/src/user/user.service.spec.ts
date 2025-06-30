@@ -199,7 +199,7 @@ describe("UserService", async () => {
     users = await service.getAllUsers(org.slug, { where });
     expect(users).toHaveLength(2);
 
-    expect(service.deleteUser({ username: user2.username }, org.slug)).rejects.toThrow();
+    await expect(service.deleteUser({ username: user2.username }, org.slug)).rejects.toThrow();
 
     await service.deleteUser({ username: user3.username }, org.slug);
     users = await service.getAllUsers(org.slug, { where });

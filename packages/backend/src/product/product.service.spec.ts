@@ -30,37 +30,66 @@ describe("ProductService", async () => {
       slug: "test-org",
     });
 
-    const createCustomerDto: CreateProductDto = {
-      name: "Test Customer",
-      email: "customer@email.com",
-      phone: "1234567890",
+    const createProductDto: CreateProductDto = {
+      description: "Test Product",
+      purchase_price: 100,
+      selling_price: 150,
+      stock_quantity: 50,
     };
 
-    const customer = await service.createProduct(createCustomerDto, org.slug);
-    expect(customer).toBeDefined();
-    expect(customer.name).toBe(createCustomerDto.name);
-    expect(customer.email).toBe(createCustomerDto.email);
-    expect(customer.phone).toBe(createCustomerDto.phone);
-    expect(customer.organizationId).toBe(org.id);
+    const product = await service.createProduct(org.slug, createProductDto);
+    expect(product).toBeDefined();
+    expect(product.description).toBe(createProductDto.description);
+    expect(product.purchase_price).toBe(createProductDto.purchase_price);
+    expect(product.selling_price).toBe(createProductDto.selling_price);
+    expect(product.stock_quantity).toBe(createProductDto.stock_quantity);
+    expect(product.organizationId).toBe(org.id);
+    expect(product.storeId).toBeNull();
   });
 
-  it("should return all customers", async () => {
+  it("should return all products", async () => {
     const org = await orgService.create({
       name: "Test Org",
       username: "admin",
       password: "12345678",
+      slug: "test-org",
     });
 
-    const customer1 = await service.createProduct({ name: "Customer One" }, org.slug);
+    const product1 = await service.createProduct(org.slug, {
+      description: "Product One",
+      purchase_price: 100,
+      selling_price: 150,
+      stock_quantity: 50,
+    });
 
-    const customer2 = await service.createProduct({ name: "Customer Two" }, org.slug);
+    const product2 = await service.createProduct(org.slug, {
+      description: "Product Two",
+      purchase_price: 200,
+      selling_price: 250,
+      stock_quantity: 25,
+    });
 
-    const customers = await service.getAllProducts(org.slug);
-    expect(customers).toBeDefined();
-    expect(customers.length).toBeGreaterThanOrEqual(2);
-    expect(customers).toContainEqual(expect.objectContaining({ id: customer1.id }));
-    expect(customers).toContainEqual(expect.objectContaining({ id: customer2.id }));
-    expect(customers[0].organizationId).toBe(org!.id);
-    expect(customers[1].organizationId).toBe(org!.id);
+    const products = await service.getAllProducts(org.slug);
+    expect(products).toBeDefined();
+    expect(products.length).toBeGreaterThanOrEqual(2);
+    expect(products).toContainEqual(expect.objectContaining({ id: product1.id }));
+    expect(products).toContainEqual(expect.objectContaining({ id: product2.id }));
+    expect(products.find((p) => p.id === product1.id)?.description).toBe("Product One");
+    expect(products.find((p) => p.id === product2.id)?.description).toBe("Product Two");
+    expect(products.find((p) => p.id === product1.id)?.organizationId).toBe(org.id);
+    expect(products.find((p) => p.id === product2.id)?.organizationId).toBe(org.id);
+  });
+
+  it("should throw NotFoundException when organization does not exist", async () => {
+    const createProductDto: CreateProductDto = {
+      description: "Test Product",
+      purchase_price: 100,
+      selling_price: 150,
+      stock_quantity: 50,
+    };
+
+    await expect(service.createProduct("non-existent-org", createProductDto)).rejects.toThrow(
+      "Organization with this slug does not exist",
+    );
   });
 });

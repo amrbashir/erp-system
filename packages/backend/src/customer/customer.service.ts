@@ -11,19 +11,18 @@ export class CustomerService {
 
   async createCustomer(createCustomerDto: CreateCustomerDto, orgSlug: string): Promise<Customer> {
     try {
-      return this.prisma.$transaction(async (prisma) => {
-        const existingCustoemr = await prisma.customer.findFirst({
+      return await this.prisma.$transaction(async (prisma) => {
+        const existingCustomer = await prisma.customer.findFirst({
           where: { name: createCustomerDto.name, organization: { slug: orgSlug } },
         });
 
-        if (existingCustoemr) throw new ConflictException("Customer with this name already exists");
+        if (existingCustomer) throw new ConflictException("Customer with this name already exists");
 
-        return this.prisma.customer.create({
+        return prisma.customer.create({
           data: {
             name: createCustomerDto.name,
             email: createCustomerDto.email,
             phone: createCustomerDto.phone,
-
             organization: { connect: { slug: orgSlug } },
           },
         });
@@ -39,7 +38,7 @@ export class CustomerService {
 
   async getAllCustomers(orgSlug: string, paginationDto?: PaginationDto): Promise<Customer[]> {
     try {
-      return this.prisma.customer.findMany({
+      return await this.prisma.customer.findMany({
         where: { organization: { slug: orgSlug } },
         skip: paginationDto?.skip,
         take: paginationDto?.take,

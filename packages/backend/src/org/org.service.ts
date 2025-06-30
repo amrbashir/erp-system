@@ -19,7 +19,7 @@ export class OrgService {
     const slug = createOrgDto.slug || slugify(createOrgDto.name);
 
     try {
-      return this.prisma.organization.create({
+      return await this.prisma.organization.create({
         data: {
           name: createOrgDto.name,
           slug,
