@@ -5,17 +5,17 @@ on:
     branches:
       - master
     paths:
-      - 'packages/backend/**'
-      - 'packages/utils/**'
-      - '.github/workflows/deploy-backend.yml'
+      - "packages/backend/**"
+      - "packages/utils/**"
+      - ".github/workflows/deploy-backend.yml"
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write  # Required for OIDC
-      contents: read   # Required to checkout the repository
+      id-token: write # Required for OIDC
+      contents: read # Required to checkout the repository
 
     steps:
       - name: Checkout repository
@@ -30,7 +30,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
 
       - name: Enable corepack
         run: corepack enable
