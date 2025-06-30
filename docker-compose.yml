@@ -31,6 +31,7 @@ services:
       - sdk-node-modules:/app/packages/sdk/node_modules
       - utils-node-modules:/app/packages/utils/node_modules
       - backend-node-modules:/app/packages/backend/node_modules
+      - backend-prisma-generated:/app/packages/backend/src/prisma/generated
       - web-node-modules:/app/packages/web/node_modules
       - .:/app
     command: pnpm install
@@ -95,4 +96,5 @@ volumes:
   utils-node-modules:
   sdk-node-modules:
   backend-node-modules:
+  backend-prisma-generated:
   web-node-modules:
