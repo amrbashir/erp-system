@@ -8,7 +8,7 @@ import * as argon2 from "argon2";
 
 import type { PaginationDto } from "../pagination.dto";
 import type { User } from "../prisma/generated/client";
-import type { UserWhereInput } from "../prisma/generated/models";
+import type { UserOrderByWithRelationInput, UserWhereInput } from "../prisma/generated/models";
 import type { CreateUserDto } from "./user.dto";
 import { UserRole } from "../prisma/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
@@ -123,24 +123,19 @@ export class UserService {
     orgSlug: string,
     options?: {
       pagination?: PaginationDto;
-      sort?: { field?: string; order?: "asc" | "desc" };
       where?: UserWhereInput;
+      orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[] | undefined;
     },
-  ): Promise<Omit<User, "password" | "refreshToken">[]> {
+  ): Promise<User[]> {
     try {
       return await this.prisma.user.findMany({
-        where: { ...options?.where, organization: { slug: orgSlug } },
         skip: options?.pagination?.skip,
         take: options?.pagination?.take,
-        orderBy: options?.sort
-          ? {
-              [options.sort.field ?? "createdAt"]: options.sort.order ?? "asc",
-            }
-          : undefined,
-        omit: {
-          password: true,
-          refreshToken: true,
+        where: {
+          ...options?.where,
+          organization: { slug: orgSlug },
         },
+        orderBy: options?.orderBy,
       });
     } catch (error: any) {
       if (error.code === "P2025") {

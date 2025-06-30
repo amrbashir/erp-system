@@ -164,22 +164,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/org/{orgSlug}/product/getAll": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["ProductController$1_getAll"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/org/{orgSlug}/product/create": {
         parameters: {
             query?: never;
@@ -190,6 +174,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["ProductController$1_createProduct"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/org/{orgSlug}/product/getAll": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ProductController$1_getAll"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -223,6 +223,7 @@ export interface components {
             password: string;
         };
         OrganizationEntity: {
+            id: string;
             name: string;
             slug: string;
         };
@@ -236,6 +237,7 @@ export interface components {
             username: string;
         };
         UserEntity: {
+            id: string;
             username: string;
             /** @enum {string} */
             role: "USER" | "ADMIN";
@@ -266,21 +268,26 @@ export interface components {
             phone?: string;
         };
         CustomerEntity: {
+            id: string;
             name: string;
             email?: string;
             phone?: string;
-            id: string;
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
             /** Format: date-time */
             deletedAt?: string;
-            organizationId: string;
+        };
+        CreateProductDto: {
+            description: string;
+            purchase_price: number;
+            selling_price: number;
+            stock_quantity: number;
         };
         ProductEntity: {
-            description: string;
             id: string;
+            description: string;
             purchase_price: number;
             selling_price: number;
             stock_quantity: number;
@@ -288,15 +295,6 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            organizationId: string;
-            storeId?: Record<string, never>;
-        };
-        CreateProductDto: {
-            description: string;
-            purchase_price: number;
-            selling_price: number;
-            stock_quantity: number;
-            storeId?: string;
         };
     };
     responses: never;
@@ -535,29 +533,6 @@ export interface operations {
             };
         };
     };
-    ProductController$1_getAll: {
-        parameters: {
-            query?: never;
-            header?: {
-                Authorization?: string;
-            };
-            path: {
-                orgSlug: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProductEntity"][];
-                };
-            };
-        };
-    };
     ProductController$1_createProduct: {
         parameters: {
             query?: never;
@@ -581,6 +556,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductEntity"];
+                };
+            };
+        };
+    };
+    ProductController$1_getAll: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductEntity"][];
                 };
             };
         };

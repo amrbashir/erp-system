@@ -34,8 +34,17 @@ export class CreateOrgDto {
 
 export class OrganizationEntity implements Partial<Organization> {
   @ApiProperty()
+  id: string;
+
+  @ApiProperty()
   name: string;
 
   @ApiProperty()
   slug: string;
+
+  constructor(org: Organization) {
+    this.id = org.id;
+    this.name = org.name;
+    this.slug = org.slug;
+  }
 }

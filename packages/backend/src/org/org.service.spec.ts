@@ -20,7 +20,7 @@ describe("OrgService", async () => {
     service = new OrgService(prisma);
   });
 
-  afterEach(async () => await dropDatabase());
+  afterEach(dropDatabase);
 
   it("should create an organization with valid data", async () => {
     const createOrgDto = {

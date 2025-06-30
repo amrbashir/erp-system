@@ -47,13 +47,7 @@ export class OrgService {
     }
   }
 
-  async findOrgBySlug(slug: string): Promise<Pick<Organization, "name" | "slug"> | null> {
-    return this.prisma.organization.findUnique({
-      where: { slug },
-      select: {
-        name: true,
-        slug: true,
-      },
-    });
+  async findOrgBySlug(slug: string): Promise<Organization | null> {
+    return this.prisma.organization.findUnique({ where: { slug } });
   }
 }

@@ -34,8 +34,9 @@ export class CustomerController {
   @ApiOkResponse({ type: [CustomerEntity] })
   async getAll(
     @Param("orgSlug") orgSlug: string,
-    @Query() paginationDto: PaginationDto,
-  ): Promise<Customer[]> {
-    return this.service.getAllCustomers(orgSlug, paginationDto);
+    @Query() paginationDto?: PaginationDto,
+  ): Promise<CustomerEntity[]> {
+    const customers = await this.service.getAllCustomers(orgSlug, paginationDto);
+    return customers.map((c) => new CustomerEntity(c));
   }
 }

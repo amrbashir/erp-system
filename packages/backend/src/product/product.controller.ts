@@ -21,21 +21,22 @@ import { ProductService } from "./product.service";
 export class ProductController {
   constructor(private readonly service: ProductService) {}
 
-  @Get("getAll")
-  @ApiOkResponse({ type: [ProductEntity] })
-  async getAll(
-    @Param("orgSlug") orgSlug: string,
-    @Query() paginationDto: PaginationDto,
-  ): Promise<Product[]> {
-    return this.service.getAllProducts(orgSlug, paginationDto);
-  }
-
   @Post("create")
   @ApiCreatedResponse({ type: ProductEntity })
   async createProduct(
     @Param("orgSlug") orgSlug: string,
     @Body() createProductDto: CreateProductDto,
-  ): Promise<Product> {
-    return this.service.createProduct(orgSlug, createProductDto);
+  ): Promise<void> {
+    await this.service.createProduct(createProductDto, orgSlug);
+  }
+
+  @Get("getAll")
+  @ApiOkResponse({ type: [ProductEntity] })
+  async getAll(
+    @Param("orgSlug") orgSlug: string,
+    @Query() paginationDto?: PaginationDto,
+  ): Promise<ProductEntity[]> {
+    const products = await this.service.getAllProducts(orgSlug, paginationDto);
+    return products.map((p) => new ProductEntity(p));
   }
 }

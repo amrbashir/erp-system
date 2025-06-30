@@ -9,7 +9,9 @@ export const CreateOrgDto = z
   })
   .passthrough();
 
-export const OrganizationEntity = z.object({ name: z.string(), slug: z.string() }).passthrough();
+export const OrganizationEntity = z
+  .object({ id: z.string(), name: z.string(), slug: z.string() })
+  .passthrough();
 
 export const CreateUserDto = z
   .object({
@@ -23,6 +25,7 @@ export const DeleteUserDto = z.object({ username: z.string() }).passthrough();
 
 export const UserEntity = z
   .object({
+    id: z.string(),
     username: z.string(),
     role: z.enum(["USER", "ADMIN"]),
     createdAt: z.string().datetime({ offset: true }),
@@ -45,28 +48,13 @@ export const CreateCustomerDto = z
 
 export const CustomerEntity = z
   .object({
+    id: z.string(),
     name: z.string(),
     email: z.string().optional(),
     phone: z.string().optional(),
-    id: z.string(),
     createdAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true }),
     deletedAt: z.string().datetime({ offset: true }).optional(),
-    organizationId: z.string(),
-  })
-  .passthrough();
-
-export const ProductEntity = z
-  .object({
-    description: z.string(),
-    id: z.string(),
-    purchase_price: z.number(),
-    selling_price: z.number(),
-    stock_quantity: z.number(),
-    createdAt: z.string().datetime({ offset: true }),
-    updatedAt: z.string().datetime({ offset: true }),
-    organizationId: z.string(),
-    storeId: z.object({}).partial().passthrough().optional(),
   })
   .passthrough();
 
@@ -76,6 +64,17 @@ export const CreateProductDto = z
     purchase_price: z.number(),
     selling_price: z.number(),
     stock_quantity: z.number(),
-    storeId: z.string().optional(),
+  })
+  .passthrough();
+
+export const ProductEntity = z
+  .object({
+    id: z.string(),
+    description: z.string(),
+    purchase_price: z.number(),
+    selling_price: z.number(),
+    stock_quantity: z.number(),
+    createdAt: z.string().datetime({ offset: true }),
+    updatedAt: z.string().datetime({ offset: true }),
   })
   .passthrough();

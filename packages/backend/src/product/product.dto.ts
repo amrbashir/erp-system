@@ -1,28 +1,7 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEmpty, IsNumber, IsString, Min } from "class-validator";
 
 import type { Product } from "../prisma/generated/client";
-
-export class ProductEntity implements Product {
-  @ApiProperty()
-  description: string;
-  @ApiProperty()
-  id: string;
-  @ApiProperty()
-  purchase_price: number;
-  @ApiProperty()
-  selling_price: number;
-  @ApiProperty()
-  stock_quantity: number;
-  @ApiProperty()
-  createdAt: Date;
-  @ApiProperty()
-  updatedAt: Date;
-  @ApiProperty()
-  organizationId: string;
-  @ApiPropertyOptional()
-  storeId: string | null;
-}
 
 export class CreateProductDto {
   @ApiProperty()
@@ -44,9 +23,37 @@ export class CreateProductDto {
   @IsNumber()
   @Min(0)
   stock_quantity: number;
+}
 
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
-  storeId?: string;
+export class ProductEntity implements Partial<Product> {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  description: string;
+
+  @ApiProperty()
+  purchase_price: number;
+
+  @ApiProperty()
+  selling_price: number;
+
+  @ApiProperty()
+  stock_quantity: number;
+
+  @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
+  updatedAt: Date;
+
+  constructor(product: Product) {
+    this.id = product.id;
+    this.description = product.description;
+    this.purchase_price = product.purchase_price;
+    this.selling_price = product.selling_price;
+    this.stock_quantity = product.stock_quantity;
+    this.createdAt = product.createdAt;
+    this.updatedAt = product.updatedAt;
+  }
 }

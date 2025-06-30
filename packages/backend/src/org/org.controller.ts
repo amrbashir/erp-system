@@ -16,7 +16,8 @@ export class OrgController {
 
   @Get(":orgSlug")
   @ApiOkResponse({ type: OrganizationEntity })
-  async getOrg(@Param("orgSlug") orgSlug: string) {
-    return this.orgService.findOrgBySlug(orgSlug);
+  async getOrg(@Param("orgSlug") orgSlug: string): Promise<OrganizationEntity | null> {
+    const org = await this.orgService.findOrgBySlug(orgSlug);
+    return org ? new OrganizationEntity(org) : null;
   }
 }

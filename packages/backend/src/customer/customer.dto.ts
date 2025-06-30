@@ -20,21 +20,35 @@ export class CreateCustomerDto {
   phone?: string;
 }
 
-export class CustomerEntity implements Customer {
-  @ApiProperty()
-  name: string;
-  @ApiPropertyOptional()
-  email: string;
-  @ApiPropertyOptional()
-  phone: string;
+export class CustomerEntity implements Partial<Customer> {
   @ApiProperty()
   id: string;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiPropertyOptional()
+  email?: string;
+
+  @ApiPropertyOptional()
+  phone?: string;
+
   @ApiProperty()
   createdAt: Date;
+
   @ApiProperty()
   updatedAt: Date;
+
   @ApiPropertyOptional()
-  deletedAt: Date;
-  @ApiProperty()
-  organizationId: string;
+  deletedAt?: Date;
+
+  constructor(customer: Customer) {
+    this.id = customer.id;
+    this.name = customer.name;
+    this.email = customer.email || undefined;
+    this.phone = customer.phone || undefined;
+    this.createdAt = customer.createdAt;
+    this.updatedAt = customer.updatedAt;
+    this.deletedAt = customer.deletedAt || undefined;
+  }
 }

@@ -20,7 +20,7 @@ describe("CustomerService", async () => {
     service = new CustomerService(prisma);
   });
 
-  afterEach(async () => await dropDatabase());
+  afterEach(dropDatabase);
 
   it("should create a customer", async () => {
     const org = await orgService.create({

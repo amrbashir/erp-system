@@ -28,13 +28,29 @@ export class DeleteUserDto {
 
 export class UserEntity implements Partial<User> {
   @ApiProperty()
+  id: string;
+
+  @ApiProperty()
   username: string;
+
   @ApiProperty({ enum: UserRole })
   role: UserRole;
+
   @ApiProperty()
   createdAt: Date;
+
   @ApiProperty()
   updatedAt: Date;
+
   @ApiPropertyOptional()
-  deletedAt: Date;
+  deletedAt?: Date;
+
+  constructor(customer: User) {
+    this.id = customer.id;
+    this.username = customer.username;
+    this.role = customer.role;
+    this.createdAt = customer.createdAt;
+    this.updatedAt = customer.updatedAt;
+    this.deletedAt = customer.deletedAt || undefined;
+  }
 }

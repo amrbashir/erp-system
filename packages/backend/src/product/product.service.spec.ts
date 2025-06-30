@@ -20,7 +20,7 @@ describe("ProductService", async () => {
     service = new ProductService(prisma);
   });
 
-  afterEach(async () => await dropDatabase());
+  afterEach(dropDatabase);
 
   it("should create a product", async () => {
     const org = await orgService.create({
@@ -37,7 +37,7 @@ describe("ProductService", async () => {
       stock_quantity: 50,
     };
 
-    const product = await service.createProduct(org.slug, createProductDto);
+    const product = await service.createProduct(createProductDto, org.slug);
     expect(product).toBeDefined();
     expect(product.description).toBe(createProductDto.description);
     expect(product.purchase_price).toBe(createProductDto.purchase_price);
@@ -55,19 +55,25 @@ describe("ProductService", async () => {
       slug: "test-org",
     });
 
-    const product1 = await service.createProduct(org.slug, {
-      description: "Product One",
-      purchase_price: 100,
-      selling_price: 150,
-      stock_quantity: 50,
-    });
+    const product1 = await service.createProduct(
+      {
+        description: "Product One",
+        purchase_price: 100,
+        selling_price: 150,
+        stock_quantity: 50,
+      },
+      org.slug,
+    );
 
-    const product2 = await service.createProduct(org.slug, {
-      description: "Product Two",
-      purchase_price: 200,
-      selling_price: 250,
-      stock_quantity: 25,
-    });
+    const product2 = await service.createProduct(
+      {
+        description: "Product Two",
+        purchase_price: 200,
+        selling_price: 250,
+        stock_quantity: 25,
+      },
+      org.slug,
+    );
 
     const products = await service.getAllProducts(org.slug);
     expect(products).toBeDefined();
@@ -88,7 +94,7 @@ describe("ProductService", async () => {
       stock_quantity: 50,
     };
 
-    await expect(service.createProduct("non-existent-org", createProductDto)).rejects.toThrow(
+    await expect(service.createProduct(createProductDto, "non-existent-org")).rejects.toThrow(
       "Organization with this slug does not exist",
     );
   });
