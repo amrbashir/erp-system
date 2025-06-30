@@ -9,10 +9,11 @@ import { CustomerModule } from "./customer/customer.module";
 import { OrgModule } from "./org/org.module";
 import { PrismaClientExceptionFilter } from "./prisma/prisma-client-exception.filter";
 import { PrismaModule } from "./prisma/prisma.module";
+import { ProductModule } from "./product/product.module";
 import { UserModule } from "./user/user.module";
 
 @Module({
-  imports: [PrismaModule, OrgModule, UserModule, AuthModule, CustomerModule],
+  imports: [PrismaModule, OrgModule, UserModule, AuthModule, CustomerModule, ProductModule],
 })
 export class AppModule {}
 

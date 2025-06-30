@@ -13,7 +13,8 @@
   "pages": {
     "home": "Home",
     "users": "Users",
-    "customers": "Customers"
+    "customers": "Customers",
+    "products": "Products"
   },
 
   "login_to_account": "Login to your account",
@@ -31,9 +32,15 @@
   "createdAt": "Created At",
   "updatedAt": "Updated At",
   "deletedAt": "Deleted At",
+
   "name": "Name",
   "email": "Email",
   "phone": "Phone",
+
+  "description": "Description",
+  "quantity": "Quantity",
+  "purchasePrice": "Purchase Price",
+  "sellingPrice": "Selling Price",
 
   "role": "Role",
   "roles": {

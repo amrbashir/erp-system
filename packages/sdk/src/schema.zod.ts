@@ -27,7 +27,7 @@ export const UserEntity = z
     role: z.enum(["USER", "ADMIN"]),
     createdAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true }),
-    deletedAt: z.object({}).partial().passthrough().optional(),
+    deletedAt: z.string().datetime({ offset: true }).optional(),
   })
   .passthrough();
 
@@ -53,5 +53,19 @@ export const CustomerEntity = z
     updatedAt: z.string().datetime({ offset: true }),
     deletedAt: z.string().datetime({ offset: true }).optional(),
     organizationId: z.string(),
+  })
+  .passthrough();
+
+export const ProductEntity = z
+  .object({
+    description: z.string(),
+    id: z.string(),
+    purchase_price: z.number(),
+    selling_price: z.number(),
+    stock_quantity: z.number(),
+    createdAt: z.string().datetime({ offset: true }),
+    updatedAt: z.string().datetime({ offset: true }),
+    organizationId: z.string(),
+    storeId: z.object({}).partial().passthrough().optional(),
   })
   .passthrough();

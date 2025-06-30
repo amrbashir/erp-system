@@ -9,7 +9,8 @@
   "pages": {
     "home": "الصفحة الرئيسية",
     "users": "المستخدمون",
-    "customers": "العملاء"
+    "customers": "العملاء",
+    "products": "المنتجات"
   },
 
   "login_to_account": "تسجيل الدخول إلى حسابك",
@@ -27,9 +28,15 @@
   "createdAt": "تاريخ الإنشاء",
   "updatedAt": "تاريخ التحديث",
   "deletedAt": "تاريخ الحذف",
+
   "name": "الاسم",
   "email": "البريد الإلكتروني",
   "phone": "الهاتف",
+
+  "description": "الوصف",
+  "quantity": "الكمية",
+  "purchasePrice": "سعر الشراء",
+  "sellingPrice": "سعر البيع",
 
   "role": "الدور",
   "roles": {

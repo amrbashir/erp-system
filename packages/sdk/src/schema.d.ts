@@ -164,6 +164,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/org/{orgSlug}/product/getAll": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ProductController$1_getAll"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -195,7 +211,8 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            deletedAt?: Record<string, never>;
+            /** Format: date-time */
+            deletedAt?: string;
         };
         LoginUserDto: {
             username: string;
@@ -228,6 +245,19 @@ export interface components {
             /** Format: date-time */
             deletedAt?: string;
             organizationId: string;
+        };
+        ProductEntity: {
+            description: string;
+            id: string;
+            purchase_price: number;
+            selling_price: number;
+            stock_quantity: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            organizationId: string;
+            storeId?: Record<string, never>;
         };
     };
     responses: never;
@@ -462,6 +492,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CustomerEntity"][];
+                };
+            };
+        };
+    };
+    ProductController$1_getAll: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductEntity"][];
                 };
             };
         };

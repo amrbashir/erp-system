@@ -30,6 +30,7 @@ export function AppSideBar() {
   const sidebarRoutes: (keyof FileRoutesById | undefined)[] = [
     "/org/$orgSlug/",
     "/org/$orgSlug/customers",
+    "/org/$orgSlug/products",
     user?.role === "ADMIN" ? "/org/$orgSlug/users" : undefined,
   ];
 

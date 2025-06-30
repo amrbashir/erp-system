@@ -43,7 +43,7 @@ function Org() {
       <OrgProvider>
         <SidebarProvider defaultOpen={defaultOpen}>
           <AppSideBar />
-          <div id="sidebar-view" className="flex flex-col w-svw md:rounded-2xl md:m-2">
+          <div id="sidebar-view" className="flex flex-col w-svw md:rounded-2xl md:my-2 md:me-2">
             <OrgHeader />
             <Outlet />
           </div>

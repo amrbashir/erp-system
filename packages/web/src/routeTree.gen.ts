@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OrgOrgSlugIndexRouteImport } from './routes/org.$orgSlug.index'
 import { Route as OrgOrgSlugUsersRouteImport } from './routes/org.$orgSlug.users'
+import { Route as OrgOrgSlugProductsRouteImport } from './routes/org.$orgSlug.products'
 import { Route as OrgOrgSlugCustomersRouteImport } from './routes/org.$orgSlug.customers'
 
 const OrgRoute = OrgRouteImport.update({
@@ -41,6 +42,11 @@ const OrgOrgSlugUsersRoute = OrgOrgSlugUsersRouteImport.update({
   path: '/$orgSlug/users',
   getParentRoute: () => OrgRoute,
 } as any)
+const OrgOrgSlugProductsRoute = OrgOrgSlugProductsRouteImport.update({
+  id: '/$orgSlug/products',
+  path: '/$orgSlug/products',
+  getParentRoute: () => OrgRoute,
+} as any)
 const OrgOrgSlugCustomersRoute = OrgOrgSlugCustomersRouteImport.update({
   id: '/$orgSlug/customers',
   path: '/$orgSlug/customers',
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/org': typeof OrgRouteWithChildren
   '/org/$orgSlug/customers': typeof OrgOrgSlugCustomersRoute
+  '/org/$orgSlug/products': typeof OrgOrgSlugProductsRoute
   '/org/$orgSlug/users': typeof OrgOrgSlugUsersRoute
   '/org/$orgSlug': typeof OrgOrgSlugIndexRoute
 }
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/org': typeof OrgRouteWithChildren
   '/org/$orgSlug/customers': typeof OrgOrgSlugCustomersRoute
+  '/org/$orgSlug/products': typeof OrgOrgSlugProductsRoute
   '/org/$orgSlug/users': typeof OrgOrgSlugUsersRoute
   '/org/$orgSlug': typeof OrgOrgSlugIndexRoute
 }
@@ -69,6 +77,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/org': typeof OrgRouteWithChildren
   '/org/$orgSlug/customers': typeof OrgOrgSlugCustomersRoute
+  '/org/$orgSlug/products': typeof OrgOrgSlugProductsRoute
   '/org/$orgSlug/users': typeof OrgOrgSlugUsersRoute
   '/org/$orgSlug/': typeof OrgOrgSlugIndexRoute
 }
@@ -79,6 +88,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/org'
     | '/org/$orgSlug/customers'
+    | '/org/$orgSlug/products'
     | '/org/$orgSlug/users'
     | '/org/$orgSlug'
   fileRoutesByTo: FileRoutesByTo
@@ -87,6 +97,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/org'
     | '/org/$orgSlug/customers'
+    | '/org/$orgSlug/products'
     | '/org/$orgSlug/users'
     | '/org/$orgSlug'
   id:
@@ -95,6 +106,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/org'
     | '/org/$orgSlug/customers'
+    | '/org/$orgSlug/products'
     | '/org/$orgSlug/users'
     | '/org/$orgSlug/'
   fileRoutesById: FileRoutesById
@@ -142,6 +154,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgOrgSlugUsersRouteImport
       parentRoute: typeof OrgRoute
     }
+    '/org/$orgSlug/products': {
+      id: '/org/$orgSlug/products'
+      path: '/$orgSlug/products'
+      fullPath: '/org/$orgSlug/products'
+      preLoaderRoute: typeof OrgOrgSlugProductsRouteImport
+      parentRoute: typeof OrgRoute
+    }
     '/org/$orgSlug/customers': {
       id: '/org/$orgSlug/customers'
       path: '/$orgSlug/customers'
@@ -154,12 +173,14 @@ declare module '@tanstack/react-router' {
 
 interface OrgRouteChildren {
   OrgOrgSlugCustomersRoute: typeof OrgOrgSlugCustomersRoute
+  OrgOrgSlugProductsRoute: typeof OrgOrgSlugProductsRoute
   OrgOrgSlugUsersRoute: typeof OrgOrgSlugUsersRoute
   OrgOrgSlugIndexRoute: typeof OrgOrgSlugIndexRoute
 }
 
 const OrgRouteChildren: OrgRouteChildren = {
   OrgOrgSlugCustomersRoute: OrgOrgSlugCustomersRoute,
+  OrgOrgSlugProductsRoute: OrgOrgSlugProductsRoute,
   OrgOrgSlugUsersRoute: OrgOrgSlugUsersRoute,
   OrgOrgSlugIndexRoute: OrgOrgSlugIndexRoute,
 }
