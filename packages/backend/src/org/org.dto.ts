@@ -32,7 +32,7 @@ export class CreateOrgDto {
   password: string;
 }
 
-export class OrganizationEntity implements Partial<Organization> {
+export class OrganizationEntity {
   @ApiProperty()
   id: string;
 

@@ -26,7 +26,7 @@ export class DeleteUserDto {
   username: string;
 }
 
-export class UserEntity implements Partial<User> {
+export class UserEntity {
   @ApiProperty()
   id: string;
 

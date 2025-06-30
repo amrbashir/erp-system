@@ -20,7 +20,7 @@ export class CreateCustomerDto {
   phone?: string;
 }
 
-export class CustomerEntity implements Partial<Customer> {
+export class CustomerEntity {
   @ApiProperty()
   id: string;
 

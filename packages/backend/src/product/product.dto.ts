@@ -25,7 +25,7 @@ export class CreateProductDto {
   stock_quantity: number;
 }
 
-export class ProductEntity implements Partial<Product> {
+export class ProductEntity {
   @ApiProperty()
   id: string;
 

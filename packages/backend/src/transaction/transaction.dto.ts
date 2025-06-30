@@ -3,7 +3,7 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import type { Transaction } from "../prisma/generated/client";
 import type { TransactionWithRelations } from "./transaction.service";
 
-export class TransactionEntity implements Partial<Transaction> {
+export class TransactionEntity {
   @ApiProperty()
   id: string;
 
