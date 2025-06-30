@@ -80,21 +80,23 @@ function Users() {
       <div className="rounded-lg overflow-hidden border">
         <Table>
           <TableHeader>
-            <TableRow className="bg-secondary">
-              <TableHead className="text-start font-bold">{t("username")}</TableHead>
-              <TableHead className="text-start font-bold">{t("role")}</TableHead>
-              <TableHead className="text-start font-bold">{t("createdAt")}</TableHead>
-              <TableHead className="text-start font-bold">{t("updatedAt")}</TableHead>
-              <TableHead className="text-start font-bold">{t("deletedAt")}</TableHead>
+            <TableRow className="bg-card">
+              <TableHead></TableHead>
+              <TableHead className="min-w-[50%]">{t("username")}</TableHead>
+              <TableHead>{t("role")}</TableHead>
+              <TableHead>{t("createdAt")}</TableHead>
+              <TableHead>{t("updatedAt")}</TableHead>
+              <TableHead>{t("deletedAt")}</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {(users ?? []).map((user) => (
+            {(users ?? []).map((user, index) => (
               <TableRow
-                key={user.username}
+                key={index}
                 className={user.deletedAt ? "line-through text-muted-foreground" : ""}
               >
+                <TableCell>{index + 1}</TableCell>
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{t(`roles.${user.role}`)}</TableCell>
                 <TableCell>{new Date(user.createdAt).toLocaleString(i18n.language)}</TableCell>

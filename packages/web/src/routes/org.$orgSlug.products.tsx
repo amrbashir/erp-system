@@ -40,18 +40,20 @@ function Products() {
       <div className="rounded-lg overflow-hidden border">
         <Table>
           <TableHeader>
-            <TableRow className="bg-secondary">
-              <TableHead className="text-start font-bold">{t("quantity")}</TableHead>
-              <TableHead className="text-start font-bold">{t("description")}</TableHead>
-              <TableHead className="text-start font-bold">{t("purchasePrice")}</TableHead>
-              <TableHead className="text-start font-bold">{t("sellingPrice")}</TableHead>
-              <TableHead className="text-start font-bold">{t("createdAt")}</TableHead>
-              <TableHead className="text-start font-bold">{t("updatedAt")}</TableHead>
+            <TableRow className="bg-card">
+              <TableHead></TableHead>
+              <TableHead>{t("quantity")}</TableHead>
+              <TableHead className="min-w-[50%]">{t("description")}</TableHead>
+              <TableHead>{t("purchasePrice")}</TableHead>
+              <TableHead>{t("sellingPrice")}</TableHead>
+              <TableHead>{t("createdAt")}</TableHead>
+              <TableHead>{t("updatedAt")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {(products ?? []).map((product, index) => (
               <TableRow key={index}>
+                <TableCell>{index + 1}</TableCell>
                 <TableCell>{product.stock_quantity}</TableCell>
                 <TableCell>{product.description}</TableCell>
                 <TableCell>{product.purchase_price}</TableCell>

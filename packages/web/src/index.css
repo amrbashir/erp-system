@@ -152,3 +152,7 @@ html[dir="rtl"] [data-slot="alert-dialog-header"] {
 html[dir="rtl"] [data-slot="dialog-close"] {
   @apply left-4! right-[unset]!;
 }
+
+html[dir="rtl"] [data-slot="table-head"] {
+  @apply text-right!;
+}

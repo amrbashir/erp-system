@@ -45,17 +45,19 @@ function Customers() {
       <div className="rounded-lg overflow-hidden border">
         <Table>
           <TableHeader>
-            <TableRow className="bg-secondary">
-              <TableHead className="text-start font-bold">{t("name")}</TableHead>
-              <TableHead className="text-start font-bold">{t("email")}</TableHead>
-              <TableHead className="text-start font-bold">{t("phone")}</TableHead>
-              <TableHead className="text-start font-bold">{t("createdAt")}</TableHead>
-              <TableHead className="text-start font-bold">{t("updatedAt")}</TableHead>
+            <TableRow className="bg-card">
+              <TableHead></TableHead>
+              <TableHead className="min-w-[50%]">{t("name")}</TableHead>
+              <TableHead>{t("email")}</TableHead>
+              <TableHead>{t("phone")}</TableHead>
+              <TableHead>{t("createdAt")}</TableHead>
+              <TableHead>{t("updatedAt")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {(customers ?? []).map((customer) => (
-              <TableRow key={customer.name}>
+            {(customers ?? []).map((customer, index) => (
+              <TableRow key={index}>
+                <TableCell>{index + 1}</TableCell>
                 <TableCell>{customer.name}</TableCell>
                 <TableCell>{customer.email}</TableCell>
                 <TableCell>{customer.phone}</TableCell>
