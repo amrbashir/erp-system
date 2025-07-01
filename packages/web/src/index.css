@@ -157,5 +157,5 @@ html[dir="rtl"] [data-slot="table-head"] {
   @apply text-right!;
 }
 html[dir="rtl"] [data-slot="sidebar-inset"] {
-  @apply me-2!;
+  @apply md:me-2!;
 }
