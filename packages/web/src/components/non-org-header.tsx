@@ -15,7 +15,7 @@ export function NonOrgHeader() {
   if (isOrg) return null;
 
   return (
-    <nav className="sticky top-0 z-49 w-screen h-20 p-4 flex items-center gap-2 backdrop-blur-sm bg-background/80 border-b border-border">
+    <nav className="sticky top-0 z-49 w-screen h-[calc(var(--spacing)_*_12)] p-4 flex items-center gap-2 backdrop-blur-sm bg-background/80 border-b border-border">
       <div className="flex-1" />
       <LanguageSelector />
       <ThemeSelector />

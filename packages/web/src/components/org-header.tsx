@@ -11,6 +11,8 @@ import {
 import { Separator } from "@/shadcn/components/ui/separator";
 import { SidebarTrigger } from "@/shadcn/components/ui/sidebar";
 
+import { ThemeSelector } from "./theme-selector";
+
 function NavigationBreadcrumbs() {
   const matches = useMatches();
 
@@ -56,13 +58,18 @@ export function OrgHeader() {
           "--header-height": "calc(var(--spacing) * 12)",
         } as React.CSSProperties
       }
-      className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear px-4 sticky top-0 z-10 bg-background/50 backdrop-blur-md rounded-t-lg"
+      className="sticky top-0 z-10 h-(--header-height) shrink-0 border-b transition-[width,height] ease-linear px-4  bg-background/50 backdrop-blur-md rounded-t-lg flex items-center justify-between"
     >
-      <SidebarTrigger className="-ml-1" />
-      <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
-      <nav>
-        <NavigationBreadcrumbs />
-      </nav>
+      <div className="flex items-center gap-2">
+        <SidebarTrigger className="-ml-1" />
+        <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
+        <nav>
+          <NavigationBreadcrumbs />
+        </nav>
+      </div>
+      <div>
+        <ThemeSelector iconOnly />
+      </div>
     </header>
   );
 }
