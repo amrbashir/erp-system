@@ -38,16 +38,16 @@ function Customers() {
   });
 
   return (
-    <main className="p-4 flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4">
       <div>
         <AddCustomerDialog />
       </div>
 
-      {customers?.length && customers.length === 0 ? (
+      {customers?.length && customers.length > 0 ? (
         <div className="rounded-lg overflow-hidden border">
           <Table>
             <TableHeader>
-              <TableRow className="bg-card">
+              <TableRow className="*:font-bold">
                 <TableHead></TableHead>
                 <TableHead className="min-w-[50%]">{t("name")}</TableHead>
                 <TableHead>{t("email")}</TableHead>
@@ -77,6 +77,6 @@ function Customers() {
       ) : (
         <EmptyTable />
       )}
-    </main>
+    </div>
   );
 }

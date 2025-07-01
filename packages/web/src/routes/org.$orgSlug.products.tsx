@@ -37,12 +37,12 @@ function Products() {
   });
 
   return (
-    <main className="p-4 flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4">
       {products?.length && products.length > 0 ? (
         <div className="rounded-lg overflow-hidden border">
           <Table>
             <TableHeader>
-              <TableRow className="bg-card">
+              <TableRow className="*:font-bold">
                 <TableHead></TableHead>
                 <TableHead>{t("quantity")}</TableHead>
                 <TableHead className="min-w-[50%]">{t("description")}</TableHead>
@@ -70,6 +70,6 @@ function Products() {
       ) : (
         <EmptyTable />
       )}
-    </main>
+    </div>
   );
 }

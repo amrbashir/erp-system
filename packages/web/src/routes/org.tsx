@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { SidebarProvider } from "@/shadcn/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/shadcn/components/ui/sidebar";
 
 import { OrgHeader } from "@/components/org-header";
 import { AppSideBar } from "@/components/sidebar";
@@ -43,10 +43,10 @@ function Org() {
       <OrgProvider>
         <SidebarProvider defaultOpen={defaultOpen}>
           <AppSideBar />
-          <div id="sidebar-view" className="flex flex-col w-svw md:rounded-2xl md:my-2 md:me-2">
+          <SidebarInset>
             <OrgHeader />
             <Outlet />
-          </div>
+          </SidebarInset>
         </SidebarProvider>
       </OrgProvider>
     </>

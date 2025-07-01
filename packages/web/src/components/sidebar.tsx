@@ -45,15 +45,12 @@ export function AppSideBar() {
     user?.role === "ADMIN" ? ["/org/$orgSlug/transactions", "/org/$orgSlug/users"] : [];
 
   return (
-    <Sidebar
-      collapsible="icon"
-      className="border-0!"
-      side={i18n.dir() === "rtl" ? "right" : "left"}
-    >
+    <Sidebar variant="inset" collapsible="icon" side={i18n.dir() === "rtl" ? "right" : "left"}>
       <SidebarHeader>
         <Label className="my-2">
           <img src="/favicon.svg" className="size-8"></img>
           <span className="md:hidden text-lg font-semibold">{orgSlug}</span>
+          {/* TODO: fix this text jumping */}
           {open && <span className="hidden md:inline-block text-lg font-semibold">{orgSlug}</span>}
         </Label>
       </SidebarHeader>

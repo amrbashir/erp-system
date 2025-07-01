@@ -72,7 +72,7 @@ function Users() {
   }, [deleteError, t]);
 
   return (
-    <main className="p-4 flex flex-col gap-4">
+    <div className="flex flex-col gap-4 p-4">
       <div>
         <AddUserDialog />
       </div>
@@ -80,7 +80,7 @@ function Users() {
       <div className="rounded-lg overflow-hidden border">
         <Table>
           <TableHeader>
-            <TableRow className="bg-card">
+            <TableRow className="*:font-bold">
               <TableHead></TableHead>
               <TableHead className="min-w-[50%]">{t("username")}</TableHead>
               <TableHead>{t("role")}</TableHead>
@@ -147,6 +147,6 @@ function Users() {
           </TableBody>
         </Table>
       </div>
-    </main>
+    </div>
   );
 }

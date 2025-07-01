@@ -50,7 +50,7 @@ function NavigationBreadcrumbs() {
 
 export function OrgHeader() {
   return (
-    <header className="sticky top-0 z-49 flex items-center gap-2 w-full bg-background/50 backdrop-blur-sm border-b px-4 py-2 md:rounded-t-lg">
+    <header className="sticky top-0 z-49 flex items-center gap-2 w-full bg-background/50 backdrop-blur-sm border-b px-4 py-2">
       <SidebarTrigger />
       <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
       <nav>
