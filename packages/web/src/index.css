@@ -156,3 +156,6 @@ html[dir="rtl"] [data-slot="dialog-close"] {
 html[dir="rtl"] [data-slot="table-head"] {
   @apply text-right!;
 }
+html[dir="rtl"] [data-slot="sidebar-inset"] {
+  @apply me-2!;
+}

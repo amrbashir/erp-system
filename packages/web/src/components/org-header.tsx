@@ -50,8 +50,15 @@ function NavigationBreadcrumbs() {
 
 export function OrgHeader() {
   return (
-    <header className="sticky top-0 z-49 flex items-center gap-2 w-full bg-background/50 backdrop-blur-sm border-b px-4 py-2">
-      <SidebarTrigger />
+    <header
+      style={
+        {
+          "--header-height": "calc(var(--spacing) * 12)",
+        } as React.CSSProperties
+      }
+      className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear px-4"
+    >
+      <SidebarTrigger className="-ml-1" />
       <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
       <nav>
         <NavigationBreadcrumbs />

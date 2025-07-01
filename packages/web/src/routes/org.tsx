@@ -39,16 +39,14 @@ function Org() {
   const defaultOpen = sidebarState === "true";
 
   return (
-    <>
-      <OrgProvider>
-        <SidebarProvider defaultOpen={defaultOpen}>
-          <AppSideBar />
-          <SidebarInset>
-            <OrgHeader />
-            <Outlet />
-          </SidebarInset>
-        </SidebarProvider>
-      </OrgProvider>
-    </>
+    <OrgProvider>
+      <SidebarProvider defaultOpen={defaultOpen}>
+        <AppSideBar />
+        <SidebarInset>
+          <OrgHeader />
+          <Outlet />
+        </SidebarInset>
+      </SidebarProvider>
+    </OrgProvider>
   );
 }
