@@ -9,24 +9,17 @@ Building an ERP system for a local store in public.
 1. Node.js
 2. Docker
 
-### Developing using Docker
+### Setup:
 
-1. Install dependencies: `pnpm install`
-2. Run the containers: `docker compose up -d`
-3. Inspect logs: `docker compose logs -f web backend`
+3. Install dependencies: `pnpm install`
+4. Start the database: `docker compose up -d`
+5. Run migrations: `pnpm -w backend migrate:db:dev`
+6. Build utilities: `pnpm -w build:utils`
 
-> On Windows and WSL2, File System Watchers may not work correctly with Docker.
-> However, the web application will hot-reload on changes thanks to polling based detection.
-> Unfortunately, the backend will not hot-reload on changes and requires a manual restart using `docker compose restart backend`.
+## Running the Application
 
-### Developing without Docker (still using Docker for Database)
-
-1. Install dependencies: `pnpm install`
-2. Start the database: `docker compose up -d postgres-db`
-3. Run migrations: `cd packages/backend && pnpm prisma migrate dev`
-4. Build utilities: `pnpm -w build:utils`
-5. Start the backend: `pnpm -w backend dev`
-6. Start the web application: `pnpm -w web dev`
+1. Start the backend: `pnpm -w backend dev`
+2. Start the web application: `pnpm -w web dev`
 
 ### Running Tests
 

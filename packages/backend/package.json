@@ -11,6 +11,7 @@
     "start": "node --env-file=.env dist/main.js",
     "start:dev": "node --env-file=.env.development dist/main.js",
     "gen:openapi-json": "node --env-file=.env.development dist/main.js gen-openapi-json",
+    "migrate:db:dev": "dotenv -e .env.development prisma migrate dev",
     "test": "docker compose up -d postgres-db && vitest run",
     "test:watch": "vitest",
     "lint": "tsc --noEmit"
@@ -42,6 +43,7 @@
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "dotenv": "^16.5.0",
+    "dotenv-cli": "^8.0.0",
     "prisma": "^6.10.1",
     "tsdown": "^0.12.9",
     "typescript": "^5.8.3",
