@@ -1,9 +1,10 @@
-import { createFileRoute, notFound, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { SidebarInset } from "@/shadcn/components/ui/sidebar";
 
 import { apiClient } from "@/api-client";
 import { OrgHeader } from "@/components/org-header";
 import { AppSideBar } from "@/components/sidebar";
+import i18n from "@/i18n";
 import { AppSidebarProvider } from "@/providers/sidebar";
 
 interface OrgSearch {
@@ -37,7 +38,7 @@ export const Route = createFileRoute("/org")({
       const { data } = await apiClient.get("/org/{orgSlug}", {
         params: { path: { orgSlug: params.orgSlug } },
       });
-      if (!data) throw new Error("asdasd");
+      if (!data) throw new Error(i18n.t("errors.organizationNotFound"));
       return data;
     }
   },
