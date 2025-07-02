@@ -34,10 +34,10 @@ export const Route = createFileRoute("/org")({
   },
   loader: async ({ params }) => {
     if ("orgSlug" in params && typeof params.orgSlug === "string") {
-      const { data, error } = await apiClient.get("/org/{orgSlug}", {
+      const { data } = await apiClient.get("/org/{orgSlug}", {
         params: { path: { orgSlug: params.orgSlug } },
       });
-      if (error) throw notFound();
+      if (!data) throw new Error("asdasd");
       return data;
     }
   },

@@ -1,9 +1,9 @@
 import { LanguageSelector } from "@/components/language-selector";
 import { ThemeSelector } from "@/components/theme-selector";
-import { useOrgSafe } from "@/hooks/use-org";
+import { useOrg } from "@/hooks/use-org";
 
 export function NonOrgHeader() {
-  const org = useOrgSafe();
+  const org = useOrg({ strict: false });
   if (org) return null;
 
   return (
