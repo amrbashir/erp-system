@@ -23,7 +23,7 @@ import type z from "zod";
 
 import { apiClient } from "@/api-client";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
-import { useOrg } from "@/providers/org-provider";
+import { useOrg } from "@/hooks/use-org";
 
 export function AddCustomerDialog() {
   const { slug: orgSlug } = useOrg();

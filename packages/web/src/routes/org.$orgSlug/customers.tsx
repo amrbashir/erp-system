@@ -14,8 +14,8 @@ import {
 import { apiClient } from "@/api-client";
 import { AddCustomerDialog } from "@/components/add-customer-dialog";
 import { EmptyTable } from "@/components/empty-table";
+import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
-import { useOrg } from "@/providers/org-provider";
 
 export const Route = createFileRoute("/org/$orgSlug/customers")({
   component: Customers,

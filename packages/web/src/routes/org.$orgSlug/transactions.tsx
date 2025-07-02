@@ -13,8 +13,8 @@ import {
 
 import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
+import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
-import { useOrg } from "@/providers/org-provider";
 
 export const Route = createFileRoute("/org/$orgSlug/transactions")({
   component: Transactions,

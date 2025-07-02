@@ -11,8 +11,8 @@ import {
   TableRow,
 } from "@/shadcn/components/ui/table";
 
+import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
-import { useOrg } from "@/providers/org-provider";
 
 import { apiClient } from "../../api-client";
 import { EmptyTable } from "../../components/empty-table";

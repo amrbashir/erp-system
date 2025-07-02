@@ -23,8 +23,8 @@ import {
 
 import type { FileRoutesById } from "@/routeTree.gen";
 import { UserDropdown } from "@/components/user-dropdown";
+import { useOrg } from "@/hooks/use-org";
 import { useAuth } from "@/providers/auth-provider";
-import { useOrg } from "@/providers/org-provider";
 
 export function AppSideBar() {
   const { t } = useTranslation();

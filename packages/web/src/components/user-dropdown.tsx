@@ -19,8 +19,8 @@ import {
 
 import { LanguageSelector } from "@/components/language-selector";
 import { ThemeSelector } from "@/components/theme-selector";
+import { useOrg } from "@/hooks/use-org";
 import { useAuth } from "@/providers/auth-provider";
-import { useOrg } from "@/providers/org-provider";
 
 export function UserDropdown() {
   const { t } = useTranslation();

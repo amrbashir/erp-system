@@ -1,9 +1,9 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, notFound, Outlet, redirect } from "@tanstack/react-router";
 import { SidebarInset, SidebarProvider } from "@/shadcn/components/ui/sidebar";
 
+import { apiClient } from "@/api-client";
 import { OrgHeader } from "@/components/org-header";
 import { AppSideBar } from "@/components/sidebar";
-import { OrgProvider } from "@/providers/org-provider";
 
 interface OrgSearch {
   redirect?: string;
@@ -31,6 +31,15 @@ export const Route = createFileRoute("/org")({
       });
     }
   },
+  loader: async ({ params }) => {
+    if ("orgSlug" in params && typeof params.orgSlug === "string") {
+      const { data, error } = await apiClient.get("/org/{orgSlug}", {
+        params: { path: { orgSlug: params.orgSlug } },
+      });
+      if (error) throw notFound();
+      return data;
+    }
+  },
 });
 
 function Org() {
@@ -39,14 +48,12 @@ function Org() {
   const defaultOpen = sidebarState === "true";
 
   return (
-    <OrgProvider>
-      <SidebarProvider defaultOpen={defaultOpen}>
-        <AppSideBar />
-        <SidebarInset>
-          <OrgHeader />
-          <Outlet />
-        </SidebarInset>
-      </SidebarProvider>
-    </OrgProvider>
+    <SidebarProvider defaultOpen={defaultOpen}>
+      <AppSideBar />
+      <SidebarInset>
+        <OrgHeader />
+        <Outlet />
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
