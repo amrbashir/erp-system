@@ -1,7 +1,4 @@
 -- CreateEnum
-CREATE TYPE "InvoiceType" AS ENUM ('INVOICE', 'REFUND');
-
--- CreateEnum
 CREATE TYPE "UserRole" AS ENUM ('USER', 'ADMIN');
 
 -- CreateTable
@@ -48,7 +45,6 @@ CREATE TABLE "invoice_items" (
 -- CreateTable
 CREATE TABLE "invoices" (
     "id" TEXT NOT NULL,
-    "type" "InvoiceType" NOT NULL,
     "total" INTEGER NOT NULL,
     "customerId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -130,9 +126,6 @@ CREATE TABLE "users" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "customers_name_key" ON "customers"("name");
-
--- CreateIndex
 CREATE UNIQUE INDEX "expenses_transactionId_key" ON "expenses"("transactionId");
 
 -- CreateIndex
@@ -140,12 +133,6 @@ CREATE UNIQUE INDEX "invoices_transactionId_key" ON "invoices"("transactionId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "organizations_slug_key" ON "organizations"("slug");
-
--- CreateIndex
-CREATE UNIQUE INDEX "stores_slug_key" ON "stores"("slug");
-
--- CreateIndex
-CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- AddForeignKey
 ALTER TABLE "customers" ADD CONSTRAINT "customers_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
