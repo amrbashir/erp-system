@@ -20,7 +20,7 @@ import {
 import { LanguageSelector } from "@/components/language-selector";
 import { ThemeSelector } from "@/components/theme-selector";
 import { useOrg } from "@/hooks/use-org";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/providers/auth";
 
 export function UserDropdown() {
   const { t } = useTranslation();

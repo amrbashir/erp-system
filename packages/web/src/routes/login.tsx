@@ -21,7 +21,7 @@ import { Footer } from "@/components/footer";
 import { FormErrors } from "@/components/form-errors";
 import { Welcome } from "@/components/welcome";
 import i18n from "@/i18n";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/providers/auth";
 
 interface LoginSearch {
   redirect?: string;

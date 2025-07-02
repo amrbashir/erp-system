@@ -1,9 +1,10 @@
 import { createFileRoute, notFound, Outlet, redirect } from "@tanstack/react-router";
-import { SidebarInset, SidebarProvider } from "@/shadcn/components/ui/sidebar";
+import { SidebarInset } from "@/shadcn/components/ui/sidebar";
 
 import { apiClient } from "@/api-client";
 import { OrgHeader } from "@/components/org-header";
 import { AppSideBar } from "@/components/sidebar";
+import { AppSidebarProvider } from "@/providers/sidebar";
 
 interface OrgSearch {
   redirect?: string;
@@ -43,17 +44,13 @@ export const Route = createFileRoute("/org")({
 });
 
 function Org() {
-  const cookies = document.cookie.split("; ");
-  const sidebarState = cookies.find((c) => c.startsWith("sidebar_state="))?.split("=")[1];
-  const defaultOpen = sidebarState === "true";
-
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
+    <AppSidebarProvider>
       <AppSideBar />
       <SidebarInset>
         <OrgHeader />
         <Outlet />
       </SidebarInset>
-    </SidebarProvider>
+    </AppSidebarProvider>
   );
 }

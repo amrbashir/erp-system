@@ -38,7 +38,7 @@ import { apiClient } from "@/api-client";
 import { AddUserDialog } from "@/components/add-user-dialog";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/providers/auth";
 
 export const Route = createFileRoute("/org/$orgSlug/users")({
   component: Users,

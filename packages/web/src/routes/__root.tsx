@@ -8,9 +8,9 @@ import { Toaster } from "@/shadcn/components/ui/sonner";
 
 import type { UserEntity } from "@erp-system/sdk/zod";
 
-import type { AuthProviderState } from "@/providers/auth-provider";
+import type { AuthProviderState } from "@/providers/auth";
 import { NonOrgHeader } from "@/components/non-org-header";
-import { ThemeProvider } from "@/providers/theme-provider";
+import { ThemeProvider } from "@/providers/theme";
 
 interface RouterContext {
   auth: AuthProviderState;

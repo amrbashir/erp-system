@@ -24,7 +24,7 @@ import {
 import type { FileRoutesById } from "@/routeTree.gen";
 import { UserDropdown } from "@/components/user-dropdown";
 import { useOrg } from "@/hooks/use-org";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/providers/auth";
 
 export function AppSideBar() {
   const { t } = useTranslation();
