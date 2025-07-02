@@ -12,12 +12,13 @@ function useOrgSafe() {
 }
 
 type OrgOrNull = ReturnType<typeof useOrgSafe>;
-type ReturnTypeOrg<TStrict> = TStrict extends true ? NonNullable<OrgOrNull> : OrgOrNull;
 
-export function useOrg<TStrict extends boolean = true>(
-  options: { strict: TStrict } = { strict: true as TStrict },
-): ReturnTypeOrg<TStrict> {
+// Function overloads
+export function useOrg(): NonNullable<OrgOrNull>;
+export function useOrg(options: { strict: true }): NonNullable<OrgOrNull>;
+export function useOrg(options: { strict: false }): OrgOrNull;
+export function useOrg(options: { strict: boolean } = { strict: true }): OrgOrNull {
   const org = useOrgSafe();
   if (!org && options.strict) throw new Error("useOrg must be used within an /org/$orgSlug route");
-  return org as ReturnTypeOrg<TStrict>;
+  return org;
 }
