@@ -42,7 +42,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   },
 });
 
-function Root() {
+function Layout({ children }: { children: React.ReactNode }) {
   const { i18n } = useTranslation("translation");
   useEffect(() => void (document.documentElement.dir = i18n.dir()), [i18n.language]);
 
@@ -52,7 +52,7 @@ function Root() {
         <HeadContent />
         <NonOrgHeader />
 
-        <Outlet />
+        {children}
 
         <Toaster position={i18n.dir() === "rtl" ? "bottom-left" : "bottom-right"} />
       </ThemeProvider>
@@ -60,11 +60,19 @@ function Root() {
   );
 }
 
+function Root() {
+  return (
+    <Layout>
+      <Outlet />
+    </Layout>
+  );
+}
+
 function NotFound404() {
   const { t } = useTranslation();
 
   return (
-    <div className="h-(--fullheight-minus-header) w-full flex flex-col items-center justify-center">
+    <main className="h-(--fullheight-minus-header) w-full flex flex-col items-center justify-center">
       <div className="text-center">
         <h1 className="text-9xl!">{t("oops")}</h1>
         <br />
@@ -76,7 +84,7 @@ function NotFound404() {
           <Link to="/">{t("goBackHome")}</Link>
         </Button>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -84,18 +92,20 @@ function ErrorComponent({ error }: { error: Error }) {
   const { t } = useTranslation();
 
   return (
-    <div className="h-(--fullheight-minus-header) w-full flex flex-col items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-9xl!">{t("oops")}</h1>
-        <br />
-        <br />
-        <p>{error.message}</p>
-        <br />
-        <br />
-        <Button>
-          <Link to="/">{t("goBackHome")}</Link>
-        </Button>
-      </div>
-    </div>
+    <Layout>
+      <main className="h-(--fullheight-minus-header) w-full flex flex-col items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-9xl!">{t("oops")}</h1>
+          <br />
+          <br />
+          <p>{error.message}</p>
+          <br />
+          <br />
+          <Button>
+            <Link to="/">{t("goBackHome")}</Link>
+          </Button>
+        </div>
+      </main>
+    </Layout>
   );
 }
