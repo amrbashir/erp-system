@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronDownIcon, ChevronUpIcon, FileTextIcon } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, ReceiptTextIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
@@ -25,13 +25,13 @@ export const Route = createFileRoute("/org/$orgSlug/invoices")({
   component: Invoices,
   context: () => ({
     title: i18n.t("pages.invoices"),
-    icon: FileTextIcon,
+    icon: ReceiptTextIcon,
   }),
 });
 
 function Invoices() {
   const { slug: orgSlug } = useOrg();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const { data: invoices } = useQuery({
     queryKey: ["invoices"],
@@ -49,7 +49,7 @@ function Invoices() {
               <TableRow className="*:font-bold">
                 <TableHead></TableHead>
                 <TableHead>{t("total")}</TableHead>
-                <TableHead>{t("username")}</TableHead>
+                <TableHead>{t("cashierName")}</TableHead>
                 <TableHead>{t("customerName")}</TableHead>
                 <TableHead>{t("createdAt")}</TableHead>
                 <TableHead>{t("updatedAt")}</TableHead>
@@ -82,7 +82,7 @@ function InvoiceRow({
       <TableRow className={open ? "bg-muted/50" : ""}>
         <TableCell>{index + 1}</TableCell>
         <TableCell>{invoice.total}</TableCell>
-        <TableCell>{invoice.username}</TableCell>
+        <TableCell>{invoice.cashierName}</TableCell>
         <TableCell>{invoice.customerName}</TableCell>
         <TableCell>{new Date(invoice.createdAt).toLocaleString(i18n.language)}</TableCell>
         <TableCell>{new Date(invoice.updatedAt).toLocaleString(i18n.language)}</TableCell>

@@ -2,25 +2,25 @@ import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
 import type { PaginationDto } from "../pagination.dto";
-import type { Invoice } from "../prisma/generated/client";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
-import { InvoiceEntity } from "./invoice.dto";
-import { InvoiceService } from "./invoice.service";
+import { ExpenseEntity } from "./expense.dto";
+import { ExpenseService } from "./expense.service";
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 @ApiHeader({ name: "Authorization" })
-@ApiTags("invoice")
-@Controller("/org/:orgSlug/invoice")
-export class InvoiceController {
-  constructor(private readonly service: InvoiceService) {}
+@ApiTags("expense")
+@Controller("/org/:orgSlug/expense")
+export class ExpenseController {
+  constructor(private readonly service: ExpenseService) {}
 
   @Get("getAll")
-  @ApiOkResponse({ type: [InvoiceEntity] })
+  @ApiOkResponse({ type: [ExpenseEntity] })
   async getAll(
     @Param("orgSlug") orgSlug: string,
     @Query() paginationDto?: PaginationDto,
-  ): Promise<Invoice[]> {
-    return this.service.getAllInvoices(orgSlug, paginationDto);
+  ): Promise<ExpenseEntity[]> {
+    const expenses = await this.service.getAllExpenses(orgSlug, paginationDto);
+    return expenses.map((e) => new ExpenseEntity(e));
   }
 }

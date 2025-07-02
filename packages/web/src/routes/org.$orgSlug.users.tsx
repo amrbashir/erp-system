@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ContactIcon, EllipsisVerticalIcon, Loader2Icon } from "lucide-react";
+import { EllipsisVerticalIcon, Loader2Icon, UsersIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -41,7 +41,7 @@ import { useOrg } from "@/providers/org-provider";
 
 export const Route = createFileRoute("/org/$orgSlug/users")({
   component: Users,
-  context: () => ({ title: i18n.t("pages.users"), icon: ContactIcon, roleRequirement: "Admin" }),
+  context: () => ({ title: i18n.t("pages.users"), icon: UsersIcon, roleRequirement: "Admin" }),
 });
 
 function Users() {

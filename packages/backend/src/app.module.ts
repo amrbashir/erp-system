@@ -6,6 +6,7 @@ import type { INestApplication } from "@nestjs/common";
 
 import { AuthModule } from "./auth/auth.module";
 import { CustomerModule } from "./customer/customer.module";
+import { ExpenseModule } from "./expense/expense.module";
 import { HealthModule } from "./health/health.module";
 import { InvoiceModule } from "./invoice/invoice.module";
 import { OrgModule } from "./org/org.module";
@@ -25,6 +26,7 @@ import { UserModule } from "./user/user.module";
     ProductModule,
     TransactionModule,
     InvoiceModule,
+    ExpenseModule,
     HealthModule,
   ],
 })

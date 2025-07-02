@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { BanknoteIcon, PackageOpenIcon } from "lucide-react";
+import { BanknoteIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   Table,

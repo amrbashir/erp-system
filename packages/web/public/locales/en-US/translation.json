@@ -16,7 +16,8 @@
     "customers": "Customers",
     "products": "Products",
     "transactions": "Transactions",
-    "invoices": "Invoices"
+    "invoices": "Invoices",
+    "expenses": "Expenses"
   },
 
   "login_to_account": "Login to your account",
@@ -30,6 +31,8 @@
   "username": "Username",
   "password": "Password",
   "orgSlug": "Organization Identifier",
+
+  "cashierName": "Cashier Name",
 
   "createdAt": "Created At",
   "updatedAt": "Updated At",

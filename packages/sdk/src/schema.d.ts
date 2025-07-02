@@ -228,6 +228,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/org/{orgSlug}/expense/getAll": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["ExpenseController$1_getAll"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -349,10 +365,21 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            username: string;
+            cashierName: string;
             customerName?: string;
             transactionId: string;
             items: components["schemas"]["InvoiceItemEntity"][];
+        };
+        ExpenseEntity: {
+            id: string;
+            description: string;
+            price: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            cashierName: string;
+            transactionId: string;
         };
     };
     responses: never;
@@ -683,6 +710,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["InvoiceEntity"][];
+                };
+            };
+        };
+    };
+    ExpenseController$1_getAll: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpenseEntity"][];
                 };
             };
         };

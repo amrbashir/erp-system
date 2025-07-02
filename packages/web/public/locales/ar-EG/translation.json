@@ -12,7 +12,8 @@
     "customers": "العملاء",
     "products": "المنتجات",
     "transactions": "المعاملات",
-    "invoices": "الفواتير"
+    "invoices": "الفواتير",
+    "expenses": "المصروفات"
   },
 
   "login_to_account": "تسجيل الدخول إلى حسابك",
@@ -26,6 +27,8 @@
   "username": "اسم المستخدم",
   "password": "كلمة المرور",
   "orgSlug": "معرف المؤسسة",
+
+  "cashierName": "اسم المحاسب",
 
   "createdAt": "تاريخ الإنشاء",
   "updatedAt": "تاريخ التحديث",
@@ -53,9 +56,6 @@
 
   "moneyAmount": "المبلغ",
   "customerName": "اسم العميل",
-  "type": "النوع",
-  "total": "المجموع",
-  "items": "العناصر",
 
   "theme": "المظهر",
   "changeTheme": "تغيير المظهر",

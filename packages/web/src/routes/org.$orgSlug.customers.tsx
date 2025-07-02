@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { UsersIcon } from "lucide-react";
+import { UserIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   Table,
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/org/$orgSlug/customers")({
   component: Customers,
   context: () => ({
     title: i18n.t("pages.customers"),
-    icon: UsersIcon,
+    icon: UserIcon,
   }),
 });
 

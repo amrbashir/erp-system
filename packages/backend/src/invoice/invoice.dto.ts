@@ -38,7 +38,7 @@ export class InvoiceEntity {
   updatedAt: Date;
 
   @ApiProperty()
-  username: string;
+  cashierName: string;
 
   @ApiPropertyOptional()
   customerName?: string;
@@ -54,7 +54,7 @@ export class InvoiceEntity {
     this.total = invoice.total;
     this.createdAt = invoice.createdAt;
     this.updatedAt = invoice.updatedAt;
-    this.username = invoice.cashier.username;
+    this.cashierName = invoice.cashier.username;
     this.customerName = invoice.customer?.name;
     this.transactionId = invoice.transactionId;
     this.items = invoice.items.map((item) => new InvoiceItemEntity(item));

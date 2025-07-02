@@ -104,9 +104,21 @@ export const InvoiceEntity = z
     total: z.number(),
     createdAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true }),
-    username: z.string(),
+    cashierName: z.string(),
     customerName: z.string().optional(),
     transactionId: z.string(),
     items: z.array(InvoiceItemEntity),
+  })
+  .passthrough();
+
+export const ExpenseEntity = z
+  .object({
+    id: z.string(),
+    description: z.string(),
+    price: z.number(),
+    createdAt: z.string().datetime({ offset: true }),
+    updatedAt: z.string().datetime({ offset: true }),
+    cashierName: z.string(),
+    transactionId: z.string(),
   })
   .passthrough();
