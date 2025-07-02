@@ -119,16 +119,9 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-body {
-  @apply bg-background;
-}
-
-.group\/sidebar-wrapper {
-  @apply bg-sidebar;
-}
-
-#sidebar-view {
-  @apply bg-background;
+:root {
+  --header-height: calc(var(--spacing) * 12);
+  --fullheight-minus-header: calc(100vh - var(--header-height));
 }
 
 /**

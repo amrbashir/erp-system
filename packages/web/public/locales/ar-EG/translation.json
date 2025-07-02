@@ -112,5 +112,8 @@
   "loadingOrganization": "جارٍ تحميل المؤسسة...",
 
   "noDataFound": "لا توجد بيانات",
-  "noDataFoundDescription": "لا توجد بيانات لعرضها في هذا القسم"
+  "noDataFoundDescription": "لا توجد بيانات لعرضها في هذا القسم",
+
+  "oops": "عذرًا!",
+  "notFound404": "عذراً ، الصفحة التي تبحث عنها غير موجودة"
 }

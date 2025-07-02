@@ -119,5 +119,8 @@
   "loadingOrganization": "Loading organization...",
 
   "noDataFound": "No Data Found",
-  "noDataFoundDescription": "There is no data to display in this section"
+  "noDataFoundDescription": "There is no data to display in this section",
+
+  "oops": "Oops!",
+  "notFound404": "Sorry, the page you are looking for does not exist"
 }

@@ -1,8 +1,9 @@
 import { DirectionProvider } from "@radix-ui/react-direction";
-import { createRootRouteWithContext, HeadContent, Outlet } from "@tanstack/react-router";
+import { createRootRouteWithContext, HeadContent, Link, Outlet } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
+import { Button } from "@/shadcn/components/ui/button";
 import { Toaster } from "@/shadcn/components/ui/sonner";
 
 import type { UserEntity } from "@erp-system/sdk/zod";
@@ -20,6 +21,8 @@ interface RouterContext {
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: Root,
+  errorComponent: ErrorComponent,
+  notFoundComponent: NotFound404,
   head: (c) => {
     const currentMatch = c.matches[c.matches.length - 1];
     const routeTitle = currentMatch.context.title ? currentMatch.context.title : "";
@@ -54,5 +57,45 @@ function Root() {
         <Toaster position={i18n.dir() === "rtl" ? "bottom-left" : "bottom-right"} />
       </ThemeProvider>
     </DirectionProvider>
+  );
+}
+
+function NotFound404() {
+  const { t } = useTranslation();
+
+  return (
+    <div className="h-(--fullheight-minus-header) w-full flex flex-col items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-9xl!">{t("oops")}</h1>
+        <br />
+        <br />
+        <p>404 - {t("notFound404")}</p>
+        <br />
+        <br />
+        <Button>
+          <Link to="/">{t("goBackHome")}</Link>
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function ErrorComponent({ error }: { error: Error }) {
+  const { t } = useTranslation();
+
+  return (
+    <div className="h-(--fullheight-minus-header) w-full flex flex-col items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-9xl!">{t("oops")}</h1>
+        <br />
+        <br />
+        <p>{error.message}</p>
+        <br />
+        <br />
+        <Button>
+          <Link to="/">{t("goBackHome")}</Link>
+        </Button>
+      </div>
+    </div>
   );
 }
