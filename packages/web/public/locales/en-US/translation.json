@@ -15,7 +15,8 @@
     "users": "Users",
     "customers": "Customers",
     "products": "Products",
-    "transactions": "Transactions"
+    "transactions": "Transactions",
+    "invoices": "Invoices"
   },
 
   "login_to_account": "Login to your account",
@@ -56,6 +57,9 @@
 
   "moneyAmount": "Amount",
   "customerName": "Customer Name",
+  "type": "Type",
+  "total": "Total",
+  "items": "Items",
 
   "theme": "Theme",
   "changeTheme": "Change Theme",

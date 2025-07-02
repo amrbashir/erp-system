@@ -1,12 +1,5 @@
-enum InvoiceType {
-  INVOICE
-  REFUND
-}
-
 model Invoice {
   id String @id @default(uuid())
-
-  type InvoiceType
 
   items InvoiceItem[]
   total Int

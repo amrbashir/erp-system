@@ -39,7 +39,7 @@ function Products() {
   return (
     <div className="flex flex-col gap-4 p-4">
       {products?.length && products.length > 0 ? (
-        <div className="rounded-lg overflow-hidden border">
+        <div className="rounded-lg border">
           <Table>
             <TableHeader>
               <TableRow className="*:font-bold">

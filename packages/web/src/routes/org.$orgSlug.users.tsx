@@ -77,7 +77,7 @@ function Users() {
         <AddUserDialog />
       </div>
 
-      <div className="rounded-lg overflow-hidden border">
+      <div className="rounded-lg border">
         <Table>
           <TableHeader>
             <TableRow className="*:font-bold">

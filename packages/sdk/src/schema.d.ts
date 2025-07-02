@@ -212,6 +212,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/org/{orgSlug}/invoice/getAll": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["InvoiceController$1_getAll"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -319,6 +335,24 @@ export interface components {
             createdAt: string;
             username: string;
             customerName?: string;
+        };
+        InvoiceItemEntity: {
+            description: string;
+            purchase_price: number;
+            selling_price: number;
+            quantity: number;
+        };
+        InvoiceEntity: {
+            id: string;
+            total: number;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            username: string;
+            customerName?: string;
+            transactionId: string;
+            items: components["schemas"]["InvoiceItemEntity"][];
         };
     };
     responses: never;
@@ -626,6 +660,29 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TransactionEntity"][];
+                };
+            };
+        };
+    };
+    InvoiceController$1_getAll: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceEntity"][];
                 };
             };
         };

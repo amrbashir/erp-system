@@ -2,8 +2,8 @@
 
 import "i18next";
 
-import arTranslation from "../public/locales/ar/translation.json";
-import enTranslation from "../public/locales/en/translation.json";
+import arTranslation from "../public/locales/ar-Eg/translation.json";
+import enTranslation from "../public/locales/en-US/translation.json";
 
 declare module "i18next" {
   interface CustomTypeOptions {

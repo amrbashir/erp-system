@@ -7,6 +7,7 @@ import type { INestApplication } from "@nestjs/common";
 import { AuthModule } from "./auth/auth.module";
 import { CustomerModule } from "./customer/customer.module";
 import { HealthModule } from "./health/health.module";
+import { InvoiceModule } from "./invoice/invoice.module";
 import { OrgModule } from "./org/org.module";
 import { PrismaClientExceptionFilter } from "./prisma/prisma-client-exception.filter";
 import { PrismaModule } from "./prisma/prisma.module";
@@ -23,6 +24,7 @@ import { UserModule } from "./user/user.module";
     CustomerModule,
     ProductModule,
     TransactionModule,
+    InvoiceModule,
     HealthModule,
   ],
 })

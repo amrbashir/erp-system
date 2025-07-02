@@ -37,6 +37,7 @@ export function AppSideBar() {
   const topRoutes: (keyof FileRoutesById)[] = ["/org/$orgSlug/"];
 
   const userRoutes: (keyof FileRoutesById)[] = [
+    "/org/$orgSlug/invoices",
     "/org/$orgSlug/products",
     "/org/$orgSlug/customers",
   ];

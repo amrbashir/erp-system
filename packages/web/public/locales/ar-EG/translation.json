@@ -11,7 +11,8 @@
     "users": "المستخدمون",
     "customers": "العملاء",
     "products": "المنتجات",
-    "transactions": "المعاملات"
+    "transactions": "المعاملات",
+    "invoices": "الفواتير"
   },
 
   "login_to_account": "تسجيل الدخول إلى حسابك",
@@ -52,6 +53,9 @@
 
   "moneyAmount": "المبلغ",
   "customerName": "اسم العميل",
+  "type": "النوع",
+  "total": "المجموع",
+  "items": "العناصر",
 
   "theme": "المظهر",
   "changeTheme": "تغيير المظهر",

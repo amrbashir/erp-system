@@ -88,3 +88,25 @@ export const TransactionEntity = z
     customerName: z.string().optional(),
   })
   .passthrough();
+
+export const InvoiceItemEntity = z
+  .object({
+    description: z.string(),
+    purchase_price: z.number(),
+    selling_price: z.number(),
+    quantity: z.number(),
+  })
+  .passthrough();
+
+export const InvoiceEntity = z
+  .object({
+    id: z.string(),
+    total: z.number(),
+    createdAt: z.string().datetime({ offset: true }),
+    updatedAt: z.string().datetime({ offset: true }),
+    username: z.string(),
+    customerName: z.string().optional(),
+    transactionId: z.string(),
+    items: z.array(InvoiceItemEntity),
+  })
+  .passthrough();
