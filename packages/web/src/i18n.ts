@@ -6,7 +6,18 @@ import LocalStorageBackend from "i18next-localstorage-backend";
 import { initReactI18next } from "react-i18next";
 
 const isDevelopment = import.meta.env.MODE === "development";
+
+const httpBackendOptions = {
+  loadPath: "/locales/{{lng}}/{{ns}}.json",
+};
+const localStorageBackendOptions = {
+  defaultVersion: "1.0.0",
+};
+
 const backends = isDevelopment ? [HttpBackend] : [LocalStorageBackend, HttpBackend];
+const backendOptions = isDevelopment
+  ? [httpBackendOptions]
+  : [localStorageBackendOptions, httpBackendOptions];
 
 await i18n
   .use(ChainedBackend)
@@ -14,16 +25,10 @@ await i18n
   .use(initReactI18next)
   .init({
     fallbackLng: ["en-US", "ar-EG"],
+    supportedLngs: ["en-US", "ar-EG"],
     backend: {
       backends,
-      backendOptions: [
-        {
-          expirationTime: 7 * 24 * 60 * 60 * 1000, // 7 days
-        },
-        {
-          loadPath: "/locales/{{lng}}/{{ns}}.json",
-        },
-      ],
+      backendOptions,
     },
   });
 

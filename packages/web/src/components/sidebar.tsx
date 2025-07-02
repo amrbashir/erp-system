@@ -57,13 +57,11 @@ export function AppSideBar() {
 
       <SidebarContent>
         <RoutesGroup routes={topRoutes} />
-        <SidebarSeparator className="w-[calc(100%_-_var(--spacing)_*_4)]!" />
         <RoutesGroup routes={userRoutes} />
         <RoutesGroup label={t("adminSection")} routes={adminRoutes} />
       </SidebarContent>
 
       <SidebarFooter>
-        <SidebarSeparator className="w-[calc(100%_-_var(--spacing)_*_2)]!" />
         <UserDropdown />
       </SidebarFooter>
     </Sidebar>
