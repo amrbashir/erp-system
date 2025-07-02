@@ -22,7 +22,6 @@ import type z from "zod";
 
 import type { AuthUser } from "@/user";
 import { apiClient } from "@/api-client";
-import { Footer } from "@/components/footer";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
 import { Welcome } from "@/components/welcome";
 import { useAuth } from "@/providers/auth";
@@ -63,8 +62,6 @@ function Index() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </>
   );
 }
