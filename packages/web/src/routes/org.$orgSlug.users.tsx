@@ -15,6 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/shadcn/components/ui/alert-dialog";
+import { Button } from "@/shadcn/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,19 +58,21 @@ function Users() {
   });
 
   const {
-    error: deleteError,
     isPending: isUserDeletePending,
     variables: deleteVariables,
     mutateAsync: deleteUser,
   } = useMutation({
-    mutationFn: async (body: z.infer<typeof DeleteUserDto>) =>
-      apiClient.delete("/org/{orgSlug}/user/delete", { body, params: { path: { orgSlug } } }),
+    mutationFn: async (body: z.infer<typeof DeleteUserDto>) => {
+      const { data, error } = await apiClient.delete("/org/{orgSlug}/user/delete", {
+        body,
+        params: { path: { orgSlug } },
+      });
+      if (error) throw error;
+      return data;
+    },
     onSuccess: () => refetchUsers(),
+    onError: (error) => toast.error(t(`errors.${error.message}` as any)),
   });
-
-  useEffect(() => {
-    if (deleteError) toast.error(t(`errors.${deleteError.message}` as any));
-  }, [deleteError, t]);
 
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -104,18 +107,20 @@ function Users() {
                 <TableCell>
                   {user.deletedAt ? new Date(user.deletedAt).toLocaleString(i18n.language) : ""}
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-end">
                   <AlertDialog>
                     <DropdownMenu>
                       <DropdownMenuTrigger
                         className="text-muted-foreground hover:text-primary"
                         asChild
                       >
-                        {isUserDeletePending && deleteVariables.username === user.username ? (
-                          <Loader2Icon className="animate-spin" />
-                        ) : (
-                          <EllipsisVerticalIcon />
-                        )}
+                        <Button variant="ghost" size="sm">
+                          {isUserDeletePending && deleteVariables.username === user.username ? (
+                            <Loader2Icon className="animate-spin" />
+                          ) : (
+                            <EllipsisVerticalIcon />
+                          )}
+                        </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <AlertDialogTrigger asChild>

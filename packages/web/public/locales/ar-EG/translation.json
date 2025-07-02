@@ -68,6 +68,7 @@
   "errors": {
     "Username or password is incorrect": "اسم المستخدم أو كلمة المرور غير صحيحة",
     "Cannot delete the last admin user in the organization": "لا يمكن حذف آخر مستخدم مدير في المؤسسة",
+    "You cannot delete your own account": "لا يمكنك حذف حسابك الخاص",
     "User with this username already exists in the organization": "يوجد مستخدم بهذا الاسم في المؤسسة بالفعل",
     "organizationNotFound": "المؤسسة بهذا المعرف غير موجودة",
     "username must contain only letters and numbers": "يجب أن يحتوي اسم المستخدم على أحرف وأرقام فقط",

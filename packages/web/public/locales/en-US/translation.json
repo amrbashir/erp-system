@@ -75,6 +75,7 @@
   "errors": {
     "Username or password is incorrect": "Username or password is incorrect",
     "Cannot delete the last admin user in the organization": "Cannot delete the last admin user in the organization",
+    "You cannot delete your own account": "You cannot delete your own account",
     "User with this username already exists in the organization": "User with this username already exists in the organization",
     "organizationNotFound": "Organization with this identifier does not exist",
     "username must contain only letters and numbers": "Username must contain only letters and numbers",
