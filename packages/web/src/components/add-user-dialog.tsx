@@ -45,7 +45,7 @@ export function AddUserDialog() {
       username: "",
       password: "",
       role: "USER" as UserRole,
-    } as z.infer<typeof CreateUserDto>,
+    } as z.infer<ReturnType<(typeof CreateUserDto)["strict"]>>,
     validators: {
       onSubmit: CreateUserDto,
     },

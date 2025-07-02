@@ -37,7 +37,7 @@ export function AddCustomerDialog() {
       name: "",
       email: undefined,
       phone: undefined,
-    } as z.infer<typeof CreateCustomerDto>,
+    } as z.infer<ReturnType<(typeof CreateCustomerDto)["strict"]>>,
     validators: {
       onSubmit: CreateCustomerDto,
     },
