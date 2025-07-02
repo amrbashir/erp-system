@@ -1,4 +1,4 @@
-import { createClient, createClient2 } from "@erp-system/sdk";
+import { createClient, createThrowingClient } from "@erp-system/sdk";
 
 import { getStoredUser, setStoredUser } from "@/user";
 
@@ -15,7 +15,7 @@ const clientOptions = {
 
 const fallbackClient = createClient(clientOptions);
 
-const client = createClient2({
+const client = createThrowingClient({
   ...clientOptions,
   fetch: async (input) => {
     const user = getStoredUser();
@@ -41,7 +41,7 @@ const client = createClient2({
       // If the refresh failed, clear the stored user and redirect to the login page
       if (response.ok === false) {
         setStoredUser(null);
-        window.location.href = `/login?orgSlug=${orgSlug}&redirect=${encodeURIComponent(window.location.href)}`;
+        window.location.href = `/?loginOrgSlug=${orgSlug}&redirect=${encodeURIComponent(window.location.href)}`;
         throw error;
       }
 

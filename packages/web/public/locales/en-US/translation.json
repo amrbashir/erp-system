@@ -20,8 +20,8 @@
     "expenses": "Expenses"
   },
 
-  "login_to_account": "Login to your account",
-  "login_to_account_description": "Please enter your credentials to access ",
+  "loginToAccount": "Login to your account",
+  "loginToAccountDescription": "Please enter your credentials to access ",
 
   "login": "Login",
   "logout": "Logout",
@@ -110,6 +110,7 @@
 
   "goToYourOrganization": "Go to Your Organization",
   "goToYourOrganizationDescription": "Enter your organization's unique identifier to access it",
+  "goToYourOrganizationDescription2": "You are already logged in to {{orgSlug}}",
 
   "createNewOrganization": "Create New Organization",
   "createNewOrganizationDescription": "Setup a new organization. Please fill in the details below",

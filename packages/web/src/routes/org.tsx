@@ -15,15 +15,14 @@ export const Route = createFileRoute("/org")({
   component: Org,
   validateSearch: ({ search }) => search as OrgSearch,
   beforeLoad: async ({ context, location, search, params }) => {
-    // redirect to login if not authenticated and not on the login page
+    // redirect to home if not authenticated
     if (
       !context.auth.isAuthenticated &&
-      location.pathname !== `/login` &&
       "orgSlug" in params &&
       typeof params.orgSlug === "string"
     ) {
       throw redirect({
-        to: "/login",
+        to: "/",
         search: {
           // if we have a redirect in the search params, use it,
           // otherwise use the current location

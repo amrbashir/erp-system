@@ -1,4 +1,4 @@
-import { useLocation, useRouter } from "@tanstack/react-router";
+import { useLocation, useNavigate } from "@tanstack/react-router";
 import { EllipsisVerticalIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback } from "@/shadcn/components/ui/avatar";
@@ -24,7 +24,7 @@ import { useAuth } from "@/providers/auth";
 
 export function UserDropdown() {
   const { t } = useTranslation();
-  const router = useRouter();
+  const navigate = useNavigate();
   const location = useLocation();
   const { slug: orgSlug } = useOrg();
 
@@ -34,8 +34,8 @@ export function UserDropdown() {
 
   async function logout() {
     authLogout(orgSlug);
-    router.navigate({
-      to: "/login",
+    navigate({
+      to: "/",
       search: {
         orgSlug,
         redirect: "redirect" in location.search ? location.search.redirect : location.href,

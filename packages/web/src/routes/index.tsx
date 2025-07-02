@@ -1,9 +1,11 @@
-import { CreateOrgDto } from "@erp-system/sdk/zod";
+import { CreateOrgDto, LoginUserDto } from "@erp-system/sdk/zod";
 import { slugify } from "@erp-system/utils";
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Loader2Icon } from "lucide-react";
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { Button } from "@/shadcn/components/ui/button";
 import {
   Card,
@@ -18,15 +20,26 @@ import { Separator } from "@/shadcn/components/ui/separator";
 
 import type z from "zod";
 
+import type { AuthUser } from "@/user";
 import { apiClient } from "@/api-client";
 import { Footer } from "@/components/footer";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
 import { Welcome } from "@/components/welcome";
+import { useAuth } from "@/providers/auth";
 
-export const Route = createFileRoute("/")({ component: Index });
+interface IndexSearch {
+  redirect?: string;
+  loginOrgSlug?: string;
+}
+
+export const Route = createFileRoute("/")({
+  component: Index,
+  validateSearch: ({ search }) => search as IndexSearch,
+});
 
 function Index() {
   const { t } = useTranslation();
+  const { user, isAuthenticated } = useAuth();
 
   return (
     <>
@@ -38,7 +51,7 @@ function Index() {
           <Separator orientation="vertical" className="hidden md:block md:h-75!" />
 
           <div className="flex flex-col items-center gap-10 w-full *:w-full md:w-auto *:md:w-auto md:min-w-sm *:md:min-w-sm">
-            <GoToganizationCard />
+            {isAuthenticated && user ? <LoginExistingOrg user={user} /> : <LoginForm />}
 
             <div className="flex items-center">
               <Separator className="flex-2" />
@@ -56,41 +69,79 @@ function Index() {
   );
 }
 
-function GoToganizationCard(props: React.ComponentProps<"div">) {
+export function LoginExistingOrg({ user }: { user: AuthUser }) {
+  const navigate = useNavigate();
   const { t } = useTranslation();
-  const router = useRouter();
+  const { logout: authLogout } = useAuth();
+
+  const logout = useCallback(() => {
+    authLogout(user.orgSlug);
+    navigate({
+      to: "/",
+      search: { loginOrgSlug: user.orgSlug },
+    });
+  }, [authLogout, navigate]);
+
+  const goToOrg = useCallback(() => {
+    navigate({ to: "/org/" + user.orgSlug + "/" });
+  }, [navigate]);
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-col items-center gap-10">
+        <CardTitle>{t("goToYourOrganization")}</CardTitle>
+        <CardDescription>
+          {t("goToYourOrganizationDescription2", {
+            orgSlug: user.orgSlug ?? t("yourorganization"),
+          })}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Button className="w-full" onClick={() => goToOrg()}>
+          {t("go")}
+        </Button>
+
+        <Button variant="outline" className="w-full mt-4" onClick={() => logout()}>
+          {t("logout")}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+function LoginForm() {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { login } = useAuth();
+
+  const { loginOrgSlug: orgSlug, redirect } = Route.useSearch();
 
   const form = useForm({
     defaultValues: {
-      orgSlug: "",
-    },
+      orgSlug: orgSlug || "",
+      username: "",
+      password: "",
+    } as z.infer<ReturnType<(typeof LoginUserDto)["strict"]>> & { orgSlug: string },
     onSubmit: async ({ value, formApi }) => {
-      const { data: org, error } = await apiClient.get("/org/{orgSlug}", {
-        params: { path: { orgSlug: value.orgSlug } },
-      });
+      const { username, password, orgSlug } = value;
 
-      if (error) {
+      try {
+        await login(username, password, orgSlug);
+        navigate({ to: redirect || "/org/" + orgSlug + "/" });
+      } catch (error: any) {
         formApi.setErrorMap({ onSubmit: error });
-        return;
       }
-
-      if (!org) {
-        formApi.setErrorMap({ onSubmit: "organizationNotFound" as any });
-        return;
-      }
-
-      router.navigate({
-        to: "/org/$orgSlug",
-        params: { orgSlug: org.slug },
-      });
     },
   });
 
   return (
-    <Card {...props}>
-      <CardHeader>
-        <CardTitle>{t("goToYourOrganization")}</CardTitle>
-        <CardDescription>{t("goToYourOrganizationDescription")}</CardDescription>
+    <Card>
+      <CardHeader className="flex flex-col items-center gap-10">
+        <CardTitle>{t("loginToAccount")}</CardTitle>
+        <CardDescription>
+          {t("loginToAccountDescription")}
+          <span className="text-primary font-bold">{orgSlug ?? t("yourorganization")}</span>
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form
@@ -101,23 +152,26 @@ function GoToganizationCard(props: React.ComponentProps<"div">) {
             form.handleSubmit();
           }}
         >
-          <div className="flex flex-col gap-2">
-            <form.Field
-              name="orgSlug"
-              children={(field) => (
-                <>
-                  <Label htmlFor={field.name}>{t(field.name)}</Label>
-                  <Input
-                    id={field.name}
-                    required
-                    name={field.name}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                  />
-                </>
-              )}
-            ></form.Field>
-          </div>
+          {Object.keys(form.options.defaultValues ?? []).map((fieldName) => (
+            <div key={fieldName} className="flex flex-col gap-2">
+              <form.Field
+                name={fieldName as any}
+                children={(field) => (
+                  <>
+                    <Label htmlFor={field.name}>{t(field.name)}</Label>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      type={field.name === "password" ? "password" : "text"}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      required
+                    />
+                  </>
+                )}
+              />
+            </div>
+          ))}
 
           <FormErrors formState={form.state} />
 
@@ -126,7 +180,7 @@ function GoToganizationCard(props: React.ComponentProps<"div">) {
             children={([canSubmit, isSubmitting]) => (
               <Button type="submit" className="w-full" disabled={!canSubmit}>
                 {isSubmitting && <Loader2Icon className="animate-spin" />}
-                {t("go")}
+                {t("login")}
               </Button>
             )}
           />
@@ -138,7 +192,8 @@ function GoToganizationCard(props: React.ComponentProps<"div">) {
 
 function CreateNewOrganizationCard(props: React.ComponentProps<"div">) {
   const { t } = useTranslation();
-  const router = useRouter();
+  const navigate = useNavigate();
+  const { logout, isAuthenticated, user } = useAuth();
 
   const form = useForm({
     defaultValues: {
@@ -166,12 +221,14 @@ function CreateNewOrganizationCard(props: React.ComponentProps<"div">) {
         return;
       }
 
-      if (value.slug) {
-        router.navigate({
-          to: "/org/$orgSlug",
-          params: { orgSlug: value.slug },
-        });
-      }
+      toast.success(t("organizationCreatedSuccessfully"));
+
+      // If the user is authenticated, log them out before redirecting
+      // to the new organization.
+      if (isAuthenticated && user) logout(user.orgSlug);
+
+      // Navigate to the new organization
+      navigate({ to: "/", search: { loginOrgSlug: value.slug } });
     },
   });
 

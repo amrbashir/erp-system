@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as OrgRouteImport } from './routes/org'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OrgOrgSlugIndexRouteImport } from './routes/org.$orgSlug/index'
 import { Route as OrgOrgSlugUsersRouteImport } from './routes/org.$orgSlug/users'
@@ -23,11 +22,6 @@ import { Route as OrgOrgSlugCustomersRouteImport } from './routes/org.$orgSlug/c
 const OrgRoute = OrgRouteImport.update({
   id: '/org',
   path: '/org',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -73,7 +67,6 @@ const OrgOrgSlugCustomersRoute = OrgOrgSlugCustomersRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/login': typeof LoginRoute
   '/org': typeof OrgRouteWithChildren
   '/org/$orgSlug/customers': typeof OrgOrgSlugCustomersRoute
   '/org/$orgSlug/expenses': typeof OrgOrgSlugExpensesRoute
@@ -85,7 +78,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/login': typeof LoginRoute
   '/org': typeof OrgRouteWithChildren
   '/org/$orgSlug/customers': typeof OrgOrgSlugCustomersRoute
   '/org/$orgSlug/expenses': typeof OrgOrgSlugExpensesRoute
@@ -98,7 +90,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/login': typeof LoginRoute
   '/org': typeof OrgRouteWithChildren
   '/org/$orgSlug/customers': typeof OrgOrgSlugCustomersRoute
   '/org/$orgSlug/expenses': typeof OrgOrgSlugExpensesRoute
@@ -112,7 +103,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/login'
     | '/org'
     | '/org/$orgSlug/customers'
     | '/org/$orgSlug/expenses'
@@ -124,7 +114,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/login'
     | '/org'
     | '/org/$orgSlug/customers'
     | '/org/$orgSlug/expenses'
@@ -136,7 +125,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/login'
     | '/org'
     | '/org/$orgSlug/customers'
     | '/org/$orgSlug/expenses'
@@ -149,7 +137,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LoginRoute: typeof LoginRoute
   OrgRoute: typeof OrgRouteWithChildren
 }
 
@@ -160,13 +147,6 @@ declare module '@tanstack/react-router' {
       path: '/org'
       fullPath: '/org'
       preLoaderRoute: typeof OrgRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -252,7 +232,6 @@ const OrgRouteWithChildren = OrgRoute._addFileChildren(OrgRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LoginRoute: LoginRoute,
   OrgRoute: OrgRouteWithChildren,
 }
 export const routeTree = rootRouteImport

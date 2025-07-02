@@ -16,8 +16,8 @@
     "expenses": "المصروفات"
   },
 
-  "login_to_account": "تسجيل الدخول إلى حسابك",
-  "login_to_account_description": "يرجى إدخال بيانات حسابك للوصول إلى ",
+  "loginToAccount": "تسجيل الدخول إلى حسابك",
+  "loginToAccountDescription": "يرجى إدخال بيانات حسابك للوصول إلى ",
 
   "login": "تسجيل الدخول",
   "logout": "تسجيل الخروج",
@@ -103,6 +103,9 @@
 
   "goToYourOrganization": "اذهب إلى مؤسستك",
   "goToYourOrganizationDescription": "ادخل اسم المؤسسة الخاصة بك للمتابعة",
+  "goToYourOrganizationDescription2": "انت بالفعل مسجل الدخول إلى {{orgSlug}}",
+
+  "organizationCreatedSuccessfully": "تم إنشاء المؤسسة بنجاح",
 
   "createNewOrganization": "أنشىء مؤسسة جديدة",
   "createNewOrganizationDescription": "قم بإعداد مؤسسة جديدة. يرجى ملء التفاصيل أدناه",

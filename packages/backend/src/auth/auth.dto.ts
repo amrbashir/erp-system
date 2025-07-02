@@ -24,6 +24,9 @@ export class LoginResponseDto {
 
   @ApiProperty()
   accessToken: string;
+
+  @ApiProperty()
+  orgSlug: string;
 }
 
 export class RefreshTokenResponseDto {

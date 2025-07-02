@@ -1,9 +1,7 @@
 import type { UserEntity } from "@erp-system/sdk/zod";
 import type z from "zod";
 
-const authUserUsernameKey = "auth.user.username";
-const authUserAccessTokenKey = "auth.user.accessToken";
-const authUserRoleKey = "auth.user.role";
+export const USER_KEY = "user";
 
 export type UserRole = z.infer<typeof UserEntity>["role"];
 
@@ -11,28 +9,19 @@ export interface AuthUser {
   username: string;
   accessToken: string;
   role: UserRole;
+  orgSlug: string;
 }
 
 export function getStoredUser(): AuthUser | null {
-  const username = localStorage.getItem(authUserUsernameKey);
-  const accessToken = localStorage.getItem(authUserAccessTokenKey);
-  const role = localStorage.getItem(authUserRoleKey);
-  if (!username || !accessToken || !role) return null;
-  return { username, accessToken, role: role as UserRole };
+  const user = localStorage.getItem(USER_KEY);
+  if (!user) return null;
+  return JSON.parse(user) as AuthUser;
 }
 
 export function setStoredUser(user: AuthUser | null) {
   if (user) {
-    localStorage.setItem(authUserUsernameKey, user.username);
-    localStorage.setItem(authUserAccessTokenKey, user.accessToken);
-    localStorage.setItem(authUserRoleKey, user.role);
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
   } else {
-    localStorage.removeItem(authUserUsernameKey);
-    localStorage.removeItem(authUserAccessTokenKey);
-    localStorage.removeItem(authUserRoleKey);
+    localStorage.removeItem(USER_KEY);
   }
-}
-
-export function isStorageKeyForUser(key: string | null): boolean {
-  return key === authUserUsernameKey || key === authUserAccessTokenKey;
 }

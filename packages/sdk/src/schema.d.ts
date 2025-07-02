@@ -305,6 +305,7 @@ export interface components {
             /** @enum {string} */
             role: "USER" | "ADMIN";
             accessToken: string;
+            orgSlug: string;
         };
         RefreshTokenResponseDto: {
             accessToken: string;

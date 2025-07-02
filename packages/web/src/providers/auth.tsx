@@ -7,13 +7,13 @@ import type { ReactNode } from "react";
 
 import type { AuthUser } from "@/user";
 import { apiClient } from "@/api-client";
-import { getStoredUser, isStorageKeyForUser, setStoredUser } from "@/user";
+import { getStoredUser, setStoredUser, USER_KEY } from "@/user";
 
 export interface AuthProviderState {
+  user: AuthUser | null;
   isAuthenticated: boolean;
   login: (username: string, password: string, orgSlug: string) => Promise<void>;
   logout: (orgSlug: string) => Promise<void>;
-  user: AuthUser | null;
 }
 
 const AuthContext = createContext<AuthProviderState | null>(null);
@@ -24,24 +24,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Handle storage changes to update the user state
   const storageChange = useCallback(
-    (e: StorageEvent) => {
-      if (isStorageKeyForUser(e.key)) {
-        // If the new value is set, update the user state
-        if (e.newValue) {
-          const storedUser = getStoredUser();
-          setUser(storedUser);
-        } else {
-          // If the new value is removed, clear the user state
-          setUser(null);
-        }
-      }
-    },
+    (e: StorageEvent) => (e.key === USER_KEY ? setUser(e.newValue ? getStoredUser() : null) : {}),
     [setUser],
   );
 
   useEffect(() => {
-    window.addEventListener("storage", (e) => storageChange(e));
-    return () => window.removeEventListener("storage", (e) => storageChange(e));
+    window.addEventListener("storage", storageChange);
+    return () => window.removeEventListener("storage", storageChange);
   }, [storageChange]);
 
   // login
@@ -53,18 +42,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }),
   });
 
-  const login = useCallback(async (username: string, password: string, orgSlug: string) => {
-    const { data: user, error } = await loginMutation.mutateAsync({
-      username,
-      password,
-      orgSlug,
-    });
+  const login = useCallback(
+    async (username: string, password: string, orgSlug: string) => {
+      const { data: user, error } = await loginMutation.mutateAsync({
+        username,
+        password,
+        orgSlug,
+      });
 
-    if (error) throw error;
+      if (error) throw error;
 
-    setStoredUser(user);
-    setUser(user);
-  }, []);
+      setStoredUser(user);
+      setUser(user);
+    },
+    [setUser],
+  );
 
   // logout
   const logoutMutation = useMutation({
@@ -83,10 +75,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setStoredUser(null);
       setUser(null);
     },
-    [user],
+    [setUser],
   );
-
-  useEffect(() => setUser(getStoredUser()), []);
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>

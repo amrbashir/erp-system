@@ -41,7 +41,7 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    return { username: user.username, role: user.role, accessToken: tokens.accessToken };
+    return { username: user.username, role: user.role, accessToken: tokens.accessToken, orgSlug };
   }
 
   @HttpCode(HttpStatus.OK)
