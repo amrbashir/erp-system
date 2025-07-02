@@ -1,5 +1,5 @@
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, Link, redirect, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Loader2Icon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/login")({
 });
 
 function Login() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const { login } = useAuth();
 
@@ -52,7 +52,7 @@ function Login() {
 
       try {
         await login(username, password, orgSlug);
-        router.history.push(redirect || "/org/" + orgSlug + "/");
+        navigate({ to: redirect || "/org/" + orgSlug + "/" });
       } catch (error: any) {
         formApi.setErrorMap({ onSubmit: error });
       }

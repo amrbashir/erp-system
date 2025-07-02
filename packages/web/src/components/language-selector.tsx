@@ -47,7 +47,9 @@ export function LanguageSelector({ asSubmenu = false }: { asSubmenu?: boolean })
           <Button title={t("changeLanguage")} variant="outline">
             <>
               <ActiveIcon />
-              <span className="hidden md:inline">{t(`languages.${i18n.language}`)}</span>
+              <span className="hidden md:inline">
+                {t(`languages.${i18n.language as LanguageFlagKey}`)}
+              </span>
             </>
           </Button>
         )}
