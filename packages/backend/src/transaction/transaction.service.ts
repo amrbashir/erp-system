@@ -13,24 +13,6 @@ export type TransactionWithRelations = Transaction & {
 export class TransactionService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createTransaction(amount: number, orgSlug: string, userId: string): Promise<Transaction> {
-    try {
-      return await this.prisma.transaction.create({
-        data: {
-          amount,
-          cashier: { connect: { id: userId } },
-          organization: { connect: { slug: orgSlug } },
-        },
-      });
-    } catch (error: any) {
-      if (error.code === "P2025") {
-        throw new NotFoundException("Organization with this slug does not exist");
-      }
-
-      throw error; // Re-throw other errors
-    }
-  }
-
   async getAllTransactions(
     orgSlug: string,
     paginationDto?: PaginationDto,

@@ -65,7 +65,6 @@ describe("Auth E2E", async () => {
   describe("Refresh Token", () => {
     it("should refresh access token with valid refresh token", async () => {
       const response = await fetch(appUrl + "/org/" + organizationSlug + "/auth/refresh", {
-        method: "GET",
         headers: { Cookie: cookies.join("; ") },
       });
 
@@ -81,16 +80,13 @@ describe("Auth E2E", async () => {
   describe("Logout", () => {
     it("should logout successfully with valid access token", async () => {
       const response = await fetch(appUrl + "/org/" + organizationSlug + "/auth/logout", {
-        method: "POST",
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       expect(response.status).toBe(200);
     });
 
     it("should fail to access logout due to missing tokens", async () => {
-      const response = await fetch(appUrl + "/org/" + organizationSlug + "/auth/logout", {
-        method: "POST",
-      });
+      const response = await fetch(appUrl + "/org/" + organizationSlug + "/auth/logout");
       expect(response.status).toBe(401);
     });
   });

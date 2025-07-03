@@ -28,6 +28,16 @@ describe("InvoiceService", () => {
 
   afterEach(dropDatabase);
 
+  function createTransaction(amount: number, orgSlug: string, cashierId: string) {
+    return prismaService.transaction.create({
+      data: {
+        amount,
+        cashier: { connect: { id: cashierId } },
+        organization: { connect: { slug: orgSlug } },
+      },
+    });
+  }
+
   describe("getAllInvoices", () => {
     it("should return invoices with customer, and cashier relations", async () => {
       // Create an organization
@@ -41,7 +51,7 @@ describe("InvoiceService", () => {
       const adminUser = await userService.findByUsernameInOrg("admin", org.slug);
 
       // Create a transaction first
-      const transaction = await transactionService.createTransaction(100, org.slug, adminUser!.id);
+      const transaction = await createTransaction(100, org.slug, adminUser!.id);
 
       // Create an invoice directly in the database
       const invoice = await prismaService.invoice.create({

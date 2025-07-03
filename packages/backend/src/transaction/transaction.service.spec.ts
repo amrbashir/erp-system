@@ -25,6 +25,16 @@ describe("TransactionService", () => {
 
   afterEach(dropDatabase);
 
+  function createTransaction(amount: number, orgSlug: string, cashierId: string) {
+    return prismaService.transaction.create({
+      data: {
+        amount,
+        cashier: { connect: { id: cashierId } },
+        organization: { connect: { slug: orgSlug } },
+      },
+    });
+  }
+
   describe("getAllTransactions", () => {
     it("should create a transaction ", async () => {
       const org = await orgService.create({
@@ -36,7 +46,7 @@ describe("TransactionService", () => {
 
       const adminUser = await userService.findByUsernameInOrg("admin", org.slug);
 
-      const transaction = await service.createTransaction(100, org.slug, adminUser!.id);
+      const transaction = await createTransaction(100, org.slug, adminUser!.id);
 
       expect(transaction).toBeDefined();
       expect(transaction.amount).toBe(100);
@@ -54,8 +64,8 @@ describe("TransactionService", () => {
 
       const adminUser = await userService.findByUsernameInOrg("admin", org.slug);
 
-      await service.createTransaction(100, org.slug, adminUser!.id);
-      await service.createTransaction(-200, org.slug, adminUser!.id);
+      await createTransaction(100, org.slug, adminUser!.id);
+      await createTransaction(-200, org.slug, adminUser!.id);
 
       const result = await service.getAllTransactions(org.slug);
 
