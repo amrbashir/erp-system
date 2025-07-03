@@ -9,7 +9,7 @@ import { Toaster } from "@/shadcn/components/ui/sonner";
 import type { UserEntity } from "@erp-system/sdk/zod";
 
 import type { AuthProviderState } from "@/providers/auth";
-import { NonOrgHeader } from "@/components/non-org-header";
+import { Header } from "@/components/header";
 import { ThemeProvider } from "@/providers/theme";
 
 interface RouterContext {
@@ -50,7 +50,7 @@ function Layout({ children }: { children: React.ReactNode }) {
     <DirectionProvider dir={i18n.dir()}>
       <ThemeProvider>
         <HeadContent />
-        <NonOrgHeader />
+        <Header />
 
         {children}
 
