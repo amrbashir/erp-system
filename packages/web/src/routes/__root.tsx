@@ -10,6 +10,7 @@ import type { UserEntity } from "@erp-system/sdk/zod";
 
 import type { AuthProviderState } from "@/providers/auth";
 import { Header } from "@/components/header";
+import i18n from "@/i18n";
 import { ThemeProvider } from "@/providers/theme";
 
 interface RouterContext {
@@ -39,6 +40,14 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         },
       ],
     };
+  },
+  beforeLoad: (c) => {
+    const currentMatch = c.matches[c.matches.length - 1];
+    const { roleRequirement, auth } = currentMatch.context;
+
+    if (roleRequirement && auth.user?.role !== roleRequirement) {
+      throw new Error(i18n.t("errors.notAuthorized"));
+    }
   },
 });
 

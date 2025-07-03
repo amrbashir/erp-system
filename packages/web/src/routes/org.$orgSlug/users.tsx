@@ -42,7 +42,7 @@ import { useAuth } from "@/providers/auth";
 
 export const Route = createFileRoute("/org/$orgSlug/users")({
   component: Users,
-  context: () => ({ title: i18n.t("pages.users"), icon: UsersIcon, roleRequirement: "Admin" }),
+  context: () => ({ title: i18n.t("pages.users"), icon: UsersIcon, roleRequirement: "ADMIN" }),
 });
 
 function Users() {

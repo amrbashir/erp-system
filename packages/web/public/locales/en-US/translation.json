@@ -81,7 +81,8 @@
     "username must contain only letters and numbers": "Username must contain only letters and numbers",
     "Organization with this slug already exists": "Organization with this identifier already exists",
     "Internal server error": "Internal server error",
-    "Organization with this slug does not exist": "$(organizationNotFound)"
+    "Organization with this slug does not exist": "$(organizationNotFound)",
+    "notAuthorized": "You are not authorized to access this page"
   },
 
   "validationErrors": {

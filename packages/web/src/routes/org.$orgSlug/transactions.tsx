@@ -21,6 +21,7 @@ export const Route = createFileRoute("/org/$orgSlug/transactions")({
   context: () => ({
     title: i18n.t("pages.transactions"),
     icon: BanknoteIcon,
+    roleRequirement: "ADMIN",
   }),
 });
 

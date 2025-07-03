@@ -74,7 +74,8 @@
     "username must contain only letters and numbers": "يجب أن يحتوي اسم المستخدم على أحرف وأرقام فقط",
     "Organization with this slug already exists": "المؤسسة بهذا المعرف موجودة بالفعل",
     "Internal server error": "خطأ داخلي في الخادم",
-    "Organization with this slug does not exist": "$(organizationNotFound)"
+    "Organization with this slug does not exist": "$(organizationNotFound)",
+    "notAuthorized": "غير مصرح لك بالوصول إلى هذه الصفحة"
   },
 
   "validationErrors": {
