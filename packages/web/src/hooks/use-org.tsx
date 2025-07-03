@@ -1,24 +1,16 @@
-import { getRouteApi } from "@tanstack/react-router";
+import { useRouterState } from "@tanstack/react-router";
 
-function useOrgSafe() {
-  try {
-    const routeApi = getRouteApi("/org");
-    const org = routeApi.useLoaderData();
-    return org ?? null;
-  } catch (error) {
-    // If the route is not found or the loader fails, return null
-    return null;
-  }
-}
+import type { OrganizationEntity } from "@erp-system/sdk/zod";
+import type z from "zod";
 
-type OrgOrNull = ReturnType<typeof useOrgSafe>;
+type Organization = z.infer<ReturnType<(typeof OrganizationEntity)["strict"]>>;
 
-// Function overloads
-export function useOrg(): NonNullable<OrgOrNull>;
-export function useOrg(options: { strict: true }): NonNullable<OrgOrNull>;
-export function useOrg(options: { strict: false }): OrgOrNull;
-export function useOrg(options: { strict: boolean } = { strict: true }): OrgOrNull {
-  const org = useOrgSafe();
-  if (!org && options.strict) throw new Error("useOrg must be used within an /org/$orgSlug route");
-  return org;
+export function useOrg<TStrict extends boolean = true>(options?: {
+  strict?: TStrict;
+}): TStrict extends true ? Organization : Organization | undefined {
+  const { strict = true } = options ?? {};
+  const match = useRouterState({ select: (s) => s.matches.find((m) => m.routeId === "/org") });
+  const org = match?.loaderData;
+  if (!org && strict) throw new Error("useOrg must be used within an /org/$orgSlug route");
+  return org as TStrict extends true ? Organization : Organization | undefined;
 }
