@@ -84,9 +84,7 @@ export function LoginExistingOrg({
     });
   }, [authLogout, navigate]);
 
-  const goToOrg = useCallback(() => {
-    navigate({ to: "/org/" + user.orgSlug + "/" });
-  }, [navigate]);
+  const goToOrg = useCallback(() => navigate({ to: "/org/" + user.orgSlug + "/" }), [navigate]);
 
   return (
     <Card {...props}>
