@@ -33,7 +33,7 @@ function Customers() {
   const { data: customers } = useQuery({
     queryKey: ["customers"],
     queryFn: async () =>
-      apiClient.get("/org/{orgSlug}/customer/getAll", { params: { path: { orgSlug } } }),
+      apiClient.getThrowing("/org/{orgSlug}/customer/getAll", { params: { path: { orgSlug } } }),
     select: (res) => res.data,
   });
 

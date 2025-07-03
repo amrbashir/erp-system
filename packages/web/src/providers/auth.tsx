@@ -61,9 +61,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // logout
   const logoutMutation = useMutation({
     mutationFn: async (orgSlug: string) =>
-      await apiClient.post("/org/{orgSlug}/auth/logout", {
-        headers: { Authorization: `Bearer ${user?.accessToken}` },
-        // @ts-expect-error - incorrect type generation by openapi-typescript
+      await apiClient.get("/org/{orgSlug}/auth/logout", {
+        // @ts-expect-error - incorrect type generation by openapi-typescript for some reason
         params: { path: { orgSlug } },
       }),
   });

@@ -107,9 +107,9 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        get: operations["AuthController$1_logout"];
         put?: never;
-        post: operations["AuthController$1_logout"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;

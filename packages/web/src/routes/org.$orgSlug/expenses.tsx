@@ -32,7 +32,7 @@ function Expenses() {
   const { data: expenses } = useQuery({
     queryKey: ["expenses"],
     queryFn: async () =>
-      apiClient.get("/org/{orgSlug}/expense/getAll", { params: { path: { orgSlug } } }),
+      apiClient.getThrowing("/org/{orgSlug}/expense/getAll", { params: { path: { orgSlug } } }),
     select: (res) => res.data,
   });
 

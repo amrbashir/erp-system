@@ -32,7 +32,7 @@ function Products() {
   const { data: products } = useQuery({
     queryKey: ["products"],
     queryFn: async () =>
-      apiClient.get("/org/{orgSlug}/product/getAll", { params: { path: { orgSlug } } }),
+      apiClient.getThrowing("/org/{orgSlug}/product/getAll", { params: { path: { orgSlug } } }),
     select: (res) => res.data,
   });
 

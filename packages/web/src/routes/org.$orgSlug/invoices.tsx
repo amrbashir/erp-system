@@ -36,7 +36,7 @@ function Invoices() {
   const { data: invoices } = useQuery({
     queryKey: ["invoices"],
     queryFn: async () =>
-      apiClient.get("/org/{orgSlug}/invoice/getAll", { params: { path: { orgSlug } } }),
+      apiClient.getThrowing("/org/{orgSlug}/invoice/getAll", { params: { path: { orgSlug } } }),
     select: (res) => res.data,
   });
 

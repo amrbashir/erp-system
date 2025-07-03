@@ -32,7 +32,7 @@ function Transactions() {
   const { data: transactions } = useQuery({
     queryKey: ["transactions"],
     queryFn: async () =>
-      apiClient.get("/org/{orgSlug}/transaction/getAll", { params: { path: { orgSlug } } }),
+      apiClient.getThrowing("/org/{orgSlug}/transaction/getAll", { params: { path: { orgSlug } } }),
     select: (res) => res.data,
   });
 

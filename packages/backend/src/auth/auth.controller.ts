@@ -48,7 +48,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiHeader({ name: "Authorization" })
-  @Post("logout")
+  @Get("logout")
   async logout(@Req() req: any): Promise<void> {
     const user = req["user"] as JwtPayload;
     this.authService.logout(user.sub, user.organizationId);

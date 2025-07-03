@@ -53,7 +53,7 @@ function Users() {
   const { data: users, refetch: refetchUsers } = useQuery({
     queryKey: ["users", user?.username],
     queryFn: async () =>
-      apiClient.get("/org/{orgSlug}/user/getAll", { params: { path: { orgSlug } } }),
+      apiClient.getThrowing("/org/{orgSlug}/user/getAll", { params: { path: { orgSlug } } }),
     select: (res) => res.data,
   });
 
@@ -62,14 +62,11 @@ function Users() {
     variables: deleteVariables,
     mutateAsync: deleteUser,
   } = useMutation({
-    mutationFn: async (body: z.infer<typeof DeleteUserDto>) => {
-      const { data, error } = await apiClient.delete("/org/{orgSlug}/user/delete", {
+    mutationFn: async (body: z.infer<typeof DeleteUserDto>) =>
+      await apiClient.deleteThrowing("/org/{orgSlug}/user/delete", {
         body,
         params: { path: { orgSlug } },
-      });
-      if (error) throw error;
-      return data;
-    },
+      }),
     onSuccess: () => refetchUsers(),
     onError: (error) => toast.error(t(`errors.${error.message}` as any)),
   });

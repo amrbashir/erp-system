@@ -214,9 +214,7 @@ function CreateNewOrganizationCard(props: React.ComponentProps<typeof Card>) {
       },
     },
     onSubmit: async ({ value, formApi }) => {
-      const { error } = await apiClient.post("/org/create", {
-        body: value,
-      });
+      const { error } = await apiClient.post("/org/create", { body: value });
 
       if (error) {
         formApi.setErrorMap({ onSubmit: error });

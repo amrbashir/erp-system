@@ -15,7 +15,7 @@ const clientOptions = {
 
 const fallbackClient = createClient(clientOptions);
 
-const client = createThrowingClient({
+export const apiClient = createThrowingClient({
   ...clientOptions,
   fetch: async (input) => {
     const user = getStoredUser();
@@ -57,13 +57,3 @@ const client = createThrowingClient({
     return result;
   },
 });
-
-// Export the API client with lowercase methods as I don't like the uppercase ones
-export const apiClient = {
-  get: client.GET.bind(client),
-  post: client.POST.bind(client),
-  put: client.PUT.bind(client),
-  patch: client.PATCH.bind(client),
-  delete: client.DELETE.bind(client),
-  request: client.request.bind(client),
-};

@@ -20,41 +20,34 @@ export function createClient(clientOptions?: ClientOptions) {
 export function createThrowingClient(clientOptions?: ClientOptions) {
   const client = createClient(clientOptions);
 
-  const originalRequest = client.request;
-  // @ts-ignore
-  client.request = async (method: any, path: any, options: any) => {
-    const res = await originalRequest(method, path, options);
-    // @ts-ignore
-    if (res.error) throw res.error;
-    return res;
-  };
+  return {
+    get: client.GET.bind(client),
+    post: client.POST.bind(client),
+    delete: client.DELETE.bind(client),
+    request: client.request.bind(client),
 
-  const originalGET = client.GET;
-  // @ts-ignore
-  client.GET = async (path: any, options: any) => {
-    const res = await originalGET(path, options);
-    // @ts-ignore
-    if (res.error) throw res.error;
-    return res;
-  };
+    getThrowing: (async (path: any, options: any) => {
+      const res = await client.GET(path, options);
+      if (res.error) throw res.error;
+      return res;
+    }) as typeof client.GET,
 
-  const originalPOST = client.POST;
-  // @ts-ignore
-  client.POST = async (path: any, options: any) => {
-    const res = await originalPOST(path, options);
-    // @ts-ignore
-    if (res.error) throw res.error;
-    return res;
-  };
+    postThrowing: (async (path: any, options: any) => {
+      const res = await client.POST(path, options);
+      if (res.error) throw res.error;
+      return res;
+    }) as typeof client.POST,
 
-  const originalDELETE = client.DELETE;
-  // @ts-ignore
-  client.DELETE = async (path: any, options: any) => {
-    const res = await originalDELETE(path, options);
-    // @ts-ignore
-    if (res.error) throw res.error;
-    return res;
-  };
+    deleteThrowing: (async (path: any, options: any) => {
+      const res = await client.DELETE(path, options);
+      if (res.error) throw res.error;
+      return res;
+    }) as typeof client.DELETE,
 
-  return client;
+    requestThrowing: (async (method: any, path: any, options: any) => {
+      const res = await client.request(method, path, options);
+      if (res.error) throw res.error;
+      return res;
+    }) as typeof client.request,
+  };
 }
