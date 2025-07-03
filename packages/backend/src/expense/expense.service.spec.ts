@@ -38,45 +38,43 @@ describe("ExpenseService", () => {
     });
   }
 
-  describe("getAllExpenses", () => {
-    it("should return expenses with cashier relation", async () => {
-      // Create an organization
-      const org = await orgService.create({
-        name: "Test Org",
-        username: "admin",
-        password: "12345678",
-        slug: "test-org",
-      });
-
-      const adminUser = await userService.findByUsernameInOrg("admin", org.slug);
-
-      // Create a transaction first (expense needs a transaction)
-      const transaction = await createTransaction(-100, org.slug, adminUser!.id);
-
-      // Create an expense directly in the database
-      const expense = await prismaService.expense.create({
-        data: {
-          description: "Test Expense",
-          price: 100,
-          cashier: { connect: { id: adminUser!.id } },
-          organization: { connect: { slug: org.slug } },
-          transaction: { connect: { id: transaction.id } },
-        },
-        include: {
-          cashier: true,
-        },
-      });
-
-      // Test the getAllExpenses method
-      const result = await service.getAllExpenses(org.slug);
-
-      expect(result).toBeDefined();
-      expect(result.length).toBe(1);
-      expect(result[0].id).toBe(expense.id);
-      expect(result[0].description).toBe("Test Expense");
-      expect(result[0].price).toBe(100);
-      expect(result[0].cashier.id).toBe(adminUser!.id);
-      expect(result[0].transactionId).toBe(transaction.id);
+  it("should return expenses with cashier relation", async () => {
+    // Create an organization
+    const org = await orgService.create({
+      name: "Test Org",
+      username: "admin",
+      password: "12345678",
+      slug: "test-org",
     });
+
+    const adminUser = await userService.findByUsernameInOrg("admin", org.slug);
+
+    // Create a transaction first (expense needs a transaction)
+    const transaction = await createTransaction(-100, org.slug, adminUser!.id);
+
+    // Create an expense directly in the database
+    const expense = await prismaService.expense.create({
+      data: {
+        description: "Test Expense",
+        price: 100,
+        cashier: { connect: { id: adminUser!.id } },
+        organization: { connect: { slug: org.slug } },
+        transaction: { connect: { id: transaction.id } },
+      },
+      include: {
+        cashier: true,
+      },
+    });
+
+    // Test the getAllExpenses method
+    const result = await service.getAllExpenses(org.slug);
+
+    expect(result).toBeDefined();
+    expect(result.length).toBe(1);
+    expect(result[0].id).toBe(expense.id);
+    expect(result[0].description).toBe("Test Expense");
+    expect(result[0].price).toBe(100);
+    expect(result[0].cashier.id).toBe(adminUser!.id);
+    expect(result[0].transactionId).toBe(transaction.id);
   });
 });

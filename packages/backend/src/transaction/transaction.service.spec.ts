@@ -35,46 +35,44 @@ describe("TransactionService", () => {
     });
   }
 
-  describe("getAllTransactions", () => {
-    it("should create a transaction ", async () => {
-      const org = await orgService.create({
-        name: "Test Org",
-        username: "admin",
-        password: "12345678",
-        slug: "test-org",
-      });
-
-      const adminUser = await userService.findByUsernameInOrg("admin", org.slug);
-
-      const transaction = await createTransaction(100, org.slug, adminUser!.id);
-
-      expect(transaction).toBeDefined();
-      expect(transaction.amount).toBe(100);
-      expect(transaction.cashierId).toBe(adminUser!.id);
-      expect(transaction.organizationId).toBe(org.id);
+  it("should create a transaction ", async () => {
+    const org = await orgService.create({
+      name: "Test Org",
+      username: "admin",
+      password: "12345678",
+      slug: "test-org",
     });
 
-    it("should return transactions with customer and cashier relations", async () => {
-      const org = await orgService.create({
-        name: "Test Org",
-        username: "admin",
-        password: "12345678",
-        slug: "test-org",
-      });
+    const adminUser = await userService.findByUsernameInOrg("admin", org.slug);
 
-      const adminUser = await userService.findByUsernameInOrg("admin", org.slug);
+    const transaction = await createTransaction(100, org.slug, adminUser!.id);
 
-      await createTransaction(100, org.slug, adminUser!.id);
-      await createTransaction(-200, org.slug, adminUser!.id);
+    expect(transaction).toBeDefined();
+    expect(transaction.amount).toBe(100);
+    expect(transaction.cashierId).toBe(adminUser!.id);
+    expect(transaction.organizationId).toBe(org.id);
+  });
 
-      const result = await service.getAllTransactions(org.slug);
-
-      expect(result).toBeDefined();
-      expect(result.length).toBe(2);
-      expect(result[0].amount).toBe(100);
-      expect(result[1].amount).toBe(-200);
-      expect(result[0].cashier.id).toBe(adminUser!.id);
-      expect(result[1].cashier.id).toBe(adminUser!.id);
+  it("should return transactions with customer and cashier relations", async () => {
+    const org = await orgService.create({
+      name: "Test Org",
+      username: "admin",
+      password: "12345678",
+      slug: "test-org",
     });
+
+    const adminUser = await userService.findByUsernameInOrg("admin", org.slug);
+
+    await createTransaction(100, org.slug, adminUser!.id);
+    await createTransaction(-200, org.slug, adminUser!.id);
+
+    const result = await service.getAllTransactions(org.slug);
+
+    expect(result).toBeDefined();
+    expect(result.length).toBe(2);
+    expect(result[0].amount).toBe(100);
+    expect(result[1].amount).toBe(-200);
+    expect(result[0].cashier.id).toBe(adminUser!.id);
+    expect(result[1].cashier.id).toBe(adminUser!.id);
   });
 });
