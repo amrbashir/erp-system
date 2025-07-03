@@ -41,32 +41,37 @@ function Index() {
   const { user, isAuthenticated } = useAuth();
 
   return (
-    <>
-      <main className="w-full *:p-5 *:md:p-20">
-        <div className="flex flex-col md:flex-row items-center justify-center gap-10">
+    <main className="w-full px-5 py-10 md:pt-[25%]">
+      <div className="md:w-fit mx-auto flex flex-col items-center gap-10 *:w-full *:md:w-auto">
+        <div className="flex flex-col md:flex-row items-center gap-10 md:gap-20">
           <Welcome />
 
           <Separator className="md:hidden" />
           <Separator orientation="vertical" className="hidden md:block md:h-75!" />
 
-          <div className="flex flex-col items-center gap-10 w-full *:w-full md:w-auto *:md:w-auto md:min-w-sm *:md:min-w-sm">
-            {isAuthenticated && user ? <LoginExistingOrg user={user} /> : <LoginForm />}
-
-            <div className="flex items-center">
-              <Separator className="flex-2" />
-              <p className="flex-1 text-center">{t("or")}</p>
-              <Separator className="flex-2" />
-            </div>
-
-            <CreateNewOrganizationCard />
-          </div>
+          {isAuthenticated && user ? (
+            <LoginExistingOrg user={user} className="w-full md:w-auto md:min-w-sm *:md:min-w-sm" />
+          ) : (
+            <LoginForm className="w-full md:w-auto md:min-w-sm *:md:min-w-sm" />
+          )}
         </div>
-      </main>
-    </>
+
+        <div className="md:self-end md:min-w-sm flex items-center">
+          <Separator className="flex-2" />
+          <p className="flex-1 text-center">{t("or")}</p>
+          <Separator className="flex-2" />
+        </div>
+
+        <CreateNewOrganizationCard className="md:self-end md:min-w-sm *:md:min-w-sm" />
+      </div>
+    </main>
   );
 }
 
-export function LoginExistingOrg({ user }: { user: AuthUser }) {
+export function LoginExistingOrg({
+  user,
+  ...props
+}: React.ComponentProps<typeof Card> & { user: AuthUser }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { logout: authLogout } = useAuth();
@@ -84,7 +89,7 @@ export function LoginExistingOrg({ user }: { user: AuthUser }) {
   }, [navigate]);
 
   return (
-    <Card>
+    <Card {...props}>
       <CardHeader className="flex flex-col items-center gap-10">
         <CardTitle>{t("goToYourOrganization")}</CardTitle>
         <CardDescription>
@@ -106,7 +111,7 @@ export function LoginExistingOrg({ user }: { user: AuthUser }) {
   );
 }
 
-function LoginForm() {
+function LoginForm(props: React.ComponentProps<typeof Card>) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { login } = useAuth();
@@ -132,7 +137,7 @@ function LoginForm() {
   });
 
   return (
-    <Card>
+    <Card {...props}>
       <CardHeader className="flex flex-col items-center gap-10">
         <CardTitle>{t("loginToAccount")}</CardTitle>
         <CardDescription>
@@ -187,7 +192,7 @@ function LoginForm() {
   );
 }
 
-function CreateNewOrganizationCard(props: React.ComponentProps<"div">) {
+function CreateNewOrganizationCard(props: React.ComponentProps<typeof Card>) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { logout, isAuthenticated, user } = useAuth();

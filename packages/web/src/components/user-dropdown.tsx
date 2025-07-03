@@ -37,7 +37,7 @@ export function UserDropdown() {
     navigate({
       to: "/",
       search: {
-        orgSlug,
+        loginOrgSlug: orgSlug,
         redirect: "redirect" in location.search ? location.search.redirect : location.href,
       },
     });

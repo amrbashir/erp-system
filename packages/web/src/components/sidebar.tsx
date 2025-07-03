@@ -73,7 +73,7 @@ function RoutesGroup({
   routes,
   label,
   ...props
-}: React.ComponentProps<"div"> & {
+}: React.ComponentProps<typeof Collapsible> & {
   label?: string;
   routes: (keyof FileRoutesById)[];
 }) {
