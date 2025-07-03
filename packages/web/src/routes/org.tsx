@@ -27,7 +27,7 @@ export const Route = createFileRoute("/org")({
           // if we have a redirect in the search params, use it,
           // otherwise use the current location
           redirect: "redirect" in search ? search.redirect : location.href,
-          orgSlug: params.orgSlug,
+          loginOrgSlug: params.orgSlug,
         },
       });
     }
