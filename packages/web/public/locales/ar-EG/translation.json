@@ -13,7 +13,8 @@
     "products": "المنتجات",
     "transactions": "المعاملات",
     "invoices": "الفواتير",
-    "expenses": "المصروفات"
+    "expenses": "المصروفات",
+    "createInvoice": "إنشاء فاتورة"
   },
 
   "loginToAccount": "تسجيل الدخول إلى حسابك",
@@ -75,7 +76,9 @@
     "Organization with this slug already exists": "المؤسسة بهذا المعرف موجودة بالفعل",
     "Internal server error": "خطأ داخلي في الخادم",
     "Organization with this slug does not exist": "$(organizationNotFound)",
-    "notAuthorized": "غير مصرح لك بالوصول إلى هذه الصفحة"
+    "notAuthorized": "غير مصرح لك بالوصول إلى هذه الصفحة",
+    "invoiceMustHaveItems": "يجب أن تحتوي الفاتورة على عنصر واحد على الأقل",
+    "Invoice must have at least one item": "$(invoiceMustHaveItems)"
   },
 
   "validationErrors": {
@@ -119,5 +122,17 @@
   "noDataFoundDescription": "لا توجد بيانات لعرضها في هذا القسم",
 
   "oops": "عذرًا!",
-  "notFound404": "عذراً ، الصفحة التي تبحث عنها غير موجودة"
+  "notFound404": "عذراً ، الصفحة التي تبحث عنها غير موجودة",
+
+  "invoiceCreatedSuccessfully": "تم إنشاء الفاتورة بنجاح",
+  "insufficientStock": "لا يوجد مخزون كافٍ للمنتج",
+
+  "stock": "المخزون",
+  "remaining": "المتبقي",
+  "searchProducts": "ابحث عن المنتجات...",
+  "total": "الإجمالي",
+  "addItemsToInvoice": "أضف عناصر إلى الفاتورة",
+
+  "searchCustomers": "ابحث عن العملاء...",
+  "selectCustomer": "اختر عميلًا"
 }

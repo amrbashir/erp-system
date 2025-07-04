@@ -43,8 +43,8 @@ export function AddCustomerDialog() {
     },
     onSubmit: async ({ value, formApi }) => {
       const { error } = await apiClient.post("/org/{orgSlug}/customer/create", {
-        body: value,
         params: { path: { orgSlug: orgSlug! } },
+        body: value,
       });
 
       if (error) {

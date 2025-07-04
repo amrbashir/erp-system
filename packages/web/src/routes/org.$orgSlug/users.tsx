@@ -64,8 +64,8 @@ function Users() {
   } = useMutation({
     mutationFn: async (body: z.infer<typeof DeleteUserDto>) =>
       await apiClient.deleteThrowing("/org/{orgSlug}/user/delete", {
-        body,
         params: { path: { orgSlug } },
+        body,
       }),
     onSuccess: () => refetchUsers(),
     onError: (error) => toast.error(t(`errors.${error.message}` as any)),

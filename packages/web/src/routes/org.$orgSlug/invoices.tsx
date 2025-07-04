@@ -32,6 +32,7 @@ export const Route = createFileRoute("/org/$orgSlug/invoices")({
 function Invoices() {
   const { slug: orgSlug } = useOrg();
   const { t } = useTranslation();
+  const navigate = Route.useNavigate();
 
   const { data: invoices } = useQuery({
     queryKey: ["invoices"],
@@ -42,18 +43,23 @@ function Invoices() {
 
   return (
     <div className="flex flex-col gap-4 p-4">
+      <div>
+        <Button onClick={() => navigate({ to: "/org/$orgSlug/create-invoice" })}>
+          {t("pages.createInvoice")}
+        </Button>
+      </div>
+
       {invoices?.length && invoices.length > 0 ? (
         <div className="rounded-lg border">
           <Table>
             <TableHeader>
               <TableRow className="*:font-bold">
-                <TableHead></TableHead>
-                <TableHead>{t("total")}</TableHead>
                 <TableHead>{t("cashierName")}</TableHead>
                 <TableHead>{t("customerName")}</TableHead>
                 <TableHead>{t("createdAt")}</TableHead>
                 <TableHead>{t("updatedAt")}</TableHead>
-                <TableHead></TableHead>
+                <TableHead>{t("total")}</TableHead>
+                <TableHead className="text-end!"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -80,13 +86,12 @@ function InvoiceRow({
   return (
     <>
       <TableRow className={open ? "bg-muted/50" : ""}>
-        <TableCell>{index + 1}</TableCell>
-        <TableCell>{invoice.total}</TableCell>
         <TableCell>{invoice.cashierName}</TableCell>
         <TableCell>{invoice.customerName}</TableCell>
         <TableCell>{new Date(invoice.createdAt).toLocaleString(i18n.language)}</TableCell>
         <TableCell>{new Date(invoice.updatedAt).toLocaleString(i18n.language)}</TableCell>
-        <TableCell className="text-end">
+        <TableCell>{invoice.total}</TableCell>
+        <TableCell className="text-end!">
           <Button onClick={() => setOpen((prev) => !prev)} variant="ghost" size="sm">
             {open ? <ChevronUpIcon /> : <ChevronDownIcon />}
           </Button>
@@ -98,19 +103,21 @@ function InvoiceRow({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t("description")}</TableHead>
+                  <TableHead>{}</TableHead>
+                  <TableHead className="w-full">{t("description")}</TableHead>
                   <TableHead>{t("quantity")}</TableHead>
-                  <TableHead>{t("purchasePrice")}</TableHead>
                   <TableHead>{t("sellingPrice")}</TableHead>
+                  <TableHead className="text-end!">{t("total")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {invoice.items.map((item, index) => (
                   <TableRow key={index}>
+                    <TableCell>{index + 1}</TableCell>
                     <TableCell>{item.description}</TableCell>
                     <TableCell>{item.quantity}</TableCell>
-                    <TableCell>{item.purchase_price}</TableCell>
                     <TableCell>{item.selling_price}</TableCell>
+                    <TableCell className="text-end">{item.selling_price * item.quantity}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

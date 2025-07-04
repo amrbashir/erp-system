@@ -116,6 +116,14 @@ export const InvoiceEntity = z
   })
   .passthrough();
 
+export const CreateInvoiceItemDto = z
+  .object({ productId: z.string(), quantity: z.number() })
+  .passthrough();
+
+export const CreateInvoiceDto = z
+  .object({ customerId: z.string().optional(), items: z.array(CreateInvoiceItemDto) })
+  .passthrough();
+
 export const ExpenseEntity = z
   .object({
     id: z.string(),

@@ -17,7 +17,8 @@
     "products": "Products",
     "transactions": "Transactions",
     "invoices": "Invoices",
-    "expenses": "Expenses"
+    "expenses": "Expenses",
+    "createInvoice": "Create Invoice"
   },
 
   "loginToAccount": "Login to your account",
@@ -60,9 +61,6 @@
 
   "moneyAmount": "Amount",
   "customerName": "Customer Name",
-  "type": "Type",
-  "total": "Total",
-  "items": "Items",
 
   "theme": "Theme",
   "changeTheme": "Change Theme",
@@ -82,7 +80,9 @@
     "Organization with this slug already exists": "Organization with this identifier already exists",
     "Internal server error": "Internal server error",
     "Organization with this slug does not exist": "$(organizationNotFound)",
-    "notAuthorized": "You are not authorized to access this page"
+    "notAuthorized": "You are not authorized to access this page",
+    "invoiceMustHaveItems": "Invoice must have at least one item",
+    "Invoice must have at least one item": "$(invoiceMustHaveItems)"
   },
 
   "validationErrors": {
@@ -124,5 +124,16 @@
   "noDataFoundDescription": "There is no data to display in this section",
 
   "oops": "Oops!",
-  "notFound404": "Sorry, the page you are looking for does not exist"
+  "notFound404": "Sorry, the page you are looking for does not exist",
+
+  "invoiceCreatedSuccessfully": "Invoice created successfully",
+
+  "stock": "Stock",
+  "remaining": "Remaining",
+  "searchProducts": "Search products...",
+  "total": "Total",
+  "addItemsToInvoice": "Add items to the invoice",
+
+  "searchCustomers": "Search customers...",
+  "selectCustomer": "Select a customer"
 }

@@ -1,8 +1,8 @@
-import { CreateUserDto, UserEntity } from "@erp-system/sdk/zod";
+import { CreateUserDto } from "@erp-system/sdk/zod";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
 import {
@@ -52,8 +52,8 @@ export function AddUserDialog() {
     onSubmit: async ({ value, formApi }) => {
       const { username, password, role } = value;
       const { error } = await apiClient.post("/org/{orgSlug}/user/create", {
-        body: { username, password, role },
         params: { path: { orgSlug: orgSlug! } },
+        body: { username, password, role },
       });
 
       if (error) {

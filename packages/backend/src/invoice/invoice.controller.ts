@@ -1,10 +1,17 @@
-import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from "@nestjs/common";
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiHeader,
+  ApiOkResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 
+import type { JwtPayload } from "../auth/auth.dto";
 import type { PaginationDto } from "../pagination.dto";
 import type { Invoice } from "../prisma/generated/client";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
-import { InvoiceEntity } from "./invoice.dto";
+import { CreateInvoiceDto, InvoiceEntity } from "./invoice.dto";
 import { InvoiceService } from "./invoice.service";
 
 @UseGuards(JwtAuthGuard)
@@ -20,7 +27,19 @@ export class InvoiceController {
   async getAll(
     @Param("orgSlug") orgSlug: string,
     @Query() paginationDto?: PaginationDto,
-  ): Promise<Invoice[]> {
-    return this.service.getAllInvoices(orgSlug, paginationDto);
+  ): Promise<InvoiceEntity[]> {
+    const invoices = await this.service.getAllInvoices(orgSlug, paginationDto);
+    return invoices.map((invoice) => new InvoiceEntity(invoice));
+  }
+
+  @Post("create")
+  @ApiCreatedResponse()
+  async create(
+    @Param("orgSlug") orgSlug: string,
+    @Body() createInvoiceDto: CreateInvoiceDto,
+    @Req() req: any,
+  ): Promise<void> {
+    const currentUser = req["user"] as JwtPayload;
+    await this.service.createInvoice(orgSlug, createInvoiceDto, currentUser.sub);
   }
 }

@@ -147,7 +147,7 @@ html[dir="rtl"] [data-slot="dialog-close"] {
 }
 
 html[dir="rtl"] [data-slot="table-head"] {
-  @apply text-right!;
+  @apply text-start;
 }
 [data-slot="sidebar-inset"] {
   @apply md:ml-0!;

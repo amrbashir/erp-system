@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 
 import type { PaginationDto } from "../pagination.dto";
-import type { Customer, Invoice, InvoiceItem, Store, User } from "../prisma/generated/client";
+import type { Customer, Invoice, InvoiceItem, User } from "../prisma/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
+import { CreateInvoiceDto } from "./invoice.dto";
 
 export type InvoiceWithRelations = Invoice & {
   customer: Customer | null;
@@ -13,6 +14,106 @@ export type InvoiceWithRelations = Invoice & {
 @Injectable()
 export class InvoiceService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async createInvoice(
+    orgSlug: string,
+    dto: CreateInvoiceDto,
+    userId: string,
+  ): Promise<InvoiceWithRelations> {
+    if (!dto.items || dto.items.length === 0) {
+      throw new BadRequestException("Invoice must have at least one item");
+    }
+
+    try {
+      return await this.prisma.$transaction(async (prisma) => {
+        // Fetch all products information
+        const productIds = dto.items.map((item) => item.productId);
+        const products = await prisma.product.findMany({
+          where: {
+            id: { in: productIds },
+            organization: { slug: orgSlug },
+          },
+        });
+
+        // Check stock quantities and prepare invoice items
+        const invoiceItems: InvoiceItem[] = [];
+        let total = 0;
+
+        for (const item of dto.items) {
+          const product = products.find((p) => p.id === item.productId);
+
+          if (!product) {
+            throw new BadRequestException(`Product with id ${item.productId} not found`);
+          }
+
+          if (product.stock_quantity < item.quantity) {
+            throw new BadRequestException(
+              `Insufficient stock for product ${product.description}. Available: ${product.stock_quantity}, Requested: ${item.quantity}`,
+            );
+          }
+
+          invoiceItems.push({
+            description: product.description,
+            purchase_price: product.purchase_price,
+            selling_price: product.selling_price,
+            quantity: item.quantity,
+          } as InvoiceItem);
+
+          total += product.selling_price * item.quantity;
+        }
+
+        const organization = { connect: { slug: orgSlug } };
+        const cashier = { connect: { id: userId } };
+        const customer = dto.customerId ? { connect: { id: dto.customerId } } : undefined;
+
+        console.log("Creating invoice with items:", customer);
+
+        // Create invoice with items in a transaction
+        // Create the invoice
+        const invoice = await prisma.invoice.create({
+          data: {
+            items: { create: invoiceItems },
+            total,
+            cashier,
+            customer,
+            organization,
+            transaction: {
+              create: {
+                amount: total,
+                cashier,
+                customer,
+                organization,
+              },
+            },
+          },
+          include: {
+            customer: true,
+            cashier: true,
+            items: true,
+          },
+        });
+
+        // Update product stock quantities
+        for (const item of dto.items) {
+          const product = products.find((p) => p.id === item.productId);
+          if (!product) {
+            throw new BadRequestException(`Product with id ${item.productId} not found`);
+          }
+          await prisma.product.update({
+            where: { id: product.id },
+            data: { stock_quantity: product.stock_quantity - item.quantity },
+          });
+        }
+
+        return invoice;
+      });
+    } catch (error: any) {
+      if (error.code === "P2025") {
+        throw new NotFoundException("Organization with this slug does not exist");
+      }
+      throw error; // Re-throw other errors
+    }
+  }
 
   async getAllInvoices(
     orgSlug: string,

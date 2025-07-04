@@ -228,6 +228,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/org/{orgSlug}/invoice/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["InvoiceController$1_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/org/{orgSlug}/expense/getAll": {
         parameters: {
             query?: never;
@@ -370,6 +386,16 @@ export interface components {
             customerName?: string;
             transactionId: string;
             items: components["schemas"]["InvoiceItemEntity"][];
+        };
+        CreateInvoiceItemDto: {
+            /** @description Product ID */
+            productId: string;
+            /** @description Quantity of the product */
+            quantity: number;
+        };
+        CreateInvoiceDto: {
+            customerId?: string;
+            items: components["schemas"]["CreateInvoiceItemDto"][];
         };
         ExpenseEntity: {
             id: string;
@@ -712,6 +738,31 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["InvoiceEntity"][];
                 };
+            };
+        };
+    };
+    InvoiceController$1_create: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateInvoiceDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
