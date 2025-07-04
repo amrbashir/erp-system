@@ -92,12 +92,11 @@ function CreateInvoice() {
       customerId: undefined,
     } as Invoice,
     validators: {
-      onSubmit: async ({ value }) => {
+      onSubmit: ({ value, formApi }) => {
         if (value.items.length === 0) return "invoiceMustHaveItems";
 
-        let res = await CreateInvoiceDto["~standard"].validate(value);
-        if (res instanceof Promise) res = await res;
-        if (res.issues) return res.issues;
+        const errors = formApi.parseValuesWithSchema(CreateInvoiceDto as any);
+        if (errors) return errors;
       },
     },
     onSubmit: async ({ value, formApi }) => {

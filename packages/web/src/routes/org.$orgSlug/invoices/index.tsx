@@ -47,6 +47,7 @@ function Invoices() {
           <Table>
             <TableHeader>
               <TableRow className="*:font-bold">
+                <TableHead>{t("invoiceNumber")}</TableHead>
                 <TableHead>{t("cashierName")}</TableHead>
                 <TableHead>{t("customerName")}</TableHead>
                 <TableHead>{t("createdAt")}</TableHead>
@@ -79,6 +80,7 @@ function InvoiceRow({
   return (
     <>
       <TableRow className={open ? "bg-muted/50" : ""}>
+        <TableCell>{invoice.id}</TableCell>
         <TableCell>{invoice.cashierName}</TableCell>
         <TableCell>{invoice.customerName}</TableCell>
         <TableCell>{new Date(invoice.createdAt).toLocaleString(i18n.language)}</TableCell>

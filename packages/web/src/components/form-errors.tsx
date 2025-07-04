@@ -56,8 +56,9 @@ export function FormErrors({
  * If the error is an array, it maps through each error and displays them.
  */
 function ErrorElement({ error, fieldName }: { error: any; fieldName?: string }) {
+  if (!error) return null;
+
   const { t } = useTranslation();
-  const [message, setMessage] = useState<string | string[] | null>(null);
 
   const errors = Array.isArray(error) ? error : [error];
 
@@ -73,19 +74,11 @@ function ErrorElement({ error, fieldName }: { error: any; fieldName?: string }) 
           : getError(error.message);
   };
 
-  useEffect(() => {
-    Promise.all(errors)
-      .then((e) => e.map((e) => (Array.isArray(e) ? e.map(getError).flat() : getError(e))))
-      .then((messages) => setMessage(messages.flat()));
-  }, [error, fieldName]);
+  const messages = errors.map(getError).flat();
 
-  return Array.isArray(message) ? (
-    message.map((msg, index) => (
-      <p key={index} className="text-destructive text-sm">
-        {msg}
-      </p>
-    ))
-  ) : (
-    <p className="text-destructive text-sm">{message}</p>
-  );
+  return messages.map((msg, index) => (
+    <p key={index} className="text-destructive text-sm">
+      {msg}
+    </p>
+  ));
 }

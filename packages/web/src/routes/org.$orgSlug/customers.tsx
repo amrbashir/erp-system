@@ -48,7 +48,7 @@ function Customers() {
           <Table>
             <TableHeader>
               <TableRow className="*:font-bold">
-                <TableHead></TableHead>
+                <TableHead>{t("customerId")}</TableHead>
                 <TableHead className="min-w-[50%]">{t("name")}</TableHead>
                 <TableHead>{t("address")}</TableHead>
                 <TableHead>{t("phone")}</TableHead>
@@ -59,7 +59,7 @@ function Customers() {
             <TableBody>
               {(customers ?? []).map((customer, index) => (
                 <TableRow key={index}>
-                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{customer.id}</TableCell>
                   <TableCell>{customer.name}</TableCell>
                   <TableCell>{customer.address}</TableCell>
                   <TableCell>{customer.phone}</TableCell>

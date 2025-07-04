@@ -136,5 +136,8 @@
 
   "searchCustomers": "Search customers...",
   "selectCustomer": "Select a customer",
-  "noCustomers": "No customers found"
+  "noCustomers": "No customers found",
+
+  "invoiceNumber": "Invoice No.",
+  "customerId": "Customer ID"
 }

@@ -105,7 +105,7 @@ export const InvoiceItemEntity = z
 
 export const InvoiceEntity = z
   .object({
-    id: z.string(),
+    id: z.number(),
     total: z.number(),
     createdAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true }),

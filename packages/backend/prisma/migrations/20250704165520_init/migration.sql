@@ -3,10 +3,10 @@ CREATE TYPE "UserRole" AS ENUM ('USER', 'ADMIN');
 
 -- CreateTable
 CREATE TABLE "customers" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "email" TEXT,
     "phone" TEXT,
+    "address" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -37,16 +37,16 @@ CREATE TABLE "invoice_items" (
     "purchase_price" INTEGER NOT NULL,
     "selling_price" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL,
-    "invoiceId" TEXT NOT NULL,
+    "invoiceId" INTEGER NOT NULL,
 
     CONSTRAINT "invoice_items_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "invoices" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "total" INTEGER NOT NULL,
-    "customerId" TEXT,
+    "customerId" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "cashierId" TEXT NOT NULL,
@@ -101,7 +101,7 @@ CREATE TABLE "stores" (
 CREATE TABLE "transactions" (
     "id" TEXT NOT NULL,
     "amount" INTEGER NOT NULL,
-    "customerId" TEXT,
+    "customerId" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "cashierId" TEXT NOT NULL,
     "organizationId" TEXT NOT NULL,

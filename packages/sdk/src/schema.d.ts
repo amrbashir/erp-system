@@ -375,7 +375,7 @@ export interface components {
             quantity: number;
         };
         InvoiceEntity: {
-            id: string;
+            id: number;
             total: number;
             /** Format: date-time */
             createdAt: string;

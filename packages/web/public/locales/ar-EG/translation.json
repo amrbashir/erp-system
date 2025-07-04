@@ -135,5 +135,8 @@
 
   "searchCustomers": "ابحث عن العملاء...",
   "selectCustomer": "اختر عميلًا",
-  "noCustomers": "لا يوجد عملاء"
+  "noCustomers": "لا يوجد عملاء",
+
+  "invoiceNumber": "رقم الفاتورة",
+  "customerId": "كود العميل"
 }

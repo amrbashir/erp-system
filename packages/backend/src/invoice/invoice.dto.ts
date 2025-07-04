@@ -1,9 +1,43 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsInt, IsNotEmpty, IsOptional, IsString, Min, ValidateNested } from "class-validator";
+import {
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+  ValidateNested,
+} from "class-validator";
 
 import type { InvoiceItem } from "../prisma/generated/client";
 import type { InvoiceWithRelations } from "./invoice.service";
+
+export class CreateInvoiceItemDto {
+  @ApiProperty({ description: "Product ID" })
+  @IsNotEmpty()
+  @IsString()
+  productId: string;
+
+  @ApiProperty({ description: "Quantity of the product" })
+  @IsNotEmpty()
+  @IsInt()
+  @Min(1)
+  quantity: number;
+}
+
+export class CreateInvoiceDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  customerId?: number;
+
+  @ApiProperty({ type: [CreateInvoiceItemDto] })
+  @IsNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => CreateInvoiceItemDto)
+  items: CreateInvoiceItemDto[];
+}
 
 export class InvoiceItemEntity {
   @ApiProperty()
@@ -28,7 +62,7 @@ export class InvoiceItemEntity {
 
 export class InvoiceEntity {
   @ApiProperty()
-  id: string;
+  id: number;
 
   @ApiProperty()
   total: number;
@@ -61,32 +95,4 @@ export class InvoiceEntity {
     this.transactionId = invoice.transactionId;
     this.items = invoice.items.map((item) => new InvoiceItemEntity(item));
   }
-}
-
-export class CreateInvoiceItemDto {
-  @ApiProperty({ description: "Product ID" })
-  @IsNotEmpty()
-  @IsString()
-  productId: string;
-
-  @ApiProperty({ description: "Quantity of the product" })
-  @IsNotEmpty()
-  @IsInt()
-  @Min(1)
-  quantity: number;
-}
-
-export class CreateInvoiceDto {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  customerId?: number;
-
-  @ApiProperty({
-    type: [CreateInvoiceItemDto],
-  })
-  @IsNotEmpty()
-  @ValidateNested({ each: true })
-  @Type(() => CreateInvoiceItemDto)
-  items: CreateInvoiceItemDto[];
 }
