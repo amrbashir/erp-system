@@ -83,19 +83,9 @@ export function AddCustomerDialog() {
             form.handleSubmit();
           }}
         >
-          {Object.keys(form.options.defaultValues ?? []).map((fieldName) => (
-            <div key={fieldName} className="flex flex-col gap-3">
-              <form.Field
-                name={fieldName as any}
-                children={(field) => (
-                  <>
-                    <Label htmlFor={field.name}>{t(field.name)}</Label>
-                    <InputField field={field} />
-                  </>
-                )}
-              />
-            </div>
-          ))}
+          <form.Field name="name" children={(field) => <InputField field={field} />} />
+          <form.Field name="phone" children={(field) => <InputField field={field} />} />
+          <form.Field name="address" children={(field) => <InputField field={field} />} />
 
           <FormErrors formState={form.state} />
 
@@ -124,8 +114,11 @@ export function AddCustomerDialog() {
 }
 
 function InputField({ field }: { field: AnyFieldApi }) {
+  const { t } = useTranslation();
+
   return (
-    <>
+    <div className="flex flex-col gap-3">
+      <Label htmlFor={field.name}>{t(field.name as any)}</Label>
       <Input
         id={field.name}
         name={field.name}
@@ -133,6 +126,6 @@ function InputField({ field }: { field: AnyFieldApi }) {
         onChange={(e) => field.handleChange(e.target.value)}
       />
       <FormFieldError field={field} />
-    </>
+    </div>
   );
 }

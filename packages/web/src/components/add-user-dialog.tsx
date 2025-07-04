@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shadcn/components/ui/select";
+import { cn } from "@/shadcn/lib/utils";
 
 import type { AnyFieldApi } from "@tanstack/react-form";
 import type z from "zod";
@@ -92,23 +93,20 @@ export function AddUserDialog() {
             form.handleSubmit();
           }}
         >
-          {Object.keys(form.options.defaultValues ?? []).map((fieldName) => (
-            <div key={fieldName} className="flex flex-col gap-3">
-              <form.Field
-                name={fieldName as any}
-                children={(field) => (
-                  <>
-                    <Label htmlFor={field.name}>{t(field.name)}</Label>
-                    {field.name === "role" ? (
-                      <SelectInput field={field} options={["USER", "ADMIN"] as UserRole[]} />
-                    ) : (
-                      <InputField field={field} />
-                    )}
-                  </>
-                )}
-              />
-            </div>
-          ))}
+          <div className="flex w-full items-center gap-2">
+            <form.Field
+              name="username"
+              children={(field) => <InputField className="w-full" field={field} />}
+            />
+            <form.Field
+              name="role"
+              children={(field) => (
+                <SelectInput field={field} options={["USER", "ADMIN"] as UserRole[]} />
+              )}
+            />
+          </div>
+
+          <form.Field name="password" children={(field) => <InputField field={field} />} />
 
           <FormErrors formState={form.state} />
 
@@ -136,9 +134,16 @@ export function AddUserDialog() {
   );
 }
 
-function InputField({ field }: { field: AnyFieldApi }) {
+function InputField({
+  field,
+  className,
+  ...props
+}: React.ComponentProps<"div"> & { field: AnyFieldApi }) {
+  const { t } = useTranslation();
+
   return (
-    <>
+    <div className={cn("flex flex-col gap-3", className)} {...props}>
+      <Label htmlFor={field.name}>{t(field.name as any)}</Label>
       <Input
         id={field.name}
         name={field.name}
@@ -148,23 +153,29 @@ function InputField({ field }: { field: AnyFieldApi }) {
         required
       />
       <FormFieldError field={field} />
-    </>
+    </div>
   );
 }
 
 function SelectInput({ field, options }: { field: AnyFieldApi; options: string[] }) {
+  const { t } = useTranslation();
+
   return (
-    <Select onValueChange={(e) => field.handleChange(e)} defaultValue={field.state.value}>
-      <SelectTrigger>
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map((r) => (
-          <SelectItem key={r} value={r}>
-            {r}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <div className="flex flex-col gap-3">
+      <Label htmlFor={field.name}>{t(field.name as any)}</Label>
+
+      <Select onValueChange={(e) => field.handleChange(e)} defaultValue={field.state.value}>
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map((r) => (
+            <SelectItem key={r} value={r}>
+              {r}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 }

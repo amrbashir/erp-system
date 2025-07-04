@@ -44,7 +44,7 @@
   "purchasePrice": "سعر الشراء",
   "sellingPrice": "سعر البيع",
 
-  "role": "الدور",
+  "role": "النوع",
   "roles": {
     "ADMIN": "مدير",
     "USER": "مستخدم"

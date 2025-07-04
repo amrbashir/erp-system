@@ -152,26 +152,60 @@ function LoginForm(props: React.ComponentProps<typeof Card>) {
             form.handleSubmit();
           }}
         >
-          {Object.keys(form.options.defaultValues ?? []).map((fieldName) => (
-            <div key={fieldName} className="flex flex-col gap-2">
-              <form.Field
-                name={fieldName as any}
-                children={(field) => (
-                  <>
-                    <Label htmlFor={field.name}>{t(field.name)}</Label>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      type={field.name === "password" ? "password" : "text"}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      required
-                    />
-                  </>
-                )}
-              />
-            </div>
-          ))}
+          <div className="flex flex-col gap-2">
+            <form.Field
+              name="orgSlug"
+              children={(field) => (
+                <>
+                  <Label htmlFor={field.name}>{t(field.name)}</Label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    required
+                  />
+                </>
+              )}
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <form.Field
+              name="username"
+              children={(field) => (
+                <>
+                  <Label htmlFor={field.name}>{t(field.name)}</Label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    required
+                  />
+                </>
+              )}
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <form.Field
+              name="password"
+              children={(field) => (
+                <>
+                  <Label htmlFor={field.name}>{t(field.name)}</Label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    type="password"
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    required
+                  />
+                </>
+              )}
+            />
+          </div>
 
           <FormErrors formState={form.state} />
 
@@ -245,26 +279,79 @@ function CreateNewOrganizationCard(props: React.ComponentProps<typeof Card>) {
             form.handleSubmit();
           }}
         >
-          {Object.keys(form.options.defaultValues ?? []).map((fieldName) => (
-            <div key={fieldName} className="flex flex-col gap-2">
-              <form.Field
-                name={fieldName as any}
-                children={(field) => (
-                  <>
-                    <Label htmlFor={field.name}>{t(`createOrg.${field.name}`)}</Label>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value}
-                      type={field.name === "password" ? "password" : "text"}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                    />
-                    <FormFieldError field={field} />
-                  </>
-                )}
-              ></form.Field>
-            </div>
-          ))}
+          <div className="flex flex-col gap-2">
+            <form.Field
+              name="name"
+              children={(field) => (
+                <>
+                  <Label htmlFor={field.name}>{t(`createOrg.${field.name}`)}</Label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                  <FormFieldError field={field} />
+                </>
+              )}
+            ></form.Field>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <form.Field
+              name="slug"
+              children={(field) => (
+                <>
+                  <Label htmlFor={field.name}>{t(`createOrg.${field.name}`)}</Label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    type={field.name === "password" ? "password" : "text"}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                  <FormFieldError field={field} />
+                </>
+              )}
+            ></form.Field>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <form.Field
+              name="username"
+              children={(field) => (
+                <>
+                  <Label htmlFor={field.name}>{t(`createOrg.${field.name}`)}</Label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                  <FormFieldError field={field} />
+                </>
+              )}
+            ></form.Field>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <form.Field
+              name="password"
+              children={(field) => (
+                <>
+                  <Label htmlFor={field.name}>{t(`createOrg.${field.name}`)}</Label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    type="password"
+                  />
+                  <FormFieldError field={field} />
+                </>
+              )}
+            ></form.Field>
+          </div>
 
           <FormErrors formState={form.state} />
 
