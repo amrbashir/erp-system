@@ -140,5 +140,6 @@
   "invoiceNumber": "رقم الفاتورة",
   "customerId": "كود العميل",
 
-  "number": "رقم"
+  "number": "رقم",
+  "transactionNumber": "رقم المعاملة"
 }

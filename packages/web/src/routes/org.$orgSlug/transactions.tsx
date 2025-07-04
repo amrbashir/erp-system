@@ -44,7 +44,7 @@ function Transactions() {
           <Table>
             <TableHeader>
               <TableRow className="*:font-bold">
-                <TableHead>{t("number")}</TableHead>
+                <TableHead>{t("transactionNumber")}</TableHead>
                 <TableHead>{t("moneyAmount")}</TableHead>
                 <TableHead>{t("username")}</TableHead>
                 <TableHead>{t("customerName")}</TableHead>
@@ -54,7 +54,7 @@ function Transactions() {
             <TableBody>
               {(transactions ?? []).map((transaction, index) => (
                 <TableRow key={index}>
-                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{transaction.id}</TableCell>
                   <TableCell>{transaction.amount}</TableCell>
                   <TableCell>{transaction.username}</TableCell>
                   <TableCell>{transaction.customerName}</TableCell>

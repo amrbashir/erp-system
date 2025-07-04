@@ -361,7 +361,7 @@ export interface components {
             updatedAt: string;
         };
         TransactionEntity: {
-            id: string;
+            id: number;
             amount: number;
             /** Format: date-time */
             createdAt: string;
@@ -383,7 +383,7 @@ export interface components {
             updatedAt: string;
             cashierName: string;
             customerName?: string;
-            transactionId: string;
+            transactionId: number;
             items: components["schemas"]["InvoiceItemEntity"][];
         };
         CreateInvoiceItemDto: {
@@ -397,7 +397,7 @@ export interface components {
             items: components["schemas"]["CreateInvoiceItemDto"][];
         };
         ExpenseEntity: {
-            id: string;
+            id: number;
             description: string;
             price: number;
             /** Format: date-time */
@@ -405,7 +405,7 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
             cashierName: string;
-            transactionId: string;
+            transactionId: number;
         };
     };
     responses: never;

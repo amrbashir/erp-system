@@ -23,7 +23,7 @@ CREATE TABLE "expenses" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "cashierId" TEXT NOT NULL,
-    "transactionId" TEXT NOT NULL,
+    "transactionId" INTEGER NOT NULL,
     "organizationId" TEXT NOT NULL,
     "storeId" TEXT,
 
@@ -50,7 +50,7 @@ CREATE TABLE "invoices" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "cashierId" TEXT NOT NULL,
-    "transactionId" TEXT NOT NULL,
+    "transactionId" INTEGER NOT NULL,
     "organizationId" TEXT NOT NULL,
     "storeId" TEXT,
 
@@ -99,7 +99,7 @@ CREATE TABLE "stores" (
 
 -- CreateTable
 CREATE TABLE "transactions" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "amount" INTEGER NOT NULL,
     "customerId" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

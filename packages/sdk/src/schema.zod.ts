@@ -86,7 +86,7 @@ export const ProductEntity = z
 
 export const TransactionEntity = z
   .object({
-    id: z.string(),
+    id: z.number(),
     amount: z.number(),
     createdAt: z.string().datetime({ offset: true }),
     username: z.string(),
@@ -111,7 +111,7 @@ export const InvoiceEntity = z
     updatedAt: z.string().datetime({ offset: true }),
     cashierName: z.string(),
     customerName: z.string().optional(),
-    transactionId: z.string(),
+    transactionId: z.number(),
     items: z.array(InvoiceItemEntity),
   })
   .passthrough();
@@ -126,12 +126,12 @@ export const CreateInvoiceDto = z
 
 export const ExpenseEntity = z
   .object({
-    id: z.string(),
+    id: z.number(),
     description: z.string(),
     price: z.number(),
     createdAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true }),
     cashierName: z.string(),
-    transactionId: z.string(),
+    transactionId: z.number(),
   })
   .passthrough();

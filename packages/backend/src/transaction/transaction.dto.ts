@@ -5,7 +5,7 @@ import type { TransactionWithRelations } from "./transaction.service";
 
 export class TransactionEntity {
   @ApiProperty()
-  id: string;
+  id: number;
 
   @ApiProperty()
   amount: number;

@@ -141,5 +141,7 @@
   "invoiceNumber": "Invoice No.",
   "customerId": "Customer ID",
 
-  "number": "No."
+  "number": "No.",
+
+  "transactionNumber": "Transaction No."
 }

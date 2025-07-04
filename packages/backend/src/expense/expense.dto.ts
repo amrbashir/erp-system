@@ -4,7 +4,7 @@ import type { ExpenseWithRelations } from "./expense.service";
 
 export class ExpenseEntity {
   @ApiProperty()
-  id: string;
+  id: number;
 
   @ApiProperty()
   description: string;
@@ -22,7 +22,7 @@ export class ExpenseEntity {
   cashierName: string;
 
   @ApiProperty()
-  transactionId: string;
+  transactionId: number;
 
   constructor(expense: ExpenseWithRelations) {
     this.id = expense.id;

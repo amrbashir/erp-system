@@ -80,7 +80,7 @@ export class InvoiceEntity {
   customerName?: string;
 
   @ApiProperty()
-  transactionId: string;
+  transactionId: number;
 
   @ApiProperty({ type: [InvoiceItemEntity] })
   items: InvoiceItemEntity[];
