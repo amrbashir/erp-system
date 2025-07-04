@@ -43,7 +43,7 @@ function Products() {
           <Table>
             <TableHeader>
               <TableRow className="*:font-bold">
-                <TableHead></TableHead>
+                <TableHead>{t("number")}</TableHead>
                 <TableHead>{t("quantity")}</TableHead>
                 <TableHead className="min-w-[50%]">{t("description")}</TableHead>
                 <TableHead>{t("purchasePrice")}</TableHead>

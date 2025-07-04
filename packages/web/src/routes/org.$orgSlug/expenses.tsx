@@ -42,7 +42,8 @@ function Expenses() {
         <div className="rounded-lg border">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="*:font-bold">
+                <TableHead>{t("number")}</TableHead>
                 <TableHead>{t("description")}</TableHead>
                 <TableHead>{t("moneyAmount")}</TableHead>
                 <TableHead>{t("cashierName")}</TableHead>
@@ -53,6 +54,7 @@ function Expenses() {
             <TableBody>
               {(expenses ?? []).map((expense, index) => (
                 <TableRow key={expense.id}>
+                  <TableCell>{index + 1}</TableCell>
                   <TableCell>{expense.description}</TableCell>
                   <TableCell>{expense.price}</TableCell>
                   <TableCell>{expense.cashierName}</TableCell>

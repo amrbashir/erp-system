@@ -81,7 +81,7 @@ function Users() {
         <Table>
           <TableHeader>
             <TableRow className="*:font-bold">
-              <TableHead></TableHead>
+              <TableHead>{t("number")}</TableHead>
               <TableHead className="min-w-[50%]">{t("username")}</TableHead>
               <TableHead>{t("role")}</TableHead>
               <TableHead>{t("createdAt")}</TableHead>

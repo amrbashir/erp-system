@@ -139,5 +139,7 @@
   "noCustomers": "No customers found",
 
   "invoiceNumber": "Invoice No.",
-  "customerId": "Customer ID"
+  "customerId": "Customer ID",
+
+  "number": "No."
 }

@@ -97,8 +97,8 @@ function InvoiceRow({
           <TableCell colSpan={7} className="pt-0">
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>{}</TableHead>
+                <TableRow className="*:font-bold">
+                  <TableHead>{t("number")}</TableHead>
                   <TableHead className="w-full">{t("description")}</TableHead>
                   <TableHead>{t("quantity")}</TableHead>
                   <TableHead>{t("sellingPrice")}</TableHead>

@@ -372,6 +372,7 @@ function InvoiceTable({
         <Table>
           <TableHeader>
             <TableRow className="*:font-bold">
+              <TableHead>{t("number")}</TableHead>
               <TableHead className="w-full">{t("description")}</TableHead>
               <TableHead>{t("quantity")}</TableHead>
               <TableHead>{t("sellingPrice")}</TableHead>
@@ -382,6 +383,7 @@ function InvoiceTable({
           <TableBody>
             {items.map((item, index) => (
               <TableRow key={index}>
+                <TableCell>{index + 1}</TableCell>
                 <TableCell>{item.description}</TableCell>
                 <TableCell>
                   <Input

@@ -44,7 +44,7 @@ function Transactions() {
           <Table>
             <TableHeader>
               <TableRow className="*:font-bold">
-                <TableHead></TableHead>
+                <TableHead>{t("number")}</TableHead>
                 <TableHead>{t("moneyAmount")}</TableHead>
                 <TableHead>{t("username")}</TableHead>
                 <TableHead>{t("customerName")}</TableHead>
