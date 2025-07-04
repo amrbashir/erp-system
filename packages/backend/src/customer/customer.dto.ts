@@ -22,7 +22,7 @@ export class CreateCustomerDto {
 
 export class CustomerEntity {
   @ApiProperty()
-  id: string;
+  id: number;
 
   @ApiProperty()
   name: string;

@@ -135,5 +135,6 @@
   "addItemsToInvoice": "Add items to the invoice",
 
   "searchCustomers": "Search customers...",
-  "selectCustomer": "Select a customer"
+  "selectCustomer": "Select a customer",
+  "noCustomers": "No customers found"
 }

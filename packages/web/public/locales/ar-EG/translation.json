@@ -134,5 +134,6 @@
   "addItemsToInvoice": "أضف عناصر إلى الفاتورة",
 
   "searchCustomers": "ابحث عن العملاء...",
-  "selectCustomer": "اختر عميلًا"
+  "selectCustomer": "اختر عميلًا",
+  "noCustomers": "لا يوجد عملاء"
 }

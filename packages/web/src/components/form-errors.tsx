@@ -1,4 +1,5 @@
 import { type AnyFieldApi, type AnyFormState } from "@tanstack/react-form";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -56,6 +57,9 @@ export function FormErrors({
  */
 function ErrorElement({ error, fieldName }: { error: any; fieldName?: string }) {
   const { t } = useTranslation();
+  const [message, setMessage] = useState<string | string[] | null>(null);
+
+  const errors = Array.isArray(error) ? error : [error];
 
   const getError = (error: any): string | string[] => {
     return typeof error === "string"
@@ -69,7 +73,11 @@ function ErrorElement({ error, fieldName }: { error: any; fieldName?: string }) 
           : getError(error.message);
   };
 
-  const message = Array.isArray(error) ? error.map(getError) : getError(error);
+  useEffect(() => {
+    Promise.all(errors)
+      .then((e) => e.map((e) => (Array.isArray(e) ? e.map(getError).flat() : getError(e))))
+      .then((messages) => setMessage(messages.flat()));
+  }, [error, fieldName]);
 
   return Array.isArray(message) ? (
     message.map((msg, index) => (

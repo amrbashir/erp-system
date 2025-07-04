@@ -7,7 +7,7 @@ model Transaction {
   expense Expense?
 
   customer   Customer? @relation(fields: [customerId], references: [id])
-  customerId String?
+  customerId Int?
 
   createdAt DateTime @default(now())
 

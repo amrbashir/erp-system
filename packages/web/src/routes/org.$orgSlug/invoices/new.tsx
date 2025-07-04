@@ -62,7 +62,7 @@ type Customer = z.infer<typeof CustomerEntity>;
 type InvoiceItem = z.infer<typeof CreateInvoiceDto>["items"][number] & Product;
 type Invoice = {
   items: InvoiceItem[];
-  customerId?: string;
+  customerId?: number;
 };
 
 function CreateInvoice() {
@@ -95,7 +95,8 @@ function CreateInvoice() {
       onSubmit: async ({ value }) => {
         if (value.items.length === 0) return "invoiceMustHaveItems";
 
-        const res = await CreateInvoiceDto["~standard"].validate(value);
+        let res = await CreateInvoiceDto["~standard"].validate(value);
+        if (res instanceof Promise) res = await res;
         if (res.issues) return res.issues;
       },
     },
@@ -291,7 +292,7 @@ function ProductItem({
 }
 
 function CustomerSelect({
-  customers,
+  customers = [],
   field,
 }: {
   customers: Customer[] | undefined;
@@ -321,13 +322,14 @@ function CustomerSelect({
           <Command>
             <CommandInput placeholder={t("searchCustomers")} className="h-9" />
             <CommandList>
+              <CommandEmpty>{t("noCustomers")}</CommandEmpty>
               <CommandGroup>
-                {(customers ?? []).map((customer) => (
+                {customers.map((customer) => (
                   <CommandItem
                     key={customer.id}
-                    value={customer.id}
-                    onSelect={(currentValue) => {
-                      field.handleChange(currentValue);
+                    value={customer.name}
+                    onSelect={() => {
+                      field.handleChange(customer.id);
                       setOpen(false);
                     }}
                   >

@@ -333,7 +333,7 @@ export interface components {
             phone?: string;
         };
         CustomerEntity: {
-            id: string;
+            id: number;
             name: string;
             email?: string;
             phone?: string;
@@ -394,7 +394,7 @@ export interface components {
             quantity: number;
         };
         CreateInvoiceDto: {
-            customerId?: string;
+            customerId?: number;
             items: components["schemas"]["CreateInvoiceItemDto"][];
         };
         ExpenseEntity: {

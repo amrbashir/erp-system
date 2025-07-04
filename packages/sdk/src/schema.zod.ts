@@ -53,7 +53,7 @@ export const CreateCustomerDto = z
 
 export const CustomerEntity = z
   .object({
-    id: z.string(),
+    id: z.number(),
     name: z.string(),
     email: z.string().optional(),
     phone: z.string().optional(),
@@ -121,7 +121,7 @@ export const CreateInvoiceItemDto = z
   .passthrough();
 
 export const CreateInvoiceDto = z
-  .object({ customerId: z.string().optional(), items: z.array(CreateInvoiceItemDto) })
+  .object({ customerId: z.number().optional(), items: z.array(CreateInvoiceItemDto) })
   .passthrough();
 
 export const ExpenseEntity = z

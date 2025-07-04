@@ -1,5 +1,5 @@
 model Customer {
-  id String @id @default(uuid())
+  id Int @id @default(autoincrement())
 
   name  String
   email String?

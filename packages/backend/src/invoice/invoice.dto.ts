@@ -80,7 +80,7 @@ export class CreateInvoiceDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  customerId?: string;
+  customerId?: number;
 
   @ApiProperty({
     type: [CreateInvoiceItemDto],

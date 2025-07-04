@@ -66,8 +66,6 @@ export class InvoiceService {
         const cashier = { connect: { id: userId } };
         const customer = dto.customerId ? { connect: { id: dto.customerId } } : undefined;
 
-        console.log("Creating invoice with items:", customer);
-
         // Create invoice with items in a transaction
         // Create the invoice
         const invoice = await prisma.invoice.create({
