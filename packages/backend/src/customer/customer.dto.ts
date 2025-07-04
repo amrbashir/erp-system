@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 import type { Customer } from "../prisma/generated/client";
 
@@ -9,10 +9,10 @@ export class CreateCustomerDto {
   @IsString()
   name: string;
 
-  @ApiPropertyOptional({ format: "email" })
-  @IsEmail()
+  @ApiPropertyOptional()
+  @IsString()
   @IsOptional()
-  email?: string;
+  address?: string;
 
   @ApiPropertyOptional()
   @IsString()
@@ -28,7 +28,7 @@ export class CustomerEntity {
   name: string;
 
   @ApiPropertyOptional()
-  email?: string;
+  address?: string;
 
   @ApiPropertyOptional()
   phone?: string;
@@ -45,7 +45,7 @@ export class CustomerEntity {
   constructor(customer: Customer) {
     this.id = customer.id;
     this.name = customer.name;
-    this.email = customer.email || undefined;
+    this.address = customer.address || undefined;
     this.phone = customer.phone || undefined;
     this.createdAt = customer.createdAt;
     this.updatedAt = customer.updatedAt;

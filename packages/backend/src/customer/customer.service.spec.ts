@@ -32,14 +32,14 @@ describe("CustomerService", async () => {
 
     const createCustomerDto: CreateCustomerDto = {
       name: "Test Customer",
-      email: "customer@email.com",
+      address: "123 Test St",
       phone: "1234567890",
     };
 
     const customer = await service.createCustomer(createCustomerDto, org.slug);
     expect(customer).toBeDefined();
     expect(customer.name).toBe(createCustomerDto.name);
-    expect(customer.email).toBe(createCustomerDto.email);
+    expect(customer.address).toBe(createCustomerDto.address);
     expect(customer.phone).toBe(createCustomerDto.phone);
     expect(customer.organizationId).toBe(org.id);
   });

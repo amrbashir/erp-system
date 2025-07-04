@@ -50,7 +50,7 @@ function Customers() {
               <TableRow className="*:font-bold">
                 <TableHead></TableHead>
                 <TableHead className="min-w-[50%]">{t("name")}</TableHead>
-                <TableHead>{t("email")}</TableHead>
+                <TableHead>{t("address")}</TableHead>
                 <TableHead>{t("phone")}</TableHead>
                 <TableHead>{t("createdAt")}</TableHead>
                 <TableHead>{t("updatedAt")}</TableHead>
@@ -61,7 +61,7 @@ function Customers() {
                 <TableRow key={index}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{customer.name}</TableCell>
-                  <TableCell>{customer.email}</TableCell>
+                  <TableCell>{customer.address}</TableCell>
                   <TableCell>{customer.phone}</TableCell>
                   <TableCell>
                     {new Date(customer.createdAt).toLocaleString(i18n.language)}

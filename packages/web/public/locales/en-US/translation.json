@@ -40,7 +40,7 @@
   "deletedAt": "Deleted At",
 
   "name": "Name",
-  "email": "Email",
+  "address": "Address",
   "phone": "Phone",
 
   "description": "Description",

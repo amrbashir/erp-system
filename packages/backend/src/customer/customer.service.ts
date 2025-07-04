@@ -21,8 +21,8 @@ export class CustomerService {
         return prisma.customer.create({
           data: {
             name: createCustomerDto.name,
-            email: createCustomerDto.email,
             phone: createCustomerDto.phone,
+            address: createCustomerDto.address,
             organization: { connect: { slug: orgSlug } },
           },
         });

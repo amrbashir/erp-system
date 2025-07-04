@@ -2,7 +2,7 @@ import { CreateCustomerDto } from "@erp-system/sdk/zod";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
 import {
@@ -35,7 +35,7 @@ export function AddCustomerDialog() {
   const form = useForm({
     defaultValues: {
       name: "",
-      email: undefined,
+      address: undefined,
       phone: undefined,
     } as z.infer<ReturnType<(typeof CreateCustomerDto)["strict"]>>,
     validators: {
@@ -130,8 +130,6 @@ function InputField({ field }: { field: AnyFieldApi }) {
         id={field.name}
         name={field.name}
         value={field.state.value}
-        type={field.name === "email" ? "email" : "text"}
-        placeholder={field.name === "email" ? "email@example.com" : ""}
         onChange={(e) => field.handleChange(e.target.value)}
       />
       <FormFieldError field={field} />

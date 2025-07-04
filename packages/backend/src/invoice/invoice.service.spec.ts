@@ -54,7 +54,7 @@ describe("InvoiceService", () => {
     const customer = await prismaService.customer.create({
       data: {
         name: "Test Customer",
-        email: "customer@test.com",
+        address: "123 Test St",
         phone: "1234567890",
         organization: { connect: { slug: org.slug } },
       },

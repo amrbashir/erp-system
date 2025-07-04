@@ -48,14 +48,14 @@ export const LoginResponseDto = z
 export const RefreshTokenResponseDto = z.object({ accessToken: z.string() }).passthrough();
 
 export const CreateCustomerDto = z
-  .object({ name: z.string(), email: z.string().email().optional(), phone: z.string().optional() })
+  .object({ name: z.string(), address: z.string().optional(), phone: z.string().optional() })
   .passthrough();
 
 export const CustomerEntity = z
   .object({
     id: z.number(),
     name: z.string(),
-    email: z.string().optional(),
+    address: z.string().optional(),
     phone: z.string().optional(),
     createdAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true }),

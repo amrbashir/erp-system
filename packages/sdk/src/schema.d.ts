@@ -328,14 +328,13 @@ export interface components {
         };
         CreateCustomerDto: {
             name: string;
-            /** Format: email */
-            email?: string;
+            address?: string;
             phone?: string;
         };
         CustomerEntity: {
             id: number;
             name: string;
-            email?: string;
+            address?: string;
             phone?: string;
             /** Format: date-time */
             createdAt: string;
