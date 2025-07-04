@@ -9,7 +9,9 @@ export function useOrg<TStrict extends boolean = true>(options?: {
   strict?: TStrict;
 }): TStrict extends true ? Organization : Organization | undefined {
   const { strict = true } = options ?? {};
-  const match = useRouterState({ select: (s) => s.matches.find((m) => m.routeId === "/org") });
+  const match = useRouterState({
+    select: (s) => s.matches.find((m) => m.routeId.startsWith("/org/")),
+  });
   const org = match?.loaderData;
   if (!org && strict) throw new Error("useOrg must be used within an /org/$orgSlug route");
   return org as TStrict extends true ? Organization : Organization | undefined;

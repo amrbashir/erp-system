@@ -19,15 +19,8 @@ import type z from "zod";
 import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
 import { useOrg } from "@/hooks/use-org";
-import i18n from "@/i18n";
 
-export const Route = createFileRoute("/org/$orgSlug/invoices")({
-  component: Invoices,
-  context: () => ({
-    title: i18n.t("pages.invoices"),
-    icon: ReceiptTextIcon,
-  }),
-});
+export const Route = createFileRoute("/org/$orgSlug/invoices/")({ component: Invoices });
 
 function Invoices() {
   const { slug: orgSlug } = useOrg();
@@ -44,7 +37,7 @@ function Invoices() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <div>
-        <Button onClick={() => navigate({ to: "/org/$orgSlug/create-invoice" })}>
+        <Button onClick={() => navigate({ to: "/org/$orgSlug/invoices/new" })}>
           {t("pages.createInvoice")}
         </Button>
       </div>

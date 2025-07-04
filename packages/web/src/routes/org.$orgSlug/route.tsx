@@ -11,7 +11,7 @@ interface OrgSearch {
   redirect?: string;
 }
 
-export const Route = createFileRoute("/org")({
+export const Route = createFileRoute("/org/$orgSlug")({
   component: Org,
   validateSearch: ({ search }) => search as OrgSearch,
   beforeLoad: async ({ context, location, search, params }) => {

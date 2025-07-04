@@ -17,9 +17,9 @@ function NavigationBreadcrumbs() {
   const matches = useMatches();
 
   const breadcrumbs = matches
-    .filter(({ context }) => context?.title)
+    .filter(({ __routeContext: context }) => context?.title)
     .map(({ pathname, context }) => ({
-      path: pathname,
+      pathname,
       title: context?.title,
     }));
 
@@ -30,10 +30,10 @@ function NavigationBreadcrumbs() {
     <Breadcrumb>
       <BreadcrumbList>
         {otherCrumbs.map((crumb) => (
-          <Fragment key={crumb.path}>
+          <Fragment key={crumb.pathname}>
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link className="text-base font-medium" to={crumb.path}>
+                <Link className="text-base font-medium" to={crumb.pathname}>
                   {crumb.title}
                 </Link>
               </BreadcrumbLink>

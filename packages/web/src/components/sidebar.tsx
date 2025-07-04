@@ -1,4 +1,4 @@
-import { Link, useLocation, useRouter } from "@tanstack/react-router";
+import { Link, useLocation, useMatches, useRouter } from "@tanstack/react-router";
 import { ChevronDownIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
@@ -80,15 +80,12 @@ function RoutesGroup({
   if (routes.length === 0) return null;
 
   const { flatRoutes } = useRouter();
-  const currentLocation = useLocation({ select: (state) => state.pathname });
-  const { slug: orgSlug } = useOrg();
+  const matches = useMatches();
 
   const routesData = routes.map((r) => {
     const route = flatRoutes.find((route) => route.to === r);
     const data = route?.options.context();
-    const location = route?.to.replace("$orgSlug", orgSlug);
-    const trimmedLocation = location.endsWith("/") ? location.slice(0, -1) : location;
-    const isActive = trimmedLocation === currentLocation;
+    const isActive = matches.some((m) => m.fullPath === route?.fullPath);
 
     return {
       url: route?.to,

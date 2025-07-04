@@ -49,7 +49,7 @@ import { FormErrors } from "@/components/form-errors";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 
-export const Route = createFileRoute("/org/$orgSlug/create-invoice")({
+export const Route = createFileRoute("/org/$orgSlug/invoices/new")({
   component: CreateInvoice,
   context: () => ({
     title: i18n.t("pages.createInvoice"),
