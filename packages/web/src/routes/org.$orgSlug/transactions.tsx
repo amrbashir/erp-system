@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { BanknoteIcon } from "lucide-react";
+import { ArrowUpIcon, BanknoteIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   Table,
@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/shadcn/components/ui/table";
+import { cn } from "@/shadcn/lib/utils";
 
 import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
@@ -55,7 +56,17 @@ function Transactions() {
               {(transactions ?? []).map((transaction, index) => (
                 <TableRow key={index}>
                   <TableCell>{transaction.id}</TableCell>
-                  <TableCell>{transaction.amount}</TableCell>
+                  <TableCell>
+                    <span className="flex gap-2">
+                      <ArrowUpIcon
+                        className={cn(
+                          "-ms-8",
+                          transaction.amount >= 0 ? "text-green-300" : "-scale-y-100 text-red-300",
+                        )}
+                      />
+                      {transaction.amount}
+                    </span>
+                  </TableCell>
                   <TableCell>{transaction.username}</TableCell>
                   <TableCell>{transaction.customerName}</TableCell>
                   <TableCell>
