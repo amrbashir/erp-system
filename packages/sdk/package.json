@@ -17,13 +17,13 @@
   },
   "dependencies": {
     "openapi-fetch": "^0.14.0",
-    "zod": "^3.25.67"
+    "zod": "^3.25.74"
   },
   "devDependencies": {
-    "@types/node": "^24.0.3",
+    "@types/node": "^24.0.10",
     "openapi-typescript": "^7.8.0",
     "openapi-zod-client": "^1.18.3",
-    "tsdown": "^0.12.7",
+    "tsdown": "^0.12.9",
     "typescript": "^5.8.3"
   }
 }

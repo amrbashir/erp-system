@@ -12,8 +12,8 @@
     "lint": "tsc --noEmit"
   },
   "devDependencies": {
-    "vitest": "^3.2.3",
-    "tsdown": "^0.12.7",
-    "typescript": "^5.8.3"
+    "tsdown": "^0.12.9",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   }
 }
