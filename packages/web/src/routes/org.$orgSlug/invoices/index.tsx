@@ -52,6 +52,9 @@ function Invoices() {
                 <TableHead>{t("customer.name")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
                 <TableHead>{t("common.dates.updatedAt")}</TableHead>
+                <TableHead>{t("invoice.subtotal")}</TableHead>
+                <TableHead>{t("invoice.discountPercent")}</TableHead>
+                <TableHead>{t("invoice.discountAmount")}</TableHead>
                 <TableHead>{t("invoice.total")}</TableHead>
                 <TableHead className="text-end!"></TableHead>
               </TableRow>
@@ -85,6 +88,9 @@ function InvoiceRow({
         <TableCell>{invoice.customerName}</TableCell>
         <TableCell>{new Date(invoice.createdAt).toLocaleString(i18n.language)}</TableCell>
         <TableCell>{new Date(invoice.updatedAt).toLocaleString(i18n.language)}</TableCell>
+        <TableCell>{invoice.subtotal}</TableCell>
+        <TableCell>{invoice.discount_percent}%</TableCell>
+        <TableCell>{invoice.discount_amount}</TableCell>
         <TableCell>{invoice.total}</TableCell>
         <TableCell className="text-end!">
           <Button onClick={() => setOpen((prev) => !prev)} variant="ghost" size="sm">
@@ -94,7 +100,7 @@ function InvoiceRow({
       </TableRow>
       {open && (
         <TableRow className="bg-muted/50">
-          <TableCell colSpan={7} className="pt-0">
+          <TableCell colSpan={10} className="pt-0">
             <Table>
               <TableHeader>
                 <TableRow className="*:font-bold">
@@ -102,6 +108,9 @@ function InvoiceRow({
                   <TableHead className="w-full">{t("common.form.description")}</TableHead>
                   <TableHead>{t("common.form.quantity")}</TableHead>
                   <TableHead>{t("common.form.price")}</TableHead>
+                  <TableHead>{t("invoice.subtotal")}</TableHead>
+                  <TableHead>{t("invoice.discountPercent")}</TableHead>
+                  <TableHead>{t("invoice.discountAmount")}</TableHead>
                   <TableHead className="text-end!">{t("invoice.total")}</TableHead>
                 </TableRow>
               </TableHeader>
@@ -112,7 +121,10 @@ function InvoiceRow({
                     <TableCell>{item.description}</TableCell>
                     <TableCell>{item.quantity}</TableCell>
                     <TableCell>{item.selling_price}</TableCell>
-                    <TableCell className="text-end">{item.selling_price * item.quantity}</TableCell>
+                    <TableCell>{item.subtotal}</TableCell>
+                    <TableCell>{item.discount_percent}%</TableCell>
+                    <TableCell>{item.discount_amount}</TableCell>
+                    <TableCell className="text-end">{item.total}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

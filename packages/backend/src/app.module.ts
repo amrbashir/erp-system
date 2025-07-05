@@ -46,7 +46,7 @@ export function setupApp(app: INestApplication) {
     defaultVersion: [VERSION_NEUTRAL, "1.0.0"],
   });
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));

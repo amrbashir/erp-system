@@ -4,12 +4,13 @@ import {
   ApiCreatedResponse,
   ApiHeader,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
 } from "@nestjs/swagger";
 
-import type { PaginationDto } from "../pagination.dto";
 import type { Customer } from "../prisma/generated/client";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
+import { PaginationDto } from "../pagination.dto";
 import { CreateCustomerDto, CustomerEntity } from "./customer.dto";
 import { CustomerService } from "./customer.service";
 
@@ -31,6 +32,7 @@ export class CustomerController {
   }
 
   @Get("getAll")
+  @ApiQuery({ type: PaginationDto })
   @ApiOkResponse({ type: [CustomerEntity] })
   async getAll(
     @Param("orgSlug") orgSlug: string,

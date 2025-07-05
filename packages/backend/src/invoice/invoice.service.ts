@@ -36,8 +36,8 @@ export class InvoiceService {
         });
 
         // Check stock quantities and prepare invoice items
-        const invoiceItems: InvoiceItem[] = [];
-        let total = 0;
+        const invoiceItems: Omit<InvoiceItem, "id" | "invoiceId">[] = [];
+        let subtotal = 0;
 
         for (const item of dto.items) {
           const product = products.find((p) => p.id === item.productId);
@@ -52,15 +52,27 @@ export class InvoiceService {
             );
           }
 
+          // Calculate item subtotal (before invoice-level discount)
+          const itemSubtotal = product.selling_price * item.quantity;
+          const itemPercentDiscount = (itemSubtotal * item.discount_percent) / 100;
+          const itemTotal = Math.max(0, itemSubtotal - itemPercentDiscount - item.discount_amount);
+
           invoiceItems.push({
             description: product.description,
             purchase_price: product.purchase_price,
             selling_price: product.selling_price,
             quantity: item.quantity,
-          } as InvoiceItem);
-
-          total += product.selling_price * item.quantity;
+            discount_percent: item.discount_percent,
+            discount_amount: item.discount_amount,
+            subtotal: itemSubtotal,
+            total: itemTotal,
+          });
+          subtotal += itemTotal;
         }
+
+        // Apply invoice-level discount
+        const percentDiscount = (subtotal * dto.discount_percent) / 100;
+        const total = Math.max(0, subtotal - percentDiscount - dto.discount_amount);
 
         const organization = { connect: { slug: orgSlug } };
         const cashier = { connect: { id: userId } };
@@ -71,6 +83,9 @@ export class InvoiceService {
         const invoice = await prisma.invoice.create({
           data: {
             items: { create: invoiceItems },
+            subtotal,
+            discount_percent: dto.discount_percent,
+            discount_amount: dto.discount_amount,
             total,
             cashier,
             customer,

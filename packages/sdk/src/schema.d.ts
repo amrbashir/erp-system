@@ -212,22 +212,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/org/{orgSlug}/invoice/getAll": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["InvoiceController$1_getAll"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/org/{orgSlug}/invoice/create": {
         parameters: {
             query?: never;
@@ -238,6 +222,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["InvoiceController$1_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/org/{orgSlug}/invoice/getAll": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["InvoiceController$1_getAll"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -368,14 +368,33 @@ export interface components {
             username: string;
             customerName?: string;
         };
+        CreateInvoiceItemDto: {
+            productId: string;
+            quantity: number;
+            discount_percent?: number;
+            discount_amount?: number;
+        };
+        CreateInvoiceDto: {
+            customerId?: number;
+            items: components["schemas"]["CreateInvoiceItemDto"][];
+            discount_percent?: number;
+            discount_amount?: number;
+        };
         InvoiceItemEntity: {
             description: string;
             purchase_price: number;
             selling_price: number;
             quantity: number;
+            discount_percent: number;
+            discount_amount: number;
+            subtotal: number;
+            total: number;
         };
         InvoiceEntity: {
             id: number;
+            subtotal: number;
+            discount_percent: number;
+            discount_amount: number;
             total: number;
             /** Format: date-time */
             createdAt: string;
@@ -385,16 +404,6 @@ export interface components {
             customerName?: string;
             transactionId: number;
             items: components["schemas"]["InvoiceItemEntity"][];
-        };
-        CreateInvoiceItemDto: {
-            /** @description Product ID */
-            productId: string;
-            /** @description Quantity of the product */
-            quantity: number;
-        };
-        CreateInvoiceDto: {
-            customerId?: number;
-            items: components["schemas"]["CreateInvoiceItemDto"][];
         };
         ExpenseEntity: {
             id: number;
@@ -510,7 +519,10 @@ export interface operations {
     };
     UserController$1_getAll: {
         parameters: {
-            query?: never;
+            query?: {
+                skip?: number;
+                take?: number;
+            };
             header?: {
                 Authorization?: string;
             };
@@ -623,7 +635,10 @@ export interface operations {
     };
     CustomerController$1_getAll: {
         parameters: {
-            query?: never;
+            query?: {
+                skip?: number;
+                take?: number;
+            };
             header?: {
                 Authorization?: string;
             };
@@ -673,7 +688,10 @@ export interface operations {
     };
     ProductController$1_getAll: {
         parameters: {
-            query?: never;
+            query?: {
+                skip?: number;
+                take?: number;
+            };
             header?: {
                 Authorization?: string;
             };
@@ -696,7 +714,10 @@ export interface operations {
     };
     TransactionController$1_getAll: {
         parameters: {
-            query?: never;
+            query?: {
+                skip?: number;
+                take?: number;
+            };
             header?: {
                 Authorization?: string;
             };
@@ -713,29 +734,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TransactionEntity"][];
-                };
-            };
-        };
-    };
-    InvoiceController$1_getAll: {
-        parameters: {
-            query?: never;
-            header?: {
-                Authorization?: string;
-            };
-            path: {
-                orgSlug: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["InvoiceEntity"][];
                 };
             };
         };
@@ -765,9 +763,38 @@ export interface operations {
             };
         };
     };
+    InvoiceController$1_getAll: {
+        parameters: {
+            query?: {
+                skip?: number;
+                take?: number;
+            };
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceEntity"][];
+                };
+            };
+        };
+    };
     ExpenseController$1_getAll: {
         parameters: {
-            query?: never;
+            query?: {
+                skip?: number;
+                take?: number;
+            };
             header?: {
                 Authorization?: string;
             };

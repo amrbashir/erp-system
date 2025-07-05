@@ -154,7 +154,10 @@
     "number": "$t(common.ui.number) الفاتورة",
     "createdSuccessfully": "تم إنشاء الفاتورة بنجاح",
     "addItemsTo": "أضف عناصر إلى الفاتورة",
-    "total": "الإجمالي"
+    "total": "الإجمالي",
+    "subtotal": "المجموع الفرعي",
+    "discountPercent": "نسبة الخصم %",
+    "discountAmount": "قيمة الخصم"
   },
 
   "goBackHome": "العودة إلى الصفحة الرئيسية",

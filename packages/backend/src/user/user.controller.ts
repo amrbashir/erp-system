@@ -10,11 +10,11 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiQuery, ApiTags } from "@nestjs/swagger";
 
 import type { JwtPayload } from "../auth/auth.dto";
-import type { PaginationDto } from "../pagination.dto";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
+import { PaginationDto } from "../pagination.dto";
 import { AdminGuard } from "./user.admin.guard";
 import { CreateUserDto, DeleteUserDto, UserEntity } from "./user.dto";
 import { UserService } from "./user.service";
@@ -51,8 +51,9 @@ export class UserController {
   }
 
   @Get("getAll")
+  @ApiQuery({ type: PaginationDto })
   @ApiOkResponse({ type: [UserEntity] })
-  async getAll(@Param("orgSlug") orgSlug: string, @Query() pagination?: PaginationDto) {
+  async getAll(@Param("orgSlug") orgSlug: string, @Query() pagination: PaginationDto) {
     const users = await this.userService.getAllUsers(orgSlug, { pagination });
     return users.map((user) => new UserEntity(user));
   }

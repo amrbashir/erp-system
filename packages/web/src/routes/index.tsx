@@ -3,7 +3,7 @@ import { slugify } from "@erp-system/utils";
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Loader2Icon } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/components/ui/button";
@@ -29,6 +29,7 @@ import { useAuth } from "@/providers/auth";
 interface IndexSearch {
   redirect?: string;
   loginOrgSlug?: string;
+  loginUsername?: string;
 }
 
 export const Route = createFileRoute("/")({
@@ -39,6 +40,8 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { t } = useTranslation();
   const { user, isAuthenticated } = useAuth();
+
+  const loginFormPasswordRef = useRef<HTMLInputElement>(null);
 
   return (
     <main className="w-full px-5 py-10 md:pt-[25%]">
@@ -52,7 +55,10 @@ function Index() {
           {isAuthenticated && user ? (
             <LoginExistingOrg user={user} className="w-full md:w-auto md:min-w-sm *:md:min-w-sm" />
           ) : (
-            <LoginForm className="w-full md:w-auto md:min-w-sm *:md:min-w-sm" />
+            <LoginForm
+              loginFormPasswordRef={loginFormPasswordRef}
+              className="w-full md:w-auto md:min-w-sm *:md:min-w-sm"
+            />
           )}
         </div>
 
@@ -62,7 +68,10 @@ function Index() {
           <Separator className="flex-2" />
         </div>
 
-        <CreateNewOrganizationCard className="md:self-end md:min-w-sm *:md:min-w-sm" />
+        <CreateNewOrganizationCard
+          className="md:self-end md:min-w-sm *:md:min-w-sm"
+          loginFormPasswordRef={loginFormPasswordRef}
+        />
       </div>
     </main>
   );
@@ -80,7 +89,7 @@ export function LoginExistingOrg({
     authLogout(user.orgSlug);
     navigate({
       to: "/",
-      search: { loginOrgSlug: user.orgSlug },
+      search: { loginOrgSlug: user.orgSlug, loginUsername: user.username },
     });
   }, [authLogout, navigate]);
 
@@ -109,17 +118,22 @@ export function LoginExistingOrg({
   );
 }
 
-function LoginForm(props: React.ComponentProps<typeof Card>) {
+function LoginForm({
+  loginFormPasswordRef,
+  ...props
+}: React.ComponentProps<typeof Card> & {
+  loginFormPasswordRef: React.RefObject<HTMLInputElement | null>;
+}) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { login } = useAuth();
 
-  const { loginOrgSlug: orgSlug, redirect } = Route.useSearch();
+  const { loginOrgSlug: orgSlug, loginUsername: username, redirect } = Route.useSearch();
 
   const form = useForm({
     defaultValues: {
       orgSlug: orgSlug || "",
-      username: "",
+      username: username || "",
       password: "",
     } as z.infer<ReturnType<(typeof LoginUserDto)["strict"]>> & { orgSlug: string },
     onSubmit: async ({ value, formApi }) => {
@@ -199,6 +213,7 @@ function LoginForm(props: React.ComponentProps<typeof Card>) {
                     name={field.name}
                     value={field.state.value}
                     type="password"
+                    ref={loginFormPasswordRef}
                     onChange={(e) => field.handleChange(e.target.value)}
                     required
                   />
@@ -224,10 +239,14 @@ function LoginForm(props: React.ComponentProps<typeof Card>) {
   );
 }
 
-function CreateNewOrganizationCard(props: React.ComponentProps<typeof Card>) {
+function CreateNewOrganizationCard({
+  loginFormPasswordRef,
+  ...props
+}: React.ComponentProps<typeof Card> & {
+  loginFormPasswordRef: React.RefObject<HTMLInputElement | null>;
+}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { logout, isAuthenticated, user } = useAuth();
 
   const form = useForm({
     defaultValues: {
@@ -255,12 +274,10 @@ function CreateNewOrganizationCard(props: React.ComponentProps<typeof Card>) {
 
       toast.success(t("org.createdSuccessfully"));
 
-      // If the user is authenticated, log them out before redirecting
-      // to the new organization.
-      if (isAuthenticated && user) logout(user.orgSlug);
-
       // Navigate to the new organization
-      navigate({ to: "/", search: { loginOrgSlug: value.slug } });
+      navigate({ to: "/", search: { loginOrgSlug: value.slug, loginUsername: value.username } });
+      form.reset();
+      loginFormPasswordRef.current?.focus();
     },
   });
 

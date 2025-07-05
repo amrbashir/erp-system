@@ -6,6 +6,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Max,
   Min,
   ValidateNested,
 } from "class-validator";
@@ -14,16 +15,29 @@ import type { InvoiceItem } from "../prisma/generated/client";
 import type { InvoiceWithRelations } from "./invoice.service";
 
 export class CreateInvoiceItemDto {
-  @ApiProperty({ description: "Product ID" })
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   productId: string;
 
-  @ApiProperty({ description: "Quantity of the product" })
+  @ApiProperty()
   @IsNotEmpty()
   @IsInt()
   @Min(1)
   quantity: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  discount_percent: number = 0;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  discount_amount: number = 0;
 }
 
 export class CreateInvoiceDto {
@@ -37,6 +51,19 @@ export class CreateInvoiceDto {
   @ValidateNested({ each: true })
   @Type(() => CreateInvoiceItemDto)
   items: CreateInvoiceItemDto[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  discount_percent: number = 0;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  discount_amount: number = 0;
 }
 
 export class InvoiceItemEntity {
@@ -52,17 +79,42 @@ export class InvoiceItemEntity {
   @ApiProperty()
   quantity: number;
 
+  @ApiProperty()
+  discount_percent: number;
+
+  @ApiProperty()
+  discount_amount: number;
+
+  @ApiProperty()
+  subtotal: number;
+
+  @ApiProperty()
+  total: number;
+
   constructor(item: InvoiceItem) {
     this.description = item.description;
     this.purchase_price = item.purchase_price;
     this.selling_price = item.selling_price;
     this.quantity = item.quantity;
+    this.discount_percent = item.discount_percent;
+    this.discount_amount = item.discount_amount;
+    this.subtotal = item.subtotal;
+    this.total = item.total;
   }
 }
 
 export class InvoiceEntity {
   @ApiProperty()
   id: number;
+
+  @ApiProperty()
+  subtotal: number;
+
+  @ApiProperty()
+  discount_percent: number;
+
+  @ApiProperty()
+  discount_amount: number;
 
   @ApiProperty()
   total: number;
@@ -87,6 +139,9 @@ export class InvoiceEntity {
 
   constructor(invoice: InvoiceWithRelations) {
     this.id = invoice.id;
+    this.subtotal = invoice.subtotal;
+    this.discount_percent = invoice.discount_percent;
+    this.discount_amount = invoice.discount_amount;
     this.total = invoice.total;
     this.createdAt = invoice.createdAt;
     this.updatedAt = invoice.updatedAt;

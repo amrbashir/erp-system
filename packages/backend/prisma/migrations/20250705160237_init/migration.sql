@@ -17,7 +17,7 @@ CREATE TABLE "customers" (
 
 -- CreateTable
 CREATE TABLE "expenses" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "description" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -37,6 +37,10 @@ CREATE TABLE "invoice_items" (
     "purchase_price" INTEGER NOT NULL,
     "selling_price" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL,
+    "discount_percent" INTEGER NOT NULL DEFAULT 0,
+    "discount_amount" INTEGER NOT NULL DEFAULT 0,
+    "subtotal" INTEGER NOT NULL,
+    "total" INTEGER NOT NULL,
     "invoiceId" INTEGER NOT NULL,
 
     CONSTRAINT "invoice_items_pkey" PRIMARY KEY ("id")
@@ -45,6 +49,9 @@ CREATE TABLE "invoice_items" (
 -- CreateTable
 CREATE TABLE "invoices" (
     "id" SERIAL NOT NULL,
+    "subtotal" INTEGER NOT NULL,
+    "discount_percent" INTEGER NOT NULL DEFAULT 0,
+    "discount_amount" INTEGER NOT NULL DEFAULT 0,
     "total" INTEGER NOT NULL,
     "customerId" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

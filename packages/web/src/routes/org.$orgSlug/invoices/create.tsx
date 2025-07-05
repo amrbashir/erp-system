@@ -1,4 +1,9 @@
-import { CreateInvoiceDto, CustomerEntity, ProductEntity } from "@erp-system/sdk/zod";
+import {
+  CreateInvoiceDto,
+  CreateInvoiceItemDto,
+  CustomerEntity,
+  ProductEntity,
+} from "@erp-system/sdk/zod";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
@@ -57,13 +62,14 @@ export const Route = createFileRoute("/org/$orgSlug/invoices/create")({
   }),
 });
 
+type CreateInvoiceItem = z.infer<typeof CreateInvoiceItemDto>;
+
 type Product = z.infer<typeof ProductEntity>;
 type Customer = z.infer<typeof CustomerEntity>;
-type InvoiceItem = z.infer<typeof CreateInvoiceDto>["items"][number] & Product;
-type Invoice = {
-  items: InvoiceItem[];
-  customerId?: number;
+type Invoice = z.infer<ReturnType<(typeof CreateInvoiceDto)["strict"]>> & {
+  items?: (CreateInvoiceItem & Product)[];
 };
+type InvoiceItem = Invoice["items"][number];
 
 function CreateInvoice() {
   const { slug: orgSlug } = useOrg();
@@ -90,6 +96,8 @@ function CreateInvoice() {
     defaultValues: {
       items: [],
       customerId: undefined,
+      discount_percent: 0,
+      discount_amount: 0,
     } as Invoice,
     validators: {
       onSubmit: ({ value, formApi }) => {
@@ -116,10 +124,13 @@ function CreateInvoice() {
     },
   });
 
-  const invoiceItems = useStore(form.store, (state) => state.values.items);
+  const [invoiceItems, invoiceDiscountPercent, invoiceDiscountAmount] = useStore(
+    form.store,
+    (state) => [state.values.items, state.values.discount_percent, state.values.discount_amount],
+  );
 
-  const addProduct = (product: Product) => {
-    const existingIndex = invoiceItems.findIndex((item) => item.productId === product.id);
+  const addItem = (product: Product) => {
+    const existingIndex = invoiceItems.findIndex((i) => i.productId === product.id);
     if (existingIndex >= 0) {
       const newItems = [...invoiceItems];
       newItems[existingIndex] = {
@@ -138,14 +149,14 @@ function CreateInvoice() {
     form.validate("change");
   };
 
-  const removeProduct = (index: number) => {
+  const removeItem = (index: number) => {
     const newItems = [...form.getFieldValue("items")];
     newItems.splice(index, 1);
     form.setFieldValue("items", newItems);
     form.validate("change");
   };
 
-  const updateProductQuantity = (index: number, quantity: number) => {
+  const updateItemQuantity = (index: number, quantity: number) => {
     const product = products?.find((p) => p.id === invoiceItems[index].productId);
     if (!product) return;
 
@@ -153,6 +164,20 @@ function CreateInvoice() {
     newItems[index] = {
       ...newItems[index],
       quantity: quantity,
+    };
+    form.setFieldValue("items", newItems);
+    form.validate("change");
+  };
+
+  const updateItemDiscount = (
+    index: number,
+    field: "discount_percent" | "discount_amount",
+    value: number,
+  ) => {
+    const newItems = [...invoiceItems];
+    newItems[index] = {
+      ...newItems[index],
+      [field]: value,
     };
     form.setFieldValue("items", newItems);
     form.validate("change");
@@ -186,7 +211,7 @@ function CreateInvoice() {
                 >
                   {t("common.actions.cancel")}
                 </Button>
-                <Button type="submit" disabled={!canSubmit}>
+                <Button type="submit" disabled={!canSubmit || invoiceItems.length === 0}>
                   {isSubmitting && <Loader2Icon className="animate-spin" />}
                   {t("common.actions.create")}
                 </Button>
@@ -200,17 +225,26 @@ function CreateInvoice() {
         <ResizablePanel className="p-2 overflow-y-auto!">
           <InvoiceTable
             items={invoiceItems}
-            updateProductQuantity={updateProductQuantity}
-            removeProduct={removeProduct}
+            invoiceDiscountAmount={invoiceDiscountAmount}
+            invoiceDiscountPercent={invoiceDiscountPercent}
+            updateItemQuantity={updateItemQuantity}
+            removeItem={removeItem}
+            updateItemDiscount={updateItemDiscount}
+            updateInvoiceDiscount={(field, value) => {
+              form.setFieldValue(field, value);
+              form.validate("change");
+            }}
           />
 
-          <FormErrors formState={form.state} />
+          <div className="mt-2">
+            <FormErrors formState={form.state} />
+          </div>
         </ResizablePanel>
 
         <ResizableHandle withHandle />
 
         <ResizablePanel className="p-2 overflow-y-auto!" defaultSize={50}>
-          <ProductsSidebar products={products} onAdd={addProduct} invoiceItems={invoiceItems} />
+          <ProductsSidebar products={products} onAdd={addItem} invoiceItems={invoiceItems} />
         </ResizablePanel>
       </ResizablePanelGroup>
     </form>
@@ -223,7 +257,7 @@ function ProductsSidebar({
   invoiceItems,
 }: {
   products: Product[] | undefined;
-  onAdd: (product: Product) => void;
+  onAdd: (item: Product) => void;
   invoiceItems: InvoiceItem[];
 }) {
   const { t } = useTranslation();
@@ -357,19 +391,42 @@ function CustomerSelect({
 
 function InvoiceTable({
   items,
-  updateProductQuantity,
-  removeProduct,
+  invoiceDiscountPercent = 0,
+  invoiceDiscountAmount = 0,
+  updateItemQuantity,
+  removeItem,
+  updateItemDiscount,
+  updateInvoiceDiscount,
 }: {
   items: InvoiceItem[];
-  updateProductQuantity: (index: number, quantity: number) => void;
-  removeProduct: (index: number) => void;
+  invoiceDiscountPercent?: number;
+  invoiceDiscountAmount?: number;
+  updateItemQuantity: (index: number, quantity: number) => void;
+  removeItem: (index: number) => void;
+  updateItemDiscount: (
+    index: number,
+    field: "discount_percent" | "discount_amount",
+    value: number,
+  ) => void;
+  updateInvoiceDiscount: (field: "discount_percent" | "discount_amount", value: any) => void;
 }) {
   const { t } = useTranslation();
 
-  const totalPrice = useMemo(
-    () => items.reduce((total, item) => total + item.selling_price! * item.quantity, 0),
+  // Calculate subtotal (before invoice-level discounts)
+  const subtotal = useMemo(
+    () =>
+      items.reduce((total, item) => {
+        const itemSubtotal = item.selling_price! * item.quantity;
+        const percentDiscount = ((item.discount_percent || 0) / 100) * itemSubtotal;
+        const itemTotal = itemSubtotal - percentDiscount - (item.discount_amount || 0);
+        return total + itemTotal;
+      }, 0),
     [items],
   );
+
+  // Calculate final total after all discounts
+  const percentDiscount = (subtotal * invoiceDiscountPercent) / 100;
+  const totalPrice = Math.max(0, subtotal - percentDiscount - invoiceDiscountAmount);
 
   return (
     <div className="border rounded-lg">
@@ -381,46 +438,113 @@ function InvoiceTable({
               <TableHead className="w-full">{t("common.form.description")}</TableHead>
               <TableHead>{t("common.form.quantity")}</TableHead>
               <TableHead>{t("common.form.price")}</TableHead>
+              <TableHead>{t("invoice.subtotal")}</TableHead>
+              <TableHead>{t("invoice.discountPercent")}</TableHead>
+              <TableHead>{t("invoice.discountAmount")}</TableHead>
               <TableHead className="text-end!">{t("invoice.total")}</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {items.map((item, index) => (
-              <TableRow key={index}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{item.description}</TableCell>
-                <TableCell>
-                  <Input
-                    className="w-20"
-                    type="number"
-                    value={item.quantity}
-                    onChange={(e) => updateProductQuantity(index, Number(e.target.value))}
-                    min={1}
-                    max={item.stock_quantity}
-                  />
-                </TableCell>
-                <TableCell>{item.selling_price}</TableCell>
-                <TableCell className="text-end">
-                  {(item.selling_price! * item.quantity).toFixed(2)}
-                </TableCell>
-                <TableCell>
-                  <Button
-                    type="button"
-                    onClick={() => removeProduct(index)}
-                    variant="ghost"
-                    size="sm"
-                  >
-                    <TrashIcon />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {items.map((item, index) => {
+              const itemSubtotal = item.selling_price * item.quantity;
+              const percentDiscount = (itemSubtotal * (item.discount_percent || 0)) / 100;
+              const itemTotal = itemSubtotal - percentDiscount - (item.discount_amount || 0);
+
+              return (
+                <TableRow key={index}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{item.description}</TableCell>
+                  <TableCell>
+                    <Input
+                      className="w-20"
+                      type="number"
+                      value={item.quantity}
+                      onChange={(e) => updateItemQuantity(index, Number(e.target.value))}
+                      min={1}
+                      max={item.stock_quantity}
+                    />
+                  </TableCell>
+                  <TableCell>{item.selling_price}</TableCell>
+                  <TableCell>{item.selling_price * item.quantity}</TableCell>
+                  <TableCell>
+                    <Input
+                      className="w-20"
+                      type="number"
+                      value={item.discount_percent || 0}
+                      onChange={(e) =>
+                        updateItemDiscount(index, "discount_percent", Number(e.target.value))
+                      }
+                      min={0}
+                      max={100}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Input
+                      className="w-20"
+                      type="number"
+                      value={item.discount_amount || 0}
+                      onChange={(e) =>
+                        updateItemDiscount(index, "discount_amount", Number(e.target.value))
+                      }
+                      min={0}
+                    />
+                  </TableCell>
+                  <TableCell className="text-end">{itemTotal.toFixed(2)}</TableCell>
+                  <TableCell>
+                    <Button
+                      type="button"
+                      onClick={() => removeItem(index)}
+                      variant="ghost"
+                      size="sm"
+                    >
+                      <TrashIcon />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
-          <TableFooter>
-            <TableRow className="*:font-bold">
-              <TableCell colSpan={4}>{t("invoice.total")}</TableCell>
-              <TableCell className="text-end">{totalPrice}</TableCell>
+          <TableFooter className="*:*:font-bold">
+            <TableRow>
+              <TableCell colSpan={7}>{t("invoice.subtotal")}</TableCell>
+              <TableCell className="text-end">{subtotal.toFixed(2)}</TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell colSpan={6}>{t("invoice.discountPercent")}</TableCell>
+              <TableCell>
+                <Input
+                  className="w-20"
+                  type="number"
+                  value={invoiceDiscountPercent}
+                  onChange={(e) =>
+                    updateInvoiceDiscount("discount_percent", Number(e.target.value))
+                  }
+                  min={0}
+                  max={100}
+                />
+              </TableCell>
+              <TableCell className="text-end">{percentDiscount.toFixed(2)}</TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell colSpan={6}>{t("invoice.discountAmount")}</TableCell>
+              <TableCell>
+                <Input
+                  className="w-20"
+                  type="number"
+                  value={invoiceDiscountAmount}
+                  onChange={(e) => updateInvoiceDiscount("discount_amount", Number(e.target.value))}
+                  min={0}
+                />
+              </TableCell>
+              <TableCell className="text-end">{invoiceDiscountAmount.toFixed(2)}</TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell colSpan={7}>{t("invoice.total")}</TableCell>
+              <TableCell className="text-end">{totalPrice.toFixed(2)}</TableCell>
               <TableCell></TableCell>
             </TableRow>
           </TableFooter>
