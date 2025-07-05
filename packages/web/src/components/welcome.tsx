@@ -12,7 +12,9 @@ export function Welcome({
       <h2 className="text-2xl font-semibold text-center">
         {t(orgSlug ? "welcomeToErpOrg" : "welcomeToErp", { orgSlug: orgSlug })}
       </h2>
-      <p className="text-base text-center mt-2 text-gray-400">{t("welcomeToErpDescription")}</p>
+      <p className="text-base text-center mt-2 text-secondary-foreground/60">
+        {t("welcomeToErpDescription")}
+      </p>
     </div>
   );
 }

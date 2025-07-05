@@ -21,12 +21,12 @@ export function Header() {
 
       <Separator orientation="vertical" className="mx-2 h-4" />
 
-      <Button variant="link" className="opacity-50 hover:opacity-100 p-0">
+      <Button variant="link" className="text-foreground opacity-50 hover:opacity-100 p-0">
         <a href="https://amrbashir.me" target="_blank">
           <AmrBashirIcon className="size-5" />
         </a>
       </Button>
-      <Button variant="link" className="opacity-50 hover:opacity-100 p-0">
+      <Button variant="link" className="text-foreground opacity-50 hover:opacity-100 p-0">
         <a href="https://github.com/amrbashir/erp-system" target="_blank">
           <GithubIcon className="size-5" />
         </a>
