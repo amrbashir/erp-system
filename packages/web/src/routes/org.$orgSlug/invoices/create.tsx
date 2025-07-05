@@ -159,25 +159,45 @@ function CreateInvoice() {
   };
 
   return (
-    <ResizablePanelGroup direction="horizontal">
-      <ResizablePanel className="p-2" defaultSize={30}>
-        <ProductsSidebar products={products} onAdd={addProduct} invoiceItems={invoiceItems} />
-      </ResizablePanel>
-      <ResizableHandle />
-      <ResizablePanel className="p-2">
-        <form
-          className="flex flex-col gap-2"
-          onSubmit={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            form.handleSubmit();
-          }}
-        >
-          <form.Field
-            name="customerId"
-            children={(field) => <CustomerSelect customers={customers} field={field} />}
-          />
+    <form
+      className="h-full flex flex-col gap-2 pt-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <div className="flex justify-between gap-2 px-2">
+        <form.Field
+          name="customerId"
+          children={(field) => <CustomerSelect customers={customers} field={field} />}
+        />
 
+        <div className="flex gap-2">
+          <form.Subscribe
+            selector={(state) => [state.canSubmit, state.isSubmitting]}
+            children={([canSubmit, isSubmitting]) => (
+              <>
+                <Button
+                  type="button"
+                  disabled={!canSubmit}
+                  variant="secondary"
+                  onClick={() => router.history.back()}
+                >
+                  {t("common.actions.cancel")}
+                </Button>
+                <Button type="submit" disabled={!canSubmit}>
+                  {isSubmitting && <Loader2Icon className="animate-spin" />}
+                  {t("common.actions.create")}
+                </Button>
+              </>
+            )}
+          />
+        </div>
+      </div>
+
+      <ResizablePanelGroup direction="vertical">
+        <ResizablePanel className="p-2 overflow-y-auto!">
           <InvoiceTable
             items={invoiceItems}
             updateProductQuantity={updateProductQuantity}
@@ -185,31 +205,15 @@ function CreateInvoice() {
           />
 
           <FormErrors formState={form.state} />
+        </ResizablePanel>
 
-          <div className="flex justify-end gap-2">
-            <form.Subscribe
-              selector={(state) => [state.canSubmit, state.isSubmitting]}
-              children={([canSubmit, isSubmitting]) => (
-                <>
-                  <Button
-                    type="button"
-                    disabled={!canSubmit}
-                    variant="secondary"
-                    onClick={() => router.history.back()}
-                  >
-                    {t("common.actions.cancel")}
-                  </Button>
-                  <Button type="submit" disabled={!canSubmit}>
-                    {isSubmitting && <Loader2Icon className="animate-spin" />}
-                    {t("common.actions.create")}
-                  </Button>
-                </>
-              )}
-            />
-          </div>
-        </form>
-      </ResizablePanel>
-    </ResizablePanelGroup>
+        <ResizableHandle withHandle />
+
+        <ResizablePanel className="p-2 overflow-y-auto!" defaultSize={50}>
+          <ProductsSidebar products={products} onAdd={addProduct} invoiceItems={invoiceItems} />
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </form>
   );
 }
 
@@ -273,6 +277,7 @@ function ProductItem({
   return (
     <Button
       disabled={remainingStock <= 0}
+      type="button"
       variant="ghost"
       className="bg-card hover:bg-secondary! flex-1 h-fit w-fit border flex flex-col items-center gap-5"
       onClick={() => onAdd(product)}
@@ -413,9 +418,10 @@ function InvoiceTable({
             ))}
           </TableBody>
           <TableFooter>
-            <TableRow>
+            <TableRow className="*:font-bold">
               <TableCell colSpan={4}>{t("invoice.total")}</TableCell>
               <TableCell className="text-end">{totalPrice}</TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableFooter>
         </Table>
