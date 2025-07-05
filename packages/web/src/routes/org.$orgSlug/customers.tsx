@@ -20,7 +20,7 @@ import i18n from "@/i18n";
 export const Route = createFileRoute("/org/$orgSlug/customers")({
   component: Customers,
   context: () => ({
-    title: i18n.t("pages.customers"),
+    title: i18n.t("routes.customers"),
     icon: UserIcon,
   }),
 });
@@ -48,12 +48,12 @@ function Customers() {
           <Table>
             <TableHeader>
               <TableRow className="*:font-bold">
-                <TableHead>{t("customerId")}</TableHead>
-                <TableHead className="min-w-[50%]">{t("name")}</TableHead>
-                <TableHead>{t("address")}</TableHead>
-                <TableHead>{t("phone")}</TableHead>
-                <TableHead>{t("createdAt")}</TableHead>
-                <TableHead>{t("updatedAt")}</TableHead>
+                <TableHead>{t("customer.id")}</TableHead>
+                <TableHead className="min-w-[50%]">{t("common.form.name")}</TableHead>
+                <TableHead>{t("common.form.address")}</TableHead>
+                <TableHead>{t("common.form.phone")}</TableHead>
+                <TableHead>{t("common.dates.createdAt")}</TableHead>
+                <TableHead>{t("common.dates.updatedAt")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

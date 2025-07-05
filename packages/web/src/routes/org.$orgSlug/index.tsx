@@ -8,7 +8,7 @@ import i18n from "@/i18n";
 export const Route = createFileRoute("/org/$orgSlug/")({
   component: Index,
   context: () => ({
-    title: i18n.t("pages.home"),
+    title: i18n.t("routes.home"),
     icon: HomeIcon,
   }),
 });

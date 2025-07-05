@@ -42,13 +42,13 @@ export function LanguageSelector({ asSubmenu = false }: { asSubmenu?: boolean })
     <Menu>
       <MenuTrigger asChild={!asSubmenu}>
         {asSubmenu ? (
-          t("language")
+          t("language.language")
         ) : (
-          <Button title={t("changeLanguage")} variant="outline">
+          <Button title={t("language.changeLanguage")} variant="outline">
             <>
               <ActiveIcon />
               <span className="hidden md:inline">
-                {t(`languages.${i18n.language as LanguageFlagKey}`)}
+                {t(`language.languages.${i18n.language as LanguageFlagKey}`)}
               </span>
             </>
           </Button>
@@ -63,7 +63,7 @@ export function LanguageSelector({ asSubmenu = false }: { asSubmenu?: boolean })
               checked={i18n.language === lang}
               onClick={() => changeLanguage(lang)}
             >
-              <Icon /> {t(`languages.${lang}`)}
+              <Icon /> {t(`language.languages.${lang}`)}
             </DropdownMenuCheckboxItem>
           );
         })}

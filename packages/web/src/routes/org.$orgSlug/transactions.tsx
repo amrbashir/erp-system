@@ -19,7 +19,7 @@ import i18n from "@/i18n";
 export const Route = createFileRoute("/org/$orgSlug/transactions")({
   component: Transactions,
   context: () => ({
-    title: i18n.t("pages.transactions"),
+    title: i18n.t("routes.transactions"),
     icon: BanknoteIcon,
     roleRequirement: "ADMIN",
   }),
@@ -45,10 +45,10 @@ function Transactions() {
             <TableHeader>
               <TableRow className="*:font-bold">
                 <TableHead>{t("transactionNumber")}</TableHead>
-                <TableHead>{t("moneyAmount")}</TableHead>
-                <TableHead>{t("username")}</TableHead>
-                <TableHead>{t("customerName")}</TableHead>
-                <TableHead>{t("createdAt")}</TableHead>
+                <TableHead>{t("common.form.amount")}</TableHead>
+                <TableHead>{t("common.form.username")}</TableHead>
+                <TableHead>{t("customer.name")}</TableHead>
+                <TableHead>{t("common.dates.createdAt")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

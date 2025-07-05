@@ -83,7 +83,7 @@ function NotFound404() {
   return (
     <main className="h-(--fullheight-minus-header) w-full flex flex-col items-center justify-center">
       <div className="text-center">
-        <h1 className="text-9xl!">{t("oops")}</h1>
+        <h1 className="text-9xl!">{t("common.ui.oops")}</h1>
         <br />
         <br />
         <p>404 - {t("notFound404")}</p>
@@ -104,7 +104,7 @@ function ErrorComponent({ error }: { error: Error }) {
     <Layout>
       <main className="h-(--fullheight-minus-header) w-full flex flex-col items-center justify-center">
         <div className="text-center">
-          <h1 className="text-9xl!">{t("oops")}</h1>
+          <h1 className="text-9xl!">{t("common.ui.oops")}</h1>
           <br />
           <br />
           <p>{error.message}</p>

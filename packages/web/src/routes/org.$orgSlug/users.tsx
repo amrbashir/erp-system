@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { EllipsisVerticalIcon, Loader2Icon, UsersIcon } from "lucide-react";
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
@@ -42,7 +41,7 @@ import { useAuth } from "@/providers/auth";
 
 export const Route = createFileRoute("/org/$orgSlug/users")({
   component: Users,
-  context: () => ({ title: i18n.t("pages.users"), icon: UsersIcon, roleRequirement: "ADMIN" }),
+  context: () => ({ title: i18n.t("routes.users"), icon: UsersIcon, roleRequirement: "ADMIN" }),
 });
 
 function Users() {
@@ -81,12 +80,12 @@ function Users() {
         <Table>
           <TableHeader>
             <TableRow className="*:font-bold">
-              <TableHead>{t("number")}</TableHead>
-              <TableHead className="min-w-[50%]">{t("username")}</TableHead>
-              <TableHead>{t("role")}</TableHead>
-              <TableHead>{t("createdAt")}</TableHead>
-              <TableHead>{t("updatedAt")}</TableHead>
-              <TableHead>{t("deletedAt")}</TableHead>
+              <TableHead>{t("common.ui.number")}</TableHead>
+              <TableHead className="min-w-[50%]">{t("common.form.username")}</TableHead>
+              <TableHead>{t("user.role")}</TableHead>
+              <TableHead>{t("common.dates.createdAt")}</TableHead>
+              <TableHead>{t("common.dates.updatedAt")}</TableHead>
+              <TableHead>{t("common.dates.deletedAt")}</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
@@ -98,7 +97,7 @@ function Users() {
               >
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>{user.username}</TableCell>
-                <TableCell>{t(`roles.${user.role}`)}</TableCell>
+                <TableCell>{t(`user.roles.${user.role}`)}</TableCell>
                 <TableCell>{new Date(user.createdAt).toLocaleString(i18n.language)}</TableCell>
                 <TableCell>{new Date(user.updatedAt).toLocaleString(i18n.language)}</TableCell>
                 <TableCell>
@@ -122,7 +121,7 @@ function Users() {
                       <DropdownMenuContent align="end">
                         <AlertDialogTrigger asChild>
                           <DropdownMenuItem disabled={!!user.deletedAt} variant="destructive">
-                            {t("delete")}
+                            {t("common.actions.delete")}
                           </DropdownMenuItem>
                         </AlertDialogTrigger>
                       </DropdownMenuContent>
@@ -130,15 +129,15 @@ function Users() {
 
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>{t("areYouSure")}</AlertDialogTitle>
+                        <AlertDialogTitle>{t("common.ui.areYouSure")}</AlertDialogTitle>
                       </AlertDialogHeader>
                       <AlertDialogDescription>
-                        {t("deleteUserDescription", { username: user.username })}
+                        {t("user.deleteDescription", { username: user.username })}
                       </AlertDialogDescription>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                        <AlertDialogCancel>{t("common.actions.cancel")}</AlertDialogCancel>
                         <AlertDialogAction onClick={() => deleteUser(user)}>
-                          {t("delete")}
+                          {t("common.actions.delete")}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>

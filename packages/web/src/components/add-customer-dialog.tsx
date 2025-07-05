@@ -66,13 +66,13 @@ export function AddCustomerDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button>{t("addCustomer")}</Button>
+        <Button>{t("customer.add")}</Button>
       </DialogTrigger>
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("addCustomer")}</DialogTitle>
-          <DialogDescription>{t("addUserDescription")}</DialogDescription>
+          <DialogTitle>{t("customer.add")}</DialogTitle>
+          <DialogDescription>{t("customer.addDescription")}</DialogDescription>
         </DialogHeader>
 
         <form
@@ -96,12 +96,12 @@ export function AddCustomerDialog() {
                 <>
                   <DialogClose asChild>
                     <Button disabled={!canSubmit} variant="outline">
-                      {t("cancel")}
+                      {t("common.actions.cancel")}
                     </Button>
                   </DialogClose>
                   <Button disabled={!canSubmit} type="submit">
                     {isSubmitting && <Loader2Icon className="animate-spin" />}
-                    {t("add")}
+                    {t("common.actions.add")}
                   </Button>
                 </>
               )}
@@ -118,11 +118,12 @@ function InputField({ field }: { field: AnyFieldApi }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <Label htmlFor={field.name}>{t(field.name as any)}</Label>
+      <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
       <Input
         id={field.name}
         name={field.name}
         value={field.state.value}
+        type={field.name === "phone" ? "tel" : "text"}
         onChange={(e) => field.handleChange(e.target.value)}
       />
       <FormFieldError field={field} />

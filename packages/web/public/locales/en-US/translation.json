@@ -1,16 +1,57 @@
 {
-  "welcomeToErp": "Welcome to erp-system",
-  "welcomeToErpOrg": "Welcome to {{orgSlug}}",
-  "welcomeToErpDescription": "Your one-stop system for all ERP needs",
-
-  "language": "Language",
-  "changeLanguage": "Change Language",
-  "languages": {
-    "en-US": "English",
-    "ar-EG": "العربية"
+  "common": {
+    "welcome": "Welcome",
+    "actions": {
+      "add": "Add",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "create": "Create",
+      "go": "Go",
+      "search": "Search",
+      "login": "Login",
+      "logout": "Logout"
+    },
+    "dates": {
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "deletedAt": "Deleted At"
+    },
+    "form": {
+      "name": "Name",
+      "address": "Address",
+      "phone": "Phone",
+      "description": "Description",
+      "quantity": "Quantity",
+      "username": "Username",
+      "password": "Password",
+      "amount": "Amount",
+      "price": "Price",
+      "role": "Role"
+    },
+    "ui": {
+      "loading": "Loading",
+      "noData": "There is no data to display in here",
+      "oops": "Oops!",
+      "areYouSure": "Are you sure?",
+      "number": "No.",
+      "or": "or"
+    },
+    "pricing": {
+      "purchase": "Purchase $t(common.form.price)",
+      "selling": "Selling $t(common.form.price)"
+    }
   },
 
-  "pages": {
+  "language": {
+    "language": "Language",
+    "changeLanguage": "Change Language",
+    "languages": {
+      "en-US": "English",
+      "ar-EG": "العربية"
+    }
+  },
+
+  "routes": {
     "home": "Home",
     "users": "Users",
     "customers": "Customers",
@@ -18,130 +59,119 @@
     "transactions": "Transactions",
     "invoices": "Invoices",
     "expenses": "Expenses",
-    "createInvoice": "Create Invoice"
+    "createInvoice": "$t(common.actions.create) Invoice"
   },
 
-  "loginToAccount": "Login to your account",
-  "loginToAccountDescription": "Please enter your credentials to access ",
-
-  "login": "Login",
-  "logout": "Logout",
-
-  "yourorganization": "your organization",
-
-  "username": "Username",
-  "password": "Password",
-  "orgSlug": "Organization Identifier",
-
-  "cashierName": "Cashier Name",
-
-  "createdAt": "Created At",
-  "updatedAt": "Updated At",
-  "deletedAt": "Deleted At",
-
-  "name": "Name",
-  "address": "Address",
-  "phone": "Phone",
-
-  "description": "Description",
-  "quantity": "Quantity",
-  "purchasePrice": "Purchase Price",
-  "sellingPrice": "Selling Price",
-
-  "role": "Role",
-  "roles": {
-    "ADMIN": "Admin",
-    "USER": "User"
+  "auth": {
+    "loginToAccount": "$t(common.actions.login) to your account",
+    "loginToAccountDescription": "Please enter your credentials to access "
   },
 
-  "adminSection": "Admin Section",
+  "org": {
+    "name": "Organization $t(common.form.name)",
+    "slug": "Organization ID",
+    "username": "$t(common.form.username) (for Admin)",
+    "password": "$t(common.form.password) (for Admin)",
+    "yours": "your organization",
+    "createNew": "$t(common.actions.create) New Organization",
+    "createNewDescription": "Setup a new organization. Please fill in the details below",
+    "goToYours": "$t(common.actions.go) to Your Organization",
+    "goToYoursDescription": "Enter your organization's unique ID to access it",
+    "goToYoursDescription2": "You are already logged in to {{orgSlug}}",
+    "createdSuccessfully": "Organization created successfully"
+  },
 
-  "addCustomer": "Add Customer",
-  "addUser": "Add User",
+  "user": {
+    "add": "$t(common.actions.add) User",
+    "addDescription": "You can add new users to the system. Please fill in the details below",
+    "deleteDescription": "You are about to delete the user '{{username}}'",
+    "role": "$t(common.form.role)",
+    "roles": {
+      "ADMIN": "Admin",
+      "USER": "User"
+    }
+  },
 
-  "moneyAmount": "Amount",
-  "customerName": "Customer Name",
+  "customer": {
+    "add": "$t(common.actions.add) Customer",
+    "addDescription": "You can add new customers to the system. Please fill in the details below",
+    "name": "Customer $t(common.form.name)",
+    "search": "$t(common.actions.search) customers...",
+    "select": "Select a customer",
+    "nothing": "No customers found",
+    "id": "Customer ID"
+  },
 
-  "theme": "Theme",
-  "changeTheme": "Change Theme",
-  "themes": {
-    "light": "Light",
-    "dark": "Dark",
-    "system": "System (Light/Dark)"
+  "product": {
+    "search": "$t(common.actions.search) products...",
+    "stock": "Stock",
+    "remaining": "Remaining",
+    "insufficientStock": "Insufficient stock for the product"
+  },
+
+  "theme": {
+    "theme": "Theme",
+    "changeTheme": "Change Theme",
+    "themes": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System (Light/Dark)"
+    }
   },
 
   "errors": {
-    "Username or password is incorrect": "Username or password is incorrect",
-    "Cannot delete the last admin user in the organization": "Cannot delete the last admin user in the organization",
-    "You cannot delete your own account": "You cannot delete your own account",
-    "User with this username already exists in the organization": "User with this username already exists in the organization",
-    "organizationNotFound": "Organization with this identifier does not exist",
-    "username must contain only letters and numbers": "Username must contain only letters and numbers",
-    "Organization with this slug already exists": "Organization with this identifier already exists",
-    "Internal server error": "Internal server error",
-    "Organization with this slug does not exist": "$(organizationNotFound)",
-    "notAuthorized": "You are not authorized to access this page",
-    "invoiceMustHaveItems": "Invoice must have at least one item",
-    "Invoice must have at least one item": "$(invoiceMustHaveItems)"
+    "auth": {
+      "incorrectCredentials": "Username or password is incorrect",
+      "notAuthorized": "You are not authorized to access this page"
+    },
+    "users": {
+      "cannotDeleteLastAdmin": "Cannot delete the last admin user in the organization",
+      "cannotDeleteOwnAccount": "You cannot delete your own account",
+      "usernameExists": "User with this username already exists in the organization",
+      "usernameFormat": "username must contain only letters and numbers"
+    },
+    "organization": {
+      "notFound": "Organization with this ID does not exist",
+      "slugExists": "Organization with this ID already exists"
+    },
+    "server": {
+      "internalError": "Internal server error"
+    },
+    "invoice": {
+      "mustHaveItems": "Invoice must have at least one item"
+    },
+
+    "Username or password is incorrect": "$t(errors.auth.incorrectCredentials)",
+    "Cannot delete the last admin user in the organization": "$t(errors.users.cannotDeleteLastAdmin)",
+    "You cannot delete your own account": "$t(errors.users.cannotDeleteOwnAccount)",
+    "User with this username already exists in the organization": "$t(errors.users.usernameExists)",
+    "organizationNotFound": "$t(errors.organization.notFound)",
+    "username must contain only letters and numbers": "$t(errors.users.usernameFormat)",
+    "Organization with this slug already exists": "$t(errors.organization.slugExists)",
+    "Internal server error": "$t(errors.server.internalError)",
+    "Organization with this slug does not exist": "$t(errors.organization.notFound)",
+    "notAuthorized": "$t(errors.auth.notAuthorized)",
+    "invoiceMustHaveItems": "$t(errors.invoice.mustHaveItems)",
+    "Invoice must have at least one item": "$t(errors.invoice.mustHaveItems)"
   },
 
   "validationErrors": {
     "too_small": "{{field}} must contain at least {{minimum}} character(s)"
   },
 
-  "delete": "Delete",
-  "add": "Add",
-  "cancel": "Cancel",
-  "create": "Create",
-  "go": "Go",
-
-  "or": "or",
-
-  "createOrg": {
-    "name": "Organization Name",
-    "slug": "Organization Identifier",
-    "username": "Username (for Admin)",
-    "password": "Password (for Admin)"
+  "invoice": {
+    "number": "Invoice $t(common.ui.number)",
+    "createdSuccessfully": "Invoice created successfully",
+    "addItemsTo": "$t(common.actions.add) items to the invoice",
+    "total": "Total"
   },
 
-  "areYouSure": "Are you sure?",
-
-  "addUserDescription": "You can add new users to the system. Please fill in the details below",
-  "deleteUserDescription": "You are about to delete the user '{{username}}'",
-
-  "goToYourOrganization": "Go to Your Organization",
-  "goToYourOrganizationDescription": "Enter your organization's unique identifier to access it",
-  "goToYourOrganizationDescription2": "You are already logged in to {{orgSlug}}",
-
-  "createNewOrganization": "Create New Organization",
-  "createNewOrganizationDescription": "Setup a new organization. Please fill in the details below",
-
-  "goBackHome": "Go Back Home",
-
-  "loadingOrganization": "Loading organization...",
-
-  "noDataFound": "No Data Found",
-  "noDataFoundDescription": "There is no data to display in this section",
-
-  "oops": "Oops!",
+  "welcomeToErp": "$t(common.welcome) to erp-system",
+  "welcomeToErpOrg": "$t(common.welcome) to {{orgSlug}}",
+  "welcomeToErpDescription": "Your one-stop system for all ERP needs",
+  "goBackHome": "Go back Home",
   "notFound404": "Sorry, the page you are looking for does not exist",
-
-  "invoiceCreatedSuccessfully": "Invoice created successfully",
-
-  "stock": "Stock",
-  "remaining": "Remaining",
-  "searchProducts": "Search products...",
-  "total": "Total",
-  "addItemsToInvoice": "Add items to the invoice",
-
-  "searchCustomers": "Search customers...",
-  "selectCustomer": "Select a customer",
-  "noCustomers": "No customers found",
-
-  "invoiceNumber": "Invoice No.",
-  "customerId": "Customer ID",
-
-  "number": "No.",
-
-  "transactionNumber": "Transaction No."
+  "transactionNumber": "Transaction $t(common.ui.number)",
+  "cashierName": "Cashier $t(common.form.name)",
+  "adminSection": "Admin Section"
 }

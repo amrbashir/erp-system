@@ -27,9 +27,8 @@ import { useOrg } from "@/hooks/use-org";
 import { useAuth } from "@/providers/auth";
 
 export function AppSideBar() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { open } = useSidebar();
-  const { i18n } = useTranslation();
   const { slug: orgSlug } = useOrg();
   const { user } = useAuth();
 

@@ -1,12 +1,61 @@
 {
-  "welcomeToErp": "مرحبًا بك في نظام ERP",
-  "welcomeToErpOrg": "مرحبًا بك في {{orgSlug}}",
+  "common": {
+    "welcome": "مرحبًا بك",
+    "actions": {
+      "add": "إضافة",
+      "delete": "حذف",
+      "cancel": "إلغاء",
+      "create": "أنشىء",
+      "go": "اذهب",
+      "search": "ابحث عن",
+      "login": "تسجيل الدخول",
+      "logout": "تسجيل الخروج"
+    },
+    "dates": {
+      "createdAt": "تاريخ الإنشاء",
+      "updatedAt": "تاريخ التحديث",
+      "deletedAt": "تاريخ الحذف"
+    },
+    "form": {
+      "name": "الاسم",
+      "address": "العنوان",
+      "phone": "الهاتف",
+      "description": "الوصف",
+      "quantity": "الكمية",
+      "username": "اسم المستخدم",
+      "password": "كلمة المرور",
+      "amount": "المبلغ",
+      "price": "السعر",
+      "role": "النوع"
+    },
+    "ui": {
+      "loading": "جارٍ تحميل",
+      "noData": "لا توجد بيانات لعرضها هنا",
+      "oops": "عذرًا!",
+      "areYouSure": "هل أنت متأكد؟",
+      "number": "رقم",
+      "or": "أو"
+    },
+    "pricing": {
+      "purchase": "سعر الشراء",
+      "selling": "سعر البيع"
+    }
+  },
+
+  "welcomeToErp": "$t(common.welcome) في نظام ERP",
+  "welcomeToErpOrg": "$t(common.welcome) في {{orgSlug}}",
   "welcomeToErpDescription": "محطتك الشاملة لجميع احتياجات ال ERP",
 
-  "language": "اللغة",
-  "changeLanguage": "تغيير اللغة",
+  "language": {
+    "language": "اللغة",
+    "changeLanguage": "تغيير اللغة",
+    "languages": {
+      "en-US": "English",
+      "ar-EG": "العربية"
+    }
+  },
 
-  "pages": {
+  "routes": {
     "home": "الصفحة الرئيسية",
     "users": "المستخدمون",
     "customers": "العملاء",
@@ -14,132 +63,103 @@
     "transactions": "المعاملات",
     "invoices": "الفواتير",
     "expenses": "المصروفات",
-    "createInvoice": "إنشاء فاتورة"
+    "createInvoice": "$t(common.actions.create) فاتورة"
   },
 
-  "loginToAccount": "تسجيل الدخول إلى حسابك",
-  "loginToAccountDescription": "يرجى إدخال بيانات حسابك للوصول إلى ",
-
-  "login": "تسجيل الدخول",
-  "logout": "تسجيل الخروج",
-
-  "yourorganization": "مؤسستك",
-
-  "username": "اسم المستخدم",
-  "password": "كلمة المرور",
-  "orgSlug": "معرف المؤسسة",
-
-  "cashierName": "اسم المحاسب",
-
-  "createdAt": "تاريخ الإنشاء",
-  "updatedAt": "تاريخ التحديث",
-  "deletedAt": "تاريخ الحذف",
-
-  "name": "الاسم",
-  "address": "العنوان",
-  "phone": "الهاتف",
-
-  "description": "الوصف",
-  "quantity": "الكمية",
-  "purchasePrice": "سعر الشراء",
-  "sellingPrice": "سعر البيع",
-
-  "role": "النوع",
-  "roles": {
-    "ADMIN": "مدير",
-    "USER": "مستخدم"
+  "auth": {
+    "loginToAccount": "$t(common.actions.login) إلى حسابك",
+    "loginToAccountDescription": "يرجى إدخال بيانات حسابك للوصول إلى "
   },
 
-  "adminSection": "قسم الإدارة",
+  "org": {
+    "name": "اسم المؤسسة",
+    "slug": "معرف المؤسسة",
+    "username": "$t(common.form.username) (للمدير)",
+    "password": "$t(common.form.password) (للمدير)",
+    "yours": "مؤسستك",
+    "createNew": "$t(common.actions.create) مؤسسة جديدة",
+    "createNewDescription": "قم بإعداد مؤسسة جديدة. يرجى ملء التفاصيل أدناه",
+    "goToYours": "$t(common.actions.go) إلى مؤسستك",
+    "goToYoursDescription": "ادخل اسم المؤسسة الخاصة بك للمتابعة",
+    "goToYoursDescription2": "انت بالفعل مسجل الدخول إلى {{orgSlug}}",
+    "createdSuccessfully": "تم إنشاء المؤسسة بنجاح"
+  },
 
-  "addCustomer": "إضافة عميل",
-  "addUser": "إضافة مستخدم",
+  "user": {
+    "add": "$t(common.actions.add) مستخدم",
+    "addDescription": "يمكنك إضافة مستخدمين جدد إلى النظام. يرجى ملء التفاصيل أدناه",
+    "deleteDescription": "أنت على وشك حذف المستخدم '{{username}}'",
+    "role": "$t(common.form.role)",
+    "roles": {
+      "ADMIN": "مدير",
+      "USER": "مستخدم"
+    }
+  },
 
-  "moneyAmount": "المبلغ",
-  "customerName": "اسم العميل",
+  "customer": {
+    "add": "$t(common.actions.add) عميل",
+    "addDescription": "يمكنك إضافة عملاء جدد إلى النظام. يرجى ملء التفاصيل أدناه",
+    "name": "اسم العميل",
+    "search": "$t(common.actions.search) العملاء...",
+    "select": "اختر عميلًا",
+    "nothing": "لا يوجد عملاء",
+    "id": "كود العميل"
+  },
 
-  "theme": "المظهر",
-  "changeTheme": "تغيير المظهر",
-  "themes": {
-    "light": "فاتح",
-    "dark": "داكن",
-    "system": "نظامي  (فاتح/داكن)"
+  "product": {
+    "search": "$t(common.actions.search) المنتجات...",
+    "stock": "المخزون",
+    "remaining": "المتبقي",
+    "insufficientStock": "لا يوجد مخزون كافٍ للمنتج"
+  },
+
+  "theme": {
+    "theme": "المظهر",
+    "changeTheme": "تغيير المظهر",
+    "themes": {
+      "light": "فاتح",
+      "dark": "داكن",
+      "system": "نظامي (فاتح/داكن)"
+    }
   },
 
   "errors": {
-    "Username or password is incorrect": "اسم المستخدم أو كلمة المرور غير صحيحة",
-    "Cannot delete the last admin user in the organization": "لا يمكن حذف آخر مستخدم مدير في المؤسسة",
-    "You cannot delete your own account": "لا يمكنك حذف حسابك الخاص",
-    "User with this username already exists in the organization": "يوجد مستخدم بهذا الاسم في المؤسسة بالفعل",
-    "organizationNotFound": "المؤسسة بهذا المعرف غير موجودة",
-    "username must contain only letters and numbers": "يجب أن يحتوي اسم المستخدم على أحرف وأرقام فقط",
-    "Organization with this slug already exists": "المؤسسة بهذا المعرف موجودة بالفعل",
-    "Internal server error": "خطأ داخلي في الخادم",
-    "Organization with this slug does not exist": "$(organizationNotFound)",
-    "notAuthorized": "غير مصرح لك بالوصول إلى هذه الصفحة",
-    "invoiceMustHaveItems": "يجب أن تحتوي الفاتورة على عنصر واحد على الأقل",
-    "Invoice must have at least one item": "$(invoiceMustHaveItems)"
+    "auth": {
+      "incorrectCredentials": "اسم المستخدم أو كلمة المرور غير صحيحة",
+      "notAuthorized": "غير مصرح لك بالوصول إلى هذه الصفحة"
+    },
+    "users": {
+      "cannotDeleteLastAdmin": "لا يمكن حذف آخر مستخدم مدير في المؤسسة",
+      "cannotDeleteOwnAccount": "لا يمكنك حذف حسابك الخاص",
+      "usernameExists": "يوجد مستخدم بهذا الاسم في المؤسسة بالفعل",
+      "usernameFormat": "يجب أن يحتوي اسم المستخدم على أحرف وأرقام فقط"
+    },
+    "organization": {
+      "notFound": "المؤسسة بهذا المعرف غير موجودة",
+      "slugExists": "المؤسسة بهذا المعرف موجودة بالفعل"
+    },
+    "server": {
+      "internalError": "خطأ داخلي في الخادم"
+    },
+    "invoice": {
+      "mustHaveItems": "يجب أن تحتوي الفاتورة على عنصر واحد على الأقل"
+    }
   },
 
   "validationErrors": {
     "too_small": "يجب أن يحتوي {{field}} على {{minimum}} حروف على الأقل"
   },
 
-  "delete": "حذف",
-  "add": "إضافة",
-  "cancel": "إلغاء",
-  "create": "أنشىء",
-  "go": "اذهب",
-
-  "or": "أو",
-
-  "createOrg": {
-    "name": "اسم المؤسسة",
-    "slug": "معرف المؤسسة",
-    "username": "اسم المستخدم (للمدير)",
-    "password": "كلمة المرور (للمدير)"
+  "invoice": {
+    "number": "$t(common.ui.number) الفاتورة",
+    "createdSuccessfully": "تم إنشاء الفاتورة بنجاح",
+    "addItemsTo": "أضف عناصر إلى الفاتورة",
+    "total": "الإجمالي"
   },
 
-  "areYouSure": "هل أنت متأكد؟",
-
-  "addUserDescription": "يمكنك إضافة مستخدمين جدد إلى النظام. يرجى ملء التفاصيل أدناه",
-  "deleteUserDescription": "أنت على وشك حذف المستخدم '{{username}}'",
-
-  "goToYourOrganization": "اذهب إلى مؤسستك",
-  "goToYourOrganizationDescription": "ادخل اسم المؤسسة الخاصة بك للمتابعة",
-  "goToYourOrganizationDescription2": "انت بالفعل مسجل الدخول إلى {{orgSlug}}",
-
-  "organizationCreatedSuccessfully": "تم إنشاء المؤسسة بنجاح",
-
-  "createNewOrganization": "أنشىء مؤسسة جديدة",
-  "createNewOrganizationDescription": "قم بإعداد مؤسسة جديدة. يرجى ملء التفاصيل أدناه",
-
   "goBackHome": "العودة إلى الصفحة الرئيسية",
-
-  "loadingOrganization": "جارٍ تحميل المؤسسة...",
-
-  "noDataFound": "لا توجد بيانات",
-  "noDataFoundDescription": "لا توجد بيانات لعرضها في هذا القسم",
-
-  "oops": "عذرًا!",
   "notFound404": "عذراً ، الصفحة التي تبحث عنها غير موجودة",
-
-  "invoiceCreatedSuccessfully": "تم إنشاء الفاتورة بنجاح",
-  "insufficientStock": "لا يوجد مخزون كافٍ للمنتج",
-
-  "stock": "المخزون",
-  "remaining": "المتبقي",
-  "searchProducts": "ابحث عن المنتجات...",
-  "total": "الإجمالي",
-  "addItemsToInvoice": "أضف عناصر إلى الفاتورة",
-
-  "searchCustomers": "ابحث عن العملاء...",
-  "selectCustomer": "اختر عميلًا",
-  "noCustomers": "لا يوجد عملاء",
-
-  "invoiceNumber": "رقم الفاتورة",
-  "customerId": "كود العميل",
-
-  "number": "رقم",
-  "transactionNumber": "رقم المعاملة"
+  "cashierName": "اسم المحاسب",
+  "adminSection": "قسم الإدارة",
+  "transactionNumber": "$t(common.ui.number) المعاملة"
 }

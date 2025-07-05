@@ -58,7 +58,7 @@ function Index() {
 
         <div className="md:self-end md:min-w-sm flex items-center">
           <Separator className="flex-2" />
-          <p className="flex-1 text-center">{t("or")}</p>
+          <p className="flex-1 text-center">{t("common.ui.or")}</p>
           <Separator className="flex-2" />
         </div>
 
@@ -89,20 +89,20 @@ export function LoginExistingOrg({
   return (
     <Card {...props}>
       <CardHeader className="flex flex-col items-center gap-10">
-        <CardTitle>{t("goToYourOrganization")}</CardTitle>
+        <CardTitle>{t("org.goToYours")}</CardTitle>
         <CardDescription>
-          {t("goToYourOrganizationDescription2", {
-            orgSlug: user.orgSlug ?? t("yourorganization"),
+          {t("org.goToYoursDescription2", {
+            orgSlug: user.orgSlug ?? t("org.yours"),
           })}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Button className="w-full" onClick={() => goToOrg()}>
-          {t("go")}
+          {t("common.actions.go")}
         </Button>
 
         <Button variant="outline" className="w-full mt-4" onClick={() => logout()}>
-          {t("logout")}
+          {t("common.actions.logout")}
         </Button>
       </CardContent>
     </Card>
@@ -137,10 +137,10 @@ function LoginForm(props: React.ComponentProps<typeof Card>) {
   return (
     <Card {...props}>
       <CardHeader className="flex flex-col items-center gap-10">
-        <CardTitle>{t("loginToAccount")}</CardTitle>
+        <CardTitle>{t("auth.loginToAccount")}</CardTitle>
         <CardDescription>
-          {t("loginToAccountDescription")}
-          <span className="text-primary font-bold">{orgSlug ?? t("yourorganization")}</span>
+          {t("auth.loginToAccountDescription")}
+          <span className="text-primary font-bold">{orgSlug ?? t("org.yours")}</span>
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -157,7 +157,7 @@ function LoginForm(props: React.ComponentProps<typeof Card>) {
               name="orgSlug"
               children={(field) => (
                 <>
-                  <Label htmlFor={field.name}>{t(field.name)}</Label>
+                  <Label htmlFor={field.name}>{t(`org.slug`)}</Label>
                   <Input
                     id={field.name}
                     name={field.name}
@@ -175,7 +175,7 @@ function LoginForm(props: React.ComponentProps<typeof Card>) {
               name="username"
               children={(field) => (
                 <>
-                  <Label htmlFor={field.name}>{t(field.name)}</Label>
+                  <Label htmlFor={field.name}>{t("common.form.username")}</Label>
                   <Input
                     id={field.name}
                     name={field.name}
@@ -193,7 +193,7 @@ function LoginForm(props: React.ComponentProps<typeof Card>) {
               name="password"
               children={(field) => (
                 <>
-                  <Label htmlFor={field.name}>{t(field.name)}</Label>
+                  <Label htmlFor={field.name}>{t("common.form.password")}</Label>
                   <Input
                     id={field.name}
                     name={field.name}
@@ -214,7 +214,7 @@ function LoginForm(props: React.ComponentProps<typeof Card>) {
             children={([canSubmit, isSubmitting]) => (
               <Button type="submit" className="w-full" disabled={!canSubmit}>
                 {isSubmitting && <Loader2Icon className="animate-spin" />}
-                {t("login")}
+                {t("common.actions.login")}
               </Button>
             )}
           />
@@ -253,7 +253,7 @@ function CreateNewOrganizationCard(props: React.ComponentProps<typeof Card>) {
         return;
       }
 
-      toast.success(t("organizationCreatedSuccessfully"));
+      toast.success(t("org.createdSuccessfully"));
 
       // If the user is authenticated, log them out before redirecting
       // to the new organization.
@@ -267,8 +267,8 @@ function CreateNewOrganizationCard(props: React.ComponentProps<typeof Card>) {
   return (
     <Card {...props}>
       <CardHeader>
-        <CardTitle>{t("createNewOrganization")}</CardTitle>
-        <CardDescription>{t("createNewOrganizationDescription")}</CardDescription>
+        <CardTitle>{t("org.createNew")}</CardTitle>
+        <CardDescription>{t("org.createNewDescription")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form
@@ -284,7 +284,7 @@ function CreateNewOrganizationCard(props: React.ComponentProps<typeof Card>) {
               name="name"
               children={(field) => (
                 <>
-                  <Label htmlFor={field.name}>{t(`createOrg.${field.name}`)}</Label>
+                  <Label htmlFor={field.name}>{t("org.name")}</Label>
                   <Input
                     id={field.name}
                     name={field.name}
@@ -302,12 +302,11 @@ function CreateNewOrganizationCard(props: React.ComponentProps<typeof Card>) {
               name="slug"
               children={(field) => (
                 <>
-                  <Label htmlFor={field.name}>{t(`createOrg.${field.name}`)}</Label>
+                  <Label htmlFor={field.name}>{t("org.slug")}</Label>
                   <Input
                     id={field.name}
                     name={field.name}
                     value={field.state.value}
-                    type={field.name === "password" ? "password" : "text"}
                     onChange={(e) => field.handleChange(e.target.value)}
                   />
                   <FormFieldError field={field} />
@@ -321,7 +320,7 @@ function CreateNewOrganizationCard(props: React.ComponentProps<typeof Card>) {
               name="username"
               children={(field) => (
                 <>
-                  <Label htmlFor={field.name}>{t(`createOrg.${field.name}`)}</Label>
+                  <Label htmlFor={field.name}>{t("org.password")}</Label>
                   <Input
                     id={field.name}
                     name={field.name}
@@ -339,7 +338,7 @@ function CreateNewOrganizationCard(props: React.ComponentProps<typeof Card>) {
               name="password"
               children={(field) => (
                 <>
-                  <Label htmlFor={field.name}>{t(`createOrg.${field.name}`)}</Label>
+                  <Label htmlFor={field.name}>{t("org.password")}</Label>
                   <Input
                     id={field.name}
                     name={field.name}
@@ -360,7 +359,7 @@ function CreateNewOrganizationCard(props: React.ComponentProps<typeof Card>) {
             children={([canSubmit, isSubmitting]) => (
               <Button type="submit" className="w-full" disabled={!canSubmit}>
                 {isSubmitting && <Loader2Icon className="animate-spin" />}
-                {t("create")}
+                {t("common.actions.create")}
               </Button>
             )}
           />

@@ -49,10 +49,10 @@ import { FormErrors } from "@/components/form-errors";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 
-export const Route = createFileRoute("/org/$orgSlug/invoices/new")({
+export const Route = createFileRoute("/org/$orgSlug/invoices/create")({
   component: CreateInvoice,
   context: () => ({
-    title: i18n.t("pages.createInvoice"),
+    title: i18n.t("routes.createInvoice"),
     icon: ReceiptTextIcon,
   }),
 });
@@ -110,7 +110,7 @@ function CreateInvoice() {
         return;
       }
 
-      toast.success(t("invoiceCreatedSuccessfully"));
+      toast.success(t("invoice.createdSuccessfully"));
       client.invalidateQueries({ queryKey: ["invoices"] });
       navigate({ to: "/org/$orgSlug/invoices", params: { orgSlug } });
     },
@@ -197,11 +197,11 @@ function CreateInvoice() {
                     variant="secondary"
                     onClick={() => router.history.back()}
                   >
-                    {t("cancel")}
+                    {t("common.actions.cancel")}
                   </Button>
                   <Button type="submit" disabled={!canSubmit}>
                     {isSubmitting && <Loader2Icon className="animate-spin" />}
-                    {t("create")}
+                    {t("common.actions.create")}
                   </Button>
                 </>
               )}
@@ -237,7 +237,7 @@ function ProductsSidebar({
   return (
     <div className="flex flex-col gap-2">
       <Input
-        placeholder={t("searchProducts")}
+        placeholder={t("product.search")}
         value={productFilter}
         onChange={(e) => setProductFilter(e.target.value)}
       />
@@ -280,10 +280,10 @@ function ProductItem({
       <h3>{product.description}</h3>
       <div className="w-full text-xs text-secondary-foreground/50 flex justify-between gap-2">
         <span className="text-blue-300">
-          {t("stock")}: {product.stock_quantity}
+          {t("product.stock")}: {product.stock_quantity}
         </span>
         <span className="text-red-300">
-          {t("remaining")}: {remainingStock}
+          {t("product.remaining")}: {remainingStock}
         </span>
       </div>
     </Button>
@@ -302,7 +302,7 @@ function CustomerSelect({
 
   return (
     <div className="flex gap-2">
-      <Label htmlFor={field.name}>{t("customerName")}</Label>
+      <Label htmlFor={field.name}>{t("customer.name")}</Label>
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -313,15 +313,15 @@ function CustomerSelect({
           >
             {field.state.value
               ? customers?.find((c) => c.id === field.state.value)?.name
-              : t("selectCustomer")}
+              : t("customer.select")}
             <ChevronsUpDownIcon className="opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
           <Command>
-            <CommandInput placeholder={t("searchCustomers")} className="h-9" />
+            <CommandInput placeholder={t("customer.search")} className="h-9" />
             <CommandList>
-              <CommandEmpty>{t("noCustomers")}</CommandEmpty>
+              <CommandEmpty>{t("customer.nothing")}</CommandEmpty>
               <CommandGroup>
                 {customers.map((customer) => (
                   <CommandItem
@@ -372,11 +372,11 @@ function InvoiceTable({
         <Table>
           <TableHeader>
             <TableRow className="*:font-bold">
-              <TableHead>{t("number")}</TableHead>
-              <TableHead className="w-full">{t("description")}</TableHead>
-              <TableHead>{t("quantity")}</TableHead>
-              <TableHead>{t("sellingPrice")}</TableHead>
-              <TableHead className="text-end!">{t("total")}</TableHead>
+              <TableHead>{t("common.ui.number")}</TableHead>
+              <TableHead className="w-full">{t("common.form.description")}</TableHead>
+              <TableHead>{t("common.form.quantity")}</TableHead>
+              <TableHead>{t("common.form.price")}</TableHead>
+              <TableHead className="text-end!">{t("invoice.total")}</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
@@ -414,13 +414,15 @@ function InvoiceTable({
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={4}>{t("total")}</TableCell>
+              <TableCell colSpan={4}>{t("invoice.total")}</TableCell>
               <TableCell className="text-end">{totalPrice}</TableCell>
             </TableRow>
           </TableFooter>
         </Table>
       ) : (
-        <div className="p-4 text-center text-secondary-foreground/50">{t("addItemsToInvoice")}</div>
+        <div className="p-4 text-center text-secondary-foreground/50">
+          {t("invoice.addItemsTo")}
+        </div>
       )}
     </div>
   );

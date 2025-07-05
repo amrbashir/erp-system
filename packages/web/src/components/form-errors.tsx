@@ -1,5 +1,4 @@
 import { type AnyFieldApi, type AnyFormState } from "@tanstack/react-form";
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 /**

@@ -5,7 +5,7 @@ import i18n from "@/i18n";
 
 export const Route = createFileRoute("/org/$orgSlug/invoices")({
   context: () => ({
-    title: i18n.t("pages.invoices"),
+    title: i18n.t("routes.invoices"),
     icon: ReceiptTextIcon,
   }),
 });

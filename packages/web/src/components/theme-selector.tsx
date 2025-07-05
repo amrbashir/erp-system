@@ -22,7 +22,7 @@ export function ThemeSelector({
   if (asSubmenu) {
     return (
       <DropdownMenuSub>
-        <DropdownMenuSubTrigger>{t("theme")}</DropdownMenuSubTrigger>
+        <DropdownMenuSubTrigger>{t("theme.theme")}</DropdownMenuSubTrigger>
         <DropdownMenuSubContent>
           {THEME_VARIANTS.map(({ theme, icon: Icon }) => {
             return (
@@ -31,7 +31,7 @@ export function ThemeSelector({
                 checked={currentTheme === theme}
                 onClick={() => setTheme(theme)}
               >
-                <Icon /> {t(`themes.${theme}`)}
+                <Icon /> {t(`theme.themes.${theme}`)}
               </DropdownMenuCheckboxItem>
             );
           })}
@@ -41,12 +41,12 @@ export function ThemeSelector({
   }
 
   return (
-    <Button title={t("changeTheme")} variant="outline" onClick={() => toggleTheme()}>
+    <Button title={t("theme.changeTheme")} variant="outline" onClick={() => toggleTheme()}>
       {
         <>
           <ThemeIcon />
           {iconOnly ? null : (
-            <span className="hidden md:inline">{t(`themes.${currentTheme}`)}</span>
+            <span className="hidden md:inline">{t(`theme.themes.${currentTheme}`)}</span>
           )}
         </>
       }

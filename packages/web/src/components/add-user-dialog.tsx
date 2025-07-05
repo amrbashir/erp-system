@@ -76,13 +76,13 @@ export function AddUserDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button>{t("addUser")}</Button>
+        <Button>{t("user.add")}</Button>
       </DialogTrigger>
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("addUser")}</DialogTitle>
-          <DialogDescription>{t("addUserDescription")}</DialogDescription>
+          <DialogTitle>{t("user.add")}</DialogTitle>
+          <DialogDescription>{t("user.addDescription")}</DialogDescription>
         </DialogHeader>
 
         <form
@@ -101,7 +101,7 @@ export function AddUserDialog() {
             <form.Field
               name="role"
               children={(field) => (
-                <SelectInput field={field} options={["USER", "ADMIN"] as UserRole[]} />
+                <RolesSelector field={field} options={["USER", "ADMIN"] as UserRole[]} />
               )}
             />
           </div>
@@ -117,12 +117,12 @@ export function AddUserDialog() {
                 <>
                   <DialogClose asChild>
                     <Button disabled={!canSubmit} variant="outline">
-                      {t("cancel")}
+                      {t("common.actions.cancel")}
                     </Button>
                   </DialogClose>
                   <Button disabled={!canSubmit} type="submit">
                     {isSubmitting && <Loader2Icon className="animate-spin" />}
-                    {t("add")}
+                    {t("common.actions.add")}
                   </Button>
                 </>
               )}
@@ -143,7 +143,7 @@ function InputField({
 
   return (
     <div className={cn("flex flex-col gap-3", className)} {...props}>
-      <Label htmlFor={field.name}>{t(field.name as any)}</Label>
+      <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
       <Input
         id={field.name}
         name={field.name}
@@ -157,13 +157,12 @@ function InputField({
   );
 }
 
-function SelectInput({ field, options }: { field: AnyFieldApi; options: string[] }) {
+function RolesSelector({ field, options }: { field: AnyFieldApi; options: string[] }) {
   const { t } = useTranslation();
 
   return (
     <div className="flex flex-col gap-3">
-      <Label htmlFor={field.name}>{t(field.name as any)}</Label>
-
+      <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
       <Select onValueChange={(e) => field.handleChange(e)} defaultValue={field.state.value}>
         <SelectTrigger>
           <SelectValue />
@@ -171,7 +170,7 @@ function SelectInput({ field, options }: { field: AnyFieldApi; options: string[]
         <SelectContent>
           {options.map((r) => (
             <SelectItem key={r} value={r}>
-              {r}
+              {t(`user.roles.${r}` as any)}
             </SelectItem>
           ))}
         </SelectContent>

@@ -19,7 +19,7 @@ import i18n from "@/i18n";
 export const Route = createFileRoute("/org/$orgSlug/products")({
   component: Products,
   context: () => ({
-    title: i18n.t("pages.products"),
+    title: i18n.t("routes.products"),
     icon: PackageIcon,
   }),
 });
@@ -43,13 +43,13 @@ function Products() {
           <Table>
             <TableHeader>
               <TableRow className="*:font-bold">
-                <TableHead>{t("number")}</TableHead>
-                <TableHead>{t("quantity")}</TableHead>
-                <TableHead className="min-w-[50%]">{t("description")}</TableHead>
-                <TableHead>{t("purchasePrice")}</TableHead>
-                <TableHead>{t("sellingPrice")}</TableHead>
-                <TableHead>{t("createdAt")}</TableHead>
-                <TableHead>{t("updatedAt")}</TableHead>
+                <TableHead>{t("common.ui.number")}</TableHead>
+                <TableHead>{t("common.form.quantity")}</TableHead>
+                <TableHead className="min-w-[50%]">{t("common.form.description")}</TableHead>
+                <TableHead>{t("common.pricing.purchase")}</TableHead>
+                <TableHead>{t("common.pricing.selling")}</TableHead>
+                <TableHead>{t("common.dates.createdAt")}</TableHead>
+                <TableHead>{t("common.dates.updatedAt")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

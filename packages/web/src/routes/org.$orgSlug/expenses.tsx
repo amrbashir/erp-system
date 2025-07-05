@@ -20,7 +20,7 @@ import { EmptyTable } from "../../components/empty-table";
 export const Route = createFileRoute("/org/$orgSlug/expenses")({
   component: Expenses,
   context: () => ({
-    title: i18n.t("pages.expenses"),
+    title: i18n.t("routes.expenses"),
     icon: ShoppingCartIcon,
   }),
 });
@@ -43,12 +43,12 @@ function Expenses() {
           <Table>
             <TableHeader>
               <TableRow className="*:font-bold">
-                <TableHead>{t("number")}</TableHead>
-                <TableHead>{t("description")}</TableHead>
-                <TableHead>{t("moneyAmount")}</TableHead>
+                <TableHead>{t("common.ui.number")}</TableHead>
+                <TableHead>{t("common.form.description")}</TableHead>
+                <TableHead>{t("common.form.amount")}</TableHead>
                 <TableHead>{t("cashierName")}</TableHead>
-                <TableHead>{t("createdAt")}</TableHead>
-                <TableHead>{t("updatedAt")}</TableHead>
+                <TableHead>{t("common.dates.createdAt")}</TableHead>
+                <TableHead>{t("common.dates.updatedAt")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

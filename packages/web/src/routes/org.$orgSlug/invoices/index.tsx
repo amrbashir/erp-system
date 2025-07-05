@@ -37,8 +37,8 @@ function Invoices() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <div>
-        <Button onClick={() => navigate({ to: "/org/$orgSlug/invoices/new" })}>
-          {t("pages.createInvoice")}
+        <Button onClick={() => navigate({ to: "/org/$orgSlug/invoices/create" })}>
+          {t("routes.createInvoice")}
         </Button>
       </div>
 
@@ -47,12 +47,12 @@ function Invoices() {
           <Table>
             <TableHeader>
               <TableRow className="*:font-bold">
-                <TableHead>{t("invoiceNumber")}</TableHead>
+                <TableHead>{t("invoice.number")}</TableHead>
                 <TableHead>{t("cashierName")}</TableHead>
-                <TableHead>{t("customerName")}</TableHead>
-                <TableHead>{t("createdAt")}</TableHead>
-                <TableHead>{t("updatedAt")}</TableHead>
-                <TableHead>{t("total")}</TableHead>
+                <TableHead>{t("customer.name")}</TableHead>
+                <TableHead>{t("common.dates.createdAt")}</TableHead>
+                <TableHead>{t("common.dates.updatedAt")}</TableHead>
+                <TableHead>{t("invoice.total")}</TableHead>
                 <TableHead className="text-end!"></TableHead>
               </TableRow>
             </TableHeader>
@@ -98,11 +98,11 @@ function InvoiceRow({
             <Table>
               <TableHeader>
                 <TableRow className="*:font-bold">
-                  <TableHead>{t("number")}</TableHead>
-                  <TableHead className="w-full">{t("description")}</TableHead>
-                  <TableHead>{t("quantity")}</TableHead>
-                  <TableHead>{t("sellingPrice")}</TableHead>
-                  <TableHead className="text-end!">{t("total")}</TableHead>
+                  <TableHead>{t("common.ui.number")}</TableHead>
+                  <TableHead className="w-full">{t("common.form.description")}</TableHead>
+                  <TableHead>{t("common.form.quantity")}</TableHead>
+                  <TableHead>{t("common.form.price")}</TableHead>
+                  <TableHead className="text-end!">{t("invoice.total")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
