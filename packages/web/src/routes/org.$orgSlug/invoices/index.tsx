@@ -12,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/shadcn/components/ui/table";
+import { cn } from "@/shadcn/lib/utils";
 
 import type { InvoiceEntity } from "@erp-system/sdk/zod";
 import type z from "zod";
@@ -98,40 +99,38 @@ function InvoiceRow({
           </Button>
         </TableCell>
       </TableRow>
-      {open && (
-        <TableRow className="bg-muted/50">
-          <TableCell colSpan={10} className="pt-0">
-            <Table>
-              <TableHeader>
-                <TableRow className="*:font-bold">
-                  <TableHead>{t("common.ui.number")}</TableHead>
-                  <TableHead className="w-full">{t("common.form.description")}</TableHead>
-                  <TableHead>{t("common.form.quantity")}</TableHead>
-                  <TableHead>{t("common.form.price")}</TableHead>
-                  <TableHead>{t("invoice.subtotal")}</TableHead>
-                  <TableHead>{t("invoice.discountPercent")}</TableHead>
-                  <TableHead>{t("invoice.discountAmount")}</TableHead>
-                  <TableHead className="text-end!">{t("invoice.total")}</TableHead>
+      <TableRow className={cn("bg-muted/50", open ? "table-row" : "hidden")}>
+        <TableCell colSpan={10} className="pt-0">
+          <Table>
+            <TableHeader>
+              <TableRow className="*:font-bold">
+                <TableHead>{t("common.ui.number")}</TableHead>
+                <TableHead className="w-full">{t("common.form.description")}</TableHead>
+                <TableHead>{t("common.form.quantity")}</TableHead>
+                <TableHead>{t("common.form.price")}</TableHead>
+                <TableHead>{t("invoice.subtotal")}</TableHead>
+                <TableHead>{t("invoice.discountPercent")}</TableHead>
+                <TableHead>{t("invoice.discountAmount")}</TableHead>
+                <TableHead className="text-end!">{t("invoice.total")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {invoice.items.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{item.description}</TableCell>
+                  <TableCell>{item.quantity}</TableCell>
+                  <TableCell>{formatCurrency(item.selling_price)}</TableCell>
+                  <TableCell>{formatCurrency(item.subtotal)}</TableCell>
+                  <TableCell>{item.discount_percent}%</TableCell>
+                  <TableCell>{formatCurrency(item.discount_amount)}</TableCell>
+                  <TableCell className="text-end">{formatCurrency(item.total)}</TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {invoice.items.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>{item.description}</TableCell>
-                    <TableCell>{item.quantity}</TableCell>
-                    <TableCell>{formatCurrency(item.selling_price)}</TableCell>
-                    <TableCell>{formatCurrency(item.subtotal)}</TableCell>
-                    <TableCell>{item.discount_percent}%</TableCell>
-                    <TableCell>{formatCurrency(item.discount_amount)}</TableCell>
-                    <TableCell className="text-end">{formatCurrency(item.total)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableCell>
-        </TableRow>
-      )}
+              ))}
+            </TableBody>
+          </Table>
+        </TableCell>
+      </TableRow>
     </>
   );
 }
