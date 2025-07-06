@@ -54,7 +54,7 @@ function Products() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {(products ?? []).map((product, index) => (
+              {products.map((product, index) => (
                 <TableRow key={index}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{product.stock_quantity}</TableCell>

@@ -53,7 +53,7 @@ function Expenses() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {(expenses ?? []).map((expense, index) => (
+              {expenses.map((expense, index) => (
                 <TableRow key={expense.id}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{expense.description}</TableCell>

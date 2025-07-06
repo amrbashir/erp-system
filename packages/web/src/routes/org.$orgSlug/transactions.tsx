@@ -54,7 +54,7 @@ function Transactions() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {(transactions ?? []).map((transaction, index) => (
+              {transactions.map((transaction, index) => (
                 <TableRow key={index}>
                   <TableCell>{transaction.id}</TableCell>
                   <TableCell>

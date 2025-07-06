@@ -57,7 +57,7 @@ function Customers() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {(customers ?? []).map((customer, index) => (
+              {customers.map((customer, index) => (
                 <TableRow key={index}>
                   <TableCell>{customer.id}</TableCell>
                   <TableCell>{customer.name}</TableCell>

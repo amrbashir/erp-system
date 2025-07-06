@@ -444,7 +444,7 @@ function ProductItem({
   onAdd: (product: Product) => void;
   invoiceItems: InvoiceItem[];
 }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const matchingInvoiceItem = invoiceItems.find((i) => i.id == product.id);
   const remainingStock = product.stock_quantity - (matchingInvoiceItem?.quantity ?? 0);

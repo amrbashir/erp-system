@@ -61,7 +61,7 @@ function Invoices() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {(invoices ?? []).map((invoice, index) => (
+              {invoices.map((invoice, index) => (
                 <InvoiceRow key={index} invoice={invoice} index={index} />
               ))}
             </TableBody>
@@ -76,7 +76,6 @@ function Invoices() {
 
 function InvoiceRow({
   invoice,
-  index,
 }: React.ComponentProps<"tr"> & { invoice: z.infer<typeof InvoiceEntity>; index: number }) {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
