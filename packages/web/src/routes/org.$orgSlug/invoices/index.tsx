@@ -1,4 +1,3 @@
-import { formatCurrency } from "@erp-system/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
@@ -19,6 +18,7 @@ import type z from "zod";
 
 import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
+import { formatCurrency } from "@/hooks/format-currency";
 import { useOrg } from "@/hooks/use-org";
 
 export const Route = createFileRoute("/org/$orgSlug/invoices/")({ component: Invoices });
@@ -89,10 +89,10 @@ function InvoiceRow({
         <TableCell>{invoice.customerName}</TableCell>
         <TableCell>{new Date(invoice.createdAt).toLocaleString(i18n.language)}</TableCell>
         <TableCell>{new Date(invoice.updatedAt).toLocaleString(i18n.language)}</TableCell>
-        <TableCell>{formatCurrency(invoice.subtotal, "EGP", i18n.language)}</TableCell>
+        <TableCell>{formatCurrency(invoice.subtotal)}</TableCell>
         <TableCell>{invoice.discount_percent}%</TableCell>
-        <TableCell>{formatCurrency(invoice.discount_amount, "EGP", i18n.language)}</TableCell>
-        <TableCell>{formatCurrency(invoice.total, "EGP", i18n.language)}</TableCell>
+        <TableCell>{formatCurrency(invoice.discount_amount)}</TableCell>
+        <TableCell>{formatCurrency(invoice.total)}</TableCell>
         <TableCell className="text-end!">
           <Button onClick={() => setOpen((prev) => !prev)} variant="ghost" size="sm">
             {open ? <ChevronUpIcon /> : <ChevronDownIcon />}
@@ -121,17 +121,11 @@ function InvoiceRow({
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>{item.description}</TableCell>
                     <TableCell>{item.quantity}</TableCell>
-                    <TableCell>
-                      {formatCurrency(item.selling_price, "EGP", i18n.language)}
-                    </TableCell>
-                    <TableCell>{formatCurrency(item.subtotal, "EGP", i18n.language)}</TableCell>
+                    <TableCell>{formatCurrency(item.selling_price)}</TableCell>
+                    <TableCell>{formatCurrency(item.subtotal)}</TableCell>
                     <TableCell>{item.discount_percent}%</TableCell>
-                    <TableCell>
-                      {formatCurrency(item.discount_amount, "EGP", i18n.language)}
-                    </TableCell>
-                    <TableCell className="text-end">
-                      {formatCurrency(item.total, "EGP", i18n.language)}
-                    </TableCell>
+                    <TableCell>{formatCurrency(item.discount_amount)}</TableCell>
+                    <TableCell className="text-end">{formatCurrency(item.total)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

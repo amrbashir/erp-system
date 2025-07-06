@@ -1,4 +1,3 @@
-import { formatCurrency } from "@erp-system/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowUpIcon, BanknoteIcon } from "lucide-react";
@@ -15,6 +14,7 @@ import { cn } from "@/shadcn/lib/utils";
 
 import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
+import { formatCurrency } from "@/hooks/format-currency";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 
@@ -65,7 +65,7 @@ function Transactions() {
                           transaction.amount >= 0 ? "text-green-300" : "-scale-y-100 text-red-300",
                         )}
                       />
-                      {formatCurrency(transaction.amount, "EGP", i18n.language)}
+                      {formatCurrency(transaction.amount)}
                     </span>
                   </TableCell>
                   <TableCell>{transaction.username}</TableCell>

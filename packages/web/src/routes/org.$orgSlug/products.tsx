@@ -1,4 +1,3 @@
-import { formatCurrency } from "@erp-system/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { PackageIcon } from "lucide-react";
@@ -14,6 +13,7 @@ import {
 
 import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
+import { formatCurrency } from "@/hooks/format-currency";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 
@@ -59,12 +59,8 @@ function Products() {
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{product.stock_quantity}</TableCell>
                   <TableCell>{product.description}</TableCell>
-                  <TableCell>
-                    {formatCurrency(product.purchase_price, "EGP", i18n.language)}
-                  </TableCell>
-                  <TableCell>
-                    {formatCurrency(product.selling_price, "EGP", i18n.language)}
-                  </TableCell>
+                  <TableCell>{formatCurrency(product.purchase_price)}</TableCell>
+                  <TableCell>{formatCurrency(product.selling_price)}</TableCell>
                   <TableCell>{new Date(product.createdAt).toLocaleString(i18n.language)}</TableCell>
                   <TableCell>{new Date(product.updatedAt).toLocaleString(i18n.language)}</TableCell>
                 </TableRow>

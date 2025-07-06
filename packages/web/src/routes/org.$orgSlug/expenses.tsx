@@ -1,4 +1,3 @@
-import { formatCurrency } from "@erp-system/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ShoppingCartIcon } from "lucide-react";
@@ -12,6 +11,7 @@ import {
   TableRow,
 } from "@/shadcn/components/ui/table";
 
+import { formatCurrency } from "@/hooks/format-currency";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 
@@ -57,7 +57,7 @@ function Expenses() {
                 <TableRow key={expense.id}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{expense.description}</TableCell>
-                  <TableCell>{formatCurrency(expense.price, "EGP", i18n.language)}</TableCell>
+                  <TableCell>{formatCurrency(expense.price)}</TableCell>
                   <TableCell>{expense.cashierName}</TableCell>
                   <TableCell>{new Date(expense.createdAt).toLocaleString(i18n.language)}</TableCell>
                   <TableCell>{new Date(expense.updatedAt).toLocaleString(i18n.language)}</TableCell>

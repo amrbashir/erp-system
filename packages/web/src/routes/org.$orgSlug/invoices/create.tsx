@@ -4,7 +4,7 @@ import {
   CustomerEntity,
   ProductEntity,
 } from "@erp-system/sdk/zod";
-import { formatCurrency, toBaseUnits, toMajorUnits } from "@erp-system/utils";
+import { toBaseUnits, toMajorUnits } from "@erp-system/utils";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
@@ -53,6 +53,7 @@ import type z from "zod";
 import { apiClient } from "@/api-client";
 import { FormErrors } from "@/components/form-errors";
 import { InputNumber } from "@/components/input-number";
+import { formatCurrency } from "@/hooks/format-currency";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 
@@ -438,7 +439,7 @@ function ProductItem({
       <h3>{product.description}</h3>
       <div className="w-full text-xs text-secondary-foreground/50 flex justify-around gap-2">
         <span className="text-chart-5">
-          {t("common.form.price")}: {formatCurrency(product.selling_price, "EGP", i18n.language)}
+          {t("common.form.price")}: {formatCurrency(product.selling_price)}
         </span>
         <span className="text-chart-2">
           {t("product.stock")}: {product.stock_quantity}
@@ -567,8 +568,8 @@ function InvoiceTableRow({
           max={item.stock_quantity}
         />
       </TableCell>
-      <TableCell>{formatCurrency(item.selling_price, "EGP", i18n.language)}</TableCell>
-      <TableCell>{formatCurrency(itemSubtotal, "EGP", i18n.language)}</TableCell>
+      <TableCell>{formatCurrency(item.selling_price)}</TableCell>
+      <TableCell>{formatCurrency(itemSubtotal)}</TableCell>
       <TableCell>
         <InputNumber
           className="w-20"
@@ -578,7 +579,7 @@ function InvoiceTableRow({
           max={100}
         />
       </TableCell>
-      <TableCell>{formatCurrency(percentDiscount, "EGP", i18n.language)}</TableCell>
+      <TableCell>{formatCurrency(percentDiscount)}</TableCell>
       <TableCell>
         <InputNumber
           className="w-20"
@@ -589,7 +590,7 @@ function InvoiceTableRow({
           min={0}
         />
       </TableCell>
-      <TableCell className="text-end">{formatCurrency(itemTotal, "EGP", i18n.language)}</TableCell>
+      <TableCell className="text-end">{formatCurrency(itemTotal)}</TableCell>
       <TableCell>
         <Button type="button" onClick={() => onRemove(index)} variant="ghost" size="sm">
           <TrashIcon />
@@ -620,7 +621,7 @@ function InvoiceTableFooter({
     <TableFooter className="*:*:font-bold">
       <TableRow>
         <TableCell colSpan={8}>{t("invoice.subtotal")}</TableCell>
-        <TableCell className="text-end">{formatCurrency(subtotal, "EGP", i18n.language)}</TableCell>
+        <TableCell className="text-end">{formatCurrency(subtotal)}</TableCell>
         <TableCell></TableCell>
       </TableRow>
       <TableRow>
@@ -635,7 +636,7 @@ function InvoiceTableFooter({
             max={100}
           />
         </TableCell>
-        <TableCell>{formatCurrency(percentDiscount, "EGP", i18n.language)}</TableCell>
+        <TableCell>{formatCurrency(percentDiscount)}</TableCell>
         <TableCell>{t("invoice.discountAmount")}</TableCell>
         <TableCell>
           <InputNumber
@@ -652,9 +653,7 @@ function InvoiceTableFooter({
 
       <TableRow>
         <TableCell colSpan={8}>{t("invoice.total")}</TableCell>
-        <TableCell className="text-end">
-          {formatCurrency(totalPrice, "EGP", i18n.language)}
-        </TableCell>
+        <TableCell className="text-end">{formatCurrency(totalPrice)}</TableCell>
         <TableCell></TableCell>
       </TableRow>
     </TableFooter>
