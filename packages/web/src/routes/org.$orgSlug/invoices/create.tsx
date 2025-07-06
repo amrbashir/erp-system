@@ -47,7 +47,7 @@ import {
 } from "@/shadcn/components/ui/table";
 import { cn } from "@/shadcn/lib/utils";
 
-import type { AnyFieldApi } from "@tanstack/react-form";
+import type { AnyFieldApi, ReactFormApi } from "@tanstack/react-form";
 import type z from "zod";
 
 import { apiClient } from "@/api-client";
@@ -64,8 +64,9 @@ export const Route = createFileRoute("/org/$orgSlug/invoices/create")({
   }),
 });
 
+// Types
+type AnyReactFormApi = ReactFormApi<any, any, any, any, any, any, any, any, any, any>;
 type CreateInvoiceItem = z.infer<typeof CreateInvoiceItemDto>;
-
 type Product = z.infer<typeof ProductEntity>;
 type Customer = z.infer<typeof CustomerEntity>;
 type Invoice = z.infer<ReturnType<(typeof CreateInvoiceDto)["strict"]>> & {
@@ -73,6 +74,36 @@ type Invoice = z.infer<ReturnType<(typeof CreateInvoiceDto)["strict"]>> & {
 };
 type InvoiceItem = Invoice["items"][number];
 
+// Utility functions for calculations
+const calculateItemSubtotal = (item: InvoiceItem) => item.selling_price * item.quantity;
+
+const calculateItemDiscount = (item: InvoiceItem) => {
+  const subtotal = calculateItemSubtotal(item);
+  const percentDiscount = ((item.discount_percent || 0) / 100) * subtotal;
+  return {
+    percentDiscount,
+    totalDiscount: percentDiscount + (item.discount_amount || 0),
+  };
+};
+
+const calculateItemTotal = (item: InvoiceItem) => {
+  const subtotal = calculateItemSubtotal(item);
+  const { totalDiscount } = calculateItemDiscount(item);
+  return Math.round(subtotal - totalDiscount);
+};
+
+const calculateInvoiceSubtotal = (items: InvoiceItem[]) =>
+  items.reduce((total, item) => total + calculateItemTotal(item), 0);
+
+const calculateInvoicePercentDiscount = (subtotal: number, discountPercent: number) =>
+  (subtotal * discountPercent) / 100;
+
+const calculateInvoiceTotal = (subtotal: number, discountPercent = 0, discountAmount = 0) => {
+  const percentDiscount = calculateInvoicePercentDiscount(subtotal, discountPercent);
+  return Math.round(Math.max(0, subtotal - percentDiscount - discountAmount));
+};
+
+// Main component
 function CreateInvoice() {
   const { slug: orgSlug } = useOrg();
   const { t } = useTranslation();
@@ -131,7 +162,7 @@ function CreateInvoice() {
     (state) => [state.values.items, state.values.discount_percent, state.values.discount_amount],
   );
 
-  const addItem = (product: Product) => {
+  const handleAddItem = (product: Product) => {
     const existingIndex = invoiceItems.findIndex((i) => i.productId === product.id);
     if (existingIndex >= 0) {
       const newItems = [...invoiceItems];
@@ -151,14 +182,14 @@ function CreateInvoice() {
     form.validate("change");
   };
 
-  const removeItem = (index: number) => {
+  const handleRemoveItem = (index: number) => {
     const newItems = [...form.getFieldValue("items")];
     newItems.splice(index, 1);
     form.setFieldValue("items", newItems);
     form.validate("change");
   };
 
-  const updateItemQuantity = (index: number, quantity: number) => {
+  const handleUpdateItemQuantity = (index: number, quantity: number) => {
     const product = products?.find((p) => p.id === invoiceItems[index].productId);
     if (!product) return;
 
@@ -171,7 +202,7 @@ function CreateInvoice() {
     form.validate("change");
   };
 
-  const updateItemDiscount = (
+  const handleUpdateItemDiscount = (
     index: number,
     field: "discount_percent" | "discount_amount",
     value: number,
@@ -185,6 +216,14 @@ function CreateInvoice() {
     form.validate("change");
   };
 
+  const handleUpdateInvoiceDiscount = (
+    field: "discount_percent" | "discount_amount",
+    value: any,
+  ) => {
+    form.setFieldValue(field, value);
+    form.validate("change");
+  };
+
   return (
     <form
       className="h-full flex flex-col gap-2 pt-2"
@@ -194,34 +233,14 @@ function CreateInvoice() {
         form.handleSubmit();
       }}
     >
-      <div className="flex justify-between gap-2 px-2">
-        <form.Field
-          name="customerId"
-          children={(field) => <CustomerSelect customers={customers} field={field} />}
-        />
-
-        <div className="flex gap-2">
-          <form.Subscribe
-            selector={(state) => [state.canSubmit, state.isSubmitting]}
-            children={([canSubmit, isSubmitting]) => (
-              <>
-                <Button
-                  type="button"
-                  disabled={!canSubmit}
-                  variant="secondary"
-                  onClick={() => router.history.back()}
-                >
-                  {t("common.actions.cancel")}
-                </Button>
-                <Button type="submit" disabled={!canSubmit || invoiceItems.length === 0}>
-                  {isSubmitting && <Loader2Icon className="animate-spin" />}
-                  {t("common.actions.create")}
-                </Button>
-              </>
-            )}
-          />
-        </div>
-      </div>
+      <InvoiceHeader
+        form={form}
+        customers={customers}
+        canSubmit={form.state.canSubmit}
+        isSubmitting={form.state.isSubmitting}
+        hasItems={invoiceItems.length > 0}
+        onCancel={() => router.history.back()}
+      />
 
       <ResizablePanelGroup direction="vertical">
         <ResizablePanel className="p-2 overflow-y-auto!">
@@ -229,13 +248,10 @@ function CreateInvoice() {
             items={invoiceItems}
             invoiceDiscountAmount={invoiceDiscountAmount}
             invoiceDiscountPercent={invoiceDiscountPercent}
-            updateItemQuantity={updateItemQuantity}
-            removeItem={removeItem}
-            updateItemDiscount={updateItemDiscount}
-            updateInvoiceDiscount={(field, value) => {
-              form.setFieldValue(field, value);
-              form.validate("change");
-            }}
+            onUpdateItemQuantity={handleUpdateItemQuantity}
+            onRemoveItem={handleRemoveItem}
+            onUpdateItemDiscount={handleUpdateItemDiscount}
+            onUpdateInvoiceDiscount={handleUpdateInvoiceDiscount}
           />
 
           <div className="mt-2">
@@ -246,94 +262,52 @@ function CreateInvoice() {
         <ResizableHandle withHandle />
 
         <ResizablePanel className="p-2 overflow-y-auto!" defaultSize={50}>
-          <ProductsSidebar products={products} onAdd={addItem} invoiceItems={invoiceItems} />
+          <ProductsSidebar products={products} onAdd={handleAddItem} invoiceItems={invoiceItems} />
         </ResizablePanel>
       </ResizablePanelGroup>
     </form>
   );
 }
 
-function ProductsSidebar({
-  products,
-  onAdd,
-  invoiceItems,
+// Header component with customer select and action buttons
+function InvoiceHeader({
+  form,
+  customers,
+  canSubmit,
+  isSubmitting,
+  hasItems,
+  onCancel,
 }: {
-  products: Product[] | undefined;
-  onAdd: (item: Product) => void;
-  invoiceItems: InvoiceItem[];
+  form: AnyReactFormApi;
+  customers: Customer[] | undefined;
+  canSubmit: boolean;
+  isSubmitting: boolean;
+  hasItems: boolean;
+  onCancel: () => void;
 }) {
   const { t } = useTranslation();
-  const [productFilter, setProductFilter] = useState("");
-
-  const filteredProducts = useMemo(() => {
-    if (!products) return [];
-    if (!productFilter) return products;
-
-    return products.filter((product) =>
-      product.description.toLowerCase().includes(productFilter.toLowerCase()),
-    );
-  }, [products, productFilter]);
 
   return (
-    <div className="flex flex-col gap-2">
-      <Input
-        placeholder={t("product.search")}
-        value={productFilter}
-        onChange={(e) => setProductFilter(e.target.value)}
+    <div className="flex justify-between gap-2 px-2">
+      <form.Field
+        name="customerId"
+        children={(field) => <CustomerSelect customers={customers} field={field} />}
       />
-      <Separator orientation="horizontal" />
-      <div className="flex flex-wrap gap-2">
-        {filteredProducts.map((product) => (
-          <ProductItem
-            key={product.id}
-            product={product}
-            onAdd={onAdd}
-            invoiceItems={invoiceItems}
-          />
-        ))}
+
+      <div className="flex gap-2">
+        <Button type="button" disabled={!canSubmit} variant="secondary" onClick={onCancel}>
+          {t("common.actions.cancel")}
+        </Button>
+        <Button type="submit" disabled={!canSubmit || !hasItems}>
+          {isSubmitting && <Loader2Icon className="animate-spin" />}
+          {t("common.actions.create")}
+        </Button>
       </div>
     </div>
   );
 }
 
-function ProductItem({
-  product,
-  onAdd,
-  invoiceItems,
-}: {
-  product: Product;
-  onAdd: (product: Product) => void;
-  invoiceItems: InvoiceItem[];
-}) {
-  const { t, i18n } = useTranslation();
-
-  const matchingInvoiceItem = invoiceItems.find((i) => i.id == product.id);
-  const remainingStock = product.stock_quantity - (matchingInvoiceItem?.quantity ?? 0);
-
-  return (
-    <Button
-      disabled={remainingStock <= 0}
-      type="button"
-      variant="ghost"
-      className="bg-card hover:bg-secondary! flex-1 h-fit w-fit border flex flex-col items-center gap-5"
-      onClick={() => onAdd(product)}
-    >
-      <h3>{product.description}</h3>
-      <div className="w-full text-xs text-secondary-foreground/50 flex justify-around gap-2">
-        <span className="text-chart-5">
-          {t("common.form.price")}: {formatCurrency(product.selling_price, "EGP", i18n.language)}
-        </span>
-        <span className="text-chart-2">
-          {t("product.stock")}: {product.stock_quantity}
-        </span>
-        <span className="text-chart-4">
-          {t("product.remaining")}: {remainingStock}
-        </span>
-      </div>
-    </Button>
-  );
-}
-
+// Customer selection dropdown component
 function CustomerSelect({
   customers = [],
   field,
@@ -394,182 +368,295 @@ function CustomerSelect({
   );
 }
 
+// Products sidebar component
+function ProductsSidebar({
+  products,
+  onAdd,
+  invoiceItems,
+}: {
+  products: Product[] | undefined;
+  onAdd: (item: Product) => void;
+  invoiceItems: InvoiceItem[];
+}) {
+  const { t } = useTranslation();
+  const [productFilter, setProductFilter] = useState("");
+
+  const filteredProducts = useMemo(() => {
+    if (!products) return [];
+    if (!productFilter) return products;
+
+    return products.filter((product) =>
+      product.description.toLowerCase().includes(productFilter.toLowerCase()),
+    );
+  }, [products, productFilter]);
+
+  return (
+    <div className="flex flex-col gap-2">
+      <Input
+        placeholder={t("product.search")}
+        value={productFilter}
+        onChange={(e) => setProductFilter(e.target.value)}
+      />
+      <Separator orientation="horizontal" />
+      <div className="flex flex-wrap gap-2">
+        {filteredProducts.map((product) => (
+          <ProductItem
+            key={product.id}
+            product={product}
+            onAdd={onAdd}
+            invoiceItems={invoiceItems}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Individual product item component
+function ProductItem({
+  product,
+  onAdd,
+  invoiceItems,
+}: {
+  product: Product;
+  onAdd: (product: Product) => void;
+  invoiceItems: InvoiceItem[];
+}) {
+  const { t, i18n } = useTranslation();
+
+  const matchingInvoiceItem = invoiceItems.find((i) => i.id == product.id);
+  const remainingStock = product.stock_quantity - (matchingInvoiceItem?.quantity ?? 0);
+
+  return (
+    <Button
+      disabled={remainingStock <= 0}
+      type="button"
+      variant="ghost"
+      className="bg-card hover:bg-secondary! flex-1 h-fit w-fit border flex flex-col items-center gap-5"
+      onClick={() => onAdd(product)}
+    >
+      <h3>{product.description}</h3>
+      <div className="w-full text-xs text-secondary-foreground/50 flex justify-around gap-2">
+        <span className="text-chart-5">
+          {t("common.form.price")}: {formatCurrency(product.selling_price, "EGP", i18n.language)}
+        </span>
+        <span className="text-chart-2">
+          {t("product.stock")}: {product.stock_quantity}
+        </span>
+        <span className="text-chart-4">
+          {t("product.remaining")}: {remainingStock}
+        </span>
+      </div>
+    </Button>
+  );
+}
+
+// Main invoice table component
 function InvoiceTable({
   items,
   invoiceDiscountPercent = 0,
   invoiceDiscountAmount = 0,
-  updateItemQuantity,
-  removeItem,
-  updateItemDiscount,
-  updateInvoiceDiscount,
+  onUpdateItemQuantity,
+  onRemoveItem,
+  onUpdateItemDiscount,
+  onUpdateInvoiceDiscount,
 }: {
   items: InvoiceItem[];
   invoiceDiscountPercent?: number;
   invoiceDiscountAmount?: number;
-  updateItemQuantity: (index: number, quantity: number) => void;
-  removeItem: (index: number) => void;
-  updateItemDiscount: (
+  onUpdateItemQuantity: (index: number, quantity: number) => void;
+  onRemoveItem: (index: number) => void;
+  onUpdateItemDiscount: (
     index: number,
     field: "discount_percent" | "discount_amount",
     value: number,
   ) => void;
-  updateInvoiceDiscount: (field: "discount_percent" | "discount_amount", value: any) => void;
+  onUpdateInvoiceDiscount: (field: "discount_percent" | "discount_amount", value: any) => void;
 }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
-  // Calculate subtotal (before invoice-level discounts)
-  const subtotal = useMemo(
-    () =>
-      items.reduce((total, item) => {
-        const itemSubtotal = item.selling_price! * item.quantity;
-        const percentDiscount = ((item.discount_percent || 0) / 100) * itemSubtotal;
-        const itemTotal = Math.round(itemSubtotal - percentDiscount - (item.discount_amount || 0));
-        return total + itemTotal;
-      }, 0),
-    [items],
-  );
-
-  // Calculate final total after all discounts
-  const percentDiscount = (subtotal * invoiceDiscountPercent) / 100;
-  const totalPrice = Math.round(Math.max(0, subtotal - percentDiscount - invoiceDiscountAmount));
-
-  return (
-    <div className="border rounded-lg">
-      {items.length > 0 ? (
-        <Table>
-          <TableHeader>
-            <TableRow className="*:font-bold">
-              <TableHead>{t("common.ui.number")}</TableHead>
-              <TableHead className="w-full">{t("common.form.description")}</TableHead>
-              <TableHead>{t("common.form.quantity")}</TableHead>
-              <TableHead>{t("common.form.price")}</TableHead>
-              <TableHead>{t("invoice.subtotal")}</TableHead>
-              <TableHead>{t("invoice.discountPercent")}</TableHead>
-              <TableHead></TableHead>
-              <TableHead>{t("invoice.discountAmount")}</TableHead>
-              <TableHead className="text-end!">{t("invoice.total")}</TableHead>
-              <TableHead></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {items.map((item, index) => {
-              const itemSubtotal = item.selling_price * item.quantity;
-              const itemPercentDiscount = (itemSubtotal * (item.discount_percent || 0)) / 100;
-              const itemTotal = Math.round(
-                itemSubtotal - itemPercentDiscount - (item.discount_amount || 0),
-              );
-
-              return (
-                <TableRow key={index}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{item.description}</TableCell>
-                  <TableCell>
-                    <InputNumber
-                      className="w-20"
-                      value={item.quantity}
-                      onChange={(e) => updateItemQuantity(index, Number(e.target.value))}
-                      min={1}
-                      max={item.stock_quantity}
-                    />
-                  </TableCell>
-                  <TableCell>{formatCurrency(item.selling_price, "EGP", i18n.language)}</TableCell>
-                  <TableCell>
-                    {formatCurrency(item.selling_price * item.quantity, "EGP", i18n.language)}
-                  </TableCell>
-                  <TableCell>
-                    <InputNumber
-                      className="w-20"
-                      value={item.discount_percent || 0}
-                      onChange={(e) =>
-                        updateItemDiscount(index, "discount_percent", Number(e.target.value))
-                      }
-                      min={0}
-                      max={100}
-                    />
-                  </TableCell>
-                  <TableCell>{formatCurrency(itemPercentDiscount, "EGP", i18n.language)}</TableCell>
-                  <TableCell>
-                    <InputNumber
-                      className="w-20"
-                      value={toMajorUnits(item.discount_amount || 0)}
-                      onChange={(e) =>
-                        updateItemDiscount(
-                          index,
-                          "discount_amount",
-                          toBaseUnits(Number(e.target.value)),
-                        )
-                      }
-                      min={0}
-                    />
-                  </TableCell>
-                  <TableCell className="text-end">
-                    {formatCurrency(itemTotal, "EGP", i18n.language)}
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      type="button"
-                      onClick={() => removeItem(index)}
-                      variant="ghost"
-                      size="sm"
-                    >
-                      <TrashIcon />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-          <TableFooter className="*:*:font-bold">
-            <TableRow>
-              <TableCell colSpan={8}>{t("invoice.subtotal")}</TableCell>
-              <TableCell className="text-end">
-                {formatCurrency(subtotal, "EGP", i18n.language)}
-              </TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell colSpan={4}></TableCell>
-              <TableCell>{t("invoice.discountPercent")}</TableCell>
-              <TableCell>
-                <InputNumber
-                  className="w-20"
-                  value={invoiceDiscountPercent}
-                  onChange={(e) =>
-                    updateInvoiceDiscount("discount_percent", Number(e.target.value))
-                  }
-                  min={0}
-                  max={100}
-                />
-              </TableCell>
-              <TableCell>{formatCurrency(percentDiscount, "EGP", i18n.language)}</TableCell>
-              <TableCell>{t("invoice.discountAmount")}</TableCell>
-              <TableCell>
-                <InputNumber
-                  className="w-20"
-                  value={toMajorUnits(invoiceDiscountAmount)}
-                  onChange={(e) =>
-                    updateInvoiceDiscount("discount_amount", toBaseUnits(Number(e.target.value)))
-                  }
-                  min={0}
-                />
-              </TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-
-            <TableRow>
-              <TableCell colSpan={8}>{t("invoice.total")}</TableCell>
-              <TableCell className="text-end">
-                {formatCurrency(totalPrice, "EGP", i18n.language)}
-              </TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-          </TableFooter>
-        </Table>
-      ) : (
+  if (items.length === 0) {
+    return (
+      <div className="border rounded-lg">
         <div className="p-4 text-center text-secondary-foreground/50">
           {t("invoice.addItemsTo")}
         </div>
-      )}
+      </div>
+    );
+  }
+
+  // Calculate subtotal (before invoice-level discounts)
+  const subtotal = useMemo(() => calculateInvoiceSubtotal(items), [items]);
+
+  return (
+    <div className="border rounded-lg">
+      <Table>
+        <TableHeader>
+          <TableRow className="*:font-bold">
+            <TableHead>{t("common.ui.number")}</TableHead>
+            <TableHead className="w-full">{t("common.form.description")}</TableHead>
+            <TableHead>{t("common.form.quantity")}</TableHead>
+            <TableHead>{t("common.form.price")}</TableHead>
+            <TableHead>{t("invoice.subtotal")}</TableHead>
+            <TableHead>{t("invoice.discountPercent")}</TableHead>
+            <TableHead></TableHead>
+            <TableHead>{t("invoice.discountAmount")}</TableHead>
+            <TableHead className="text-end!">{t("invoice.total")}</TableHead>
+            <TableHead></TableHead>
+          </TableRow>
+        </TableHeader>
+
+        <TableBody>
+          {items.map((item, index) => (
+            <InvoiceTableRow
+              key={index}
+              item={item}
+              index={index}
+              onUpdateQuantity={onUpdateItemQuantity}
+              onUpdateDiscount={onUpdateItemDiscount}
+              onRemove={onRemoveItem}
+            />
+          ))}
+        </TableBody>
+
+        <InvoiceTableFooter
+          subtotal={subtotal}
+          discountPercent={invoiceDiscountPercent}
+          discountAmount={invoiceDiscountAmount}
+          onUpdateDiscount={onUpdateInvoiceDiscount}
+        />
+      </Table>
     </div>
+  );
+}
+
+// Invoice table row component
+function InvoiceTableRow({
+  item,
+  index,
+  onUpdateQuantity,
+  onUpdateDiscount,
+  onRemove,
+}: {
+  item: InvoiceItem;
+  index: number;
+  onUpdateQuantity: (index: number, quantity: number) => void;
+  onUpdateDiscount: (
+    index: number,
+    field: "discount_percent" | "discount_amount",
+    value: number,
+  ) => void;
+  onRemove: (index: number) => void;
+}) {
+  const { t, i18n } = useTranslation();
+
+  const itemSubtotal = calculateItemSubtotal(item);
+  const { percentDiscount } = calculateItemDiscount(item);
+  const itemTotal = calculateItemTotal(item);
+
+  return (
+    <TableRow>
+      <TableCell>{index + 1}</TableCell>
+      <TableCell>{item.description}</TableCell>
+      <TableCell>
+        <InputNumber
+          className="w-20"
+          value={item.quantity}
+          onChange={(e) => onUpdateQuantity(index, Number(e.target.value))}
+          min={1}
+          max={item.stock_quantity}
+        />
+      </TableCell>
+      <TableCell>{formatCurrency(item.selling_price, "EGP", i18n.language)}</TableCell>
+      <TableCell>{formatCurrency(itemSubtotal, "EGP", i18n.language)}</TableCell>
+      <TableCell>
+        <InputNumber
+          className="w-20"
+          value={item.discount_percent || 0}
+          onChange={(e) => onUpdateDiscount(index, "discount_percent", Number(e.target.value))}
+          min={0}
+          max={100}
+        />
+      </TableCell>
+      <TableCell>{formatCurrency(percentDiscount, "EGP", i18n.language)}</TableCell>
+      <TableCell>
+        <InputNumber
+          className="w-20"
+          value={toMajorUnits(item.discount_amount || 0)}
+          onChange={(e) =>
+            onUpdateDiscount(index, "discount_amount", toBaseUnits(Number(e.target.value)))
+          }
+          min={0}
+        />
+      </TableCell>
+      <TableCell className="text-end">{formatCurrency(itemTotal, "EGP", i18n.language)}</TableCell>
+      <TableCell>
+        <Button type="button" onClick={() => onRemove(index)} variant="ghost" size="sm">
+          <TrashIcon />
+        </Button>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+// Invoice footer component with totals and discount inputs
+function InvoiceTableFooter({
+  subtotal,
+  discountPercent,
+  discountAmount,
+  onUpdateDiscount,
+}: {
+  subtotal: number;
+  discountPercent: number;
+  discountAmount: number;
+  onUpdateDiscount: (field: "discount_percent" | "discount_amount", value: number) => void;
+}) {
+  const { t, i18n } = useTranslation();
+
+  const percentDiscount = calculateInvoicePercentDiscount(subtotal, discountPercent);
+  const totalPrice = calculateInvoiceTotal(subtotal, discountPercent, discountAmount);
+
+  return (
+    <TableFooter className="*:*:font-bold">
+      <TableRow>
+        <TableCell colSpan={8}>{t("invoice.subtotal")}</TableCell>
+        <TableCell className="text-end">{formatCurrency(subtotal, "EGP", i18n.language)}</TableCell>
+        <TableCell></TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell colSpan={4}></TableCell>
+        <TableCell>{t("invoice.discountPercent")}</TableCell>
+        <TableCell>
+          <InputNumber
+            className="w-20"
+            value={discountPercent}
+            onChange={(e) => onUpdateDiscount("discount_percent", Number(e.target.value))}
+            min={0}
+            max={100}
+          />
+        </TableCell>
+        <TableCell>{formatCurrency(percentDiscount, "EGP", i18n.language)}</TableCell>
+        <TableCell>{t("invoice.discountAmount")}</TableCell>
+        <TableCell>
+          <InputNumber
+            className="w-20"
+            value={toMajorUnits(discountAmount)}
+            onChange={(e) =>
+              onUpdateDiscount("discount_amount", toBaseUnits(Number(e.target.value)))
+            }
+            min={0}
+          />
+        </TableCell>
+        <TableCell></TableCell>
+      </TableRow>
+
+      <TableRow>
+        <TableCell colSpan={8}>{t("invoice.total")}</TableCell>
+        <TableCell className="text-end">
+          {formatCurrency(totalPrice, "EGP", i18n.language)}
+        </TableCell>
+        <TableCell></TableCell>
+      </TableRow>
+    </TableFooter>
   );
 }
