@@ -52,7 +52,7 @@ import type z from "zod";
 
 import { apiClient } from "@/api-client";
 import { FormErrors } from "@/components/form-errors";
-import { InputNumber } from "@/components/InputNumber";
+import { InputNumber } from "@/components/input-number";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 

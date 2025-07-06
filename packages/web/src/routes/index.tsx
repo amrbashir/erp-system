@@ -23,7 +23,6 @@ import type z from "zod";
 import type { AuthUser } from "@/user";
 import { apiClient } from "@/api-client";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
-import { Welcome } from "@/components/welcome";
 import { useAuth } from "@/providers/auth";
 
 interface IndexSearch {
@@ -77,7 +76,23 @@ function Index() {
   );
 }
 
-export function LoginExistingOrg({
+function Welcome({ orgSlug, ...props }: React.ComponentProps<"div"> & { orgSlug?: string } = {}) {
+  const { t } = useTranslation();
+
+  return (
+    <div {...props}>
+      <img src="/logo.svg" alt="ERP System Logo" width={300} className="mb-10" />
+      <h2 className="text-2xl font-semibold text-center">
+        {t(orgSlug ? "welcomeToErpOrg" : "welcomeToErp", { orgSlug: orgSlug })}
+      </h2>
+      <p className="text-base text-center mt-2 text-secondary-foreground/60">
+        {t("welcomeToErpDescription")}
+      </p>
+    </div>
+  );
+}
+
+function LoginExistingOrg({
   user,
   ...props
 }: React.ComponentProps<typeof Card> & { user: AuthUser }) {

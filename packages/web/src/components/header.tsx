@@ -1,9 +1,8 @@
-import { useMatch } from "@tanstack/react-router";
 import { Button } from "@/shadcn/components/ui/button";
 import { Separator } from "@/shadcn/components/ui/separator";
 
-import { AmrBashirIcon } from "@/components/icons/AmrBashirIcon";
-import { GithubIcon } from "@/components/icons/github";
+import { AmrBashirIcon } from "@/components/icons/AmrBashir";
+import { GithubIcon } from "@/components/icons/GitHub";
 import { LanguageSelector } from "@/components/language-selector";
 import { ThemeSelector } from "@/components/theme-selector";
 import { useOrg } from "@/hooks/use-org";
