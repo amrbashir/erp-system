@@ -9,7 +9,7 @@
  */
 export function formatCurrency(value: number, currency: string, locale: string): string {
   // Convert from base units to major units (assuming 100 base units = 1 major unit)
-  const valueInMajorUnits = toBaseUnits(value);
+  const valueInMajorUnits = toMajorUnits(value);
 
   return valueInMajorUnits.toLocaleString(locale, {
     style: "currency",
