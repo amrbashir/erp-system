@@ -16,7 +16,7 @@ import {
   ReceiptTextIcon,
   TrashIcon,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/components/ui/button";
@@ -320,6 +320,11 @@ function CustomerSelect({
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const [customerSearch, setCustomerSearch] = useState("");
+
+  useEffect(() => {
+    console.log("Customer search updated:", customerSearch);
+  }, [customerSearch]);
 
   return (
     <div className="flex gap-2">
@@ -330,7 +335,7 @@ function CustomerSelect({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-[200px] justify-between"
+            className="w-sm justify-between"
           >
             {field.state.value
               ? customers?.find((c) => c.id === field.state.value)?.name
@@ -338,11 +343,16 @@ function CustomerSelect({
             <ChevronsUpDownIcon className="opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
+        <PopoverContent className="w-sm p-0">
           <Command>
-            <div className="flex items-center gap-2 p-1 *:data-[slot=command-input-wrapper]:px-0 *:data-[slot=command-input-wrapper]:ps-2">
-              <CommandInput placeholder={t("customer.search")} />
+            <div className="flex items-center *:first:flex-1 gap-2 p-1 *:data-[slot=command-input-wrapper]:px-0 *:data-[slot=command-input-wrapper]:ps-2">
+              <CommandInput
+                placeholder={t("customer.search")}
+                value={customerSearch}
+                onValueChange={(v) => setCustomerSearch(v)}
+              />
               <AddCustomerDialog
+                initialName={customerSearch}
                 trigger={
                   <Button variant="ghost" size="icon">
                     <PlusIcon />
@@ -351,7 +361,7 @@ function CustomerSelect({
               />
             </div>
             <CommandList>
-              <CommandEmpty>{t("customer.nothing")}</CommandEmpty>
+              <CommandEmpty>{t("customer.nomatches")}</CommandEmpty>
               <CommandGroup>
                 {customers.map((customer) => (
                   <CommandItem

@@ -25,7 +25,13 @@ import { apiClient } from "@/api-client";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
 import { useOrg } from "@/hooks/use-org";
 
-export function AddCustomerDialog({ trigger }: { trigger?: React.ReactNode }) {
+export function AddCustomerDialog({
+  trigger,
+  initialName,
+}: {
+  trigger?: React.ReactNode;
+  initialName?: string;
+}) {
   const { slug: orgSlug } = useOrg();
   const { t } = useTranslation();
   const client = useQueryClient();
@@ -34,7 +40,7 @@ export function AddCustomerDialog({ trigger }: { trigger?: React.ReactNode }) {
 
   const form = useForm({
     defaultValues: {
-      name: "",
+      name: initialName || "",
       address: undefined,
       phone: undefined,
     } as z.infer<ReturnType<(typeof CreateCustomerDto)["strict"]>>,

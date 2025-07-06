@@ -102,7 +102,7 @@
     "name": "اسم العميل",
     "search": "$t(common.actions.search) العملاء...",
     "select": "اختر عميلًا",
-    "nothing": "لا يوجد عملاء",
+    "nomatches": "لا يوجد عملاء",
     "id": "كود العميل"
   },
 

@@ -98,7 +98,7 @@
     "name": "Customer $t(common.form.name)",
     "search": "$t(common.actions.search) customers...",
     "select": "Select a customer",
-    "nothing": "No customers found",
+    "nomatches": "No customers found",
     "id": "Customer ID"
   },
 
