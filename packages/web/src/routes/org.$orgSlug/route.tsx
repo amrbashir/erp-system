@@ -34,9 +34,10 @@ export const Route = createFileRoute("/org/$orgSlug")({
   },
   loader: async ({ params }) => {
     if ("orgSlug" in params && typeof params.orgSlug === "string") {
-      const { data } = await apiClient.get("/org/{orgSlug}", {
+      const { data, response } = await apiClient.get("/org/{orgSlug}", {
         params: { path: { orgSlug: params.orgSlug } },
       });
+      if (!response.ok) throw new Error(i18n.t(`errors.statusCode.${response.status}` as any));
       if (!data) throw new Error(i18n.t("errors.organizationNotFound"));
       return data;
     }
