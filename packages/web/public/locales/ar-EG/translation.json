@@ -24,7 +24,7 @@
       "quantity": "الكمية",
       "username": "اسم المستخدم",
       "password": "كلمة المرور",
-      "amount": "المبلغ",
+      "moneyAmount": "المبلغ",
       "price": "السعر",
       "role": "النوع"
     },

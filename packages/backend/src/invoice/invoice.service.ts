@@ -52,10 +52,12 @@ export class InvoiceService {
             );
           }
 
-          // Calculate item subtotal (before invoice-level discount)
+          // Calculate item subtotal (before invoice-level discount), rounding to base units to avoid fractions
           const itemSubtotal = product.selling_price * item.quantity;
           const itemPercentDiscount = (itemSubtotal * item.discount_percent) / 100;
-          const itemTotal = Math.max(0, itemSubtotal - itemPercentDiscount - item.discount_amount);
+          const itemTotal = Math.round(
+            Math.max(0, itemSubtotal - itemPercentDiscount - item.discount_amount),
+          );
 
           invoiceItems.push({
             description: product.description,
@@ -67,12 +69,13 @@ export class InvoiceService {
             subtotal: itemSubtotal,
             total: itemTotal,
           });
+
           subtotal += itemTotal;
         }
 
-        // Apply invoice-level discount
+        // Apply invoice-level discount, rounding to base units to avoid fractions
         const percentDiscount = (subtotal * dto.discount_percent) / 100;
-        const total = Math.max(0, subtotal - percentDiscount - dto.discount_amount);
+        const total = Math.round(Math.max(0, subtotal - percentDiscount - dto.discount_amount));
 
         const organization = { connect: { slug: orgSlug } };
         const cashier = { connect: { id: userId } };

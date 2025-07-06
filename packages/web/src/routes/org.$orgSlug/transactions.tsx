@@ -1,3 +1,4 @@
+import { formatCurrency } from "@erp-system/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowUpIcon, BanknoteIcon } from "lucide-react";
@@ -46,7 +47,7 @@ function Transactions() {
             <TableHeader>
               <TableRow className="*:font-bold">
                 <TableHead>{t("transactionNumber")}</TableHead>
-                <TableHead>{t("common.form.amount")}</TableHead>
+                <TableHead>{t("common.form.moneyAmount")}</TableHead>
                 <TableHead>{t("common.form.username")}</TableHead>
                 <TableHead>{t("customer.name")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
@@ -64,7 +65,7 @@ function Transactions() {
                           transaction.amount >= 0 ? "text-green-300" : "-scale-y-100 text-red-300",
                         )}
                       />
-                      {transaction.amount}
+                      {formatCurrency(transaction.amount, "EGP", i18n.language)}
                     </span>
                   </TableCell>
                   <TableCell>{transaction.username}</TableCell>

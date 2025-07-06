@@ -24,7 +24,7 @@
       "quantity": "Quantity",
       "username": "Username",
       "password": "Password",
-      "amount": "Amount",
+      "moneyAmount": "Amount",
       "price": "Price",
       "role": "Role"
     },

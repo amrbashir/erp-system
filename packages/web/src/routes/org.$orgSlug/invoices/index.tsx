@@ -1,6 +1,7 @@
+import { formatCurrency } from "@erp-system/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronDownIcon, ChevronUpIcon, ReceiptTextIcon } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
@@ -88,10 +89,10 @@ function InvoiceRow({
         <TableCell>{invoice.customerName}</TableCell>
         <TableCell>{new Date(invoice.createdAt).toLocaleString(i18n.language)}</TableCell>
         <TableCell>{new Date(invoice.updatedAt).toLocaleString(i18n.language)}</TableCell>
-        <TableCell>{invoice.subtotal}</TableCell>
+        <TableCell>{formatCurrency(invoice.subtotal, "EGP", i18n.language)}</TableCell>
         <TableCell>{invoice.discount_percent}%</TableCell>
-        <TableCell>{invoice.discount_amount}</TableCell>
-        <TableCell>{invoice.total}</TableCell>
+        <TableCell>{formatCurrency(invoice.discount_amount, "EGP", i18n.language)}</TableCell>
+        <TableCell>{formatCurrency(invoice.total, "EGP", i18n.language)}</TableCell>
         <TableCell className="text-end!">
           <Button onClick={() => setOpen((prev) => !prev)} variant="ghost" size="sm">
             {open ? <ChevronUpIcon /> : <ChevronDownIcon />}
@@ -120,11 +121,17 @@ function InvoiceRow({
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>{item.description}</TableCell>
                     <TableCell>{item.quantity}</TableCell>
-                    <TableCell>{item.selling_price}</TableCell>
-                    <TableCell>{item.subtotal}</TableCell>
+                    <TableCell>
+                      {formatCurrency(item.selling_price, "EGP", i18n.language)}
+                    </TableCell>
+                    <TableCell>{formatCurrency(item.subtotal, "EGP", i18n.language)}</TableCell>
                     <TableCell>{item.discount_percent}%</TableCell>
-                    <TableCell>{item.discount_amount}</TableCell>
-                    <TableCell className="text-end">{item.total}</TableCell>
+                    <TableCell>
+                      {formatCurrency(item.discount_amount, "EGP", i18n.language)}
+                    </TableCell>
+                    <TableCell className="text-end">
+                      {formatCurrency(item.total, "EGP", i18n.language)}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

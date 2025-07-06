@@ -168,11 +168,12 @@ describe("InvoiceService", async () => {
   it("should calculate discounts correctly", async () => {
     const { product1, user } = await setupTestOrganization();
 
-    // Item price: $100, Quantity: 5, Total before discount: $500
-    // Item discount: 10% ($50) + $25 flat = $75 discount
-    // Item total after discount: $425
-    // Invoice discount: 5% ($21.25) + $10 flat = $31.25
-    // Final total: $393.75 (rounded to integer if needed)
+    // Values are in base units (e.g., cents, piasters)
+    // Item price: 100 base units, Quantity: 5, Total before discount: 500 base units
+    // Item discount: 10% (50 base units) + 25 base units flat = 75 base units discount
+    // Item total after discount: 425 base units
+    // Invoice discount: 5% (21.25 base units) + 10 base units flat = 31.25 base units
+    // Final total: 393.75 base units
 
     const createInvoiceDto: CreateInvoiceDto = {
       items: [
@@ -190,8 +191,8 @@ describe("InvoiceService", async () => {
     const invoice = await service.createInvoice(orgSlug, createInvoiceDto, user.id);
 
     // The calculation should match what happens in the service
-    expect(invoice.subtotal).toBe(425); // After item discounts
-    expect(invoice.total).toBe(393.75); // After invoice discounts
+    expect(invoice.subtotal).toBe(425); // After item discounts (in base units)
+    expect(invoice.total).toBe(394); // After invoice discounts (in base units), rounded to nearest base unit
   });
 
   it("should get all invoices for an organization", async () => {

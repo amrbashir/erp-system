@@ -1,3 +1,4 @@
+import { formatCurrency } from "@erp-system/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ShoppingCartIcon } from "lucide-react";
@@ -45,7 +46,7 @@ function Expenses() {
               <TableRow className="*:font-bold">
                 <TableHead>{t("common.ui.number")}</TableHead>
                 <TableHead>{t("common.form.description")}</TableHead>
-                <TableHead>{t("common.form.amount")}</TableHead>
+                <TableHead>{t("common.form.price")}</TableHead>
                 <TableHead>{t("cashierName")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
                 <TableHead>{t("common.dates.updatedAt")}</TableHead>
@@ -56,7 +57,7 @@ function Expenses() {
                 <TableRow key={expense.id}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{expense.description}</TableCell>
-                  <TableCell>{expense.price}</TableCell>
+                  <TableCell>{formatCurrency(expense.price, "EGP", i18n.language)}</TableCell>
                   <TableCell>{expense.cashierName}</TableCell>
                   <TableCell>{new Date(expense.createdAt).toLocaleString(i18n.language)}</TableCell>
                   <TableCell>{new Date(expense.updatedAt).toLocaleString(i18n.language)}</TableCell>

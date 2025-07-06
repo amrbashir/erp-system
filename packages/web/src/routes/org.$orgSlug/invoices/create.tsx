@@ -4,6 +4,7 @@ import {
   CustomerEntity,
   ProductEntity,
 } from "@erp-system/sdk/zod";
+import { formatCurrency, toBaseUnits, toMajorUnits } from "@erp-system/utils";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
@@ -51,6 +52,7 @@ import type z from "zod";
 
 import { apiClient } from "@/api-client";
 import { FormErrors } from "@/components/form-errors";
+import { InputNumber } from "@/components/InputNumber";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 
@@ -303,7 +305,7 @@ function ProductItem({
   onAdd: (product: Product) => void;
   invoiceItems: InvoiceItem[];
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const matchingInvoiceItem = invoiceItems.find((i) => i.id == product.id);
   const remainingStock = product.stock_quantity - (matchingInvoiceItem?.quantity ?? 0);
@@ -317,11 +319,14 @@ function ProductItem({
       onClick={() => onAdd(product)}
     >
       <h3>{product.description}</h3>
-      <div className="w-full text-xs text-secondary-foreground/50 flex justify-between gap-2">
-        <span className="text-blue-300">
+      <div className="w-full text-xs text-secondary-foreground/50 flex justify-around gap-2">
+        <span className="text-chart-5">
+          {t("common.form.price")}: {formatCurrency(product.selling_price, "EGP", i18n.language)}
+        </span>
+        <span className="text-chart-2">
           {t("product.stock")}: {product.stock_quantity}
         </span>
-        <span className="text-red-300">
+        <span className="text-chart-4">
           {t("product.remaining")}: {remainingStock}
         </span>
       </div>
@@ -410,7 +415,7 @@ function InvoiceTable({
   ) => void;
   updateInvoiceDiscount: (field: "discount_percent" | "discount_amount", value: any) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // Calculate subtotal (before invoice-level discounts)
   const subtotal = useMemo(
@@ -418,7 +423,7 @@ function InvoiceTable({
       items.reduce((total, item) => {
         const itemSubtotal = item.selling_price! * item.quantity;
         const percentDiscount = ((item.discount_percent || 0) / 100) * itemSubtotal;
-        const itemTotal = itemSubtotal - percentDiscount - (item.discount_amount || 0);
+        const itemTotal = Math.round(itemSubtotal - percentDiscount - (item.discount_amount || 0));
         return total + itemTotal;
       }, 0),
     [items],
@@ -426,7 +431,7 @@ function InvoiceTable({
 
   // Calculate final total after all discounts
   const percentDiscount = (subtotal * invoiceDiscountPercent) / 100;
-  const totalPrice = Math.max(0, subtotal - percentDiscount - invoiceDiscountAmount);
+  const totalPrice = Math.round(Math.max(0, subtotal - percentDiscount - invoiceDiscountAmount));
 
   return (
     <div className="border rounded-lg">
@@ -440,6 +445,7 @@ function InvoiceTable({
               <TableHead>{t("common.form.price")}</TableHead>
               <TableHead>{t("invoice.subtotal")}</TableHead>
               <TableHead>{t("invoice.discountPercent")}</TableHead>
+              <TableHead></TableHead>
               <TableHead>{t("invoice.discountAmount")}</TableHead>
               <TableHead className="text-end!">{t("invoice.total")}</TableHead>
               <TableHead></TableHead>
@@ -448,29 +454,31 @@ function InvoiceTable({
           <TableBody>
             {items.map((item, index) => {
               const itemSubtotal = item.selling_price * item.quantity;
-              const percentDiscount = (itemSubtotal * (item.discount_percent || 0)) / 100;
-              const itemTotal = itemSubtotal - percentDiscount - (item.discount_amount || 0);
+              const itemPercentDiscount = (itemSubtotal * (item.discount_percent || 0)) / 100;
+              const itemTotal = Math.round(
+                itemSubtotal - itemPercentDiscount - (item.discount_amount || 0),
+              );
 
               return (
                 <TableRow key={index}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{item.description}</TableCell>
                   <TableCell>
-                    <Input
+                    <InputNumber
                       className="w-20"
-                      type="number"
                       value={item.quantity}
                       onChange={(e) => updateItemQuantity(index, Number(e.target.value))}
                       min={1}
                       max={item.stock_quantity}
                     />
                   </TableCell>
-                  <TableCell>{item.selling_price}</TableCell>
-                  <TableCell>{item.selling_price * item.quantity}</TableCell>
+                  <TableCell>{formatCurrency(item.selling_price, "EGP", i18n.language)}</TableCell>
                   <TableCell>
-                    <Input
+                    {formatCurrency(item.selling_price * item.quantity, "EGP", i18n.language)}
+                  </TableCell>
+                  <TableCell>
+                    <InputNumber
                       className="w-20"
-                      type="number"
                       value={item.discount_percent || 0}
                       onChange={(e) =>
                         updateItemDiscount(index, "discount_percent", Number(e.target.value))
@@ -479,18 +487,24 @@ function InvoiceTable({
                       max={100}
                     />
                   </TableCell>
+                  <TableCell>{formatCurrency(itemPercentDiscount, "EGP", i18n.language)}</TableCell>
                   <TableCell>
-                    <Input
+                    <InputNumber
                       className="w-20"
-                      type="number"
-                      value={item.discount_amount || 0}
+                      value={toMajorUnits(item.discount_amount || 0)}
                       onChange={(e) =>
-                        updateItemDiscount(index, "discount_amount", Number(e.target.value))
+                        updateItemDiscount(
+                          index,
+                          "discount_amount",
+                          toBaseUnits(Number(e.target.value)),
+                        )
                       }
                       min={0}
                     />
                   </TableCell>
-                  <TableCell className="text-end">{itemTotal.toFixed(2)}</TableCell>
+                  <TableCell className="text-end">
+                    {formatCurrency(itemTotal, "EGP", i18n.language)}
+                  </TableCell>
                   <TableCell>
                     <Button
                       type="button"
@@ -507,16 +521,18 @@ function InvoiceTable({
           </TableBody>
           <TableFooter className="*:*:font-bold">
             <TableRow>
-              <TableCell colSpan={7}>{t("invoice.subtotal")}</TableCell>
-              <TableCell className="text-end">{subtotal.toFixed(2)}</TableCell>
+              <TableCell colSpan={8}>{t("invoice.subtotal")}</TableCell>
+              <TableCell className="text-end">
+                {formatCurrency(subtotal, "EGP", i18n.language)}
+              </TableCell>
               <TableCell></TableCell>
             </TableRow>
             <TableRow>
-              <TableCell colSpan={6}>{t("invoice.discountPercent")}</TableCell>
+              <TableCell colSpan={4}></TableCell>
+              <TableCell>{t("invoice.discountPercent")}</TableCell>
               <TableCell>
-                <Input
+                <InputNumber
                   className="w-20"
-                  type="number"
                   value={invoiceDiscountPercent}
                   onChange={(e) =>
                     updateInvoiceDiscount("discount_percent", Number(e.target.value))
@@ -525,26 +541,26 @@ function InvoiceTable({
                   max={100}
                 />
               </TableCell>
-              <TableCell className="text-end">{percentDiscount.toFixed(2)}</TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell colSpan={6}>{t("invoice.discountAmount")}</TableCell>
+              <TableCell>{formatCurrency(percentDiscount, "EGP", i18n.language)}</TableCell>
+              <TableCell>{t("invoice.discountAmount")}</TableCell>
               <TableCell>
-                <Input
+                <InputNumber
                   className="w-20"
-                  type="number"
-                  value={invoiceDiscountAmount}
-                  onChange={(e) => updateInvoiceDiscount("discount_amount", Number(e.target.value))}
+                  value={toMajorUnits(invoiceDiscountAmount)}
+                  onChange={(e) =>
+                    updateInvoiceDiscount("discount_amount", toBaseUnits(Number(e.target.value)))
+                  }
                   min={0}
                 />
               </TableCell>
-              <TableCell className="text-end">{invoiceDiscountAmount.toFixed(2)}</TableCell>
               <TableCell></TableCell>
             </TableRow>
+
             <TableRow>
-              <TableCell colSpan={7}>{t("invoice.total")}</TableCell>
-              <TableCell className="text-end">{totalPrice.toFixed(2)}</TableCell>
+              <TableCell colSpan={8}>{t("invoice.total")}</TableCell>
+              <TableCell className="text-end">
+                {formatCurrency(totalPrice, "EGP", i18n.language)}
+              </TableCell>
               <TableCell></TableCell>
             </TableRow>
           </TableFooter>

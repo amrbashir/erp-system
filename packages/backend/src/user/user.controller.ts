@@ -53,7 +53,7 @@ export class UserController {
   @Get("getAll")
   @ApiQuery({ type: PaginationDto })
   @ApiOkResponse({ type: [UserEntity] })
-  async getAll(@Param("orgSlug") orgSlug: string, @Query() pagination: PaginationDto) {
+  async getAll(@Param("orgSlug") orgSlug: string, @Query() pagination?: PaginationDto) {
     const users = await this.userService.getAllUsers(orgSlug, { pagination });
     return users.map((user) => new UserEntity(user));
   }
