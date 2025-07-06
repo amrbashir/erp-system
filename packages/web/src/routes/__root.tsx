@@ -53,7 +53,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function Layout({ children }: { children: React.ReactNode }) {
   const { i18n } = useTranslation("translation");
-  useEffect(() => void (document.documentElement.dir = i18n.dir()), [i18n.language]);
+  useEffect(() => {
+    document.documentElement.lang = i18n.language;
+    document.documentElement.dir = i18n.dir();
+  }, [i18n.language]);
 
   return (
     <DirectionProvider dir={i18n.dir()}>
