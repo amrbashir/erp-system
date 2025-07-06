@@ -25,7 +25,7 @@ import { apiClient } from "@/api-client";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
 import { useOrg } from "@/hooks/use-org";
 
-export function AddCustomerDialog() {
+export function AddCustomerDialog({ trigger }: { trigger?: React.ReactNode }) {
   const { slug: orgSlug } = useOrg();
   const { t } = useTranslation();
   const client = useQueryClient();
@@ -66,7 +66,7 @@ export function AddCustomerDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button>{t("customer.add")}</Button>
+        {trigger ? trigger : <Button>{t("customer.add")}</Button>}
       </DialogTrigger>
 
       <DialogContent>

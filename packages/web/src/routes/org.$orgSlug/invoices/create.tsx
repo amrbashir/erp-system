@@ -12,6 +12,7 @@ import {
   CheckIcon,
   ChevronsUpDownIcon,
   Loader2Icon,
+  PlusIcon,
   ReceiptTextIcon,
   TrashIcon,
 } from "lucide-react";
@@ -51,6 +52,7 @@ import type { AnyFieldApi, ReactFormApi } from "@tanstack/react-form";
 import type z from "zod";
 
 import { apiClient } from "@/api-client";
+import { AddCustomerDialog } from "@/components/add-customer-dialog";
 import { FormErrors } from "@/components/form-errors";
 import { InputNumber } from "@/components/input-number";
 import { formatCurrency } from "@/hooks/format-currency";
@@ -322,7 +324,7 @@ function CustomerSelect({
   return (
     <div className="flex gap-2">
       <Label htmlFor={field.name}>{t("customer.name")}</Label>
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
@@ -338,7 +340,16 @@ function CustomerSelect({
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
           <Command>
-            <CommandInput placeholder={t("customer.search")} className="h-9" />
+            <div className="flex items-center gap-2 p-1 *:data-[slot=command-input-wrapper]:px-0 *:data-[slot=command-input-wrapper]:ps-2">
+              <CommandInput placeholder={t("customer.search")} />
+              <AddCustomerDialog
+                trigger={
+                  <Button variant="ghost" size="icon">
+                    <PlusIcon />
+                  </Button>
+                }
+              />
+            </div>
             <CommandList>
               <CommandEmpty>{t("customer.nothing")}</CommandEmpty>
               <CommandGroup>
