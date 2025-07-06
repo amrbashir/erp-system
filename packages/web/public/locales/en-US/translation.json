@@ -134,13 +134,15 @@
       "notFound": "Organization with this ID does not exist",
       "slugExists": "Organization with this ID already exists"
     },
+    "customers": {
+      "nameExists": "Customer with this name already exists"
+    },
     "server": {
       "internalError": "Internal server error"
     },
     "invoice": {
       "mustHaveItems": "Invoice must have at least one item"
     },
-
     "statusCode": {
       "400": "Bad Request",
       "401": "Unauthorized",
@@ -160,7 +162,8 @@
     "Organization with this slug does not exist": "$t(errors.organization.notFound)",
     "notAuthorized": "$t(errors.auth.notAuthorized)",
     "invoiceMustHaveItems": "$t(errors.invoice.mustHaveItems)",
-    "Invoice must have at least one item": "$t(errors.invoice.mustHaveItems)"
+    "Invoice must have at least one item": "$t(errors.invoice.mustHaveItems)",
+    "Customer with this name already exists": "$t(errors.customers.nameExists)"
   },
 
   "validationErrors": {

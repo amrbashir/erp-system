@@ -320,11 +320,20 @@ function CustomerSelect({
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<string | undefined>(undefined);
   const [customerSearch, setCustomerSearch] = useState("");
 
-  useEffect(() => {
-    console.log("Customer search updated:", customerSearch);
-  }, [customerSearch]);
+  function handleCustomerCreated(customer: Customer) {
+    field.handleChange(customer.id);
+    setSelectedCustomer(customer.name);
+    setCustomerSearch(customer.name);
+    setOpen(false);
+  }
+
+  function handleCustomerSelect(customer: Customer) {
+    field.handleChange(customer.id);
+    setOpen(false);
+  }
 
   return (
     <div className="flex gap-2">
@@ -344,7 +353,7 @@ function CustomerSelect({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-sm p-0">
-          <Command>
+          <Command value={selectedCustomer} onValueChange={setSelectedCustomer}>
             <div className="flex items-center *:first:flex-1 gap-2 p-1 *:data-[slot=command-input-wrapper]:px-0 *:data-[slot=command-input-wrapper]:ps-2">
               <CommandInput
                 placeholder={t("customer.search")}
@@ -353,6 +362,7 @@ function CustomerSelect({
               />
               <AddCustomerDialog
                 initialName={customerSearch}
+                onCreated={handleCustomerCreated}
                 trigger={
                   <Button variant="ghost" size="icon">
                     <PlusIcon />
@@ -367,10 +377,7 @@ function CustomerSelect({
                   <CommandItem
                     key={customer.id}
                     value={customer.name}
-                    onSelect={() => {
-                      field.handleChange(customer.id);
-                      setOpen(false);
-                    }}
+                    onSelect={() => handleCustomerSelect(customer)}
                   >
                     {customer.name}
                     <CheckIcon

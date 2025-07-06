@@ -1,4 +1,4 @@
-import { CreateCustomerDto } from "@erp-system/sdk/zod";
+import { CreateCustomerDto, CustomerEntity } from "@erp-system/sdk/zod";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon } from "lucide-react";
@@ -25,12 +25,16 @@ import { apiClient } from "@/api-client";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
 import { useOrg } from "@/hooks/use-org";
 
+type Customer = z.infer<typeof CustomerEntity>;
+
 export function AddCustomerDialog({
   trigger,
   initialName,
+  onCreated,
 }: {
   trigger?: React.ReactNode;
   initialName?: string;
+  onCreated?: (customer: Customer) => void;
 }) {
   const { slug: orgSlug } = useOrg();
   const { t } = useTranslation();
@@ -48,7 +52,7 @@ export function AddCustomerDialog({
       onSubmit: CreateCustomerDto,
     },
     onSubmit: async ({ value, formApi }) => {
-      const { error } = await apiClient.post("/org/{orgSlug}/customer/create", {
+      const { error, data } = await apiClient.post("/org/{orgSlug}/customer/create", {
         params: { path: { orgSlug: orgSlug! } },
         body: value,
       });
@@ -57,6 +61,8 @@ export function AddCustomerDialog({
         formApi.setErrorMap({ onSubmit: error });
         return;
       }
+
+      if (data && onCreated) onCreated(data);
 
       client.invalidateQueries({ queryKey: ["customers"] });
       setOpen(false);
