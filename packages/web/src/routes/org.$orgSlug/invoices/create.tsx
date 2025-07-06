@@ -487,6 +487,9 @@ function InvoiceTable({
 }) {
   const { t } = useTranslation();
 
+  // Calculate subtotal (before invoice-level discounts)
+  const subtotal = useMemo(() => calculateInvoiceSubtotal(items), [items]);
+
   if (items.length === 0) {
     return (
       <div className="border rounded-lg">
@@ -496,9 +499,6 @@ function InvoiceTable({
       </div>
     );
   }
-
-  // Calculate subtotal (before invoice-level discounts)
-  const subtotal = useMemo(() => calculateInvoiceSubtotal(items), [items]);
 
   return (
     <div className="border rounded-lg">
