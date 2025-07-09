@@ -54,7 +54,7 @@ import type z from "zod";
 import { apiClient } from "@/api-client";
 import { AddCustomerDialog } from "@/components/add-customer-dialog";
 import { FormErrors } from "@/components/form-errors";
-import { InputNumpad } from "@/components/input-numpad";
+import { InputNumpad } from "@/components/ui/input-numpad";
 import { formatCurrency } from "@/hooks/format-currency";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";

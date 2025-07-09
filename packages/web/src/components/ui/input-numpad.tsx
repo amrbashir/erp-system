@@ -5,8 +5,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn/components/ui/
 import { cn } from "@/shadcn/lib/utils";
 
 import { PhNumpadIcon } from "@/components/icons/PhNumpad";
-import { InputNumber } from "@/components/input-number";
-import { Numpad } from "@/components/numpad";
+import { InputNumber } from "@/components/ui/input-number";
+import { Numpad } from "@/components/ui/numpad";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 export function InputNumpad({
