@@ -54,7 +54,7 @@ import type z from "zod";
 import { apiClient } from "@/api-client";
 import { AddCustomerDialog } from "@/components/add-customer-dialog";
 import { FormErrors } from "@/components/form-errors";
-import { InputNumber } from "@/components/input-number";
+import { InputNumpad } from "@/components/input-numpad";
 import { formatCurrency } from "@/hooks/format-currency";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
@@ -577,8 +577,6 @@ function InvoiceTableRow({
   ) => void;
   onRemove: (index: number) => void;
 }) {
-  const { t, i18n } = useTranslation();
-
   const itemSubtotal = calculateItemSubtotal(item);
   const { percentDiscount } = calculateItemDiscount(item);
   const itemTotal = calculateItemTotal(item);
@@ -588,10 +586,10 @@ function InvoiceTableRow({
       <TableCell>{index + 1}</TableCell>
       <TableCell>{item.description}</TableCell>
       <TableCell>
-        <InputNumber
+        <InputNumpad
           className="w-20"
           value={item.quantity}
-          onChange={(e) => onUpdateQuantity(index, Number(e.target.value))}
+          onChange={(e) => onUpdateQuantity(index, e.target.valueAsNumber)}
           min={1}
           max={item.stock_quantity}
         />
@@ -599,23 +597,25 @@ function InvoiceTableRow({
       <TableCell>{formatCurrency(item.selling_price)}</TableCell>
       <TableCell>{formatCurrency(itemSubtotal)}</TableCell>
       <TableCell>
-        <InputNumber
+        <InputNumpad
           className="w-20"
           value={item.discount_percent || 0}
-          onChange={(e) => onUpdateDiscount(index, "discount_percent", Number(e.target.value))}
+          onChange={(e) => onUpdateDiscount(index, "discount_percent", e.target.valueAsNumber)}
+          step={0.1}
           min={0}
           max={100}
         />
       </TableCell>
       <TableCell>{formatCurrency(percentDiscount)}</TableCell>
       <TableCell>
-        <InputNumber
+        <InputNumpad
           className="w-20"
           value={toMajorUnits(item.discount_amount || 0)}
           onChange={(e) =>
-            onUpdateDiscount(index, "discount_amount", toBaseUnits(Number(e.target.value)))
+            onUpdateDiscount(index, "discount_amount", toBaseUnits(e.target.valueAsNumber))
           }
           min={0}
+          max={itemSubtotal}
         />
       </TableCell>
       <TableCell className="text-end">{formatCurrency(itemTotal)}</TableCell>
@@ -640,7 +640,7 @@ function InvoiceTableFooter({
   discountAmount: number;
   onUpdateDiscount: (field: "discount_percent" | "discount_amount", value: number) => void;
 }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const percentDiscount = calculateInvoicePercentDiscount(subtotal, discountPercent);
   const totalPrice = calculateInvoiceTotal(subtotal, discountPercent, discountAmount);
@@ -656,10 +656,11 @@ function InvoiceTableFooter({
         <TableCell colSpan={4}></TableCell>
         <TableCell>{t("invoice.discountPercent")}</TableCell>
         <TableCell>
-          <InputNumber
+          <InputNumpad
             className="w-20"
             value={discountPercent}
-            onChange={(e) => onUpdateDiscount("discount_percent", Number(e.target.value))}
+            onChange={(e) => onUpdateDiscount("discount_percent", e.target.valueAsNumber)}
+            step={0.1}
             min={0}
             max={100}
           />
@@ -667,13 +668,14 @@ function InvoiceTableFooter({
         <TableCell>{formatCurrency(percentDiscount)}</TableCell>
         <TableCell>{t("invoice.discountAmount")}</TableCell>
         <TableCell>
-          <InputNumber
+          <InputNumpad
             className="w-20"
             value={toMajorUnits(discountAmount)}
             onChange={(e) =>
-              onUpdateDiscount("discount_amount", toBaseUnits(Number(e.target.value)))
+              onUpdateDiscount("discount_amount", toBaseUnits(e.target.valueAsNumber))
             }
             min={0}
+            max={subtotal}
           />
         </TableCell>
         <TableCell></TableCell>
