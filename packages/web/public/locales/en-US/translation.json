@@ -105,6 +105,8 @@
   },
 
   "product": {
+    "add": "$t(common.actions.add) Product",
+    "addDescription": "You can add new products to the system. Please fill in the details below",
     "search": "$t(common.actions.search) products...",
     "stock": "Stock",
     "remaining": "Remaining",
@@ -184,7 +186,14 @@
     "total": "Total",
     "subtotal": "Subtotal",
     "discountPercent": "Discount %",
-    "discountAmount": "Discount Amount"
+    "discountAmount": "Discount Amount",
+    "form": {
+      "barcode": "$t(common.form.barcode)",
+      "description": "$t(common.form.description)",
+      "quantity": "$t(common.form.quantity)",
+      "purchase_price": "$t(common.pricing.purchase)",
+      "selling_price": "$t(common.pricing.selling)"
+    }
   },
 
   "welcomeToErp": "$t(common.welcome) to erp-system",

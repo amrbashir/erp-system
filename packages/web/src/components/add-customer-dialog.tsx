@@ -99,7 +99,7 @@ export function AddCustomerDialog({
           <form.Field name="phone" children={(field) => <InputField field={field} />} />
           <form.Field name="address" children={(field) => <InputField field={field} />} />
 
-          <FormErrors formState={form.state} />
+          <form.Subscribe children={(state) => <FormErrors formState={state} />} />
 
           <DialogFooter>
             <form.Subscribe
@@ -107,7 +107,7 @@ export function AddCustomerDialog({
               children={([canSubmit, isSubmitting]) => (
                 <>
                   <DialogClose asChild>
-                    <Button disabled={!canSubmit} variant="outline">
+                    <Button disabled={isSubmitting} variant="outline">
                       {t("common.actions.cancel")}
                     </Button>
                   </DialogClose>
@@ -125,7 +125,7 @@ export function AddCustomerDialog({
   );
 }
 
-function InputField({ field }: { field: AnyFieldApi }) {
+function InputField({ field, ...props }: { field: AnyFieldApi } & React.ComponentProps<"input">) {
   const { t } = useTranslation();
 
   return (
@@ -137,6 +137,7 @@ function InputField({ field }: { field: AnyFieldApi }) {
         value={field.state.value}
         type={field.name === "phone" ? "tel" : "text"}
         onChange={(e) => field.handleChange(e.target.value)}
+        {...props}
       />
       <FormFieldError field={field} />
     </div>

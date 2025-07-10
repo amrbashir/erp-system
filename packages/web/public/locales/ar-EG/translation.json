@@ -109,6 +109,9 @@
   },
 
   "product": {
+    "add": "$t(common.actions.add) منتج",
+    "addDescription": "يمكنك إضافة منتجات جديدة إلى النظام. يرجى ملء التفاصيل أدناه",
+    "name": "$t(common.form.name) المنتج",
     "search": "$t(common.actions.search) المنتجات...",
     "stock": "المخزون",
     "remaining": "المتبقي",

@@ -108,7 +108,7 @@ export function AddUserDialog() {
 
           <form.Field name="password" children={(field) => <InputField field={field} />} />
 
-          <FormErrors formState={form.state} />
+          <form.Subscribe children={(state) => <FormErrors formState={state} />} />
 
           <DialogFooter>
             <form.Subscribe
@@ -116,7 +116,7 @@ export function AddUserDialog() {
               children={([canSubmit, isSubmitting]) => (
                 <>
                   <DialogClose asChild>
-                    <Button disabled={!canSubmit} variant="outline">
+                    <Button disabled={isSubmitting} variant="outline">
                       {t("common.actions.cancel")}
                     </Button>
                   </DialogClose>
@@ -138,7 +138,7 @@ function InputField({
   field,
   className,
   ...props
-}: React.ComponentProps<"div"> & { field: AnyFieldApi }) {
+}: { field: AnyFieldApi } & React.ComponentProps<"input">) {
   const { t } = useTranslation();
 
   return (
@@ -150,7 +150,6 @@ function InputField({
         value={field.state.value}
         type={field.name === "password" ? "password" : "text"}
         onChange={(e) => field.handleChange(e.target.value)}
-        required
       />
       <FormFieldError field={field} />
     </div>

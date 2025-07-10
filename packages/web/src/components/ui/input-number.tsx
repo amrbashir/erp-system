@@ -18,7 +18,7 @@ export function InputNumber({ className, ref, ...props }: React.ComponentProps<t
   };
 
   return (
-    <div className="flex items-center">
+    <div className="flex-1 flex items-center">
       <div className="flex flex-col h-9!">
         <Button
           type="button"

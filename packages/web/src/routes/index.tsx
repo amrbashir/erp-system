@@ -192,7 +192,6 @@ function LoginForm({
                     name={field.name}
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
-                    required
                   />
                 </>
               )}
@@ -210,7 +209,6 @@ function LoginForm({
                     name={field.name}
                     value={field.state.value}
                     onChange={(e) => field.handleChange(e.target.value)}
-                    required
                   />
                 </>
               )}
@@ -230,14 +228,13 @@ function LoginForm({
                     type="password"
                     ref={loginFormPasswordRef}
                     onChange={(e) => field.handleChange(e.target.value)}
-                    required
                   />
                 </>
               )}
             />
           </div>
 
-          <FormErrors formState={form.state} />
+          <form.Subscribe children={(state) => <FormErrors formState={state} />} />
 
           <form.Subscribe
             selector={(state) => [state.canSubmit, state.isSubmitting]}
@@ -384,7 +381,7 @@ function CreateNewOrganizationCard({
             ></form.Field>
           </div>
 
-          <FormErrors formState={form.state} />
+          <form.Subscribe children={(state) => <FormErrors formState={state} />} />
 
           <form.Subscribe
             selector={(state) => [state.canSubmit, state.isSubmitting]}

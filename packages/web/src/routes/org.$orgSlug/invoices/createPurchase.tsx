@@ -27,7 +27,7 @@ import type { ReactFormApi } from "@tanstack/react-form";
 import type z from "zod";
 
 import { apiClient } from "@/api-client";
-import { AddCustomerDialog } from "@/components/add-customer-dialog";
+import { AddProductDialog } from "@/components/add-product-dialog";
 import { FormErrors } from "@/components/form-errors";
 import { CustomerSelect } from "@/components/invoice-customer-select";
 import { InputNumpad } from "@/components/ui/input-numpad";
@@ -132,15 +132,8 @@ function CreatePurchaseInvoice() {
     (state) => [state.values.items, state.values.discount_percent, state.values.discount_amount],
   );
 
-  const handleAddItem = () => {
-    form.pushFieldValue("items", {
-      description: "",
-      purchase_price: 0,
-      selling_price: 0,
-      quantity: 1,
-      discount_percent: 0,
-      discount_amount: 0,
-    });
+  const handleAddItem = (item: InvoiceItem) => {
+    form.pushFieldValue("items", item);
     form.validate("change");
   };
 
@@ -189,10 +182,9 @@ function CreatePurchaseInvoice() {
         onCancel={() => router.history.back()}
       />
 
-      <Button type="button" variant="outline" className="m-2 mb-0" onClick={handleAddItem}>
-        <PlusIcon />
-        {t("common.actions.add")}
-      </Button>
+      <div className="p-2 *:w-full">
+        <AddProductDialog onSubmit={handleAddItem} />
+      </div>
 
       <div className="flex flex-col w-full h-full overflow-hidden">
         <div className="flex-1 basis-0 p-2 overflow-x-hidden overflow-y-auto">
@@ -206,7 +198,7 @@ function CreatePurchaseInvoice() {
           />
 
           <div className="mt-2">
-            <FormErrors formState={form.state} />
+            <form.Subscribe children={(state) => <FormErrors formState={state} />} />
           </div>
         </div>
       </div>
@@ -240,7 +232,7 @@ function InvoiceHeader({
           selector={(state) => [state.canSubmit, state.isSubmitting]}
           children={([canSubmit, isSubmitting]) => (
             <>
-              <Button type="button" disabled={!canSubmit} variant="secondary" onClick={onCancel}>
+              <Button type="button" disabled={isSubmitting} variant="secondary" onClick={onCancel}>
                 {t("common.actions.cancel")}
               </Button>
               <Button type="submit" disabled={!canSubmit || !hasItems}>
@@ -296,11 +288,11 @@ function InvoiceTable({
         <TableHeader className="bg-muted">
           <TableRow className="*:font-bold">
             <TableHead>{t("common.ui.number")}</TableHead>
-            <TableHead className="w-[20%]">{t("common.form.barcode")}</TableHead>
-            <TableHead className="w-[80%]">{t("common.form.description")}</TableHead>
+            <TableHead>{t("common.form.barcode")}</TableHead>
+            <TableHead className="w-full">{t("common.form.description")}</TableHead>
             <TableHead>{t("common.form.quantity")}</TableHead>
-            <TableHead>{t("common.form.price")} (Purchase)</TableHead>
-            <TableHead>{t("common.form.price")} (Selling)</TableHead>
+            <TableHead>{t("common.pricing.purchase")}</TableHead>
+            <TableHead>{t("common.pricing.selling")}</TableHead>
             <TableHead>{t("invoice.subtotal")}</TableHead>
             <TableHead>{t("invoice.discountPercent")}</TableHead>
             <TableHead></TableHead>
@@ -358,18 +350,8 @@ function InvoiceTableRow({
   return (
     <TableRow>
       <TableCell>{index + 1}</TableCell>
-      <TableCell>
-        <Input
-          value={item.barcode}
-          onChange={(e) => onUpdateItemField(index, "barcode", e.target.value)}
-        />
-      </TableCell>
-      <TableCell>
-        <Input
-          value={item.description}
-          onChange={(e) => onUpdateItemField(index, "description", e.target.value)}
-        />
-      </TableCell>
+      <TableCell>{item.barcode}</TableCell>
+      <TableCell>{item.description}</TableCell>
       <TableCell>
         <InputNumpad
           className="w-20"
@@ -378,26 +360,8 @@ function InvoiceTableRow({
           min={1}
         />
       </TableCell>
-      <TableCell>
-        <InputNumpad
-          className="w-20"
-          value={toMajorUnits(item.purchase_price)}
-          onChange={(e) =>
-            onUpdateItemField(index, "purchase_price", toBaseUnits(e.target.valueAsNumber))
-          }
-          min={0}
-        />
-      </TableCell>
-      <TableCell>
-        <InputNumpad
-          className="w-20"
-          value={toMajorUnits(item.selling_price)}
-          onChange={(e) =>
-            onUpdateItemField(index, "selling_price", toBaseUnits(e.target.valueAsNumber))
-          }
-          min={0}
-        />
-      </TableCell>
+      <TableCell>{formatCurrency(item.purchase_price)}</TableCell>
+      <TableCell>{formatCurrency(item.selling_price)}</TableCell>
       <TableCell>{formatCurrency(itemSubtotal)}</TableCell>
       <TableCell>
         <InputNumpad
@@ -452,12 +416,12 @@ function InvoiceTableFooter({
   return (
     <TableFooter className="*:*:font-bold">
       <TableRow>
-        <TableCell colSpan={9}>{t("invoice.subtotal")}</TableCell>
+        <TableCell colSpan={10}>{t("invoice.subtotal")}</TableCell>
         <TableCell className="text-end">{formatCurrency(subtotal)}</TableCell>
         <TableCell></TableCell>
       </TableRow>
       <TableRow>
-        <TableCell colSpan={5}></TableCell>
+        <TableCell colSpan={6}></TableCell>
         <TableCell>{t("invoice.discountPercent")}</TableCell>
         <TableCell>
           <InputNumpad
@@ -486,7 +450,7 @@ function InvoiceTableFooter({
       </TableRow>
 
       <TableRow>
-        <TableCell colSpan={9}>{t("invoice.total")}</TableCell>
+        <TableCell colSpan={10}>{t("invoice.total")}</TableCell>
         <TableCell className="text-end">{formatCurrency(totalPrice)}</TableCell>
         <TableCell></TableCell>
       </TableRow>

@@ -11,8 +11,8 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 
 export function InputNumpad({
   value,
-  className,
   onChange,
+  className,
   ...props
 }: React.ComponentProps<typeof Input>) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -26,8 +26,8 @@ export function InputNumpad({
         type="number"
         value={value}
         onChange={onChange}
-        className={cn("", className)}
         {...props}
+        className={cn("rounded-e-none", className)}
       />
 
       {!isMobile ? (
@@ -44,12 +44,11 @@ export function InputNumpad({
           <PopoverContent className="bg-card">
             <Numpad
               value={value}
-              onNewValue={(values) => {
+              onSubmit={(values) => {
                 onChange?.({ target: values } as any);
                 inputRef.current?.dispatchEvent(new Event("input", { bubbles: true }));
                 setOpen(false);
               }}
-              className="w-64"
             />
           </PopoverContent>
         </Popover>

@@ -237,7 +237,7 @@ function CreateSaleInvoice() {
           />
 
           <div className="mt-2">
-            <FormErrors formState={form.state} />
+            <form.Subscribe children={(state) => <FormErrors formState={state} />} />
           </div>
         </ResizablePanel>
 
@@ -276,7 +276,7 @@ function InvoiceHeader({
           selector={(state) => [state.canSubmit, state.isSubmitting]}
           children={([canSubmit, isSubmitting]) => (
             <>
-              <Button type="button" disabled={!canSubmit} variant="secondary" onClick={onCancel}>
+              <Button type="button" disabled={isSubmitting} variant="secondary" onClick={onCancel}>
                 {t("common.actions.cancel")}
               </Button>
               <Button type="submit" disabled={!canSubmit || !hasItems}>
@@ -548,12 +548,12 @@ function InvoiceTableFooter({
   return (
     <TableFooter className="*:*:font-bold">
       <TableRow>
-        <TableCell colSpan={8}>{t("invoice.subtotal")}</TableCell>
+        <TableCell colSpan={9}>{t("invoice.subtotal")}</TableCell>
         <TableCell className="text-end">{formatCurrency(subtotal)}</TableCell>
         <TableCell></TableCell>
       </TableRow>
       <TableRow>
-        <TableCell colSpan={4}></TableCell>
+        <TableCell colSpan={5}></TableCell>
         <TableCell>{t("invoice.discountPercent")}</TableCell>
         <TableCell>
           <InputNumpad
@@ -582,7 +582,7 @@ function InvoiceTableFooter({
       </TableRow>
 
       <TableRow>
-        <TableCell colSpan={8}>{t("invoice.total")}</TableCell>
+        <TableCell colSpan={9}>{t("invoice.total")}</TableCell>
         <TableCell className="text-end">{formatCurrency(totalPrice)}</TableCell>
         <TableCell></TableCell>
       </TableRow>

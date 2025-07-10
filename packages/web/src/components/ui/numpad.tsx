@@ -13,7 +13,7 @@ const KEYS = [
   "Del", "0", "."
 ] as const;
 
-type OnNewValue = (values: {
+type OnSubmit = (values: {
   value: string | number | readonly string[] | undefined;
   valueAsNumber: number;
 }) => void;
@@ -21,11 +21,11 @@ type OnNewValue = (values: {
 export function Numpad({
   value: outerValue,
   className,
-  onNewValue,
+  onSubmit,
   ...props
 }: {
   value: string | number | readonly string[] | undefined;
-  onNewValue?: OnNewValue;
+  onSubmit?: OnSubmit;
   min?: number;
   max?: number;
 } & React.ComponentProps<"div">) {
@@ -93,7 +93,7 @@ export function Numpad({
           type="button"
           variant="ghost"
           className="text-green-300 hover:text-green-300"
-          onClick={() => onNewValue?.({ value, valueAsNumber })}
+          onClick={() => onSubmit?.({ value, valueAsNumber })}
         >
           <CheckIcon />
         </Button>
