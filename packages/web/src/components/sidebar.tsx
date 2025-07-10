@@ -1,11 +1,5 @@
-import { Link, useLocation, useMatches, useRouter } from "@tanstack/react-router";
-import { ChevronDownIcon } from "lucide-react";
+import { Link, useMatches, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/shadcn/components/ui/collapsible";
 import { Label } from "@/shadcn/components/ui/label";
 import {
   Sidebar,
@@ -72,7 +66,7 @@ function RoutesGroup({
   routes,
   label,
   ...props
-}: React.ComponentProps<typeof Collapsible> & {
+}: React.ComponentProps<typeof SidebarGroup> & {
   label?: string;
   routes: (keyof FileRoutesById)[];
 }) {
@@ -95,36 +89,26 @@ function RoutesGroup({
   });
 
   return (
-    <Collapsible defaultOpen className="group/collapsible">
-      <SidebarGroup {...props}>
-        {label && (
-          <SidebarGroupLabel asChild>
-            <CollapsibleTrigger className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground mb-1">
-              {label}
-              <ChevronDownIcon className="ms-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
-            </CollapsibleTrigger>
-          </SidebarGroupLabel>
-        )}
-        <CollapsibleContent>
-          <SidebarGroupContent className="flex flex-col gap-2">
-            <SidebarMenu>
-              {routesData.map(({ url, title, icon: RouteIcon, isActive }) => (
-                <SidebarMenuItem key={url}>
-                  <SidebarMenuButton asChild isActive={isActive}>
-                    <Link
-                      className="data-[active=true]:bg-primary! data-[active=true]:text-primary-foreground!"
-                      to={url}
-                    >
-                      {RouteIcon && <RouteIcon />}
-                      <span>{title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </CollapsibleContent>
-      </SidebarGroup>
-    </Collapsible>
+    <SidebarGroup {...props}>
+      {label && <SidebarGroupLabel>{label}</SidebarGroupLabel>}
+
+      <SidebarGroupContent className="flex flex-col gap-2">
+        <SidebarMenu>
+          {routesData.map(({ url, title, icon: RouteIcon, isActive }) => (
+            <SidebarMenuItem key={url}>
+              <SidebarMenuButton asChild isActive={isActive}>
+                <Link
+                  className="data-[active=true]:bg-primary! data-[active=true]:text-primary-foreground!"
+                  to={url}
+                >
+                  {RouteIcon && <RouteIcon />}
+                  <span>{title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
   );
 }

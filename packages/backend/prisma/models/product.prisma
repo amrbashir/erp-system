@@ -1,6 +1,8 @@
 model Product {
   id String @id @default(uuid())
 
+  barcode String? @unique
+
   description    String
   purchase_price Int
   selling_price  Int

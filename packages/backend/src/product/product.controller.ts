@@ -1,16 +1,9 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
-import {
-  ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiHeader,
-  ApiOkResponse,
-  ApiTags,
-} from "@nestjs/swagger";
+import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
+import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
-import type { Product } from "../prisma/generated/client";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
 import { PaginationDto } from "../pagination.dto";
-import { CreateProductDto, ProductEntity } from "./product.dto";
+import { ProductEntity } from "./product.dto";
 import { ProductService } from "./product.service";
 
 @UseGuards(JwtAuthGuard)
@@ -20,15 +13,6 @@ import { ProductService } from "./product.service";
 @Controller("/org/:orgSlug/product")
 export class ProductController {
   constructor(private readonly service: ProductService) {}
-
-  @Post("create")
-  @ApiCreatedResponse({ type: ProductEntity })
-  async createProduct(
-    @Param("orgSlug") orgSlug: string,
-    @Body() createProductDto: CreateProductDto,
-  ): Promise<void> {
-    await this.service.createProduct(createProductDto, orgSlug);
-  }
 
   @Get("getAll")
   @ApiOkResponse({ type: [ProductEntity] })

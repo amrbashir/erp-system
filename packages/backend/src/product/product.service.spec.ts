@@ -1,6 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import type { CreateProductDto } from "./product.dto";
 import { generateRandomOrgData, useRandomDatabase } from "../../e2e/utils";
 import { OrgService } from "../org/org.service";
 import { PrismaService } from "../prisma/prisma.service";
@@ -26,14 +25,17 @@ describe("ProductService", async () => {
     const orgData = generateRandomOrgData();
     const org = await orgService.create(orgData);
 
-    const createProductDto: CreateProductDto = {
+    const createProductDto = {
       description: "Test Product",
       purchase_price: 100,
       selling_price: 150,
       stock_quantity: 50,
     };
 
-    const product = await service.createProduct(createProductDto, org.slug);
+    const product = await prisma.product.create({
+      data: { ...createProductDto, organizationId: org.id },
+    });
+
     expect(product).toBeDefined();
     expect(product.description).toBe(createProductDto.description);
     expect(product.purchase_price).toBe(createProductDto.purchase_price);
@@ -47,25 +49,25 @@ describe("ProductService", async () => {
     const orgData = generateRandomOrgData();
     const org = await orgService.create(orgData);
 
-    const product1 = await service.createProduct(
-      {
+    const product1 = await prisma.product.create({
+      data: {
         description: "Product One",
         purchase_price: 100,
         selling_price: 150,
         stock_quantity: 50,
+        organizationId: org.id,
       },
-      org.slug,
-    );
+    });
 
-    const product2 = await service.createProduct(
-      {
+    const product2 = await prisma.product.create({
+      data: {
         description: "Product Two",
-        purchase_price: 200,
-        selling_price: 250,
-        stock_quantity: 25,
+        purchase_price: 100,
+        selling_price: 150,
+        stock_quantity: 50,
+        organizationId: org.id,
       },
-      org.slug,
-    );
+    });
 
     const products = await service.getAllProducts(org.slug);
     expect(products).toBeDefined();
@@ -76,18 +78,5 @@ describe("ProductService", async () => {
     expect(products.find((p) => p.id === product2.id)?.description).toBe("Product Two");
     expect(products.find((p) => p.id === product1.id)?.organizationId).toBe(org.id);
     expect(products.find((p) => p.id === product2.id)?.organizationId).toBe(org.id);
-  });
-
-  it("should throw NotFoundException when organization does not exist", async () => {
-    const createProductDto: CreateProductDto = {
-      description: "Test Product",
-      purchase_price: 100,
-      selling_price: 150,
-      stock_quantity: 50,
-    };
-
-    await expect(service.createProduct(createProductDto, "non-existent-org")).rejects.toThrow(
-      "Organization with this slug does not exist",
-    );
   });
 });

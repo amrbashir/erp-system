@@ -64,6 +64,7 @@ export class InvoiceService {
           );
 
           invoiceItems.push({
+            barcode: product.barcode,
             description: product.description,
             purchase_price: product.purchase_price,
             selling_price: product.selling_price,
@@ -166,6 +167,7 @@ export class InvoiceService {
           );
 
           invoiceItems.push({
+            barcode: item.barcode || null,
             description: item.description,
             purchase_price: item.purchase_price,
             selling_price: item.selling_price,
@@ -258,6 +260,7 @@ export class InvoiceService {
             // Create new product
             await prisma.product.create({
               data: {
+                barcode: item.barcode,
                 description: item.description,
                 purchase_price: item.purchase_price,
                 selling_price: item.selling_price,

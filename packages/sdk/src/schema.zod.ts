@@ -63,18 +63,10 @@ export const CustomerEntity = z
   })
   .passthrough();
 
-export const CreateProductDto = z
-  .object({
-    description: z.string(),
-    purchase_price: z.number(),
-    selling_price: z.number(),
-    stock_quantity: z.number(),
-  })
-  .passthrough();
-
 export const ProductEntity = z
   .object({
     id: z.string(),
+    bardcode: z.string().optional(),
     description: z.string(),
     purchase_price: z.number(),
     selling_price: z.number(),
@@ -114,6 +106,7 @@ export const CreateSaleInvoiceDto = z
 
 export const CreatePurchaseInvoiceItemDto = z
   .object({
+    barcode: z.string().optional(),
     description: z.string(),
     purchase_price: z.number(),
     selling_price: z.number(),
@@ -134,6 +127,7 @@ export const CreatePurchaseInvoiceDto = z
 
 export const InvoiceItemEntity = z
   .object({
+    barcode: z.string().optional(),
     description: z.string(),
     purchase_price: z.number(),
     selling_price: z.number(),

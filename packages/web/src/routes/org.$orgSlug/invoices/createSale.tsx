@@ -418,6 +418,7 @@ function InvoiceTable({
         <TableHeader className="bg-muted">
           <TableRow className="*:font-bold">
             <TableHead>{t("common.ui.number")}</TableHead>
+            <TableHead>{t("common.form.barcode")}</TableHead>
             <TableHead className="w-full">{t("common.form.description")}</TableHead>
             <TableHead>{t("common.form.quantity")}</TableHead>
             <TableHead>{t("common.form.price")}</TableHead>
@@ -481,6 +482,7 @@ function InvoiceTableRow({
   return (
     <TableRow>
       <TableCell>{index + 1}</TableCell>
+      <TableCell>{item.bardcode}</TableCell>
       <TableCell>{item.description}</TableCell>
       <TableCell>
         <InputNumpad

@@ -47,6 +47,7 @@ function Products() {
               <TableRow className="*:font-bold">
                 <TableHead>{t("common.ui.number")}</TableHead>
                 <TableHead>{t("common.form.quantity")}</TableHead>
+                <TableHead>{t("common.form.barcode")}</TableHead>
                 <TableHead className="min-w-[50%]">{t("common.form.description")}</TableHead>
                 <TableHead>{t("common.pricing.purchase")}</TableHead>
                 <TableHead>{t("common.pricing.selling")}</TableHead>
@@ -59,6 +60,7 @@ function Products() {
                 <TableRow key={index}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{product.stock_quantity}</TableCell>
+                  <TableCell>{product.bardcode}</TableCell>
                   <TableCell>{product.description}</TableCell>
                   <TableCell>{formatCurrency(product.purchase_price)}</TableCell>
                   <TableCell>{formatCurrency(product.selling_price)}</TableCell>

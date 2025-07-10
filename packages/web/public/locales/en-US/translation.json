@@ -26,7 +26,8 @@
       "password": "Password",
       "moneyAmount": "Amount",
       "price": "Price",
-      "role": "Role"
+      "role": "Role",
+      "barcode": "Barcode"
     },
     "ui": {
       "loading": "Loading",

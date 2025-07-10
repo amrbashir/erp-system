@@ -142,6 +142,7 @@ function InvoiceRow({
             <TableHeader className="bg-muted">
               <TableRow className="*:font-bold">
                 <TableHead>{t("common.ui.number")}</TableHead>
+                <TableHead>{t("common.form.barcode")}</TableHead>
                 <TableHead className="w-full">{t("common.form.description")}</TableHead>
                 <TableHead>{t("common.form.quantity")}</TableHead>
                 <TableHead>{t("common.form.price")}</TableHead>
@@ -155,6 +156,7 @@ function InvoiceRow({
               {invoice.items.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell>{index + 1}</TableCell>
+                  <TableCell>{item.barcode}</TableCell>
                   <TableCell>{item.description}</TableCell>
                   <TableCell>{item.quantity}</TableCell>
                   <TableCell>{formatCurrency(item.selling_price)}</TableCell>

@@ -164,22 +164,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/org/{orgSlug}/product/create": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["ProductController$1_createProduct"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/org/{orgSlug}/product/getAll": {
         parameters: {
             query?: never;
@@ -359,14 +343,9 @@ export interface components {
             /** Format: date-time */
             deletedAt?: string;
         };
-        CreateProductDto: {
-            description: string;
-            purchase_price: number;
-            selling_price: number;
-            stock_quantity: number;
-        };
         ProductEntity: {
             id: string;
+            bardcode?: string;
             description: string;
             purchase_price: number;
             selling_price: number;
@@ -397,6 +376,7 @@ export interface components {
             discount_amount?: number;
         };
         CreatePurchaseInvoiceItemDto: {
+            barcode?: string;
             description: string;
             purchase_price: number;
             selling_price: number;
@@ -411,6 +391,7 @@ export interface components {
             items: components["schemas"]["CreatePurchaseInvoiceItemDto"][];
         };
         InvoiceItemEntity: {
+            barcode?: string;
             description: string;
             purchase_price: number;
             selling_price: number;
@@ -687,33 +668,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CustomerEntity"][];
-                };
-            };
-        };
-    };
-    ProductController$1_createProduct: {
-        parameters: {
-            query?: never;
-            header?: {
-                Authorization?: string;
-            };
-            path: {
-                orgSlug: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateProductDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProductEntity"];
                 };
             };
         };

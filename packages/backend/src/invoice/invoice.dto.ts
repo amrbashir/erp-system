@@ -70,6 +70,11 @@ export class CreateSaleInvoiceDto {
 }
 
 export class CreatePurchaseInvoiceItemDto {
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  barcode?: string;
+
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
@@ -116,6 +121,9 @@ export class CreatePurchaseInvoiceDto extends OmitType(CreateSaleInvoiceDto, ["i
 }
 
 export class InvoiceItemEntity {
+  @ApiPropertyOptional()
+  barcode?: string;
+
   @ApiProperty()
   description: string;
 
@@ -141,6 +149,7 @@ export class InvoiceItemEntity {
   total: number;
 
   constructor(item: InvoiceItem) {
+    this.barcode = item.barcode || undefined;
     this.description = item.description;
     this.purchase_price = item.purchase_price;
     this.selling_price = item.selling_price;

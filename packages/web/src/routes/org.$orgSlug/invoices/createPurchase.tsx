@@ -296,7 +296,8 @@ function InvoiceTable({
         <TableHeader className="bg-muted">
           <TableRow className="*:font-bold">
             <TableHead>{t("common.ui.number")}</TableHead>
-            <TableHead className="w-full">{t("common.form.description")}</TableHead>
+            <TableHead className="w-[20%]">{t("common.form.barcode")}</TableHead>
+            <TableHead className="w-[80%]">{t("common.form.description")}</TableHead>
             <TableHead>{t("common.form.quantity")}</TableHead>
             <TableHead>{t("common.form.price")} (Purchase)</TableHead>
             <TableHead>{t("common.form.price")} (Selling)</TableHead>
@@ -359,9 +360,14 @@ function InvoiceTableRow({
       <TableCell>{index + 1}</TableCell>
       <TableCell>
         <Input
+          value={item.barcode}
+          onChange={(e) => onUpdateItemField(index, "barcode", e.target.value)}
+        />
+      </TableCell>
+      <TableCell>
+        <Input
           value={item.description}
           onChange={(e) => onUpdateItemField(index, "description", e.target.value)}
-          placeholder={`Product ${index + 1}`}
         />
       </TableCell>
       <TableCell>
