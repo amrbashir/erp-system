@@ -111,7 +111,10 @@ function RoutesGroup({
               {routesData.map(({ url, title, icon: RouteIcon, isActive }) => (
                 <SidebarMenuItem key={url}>
                   <SidebarMenuButton asChild isActive={isActive}>
-                    <Link to={url}>
+                    <Link
+                      className="data-[active=true]:bg-primary! data-[active=true]:text-primary-foreground!"
+                      to={url}
+                    >
                       {RouteIcon && <RouteIcon />}
                       <span>{title}</span>
                     </Link>

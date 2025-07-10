@@ -34,21 +34,27 @@ function Invoices() {
   const navigate = Route.useNavigate();
 
   return (
-    <div className="flex flex-col gap-4 p-4">
-      <div className="flex items-center gap-2">
-        <Button onClick={() => navigate({ to: "/org/$orgSlug/invoices/createSale" })}>
-          {t("routes.createSaleInvoice")}
-        </Button>
-        <Button onClick={() => navigate({ to: "/org/$orgSlug/invoices/createPurchase" })}>
-          {t("routes.createPurcahseInvoice")}
-        </Button>
-      </div>
-
+    <div className="p-4">
       <Tabs defaultValue="SALE">
-        <TabsList className="w-full">
-          <TabsTrigger value="SALE">{t("invoice.types.sale")}</TabsTrigger>
-          <TabsTrigger value="PURCHASE">{t("invoice.types.purchase")}</TabsTrigger>
-        </TabsList>
+        <div className="flex justify-between flex-row gap-2 flex-wrap-reverse">
+          <TabsList>
+            <TabsTrigger className="data-[state=active]:bg-background!" value="SALE">
+              {t("invoice.types.sale")}
+            </TabsTrigger>
+            <TabsTrigger className="data-[state=active]:bg-background!" value="PURCHASE">
+              {t("invoice.types.purchase")}
+            </TabsTrigger>
+          </TabsList>
+
+          <div className="flex items-center gap-2">
+            <Button onClick={() => navigate({ to: "/org/$orgSlug/invoices/createSale" })}>
+              {t("routes.createSaleInvoice")}
+            </Button>
+            <Button onClick={() => navigate({ to: "/org/$orgSlug/invoices/createPurchase" })}>
+              {t("routes.createPurcahseInvoice")}
+            </Button>
+          </div>
+        </div>
         <TabsContent value="SALE">
           <InvoiceList invoiceType="SALE" />
         </TabsContent>
@@ -79,7 +85,7 @@ function InvoiceList({ invoiceType }: { invoiceType: InvoiceType }) {
   return invoices?.length && invoices.length > 0 ? (
     <div className="rounded-lg border">
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-muted">
           <TableRow className="*:font-bold">
             <TableHead>{t("invoice.number")}</TableHead>
             <TableHead>{t("cashierName")}</TableHead>
@@ -114,7 +120,7 @@ function InvoiceRow({
 
   return (
     <>
-      <TableRow className={open ? "bg-muted/50" : ""}>
+      <TableRow className={open ? "bg-muted hover:bg-muted" : ""}>
         <TableCell>{invoice.id}</TableCell>
         <TableCell>{invoice.cashierName}</TableCell>
         <TableCell>{invoice.customerName}</TableCell>
@@ -131,9 +137,9 @@ function InvoiceRow({
         </TableCell>
       </TableRow>
       <TableRow className={cn("bg-muted/50", open ? "table-row" : "hidden")}>
-        <TableCell colSpan={10} className="pt-0">
+        <TableCell colSpan={10} className="p-0!">
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-muted">
               <TableRow className="*:font-bold">
                 <TableHead>{t("common.ui.number")}</TableHead>
                 <TableHead className="w-full">{t("common.form.description")}</TableHead>

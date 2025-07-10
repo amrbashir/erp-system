@@ -43,7 +43,7 @@ function Products() {
       {products?.length && products.length > 0 ? (
         <div className="rounded-lg border">
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-muted">
               <TableRow className="*:font-bold">
                 <TableHead>{t("common.ui.number")}</TableHead>
                 <TableHead>{t("common.form.quantity")}</TableHead>

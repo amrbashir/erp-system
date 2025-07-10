@@ -8,22 +8,12 @@ import { toBaseUnits, toMajorUnits } from "@erp-system/utils";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
-import { CheckIcon, ChevronsUpDownIcon, Loader2Icon, PlusIcon, TrashIcon } from "lucide-react";
+import { Loader2Icon, TrashIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/shadcn/components/ui/command";
 import { Input } from "@/shadcn/components/ui/input";
-import { Label } from "@/shadcn/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn/components/ui/popover";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -39,14 +29,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/shadcn/components/ui/table";
-import { cn } from "@/shadcn/lib/utils";
 
-import type { AnyFieldApi, ReactFormApi } from "@tanstack/react-form";
+import type { ReactFormApi } from "@tanstack/react-form";
 import type z from "zod";
 
 import { apiClient } from "@/api-client";
-import { AddCustomerDialog } from "@/components/add-customer-dialog";
 import { FormErrors } from "@/components/form-errors";
+import { CustomerSelect } from "@/components/invoice-customer-select";
 import { InputNumpad } from "@/components/ui/input-numpad";
 import { useFormatCurrency } from "@/hooks/format-currency";
 import { useOrg } from "@/hooks/use-org";
@@ -277,7 +266,7 @@ function InvoiceHeader({
   const { t } = useTranslation();
 
   return (
-    <div className="flex justify-between gap-2 px-2">
+    <div className="flex justify-between flex-wrap-reverse gap-2 px-2 ">
       <form.Field
         name="customerId"
         children={(field) => <CustomerSelect customers={customers} field={field} />}
@@ -298,94 +287,6 @@ function InvoiceHeader({
           )}
         />
       </div>
-    </div>
-  );
-}
-
-// Customer selection dropdown component
-function CustomerSelect({
-  customers = [],
-  field,
-}: {
-  customers: Customer[] | undefined;
-  field: AnyFieldApi;
-}) {
-  const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<string | undefined>(undefined);
-  const [customerSearch, setCustomerSearch] = useState("");
-
-  function handleCustomerCreated(customer: Customer) {
-    field.handleChange(customer.id);
-    setSelectedCustomer(customer.name);
-    setCustomerSearch(customer.name);
-    setOpen(false);
-  }
-
-  function handleCustomerSelect(customer: Customer) {
-    field.handleChange(customer.id);
-    setOpen(false);
-  }
-
-  return (
-    <div className="flex gap-2">
-      <Label htmlFor={field.name}>{t("customer.name")}</Label>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            type="button"
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="w-sm justify-between"
-          >
-            {field.state.value
-              ? customers?.find((c) => c.id === field.state.value)?.name
-              : t("customer.select")}
-            <ChevronsUpDownIcon className="opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-sm p-0">
-          <Command value={selectedCustomer} onValueChange={setSelectedCustomer}>
-            <div className="flex items-center *:first:flex-1 gap-2 p-1 *:data-[slot=command-input-wrapper]:px-0 *:data-[slot=command-input-wrapper]:ps-2">
-              <CommandInput
-                placeholder={t("customer.search")}
-                value={customerSearch}
-                onValueChange={(v) => setCustomerSearch(v)}
-              />
-              <AddCustomerDialog
-                initialName={customerSearch}
-                onCreated={handleCustomerCreated}
-                trigger={
-                  <Button type="button" variant="ghost" size="icon">
-                    <PlusIcon />
-                  </Button>
-                }
-              />
-            </div>
-            <CommandList>
-              <CommandEmpty>{t("customer.nomatches")}</CommandEmpty>
-              <CommandGroup>
-                {customers.map((customer) => (
-                  <CommandItem
-                    key={customer.id}
-                    value={customer.name}
-                    onSelect={() => handleCustomerSelect(customer)}
-                  >
-                    {customer.name}
-                    <CheckIcon
-                      className={cn(
-                        "ml-auto",
-                        field.state.value === customer.id ? "opacity-100" : "opacity-0",
-                      )}
-                    />
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
     </div>
   );
 }
@@ -514,7 +415,7 @@ function InvoiceTable({
   return (
     <div className="border rounded-lg">
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-muted">
           <TableRow className="*:font-bold">
             <TableHead>{t("common.ui.number")}</TableHead>
             <TableHead className="w-full">{t("common.form.description")}</TableHead>

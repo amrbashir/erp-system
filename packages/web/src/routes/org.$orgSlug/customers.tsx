@@ -46,7 +46,7 @@ function Customers() {
       {customers?.length && customers.length > 0 ? (
         <div className="rounded-lg border">
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-muted">
               <TableRow className="*:font-bold">
                 <TableHead>{t("customer.id")}</TableHead>
                 <TableHead className="min-w-[50%]">{t("common.form.name")}</TableHead>

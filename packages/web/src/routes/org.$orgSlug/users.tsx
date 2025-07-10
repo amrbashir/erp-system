@@ -80,7 +80,7 @@ function Users() {
       {users?.length && users.length > 0 ? (
         <div className="rounded-lg border">
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-muted">
               <TableRow className="*:font-bold">
                 <TableHead>{t("common.ui.number")}</TableHead>
                 <TableHead className="min-w-[50%]">{t("common.form.username")}</TableHead>
