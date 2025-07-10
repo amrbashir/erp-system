@@ -123,7 +123,7 @@ function CreatePurchaseInvoice() {
 
       toast.success(t("invoice.createdSuccessfully"));
       client.invalidateQueries({ queryKey: ["invoices", "PURCHASE", orgSlug] });
-      navigate({ to: "/org/$orgSlug/invoices", params: { orgSlug } });
+      formApi.reset();
     },
   });
 
