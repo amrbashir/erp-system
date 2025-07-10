@@ -58,9 +58,12 @@ describe("InvoiceService", async () => {
       },
     });
 
+    const randomId = Math.random().toString(36).substring(2, 8);
+
     // Create test products
     const product1 = await prisma.product.create({
       data: {
+        barcode: randomId,
         description: "Product 1",
         purchase_price: 50,
         selling_price: 100,
@@ -112,6 +115,7 @@ describe("InvoiceService", async () => {
       expect(invoice).toBeDefined();
       expect(invoice.items.length).toBe(2);
       expect(invoice.customer!.id).toBe(customer.id);
+      expect(invoice.items[0].barcode).toBe(product1.barcode);
 
       // Verify product quantities have been updated
       const updatedProduct1 = await prisma.product.findUnique({ where: { id: product1.id } });
