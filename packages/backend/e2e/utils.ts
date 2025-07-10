@@ -73,3 +73,14 @@ export async function useTestingApp() {
     closeApp,
   };
 }
+
+// Helper function to generate random organization names and slugs
+export function generateRandomOrgData() {
+  const randomId = Math.random().toString(36).substring(2, 8);
+  return {
+    name: `Test Organization ${randomId}`,
+    slug: `test-org-${randomId}`,
+    username: "admin",
+    password: "12345678",
+  };
+}

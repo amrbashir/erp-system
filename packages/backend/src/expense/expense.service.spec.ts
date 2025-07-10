@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { useRandomDatabase } from "../../e2e/utils";
+import { generateRandomOrgData, useRandomDatabase } from "../../e2e/utils";
 import { OrgService } from "../org/org.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { TransactionService } from "../transaction/transaction.service";
@@ -16,7 +16,7 @@ describe("ExpenseService", () => {
 
   const { createDatabase, dropDatabase } = useRandomDatabase();
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await createDatabase();
 
     prismaService = new PrismaService();
@@ -26,7 +26,7 @@ describe("ExpenseService", () => {
     transactionService = new TransactionService(prismaService);
   });
 
-  afterEach(dropDatabase);
+  afterAll(dropDatabase);
 
   function createTransaction(amount: number, orgSlug: string, cashierId: string) {
     return prismaService.transaction.create({
@@ -40,12 +40,8 @@ describe("ExpenseService", () => {
 
   it("should return expenses with cashier relation", async () => {
     // Create an organization
-    const org = await orgService.create({
-      name: "Test Org",
-      username: "admin",
-      password: "12345678",
-      slug: "test-org",
-    });
+    const orgData = generateRandomOrgData();
+    const org = await orgService.create(orgData);
 
     const adminUser = await userService.findByUsernameInOrg("admin", org.slug);
 

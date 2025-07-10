@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { useRandomDatabase } from "../../e2e/utils";
+import { generateRandomOrgData, useRandomDatabase } from "../../e2e/utils";
 import { OrgService } from "../org/org.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { UserService } from "../user/user.service";
@@ -14,7 +14,7 @@ describe("TransactionService", () => {
 
   const { createDatabase, dropDatabase } = useRandomDatabase();
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await createDatabase();
 
     prismaService = new PrismaService();
@@ -23,7 +23,7 @@ describe("TransactionService", () => {
     userService = new UserService(prismaService);
   });
 
-  afterEach(dropDatabase);
+  afterAll(dropDatabase);
 
   function createTransaction(amount: number, orgSlug: string, cashierId: string) {
     return prismaService.transaction.create({
@@ -36,14 +36,10 @@ describe("TransactionService", () => {
   }
 
   it("should create a transaction ", async () => {
-    const org = await orgService.create({
-      name: "Test Org",
-      username: "admin",
-      password: "12345678",
-      slug: "test-org",
-    });
+    const orgData = generateRandomOrgData();
+    const org = await orgService.create(orgData);
 
-    const adminUser = await userService.findByUsernameInOrg("admin", org.slug);
+    const adminUser = await userService.findByUsernameInOrg(orgData.username, org.slug);
 
     const transaction = await createTransaction(100, org.slug, adminUser!.id);
 
@@ -54,14 +50,10 @@ describe("TransactionService", () => {
   });
 
   it("should return transactions with customer and cashier relations", async () => {
-    const org = await orgService.create({
-      name: "Test Org",
-      username: "admin",
-      password: "12345678",
-      slug: "test-org",
-    });
+    const orgData = generateRandomOrgData();
+    const org = await orgService.create(orgData);
 
-    const adminUser = await userService.findByUsernameInOrg("admin", org.slug);
+    const adminUser = await userService.findByUsernameInOrg(orgData.username, org.slug);
 
     await createTransaction(100, org.slug, adminUser!.id);
     await createTransaction(-200, org.slug, adminUser!.id);

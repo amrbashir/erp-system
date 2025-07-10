@@ -1,7 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import type { CreateCustomerDto } from "./customer.dto";
-import { useRandomDatabase } from "../../e2e/utils";
+import { generateRandomOrgData, useRandomDatabase } from "../../e2e/utils";
 import { OrgService } from "../org/org.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { CustomerService } from "./customer.service";
@@ -13,22 +13,19 @@ describe("CustomerService", async () => {
 
   const { createDatabase, dropDatabase } = useRandomDatabase();
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await createDatabase();
     prisma = new PrismaService();
     orgService = new OrgService(prisma);
     service = new CustomerService(prisma);
   });
 
-  afterEach(dropDatabase);
+  afterAll(dropDatabase);
 
   it("should create a customer", async () => {
-    const org = await orgService.create({
-      name: "Test Org",
-      username: "admin",
-      password: "12345678",
-      slug: "test-org",
-    });
+    const orgData = generateRandomOrgData();
+
+    const org = await orgService.create(orgData);
 
     const createCustomerDto: CreateCustomerDto = {
       name: "Test Customer",
@@ -45,11 +42,8 @@ describe("CustomerService", async () => {
   });
 
   it("should return all customers", async () => {
-    const org = await orgService.create({
-      name: "Test Org",
-      username: "admin",
-      password: "12345678",
-    });
+    const orgData = generateRandomOrgData();
+    const org = await orgService.create(orgData);
 
     const customer1 = await service.createCustomer({ name: "Customer One" }, org.slug);
 

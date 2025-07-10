@@ -1,9 +1,9 @@
 import { slugify } from "@erp-system/utils";
-import { BadRequestException, ConflictException } from "@nestjs/common";
+import { BadRequestException } from "@nestjs/common";
 import argon2 from "argon2";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { useRandomDatabase } from "../../e2e/utils";
+import { generateRandomOrgData, useRandomDatabase } from "../../e2e/utils";
 import { UserRole } from "../prisma/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { OrgService } from "./org.service";
@@ -14,25 +14,21 @@ describe("OrgService", async () => {
 
   const { createDatabase, dropDatabase } = useRandomDatabase();
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await createDatabase();
     prisma = new PrismaService();
     service = new OrgService(prisma);
   });
 
-  afterEach(dropDatabase);
+  afterAll(dropDatabase);
 
   it("should create an organization with valid data", async () => {
-    const createOrgDto = {
-      name: "Test Org",
-      username: "admin",
-      password: "12345678",
-      slug: "test-org",
-    };
-    const org = await service.create(createOrgDto);
+    const orgData = generateRandomOrgData();
+    const org = await service.create(orgData);
+
     expect(org).toBeDefined();
-    expect(org!.name).toBe("Test Org");
-    expect(org!.slug).toBe("test-org");
+    expect(org!.name).toBe(orgData.name);
+    expect(org!.slug).toBe(orgData.slug);
 
     const users = await prisma.user.findMany({
       where: { organizationId: org!.id },
@@ -51,70 +47,52 @@ describe("OrgService", async () => {
   });
 
   it("should throw BadRequestException for invalid slug", async () => {
-    const createOrgDto = {
-      name: "Test Org",
-      username: "admin",
-      password: "12345678",
-      slug: "invalid slug",
-    };
-    await expect(service.create(createOrgDto)).rejects.toThrow(BadRequestException);
+    const orgData = generateRandomOrgData();
+    orgData.slug = "invalid slug"; // Invalid slug with space
+    await expect(service.create(orgData)).rejects.toThrow(BadRequestException);
   });
 
   it("should throw ConflictException for existing organization", async () => {
-    const createOrgDto = {
-      name: "Test Org",
-      username: "admin",
-      password: "12345678",
-      slug: "test-org",
-    };
-    await service.create(createOrgDto); // create for the first time
-    await expect(service.create(createOrgDto)).rejects.toThrow();
+    const orgData = generateRandomOrgData();
+    await service.create(orgData); // create for the first time
+    await expect(service.create(orgData)).rejects.toThrow();
   });
 
   it("should create an organization without slug", async () => {
-    const createOrgDto = { name: "Another Org", username: "admin2", password: "12345678" };
-    const org = await service.create(createOrgDto);
+    const orgData = generateRandomOrgData();
+    orgData.slug = undefined as any;
+
+    const org = await service.create(orgData);
+
     expect(org).toBeDefined();
-    expect(org!.name).toBe("Another Org");
-    expect(org!.slug).toBe(slugify("Another Org"));
+    expect(org!.name).toBe(orgData.name);
+    expect(org!.slug).toBe(slugify(orgData.name));
   });
 
-  it("should get organization  if exists", async () => {
-    const createOrgDto = {
-      name: "Check Org",
-      username: "admin3",
-      password: "12345678",
-      slug: "check-org",
-    };
-    const org = await service.create(createOrgDto);
+  it("should get organization if exists", async () => {
+    const orgData = generateRandomOrgData();
+    await service.create(orgData);
 
-    const retrieved = await service.findOrgBySlug("check-org");
+    const retrieved = await service.findOrgBySlug(orgData.slug);
 
     expect(retrieved).toMatchObject({
-      name: org.name,
-      slug: org.slug,
+      name: orgData.name,
+      slug: orgData.slug,
     });
   });
 
   it("should create multiple organizations with different slugs", async () => {
-    const org1 = await service.create({
-      name: "Org One",
-      username: "admin1",
-      password: "password1",
-      slug: "org-one",
-    });
-    expect(org1.slug).toBe("org-one");
+    const org1Data = generateRandomOrgData();
+    const org1 = await service.create(org1Data);
 
-    const org2 = await service.create({
-      name: "Org Two",
-      username: "admin2",
-      password: "password2",
-      slug: "org-two",
-    });
-    expect(org2.slug).toBe("org-two");
+    const org2Data = generateRandomOrgData();
+    const org2 = await service.create(org2Data);
 
-    const retrieved1 = await service.findOrgBySlug("org-one");
-    const retrieved2 = await service.findOrgBySlug("org-two");
+    expect(org1.slug).toBe(org1Data.slug);
+    expect(org2.slug).toBe(org2Data.slug);
+
+    const retrieved1 = await service.findOrgBySlug(org1Data.slug);
+    const retrieved2 = await service.findOrgBySlug(org2Data.slug);
 
     expect(retrieved1).toBeDefined();
     expect(retrieved2).toBeDefined();

@@ -1,7 +1,7 @@
 import { ConflictException } from "@nestjs/common";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { useRandomDatabase } from "../../e2e/utils";
+import { generateRandomOrgData, useRandomDatabase } from "../../e2e/utils";
 import { OrgService } from "../org/org.service";
 import { UserRole } from "../prisma/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
@@ -14,22 +14,18 @@ describe("UserService", async () => {
 
   const { createDatabase, dropDatabase } = useRandomDatabase();
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await createDatabase();
     prisma = new PrismaService();
     orgService = new OrgService(prisma);
     service = new UserService(prisma);
   });
 
-  afterEach(dropDatabase);
+  afterAll(dropDatabase);
 
   it("should create a user with valid data", async () => {
-    const org = await orgService.create({
-      name: "Test Org",
-      username: "admin",
-      password: "12345678",
-      slug: "test-org",
-    });
+    const orgData = generateRandomOrgData();
+    const org = await orgService.create(orgData);
 
     const createUserDto = {
       username: "testuser",
@@ -41,12 +37,8 @@ describe("UserService", async () => {
   });
 
   it("should throw an error when creating a user with an existing username", async () => {
-    const org = await orgService.create({
-      name: "Test Org",
-      username: "admin",
-      password: "12345678",
-      slug: "test-org",
-    });
+    const orgData = generateRandomOrgData();
+    const org = await orgService.create(orgData);
 
     const createUserDto = {
       username: "testuser",
@@ -59,14 +51,8 @@ describe("UserService", async () => {
   });
 
   it("should return users based on pagination", async () => {
-    const createOrgDto = {
-      name: "Test Org",
-      username: "admin",
-      password: "12345678",
-      slug: "test-org",
-    };
-
-    const org = await orgService.create(createOrgDto);
+    const orgData = generateRandomOrgData();
+    const org = await orgService.create(orgData);
 
     const user1 = await service.createUser(
       {
@@ -97,7 +83,7 @@ describe("UserService", async () => {
       orderBy,
     });
     expect(users).toHaveLength(1);
-    expect(users[0].username).toBe(createOrgDto.username);
+    expect(users[0].username).toBe(orgData.username);
 
     const users2 = await service.getAllUsers(org.slug, {
       pagination: { skip: 1, take: 1 },
@@ -116,14 +102,8 @@ describe("UserService", async () => {
   });
 
   it("should delete a user", async () => {
-    const createOrgDto = {
-      name: "Test Org",
-      username: "admin",
-      password: "12345678",
-      slug: "test-org",
-    };
-
-    const org = await orgService.create(createOrgDto);
+    const orgData = generateRandomOrgData();
+    const org = await orgService.create(orgData);
 
     const user1 = await service.createUser(
       {
@@ -152,7 +132,7 @@ describe("UserService", async () => {
     let users = await service.getAllUsers(org.slug, { where: { deletedAt: null } });
     expect(users).toHaveLength(3);
 
-    await service.deleteUser({ username: createOrgDto.username }, org.slug);
+    await service.deleteUser({ username: orgData.username }, org.slug);
     users = await service.getAllUsers(org.slug, { where: { deletedAt: null } });
     expect(users).toHaveLength(2);
 

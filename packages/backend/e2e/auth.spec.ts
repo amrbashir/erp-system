@@ -1,26 +1,23 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { useTestingApp } from "./utils";
+import { generateRandomOrgData, useTestingApp } from "./utils";
 
 describe("Auth E2E", async () => {
   const { appUrl, runApp, closeApp } = await useTestingApp();
   beforeAll(runApp);
   afterAll(closeApp);
 
+  const orgData = generateRandomOrgData();
+
   let cookies: string[];
   let accessToken: string;
-  let organizationSlug: string = "test-organization";
 
   describe("Organization Creation", () => {
     it("should create an organization successfully", async () => {
       const response = await fetch(appUrl + "/org/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: "Test Organization",
-          username: "admin",
-          password: "12345678",
-        }),
+        body: JSON.stringify(orgData),
       });
 
       expect(response.status).toBe(201);
@@ -29,12 +26,12 @@ describe("Auth E2E", async () => {
 
   describe("Login", () => {
     it("should login successfully with valid credentials", async () => {
-      const response = await fetch(appUrl + "/org/" + organizationSlug + "/auth/login", {
+      const response = await fetch(appUrl + "/org/" + orgData.slug + "/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username: "admin",
-          password: "12345678",
+          username: orgData.username,
+          password: orgData.password,
         }),
       });
 
@@ -51,11 +48,11 @@ describe("Auth E2E", async () => {
     });
 
     it("should fail with invalid credentials", async () => {
-      await fetch(appUrl + "/org/" + organizationSlug + "/auth/login", {
+      await fetch(appUrl + "/org/" + orgData.slug + "/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username: "admin",
+          username: orgData.username,
           password: "wrongpassword",
         }),
       });
@@ -64,7 +61,7 @@ describe("Auth E2E", async () => {
 
   describe("Refresh Token", () => {
     it("should refresh access token with valid refresh token", async () => {
-      const response = await fetch(appUrl + "/org/" + organizationSlug + "/auth/refresh", {
+      const response = await fetch(appUrl + "/org/" + orgData.slug + "/auth/refresh", {
         headers: { Cookie: cookies.join("; ") },
       });
 
@@ -79,14 +76,14 @@ describe("Auth E2E", async () => {
 
   describe("Logout", () => {
     it("should logout successfully with valid access token", async () => {
-      const response = await fetch(appUrl + "/org/" + organizationSlug + "/auth/logout", {
+      const response = await fetch(appUrl + "/org/" + orgData.slug + "/auth/logout", {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       expect(response.status).toBe(200);
     });
 
     it("should fail to access logout due to missing tokens", async () => {
-      const response = await fetch(appUrl + "/org/" + organizationSlug + "/auth/logout");
+      const response = await fetch(appUrl + "/org/" + orgData.slug + "/auth/logout");
       expect(response.status).toBe(401);
     });
   });
