@@ -197,7 +197,7 @@
   },
 
   "welcomeToErp": "$t(common.welcome) to erp-system",
-  "welcomeToErpOrg": "$t(common.welcome) to {{orgSlug}}",
+  "welcomeToErpOrg": "$t(common.welcome) to {{orgName}}",
   "welcomeToErpDescription": "Your one-stop system for all ERP needs",
   "goBackHome": "Go back Home",
   "notFound404": "Sorry, the page you are looking for does not exist",

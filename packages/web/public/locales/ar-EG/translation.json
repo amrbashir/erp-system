@@ -44,7 +44,7 @@
   },
 
   "welcomeToErp": "$t(common.welcome) في نظام ERP",
-  "welcomeToErpOrg": "$t(common.welcome) في {{orgSlug}}",
+  "welcomeToErpOrg": "$t(common.welcome) في {{orgName}}",
   "welcomeToErpDescription": "محطتك الشاملة لجميع احتياجات ال ERP",
 
   "language": {
@@ -65,7 +65,7 @@
     "invoices": "الفواتير",
     "expenses": "المصروفات",
     "createSaleInvoice": "$t(common.actions.create) فاتورة مبيعات",
-    "createPurcahseInvoice": "$t(common.actions.create) فاتورة مشتريات"
+    "createPurchaseInvoice": "$t(common.actions.create) فاتورة مشتريات"
   },
 
   "auth": {

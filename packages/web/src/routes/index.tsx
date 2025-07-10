@@ -76,15 +76,13 @@ function Index() {
   );
 }
 
-function Welcome({ orgSlug, ...props }: React.ComponentProps<"div"> & { orgSlug?: string } = {}) {
+function Welcome(props: React.ComponentProps<"div">) {
   const { t } = useTranslation();
 
   return (
     <div {...props}>
       <img src="/logo.svg" alt="ERP System Logo" width={300} className="mb-10" />
-      <h2 className="text-2xl font-semibold text-center">
-        {t(orgSlug ? "welcomeToErpOrg" : "welcomeToErp", { orgSlug: orgSlug })}
-      </h2>
+      <h2 className="text-2xl font-semibold text-center">{t("welcomeToErp")}</h2>
       <p className="text-base text-center mt-2 text-secondary-foreground/60">
         {t("welcomeToErpDescription")}
       </p>

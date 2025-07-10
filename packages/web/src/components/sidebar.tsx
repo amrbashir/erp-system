@@ -23,7 +23,7 @@ import { useAuth } from "@/providers/auth";
 export function AppSideBar() {
   const { t, i18n } = useTranslation();
   const { open } = useSidebar();
-  const { slug: orgSlug } = useOrg();
+  const { slug: orgSlug, name: orgName } = useOrg();
   const { user } = useAuth();
 
   const topRoutes: (keyof FileRoutesById)[] = ["/org/$orgSlug/"];
@@ -43,9 +43,9 @@ export function AppSideBar() {
       <SidebarHeader>
         <Label className="my-2">
           <img src="/favicon.svg" className="size-8"></img>
-          <span className="md:hidden text-lg font-semibold">{orgSlug}</span>
+          <span className="md:hidden text-lg font-semibold">{orgName}</span>
           {/* TODO: fix this text jumping */}
-          {open && <span className="hidden md:inline-block text-lg font-semibold">{orgSlug}</span>}
+          {open && <span className="hidden md:inline-block text-lg font-semibold">{orgName}</span>}
         </Label>
       </SidebarHeader>
 

@@ -38,7 +38,7 @@ import i18n from "@/i18n";
 export const Route = createFileRoute("/org/$orgSlug/invoices/createPurchase")({
   component: CreatePurchaseInvoice,
   context: () => ({
-    title: i18n.t("routes.createPurcahseInvoice"),
+    title: i18n.t("routes.createPurchaseInvoice"),
   }),
 });
 
