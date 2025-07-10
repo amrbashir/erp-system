@@ -276,10 +276,10 @@ function InvoiceHeader({
           selector={(state) => [state.canSubmit, state.isSubmitting]}
           children={([canSubmit, isSubmitting]) => (
             <>
-              <Button type="button" disabled={isSubmitting} variant="secondary" onClick={onCancel}>
+              <Button disabled={isSubmitting} variant="secondary" onClick={onCancel}>
                 {t("common.actions.cancel")}
               </Button>
-              <Button type="submit" disabled={!canSubmit || !hasItems}>
+              <Button disabled={!canSubmit || !hasItems}>
                 {isSubmitting && <Loader2Icon className="animate-spin" />}
                 {t("common.actions.create")}
               </Button>
@@ -519,7 +519,7 @@ function InvoiceTableRow({
       </TableCell>
       <TableCell className="text-end">{formatCurrency(itemTotal)}</TableCell>
       <TableCell>
-        <Button type="button" onClick={() => onRemove(index)} variant="ghost" size="sm">
+        <Button onClick={() => onRemove(index)} variant="ghost" size="sm">
           <TrashIcon />
         </Button>
       </TableCell>

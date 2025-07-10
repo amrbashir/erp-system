@@ -120,7 +120,7 @@ export function AddUserDialog() {
                       {t("common.actions.cancel")}
                     </Button>
                   </DialogClose>
-                  <Button disabled={!canSubmit} type="submit">
+                  <Button disabled={!canSubmit}>
                     {isSubmitting && <Loader2Icon className="animate-spin" />}
                     {t("common.actions.add")}
                   </Button>

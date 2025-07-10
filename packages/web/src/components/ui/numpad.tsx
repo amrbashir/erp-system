@@ -90,7 +90,6 @@ export function Numpad({
           }}
         />
         <Button
-          type="button"
           variant="ghost"
           className="text-green-300 hover:text-green-300"
           onClick={() => onSubmit?.({ value, valueAsNumber })}
@@ -101,7 +100,6 @@ export function Numpad({
       <div className="grid grid-cols-3 gap-2" dir="ltr">
         {KEYS.map((key) => (
           <Button
-            type="button"
             className={cn("p-10!", key === "Del" && "text-red-300 hover:text-red-300")}
             variant={key === "Del" || key === "." ? "ghost" : "secondary"}
             key={key}

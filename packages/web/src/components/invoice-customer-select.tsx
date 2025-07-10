@@ -54,7 +54,6 @@ export function CustomerSelect({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            type="button"
             variant="outline"
             role="combobox"
             aria-expanded={open}
@@ -78,7 +77,7 @@ export function CustomerSelect({
                 initialName={customerSearch}
                 onCreated={handleCustomerCreated}
                 trigger={
-                  <Button type="button" variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon">
                     <PlusIcon />
                   </Button>
                 }

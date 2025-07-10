@@ -33,11 +33,7 @@ export function InputNumpad({
       {!isMobile ? (
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <Button
-              type="button"
-              variant="secondary"
-              className="focus-visible:z-1 rounded-none rounded-e"
-            >
+            <Button variant="secondary" className="focus-visible:z-1 rounded-none rounded-e">
               <PhNumpadIcon />
             </Button>
           </PopoverTrigger>

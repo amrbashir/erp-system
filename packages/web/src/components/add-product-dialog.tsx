@@ -88,18 +88,11 @@ export function AddProductDialog({ onSubmit }: { onSubmit: (product: InvoiceItem
               children={([canSubmit, isSubmitting]) => (
                 <>
                   <DialogClose asChild>
-                    <Button
-                      type="button"
-                      disabled={isSubmitting}
-                      variant="outline"
-                      onClick={() => form.reset()}
-                    >
+                    <Button disabled={isSubmitting} variant="outline" onClick={() => form.reset()}>
                       {t("common.actions.cancel")}
                     </Button>
                   </DialogClose>
-                  <Button disabled={!canSubmit} type="submit">
-                    {t("common.actions.add")}
-                  </Button>
+                  <Button disabled={!canSubmit}>{t("common.actions.add")}</Button>
                 </>
               )}
             />
