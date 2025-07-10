@@ -59,7 +59,8 @@
     "transactions": "Transactions",
     "invoices": "Invoices",
     "expenses": "Expenses",
-    "createInvoice": "$t(common.actions.create) Invoice"
+    "createSaleInvoice": "$t(common.actions.create) Sale Invoice",
+    "createPurchaseInvoice": "$t(common.actions.create) Purchase Invoice"
   },
 
   "auth": {
@@ -98,7 +99,7 @@
     "name": "Customer $t(common.form.name)",
     "search": "$t(common.actions.search) customers...",
     "select": "Select a customer",
-    "nomatches": "No customers found",
+    "noResults": "No customers found",
     "id": "Customer ID"
   },
 
@@ -171,7 +172,12 @@
   },
 
   "invoice": {
+    "types": {
+      "sale": "Sale Invoices",
+      "purchase": "Purchase Invoices"
+    },
     "number": "Invoice $t(common.ui.number)",
+    "type": "Invoice Type",
     "createdSuccessfully": "Invoice created successfully",
     "addItemsTo": "$t(common.actions.add) items to the invoice",
     "total": "Total",

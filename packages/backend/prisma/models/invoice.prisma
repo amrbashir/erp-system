@@ -1,6 +1,8 @@
 model Invoice {
   id Int @id @default(autoincrement())
 
+  type InvoiceType @default(SALE)
+
   items            InvoiceItem[]
   subtotal         Int
   discount_percent Int           @default(0)
@@ -26,4 +28,9 @@ model Invoice {
   storeId String?
 
   @@map("invoices")
+}
+
+enum InvoiceType {
+  SALE
+  PURCHASE
 }

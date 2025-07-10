@@ -4,7 +4,6 @@ import {
   ApiCreatedResponse,
   ApiHeader,
   ApiOkResponse,
-  ApiQuery,
   ApiTags,
 } from "@nestjs/swagger";
 
@@ -32,7 +31,6 @@ export class ProductController {
   }
 
   @Get("getAll")
-  @ApiQuery({ type: PaginationDto })
   @ApiOkResponse({ type: [ProductEntity] })
   async getAll(
     @Param("orgSlug") orgSlug: string,

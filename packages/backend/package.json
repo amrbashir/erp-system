@@ -12,6 +12,7 @@
     "start:dev": "node --env-file=.env.development dist/main.js",
     "gen:openapi-json": "node --env-file=.env.development dist/main.js gen-openapi-json",
     "migrate:db:dev": "dotenv -e .env.development prisma migrate dev",
+    "prisma:generate": "prisma generate",
     "test": "docker compose up -d postgres-db && vitest run",
     "test:watch": "vitest",
     "lint": "tsc --noEmit"

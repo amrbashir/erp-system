@@ -212,7 +212,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/org/{orgSlug}/invoice/create": {
+    "/org/{orgSlug}/invoice/createSale": {
         parameters: {
             query?: never;
             header?: never;
@@ -221,7 +221,23 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["InvoiceController$1_create"];
+        post: operations["InvoiceController$1_createSale"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/org/{orgSlug}/invoice/createPurchase": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["InvoiceController$1_createPurchase"];
         delete?: never;
         options?: never;
         head?: never;
@@ -368,17 +384,31 @@ export interface components {
             username: string;
             customerName?: string;
         };
-        CreateInvoiceItemDto: {
+        CreateSaleInvoiceItemDto: {
             productId: string;
             quantity: number;
             discount_percent?: number;
             discount_amount?: number;
         };
-        CreateInvoiceDto: {
+        CreateSaleInvoiceDto: {
             customerId?: number;
-            items: components["schemas"]["CreateInvoiceItemDto"][];
+            items: components["schemas"]["CreateSaleInvoiceItemDto"][];
             discount_percent?: number;
             discount_amount?: number;
+        };
+        CreatePurchaseInvoiceItemDto: {
+            description: string;
+            purchase_price: number;
+            selling_price: number;
+            quantity: number;
+            discount_percent?: number;
+            discount_amount?: number;
+        };
+        CreatePurchaseInvoiceDto: {
+            customerId?: number;
+            discount_percent?: number;
+            discount_amount?: number;
+            items: components["schemas"]["CreatePurchaseInvoiceItemDto"][];
         };
         InvoiceItemEntity: {
             description: string;
@@ -392,6 +422,8 @@ export interface components {
         };
         InvoiceEntity: {
             id: number;
+            /** @enum {string} */
+            type: "SALE" | "PURCHASE";
             subtotal: number;
             discount_percent: number;
             discount_amount: number;
@@ -738,7 +770,7 @@ export interface operations {
             };
         };
     };
-    InvoiceController$1_create: {
+    InvoiceController$1_createSale: {
         parameters: {
             query?: never;
             header?: {
@@ -751,7 +783,32 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateInvoiceDto"];
+                "application/json": components["schemas"]["CreateSaleInvoiceDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InvoiceController$1_createPurchase: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePurchaseInvoiceDto"];
             };
         };
         responses: {
@@ -768,6 +825,7 @@ export interface operations {
             query?: {
                 skip?: number;
                 take?: number;
+                type?: "SALE" | "PURCHASE";
             };
             header?: {
                 Authorization?: string;

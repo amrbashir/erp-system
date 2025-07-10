@@ -9,8 +9,8 @@
     "sdk": "pnpm run --filter @erp-system/sdk --",
     "utils": "pnpm run --filter @erp-system/utils --",
     "build:utils": "pnpm utils build && pnpm backend build && pnpm sdk build",
-    "test": "pnpm build:utils && pnpm -r test",
-    "lint": "pnpm build:utils && pnpm -r lint",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

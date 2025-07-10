@@ -1,3 +1,4 @@
+import { InvoiceEntity } from "@erp-system/sdk/zod";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
@@ -12,66 +13,95 @@ import {
   TableHeader,
   TableRow,
 } from "@/shadcn/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn/components/ui/tabs";
 import { cn } from "@/shadcn/lib/utils";
 
-import type { InvoiceEntity } from "@erp-system/sdk/zod";
 import type z from "zod";
 
 import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
-import { formatCurrency } from "@/hooks/format-currency";
+import { useFormatCurrency } from "@/hooks/format-currency";
 import { useOrg } from "@/hooks/use-org";
 
-export const Route = createFileRoute("/org/$orgSlug/invoices/")({ component: Invoices });
+export const Route = createFileRoute("/org/$orgSlug/invoices/")({
+  component: Invoices,
+});
+
+type InvoiceType = z.infer<typeof InvoiceEntity>["type"];
 
 function Invoices() {
-  const { slug: orgSlug } = useOrg();
   const { t } = useTranslation();
   const navigate = Route.useNavigate();
 
-  const { data: invoices } = useQuery({
-    queryKey: ["invoices"],
-    queryFn: async () =>
-      apiClient.getThrowing("/org/{orgSlug}/invoice/getAll", { params: { path: { orgSlug } } }),
-    select: (res) => res.data,
-  });
-
   return (
     <div className="flex flex-col gap-4 p-4">
-      <div>
-        <Button onClick={() => navigate({ to: "/org/$orgSlug/invoices/create" })}>
-          {t("routes.createInvoice")}
+      <div className="flex items-center gap-2">
+        <Button onClick={() => navigate({ to: "/org/$orgSlug/invoices/createSale" })}>
+          {t("routes.createSaleInvoice")}
+        </Button>
+        <Button onClick={() => navigate({ to: "/org/$orgSlug/invoices/createPurchase" })}>
+          {t("routes.createPurcahseInvoice")}
         </Button>
       </div>
 
-      {invoices?.length && invoices.length > 0 ? (
-        <div className="rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow className="*:font-bold">
-                <TableHead>{t("invoice.number")}</TableHead>
-                <TableHead>{t("cashierName")}</TableHead>
-                <TableHead>{t("customer.name")}</TableHead>
-                <TableHead>{t("common.dates.createdAt")}</TableHead>
-                <TableHead>{t("common.dates.updatedAt")}</TableHead>
-                <TableHead>{t("invoice.subtotal")}</TableHead>
-                <TableHead>{t("invoice.discountPercent")}</TableHead>
-                <TableHead>{t("invoice.discountAmount")}</TableHead>
-                <TableHead>{t("invoice.total")}</TableHead>
-                <TableHead className="text-end!"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {invoices.map((invoice, index) => (
-                <InvoiceRow key={index} invoice={invoice} index={index} />
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      ) : (
-        <EmptyTable />
-      )}
+      <Tabs defaultValue="SALE">
+        <TabsList className="w-full">
+          <TabsTrigger value="SALE">{t("invoice.types.sale")}</TabsTrigger>
+          <TabsTrigger value="PURCHASE">{t("invoice.types.purchase")}</TabsTrigger>
+        </TabsList>
+        <TabsContent value="SALE">
+          <InvoiceList invoiceType="SALE" />
+        </TabsContent>
+        <TabsContent value="PURCHASE">
+          <InvoiceList invoiceType="PURCHASE" />
+        </TabsContent>
+      </Tabs>
     </div>
+  );
+}
+
+function InvoiceList({ invoiceType }: { invoiceType: InvoiceType }) {
+  const { t } = useTranslation();
+  const { slug: orgSlug } = useOrg();
+
+  const { data: invoices } = useQuery({
+    queryKey: ["invoices", invoiceType, orgSlug],
+    queryFn: async () =>
+      apiClient.getThrowing("/org/{orgSlug}/invoice/getAll", {
+        params: {
+          path: { orgSlug },
+          query: { type: invoiceType },
+        },
+      }),
+    select: (res) => res.data,
+  });
+
+  return invoices?.length && invoices.length > 0 ? (
+    <div className="rounded-lg border">
+      <Table>
+        <TableHeader>
+          <TableRow className="*:font-bold">
+            <TableHead>{t("invoice.number")}</TableHead>
+            <TableHead>{t("cashierName")}</TableHead>
+            <TableHead>{t("customer.name")}</TableHead>
+            <TableHead>{t("common.dates.createdAt")}</TableHead>
+            <TableHead>{t("common.dates.updatedAt")}</TableHead>
+            <TableHead>{t("invoice.subtotal")}</TableHead>
+            <TableHead>{t("invoice.discountPercent")}</TableHead>
+            <TableHead>{t("invoice.discountAmount")}</TableHead>
+            <TableHead>{t("invoice.total")}</TableHead>
+            <TableHead className="text-end!"></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {invoices.map((invoice, index) => (
+            <InvoiceRow key={index} invoice={invoice} index={index} />
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  ) : (
+    <EmptyTable />
   );
 }
 
@@ -79,6 +109,7 @@ function InvoiceRow({
   invoice,
 }: React.ComponentProps<"tr"> & { invoice: z.infer<typeof InvoiceEntity>; index: number }) {
   const { t, i18n } = useTranslation();
+  const { formatCurrency } = useFormatCurrency();
   const [open, setOpen] = useState(false);
 
   return (

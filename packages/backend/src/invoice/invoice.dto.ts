@@ -1,6 +1,7 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional, OmitType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import {
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsNumber,
@@ -13,8 +14,10 @@ import {
 
 import type { InvoiceItem } from "../prisma/generated/client";
 import type { InvoiceWithRelations } from "./invoice.service";
+import { PaginationDto } from "../pagination.dto";
+import { InvoiceType } from "../prisma/generated/client";
 
-export class CreateInvoiceItemDto {
+export class CreateSaleInvoiceItemDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
@@ -40,17 +43,17 @@ export class CreateInvoiceItemDto {
   discount_amount: number = 0;
 }
 
-export class CreateInvoiceDto {
+export class CreateSaleInvoiceDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
   customerId?: number;
 
-  @ApiProperty({ type: [CreateInvoiceItemDto] })
+  @ApiProperty({ type: [CreateSaleInvoiceItemDto] })
   @IsNotEmpty()
   @ValidateNested({ each: true })
-  @Type(() => CreateInvoiceItemDto)
-  items: CreateInvoiceItemDto[];
+  @Type(() => CreateSaleInvoiceItemDto)
+  items: CreateSaleInvoiceItemDto[];
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -64,6 +67,52 @@ export class CreateInvoiceDto {
   @IsInt()
   @Min(0)
   discount_amount: number = 0;
+}
+
+export class CreatePurchaseInvoiceItemDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  description: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsInt()
+  @Min(0)
+  purchase_price: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsInt()
+  @Min(0)
+  selling_price: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsInt()
+  @Min(1)
+  quantity: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  discount_percent: number = 0;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  discount_amount: number = 0;
+}
+
+export class CreatePurchaseInvoiceDto extends OmitType(CreateSaleInvoiceDto, ["items"]) {
+  @ApiProperty({ type: [CreatePurchaseInvoiceItemDto] })
+  @IsNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => CreatePurchaseInvoiceItemDto)
+  items: CreatePurchaseInvoiceItemDto[];
 }
 
 export class InvoiceItemEntity {
@@ -107,6 +156,9 @@ export class InvoiceEntity {
   @ApiProperty()
   id: number;
 
+  @ApiProperty({ enum: InvoiceType })
+  type: InvoiceType;
+
   @ApiProperty()
   subtotal: number;
 
@@ -139,6 +191,7 @@ export class InvoiceEntity {
 
   constructor(invoice: InvoiceWithRelations) {
     this.id = invoice.id;
+    this.type = invoice.type;
     this.subtotal = invoice.subtotal;
     this.discount_percent = invoice.discount_percent;
     this.discount_amount = invoice.discount_amount;
@@ -150,4 +203,11 @@ export class InvoiceEntity {
     this.transactionId = invoice.transactionId;
     this.items = invoice.items.map((item) => new InvoiceItemEntity(item));
   }
+}
+
+export class GetAllInvoicesQueryDto extends PaginationDto {
+  @ApiPropertyOptional({ enum: InvoiceType })
+  @IsOptional()
+  @IsEnum(InvoiceType)
+  type: InvoiceType = InvoiceType.SALE;
 }

@@ -1,4 +1,7 @@
 -- CreateEnum
+CREATE TYPE "InvoiceType" AS ENUM ('SALE', 'PURCHASE');
+
+-- CreateEnum
 CREATE TYPE "UserRole" AS ENUM ('USER', 'ADMIN');
 
 -- CreateTable
@@ -49,6 +52,7 @@ CREATE TABLE "invoice_items" (
 -- CreateTable
 CREATE TABLE "invoices" (
     "id" SERIAL NOT NULL,
+    "type" "InvoiceType" NOT NULL DEFAULT 'SALE',
     "subtotal" INTEGER NOT NULL,
     "discount_percent" INTEGER NOT NULL DEFAULT 0,
     "discount_amount" INTEGER NOT NULL DEFAULT 0,

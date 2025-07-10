@@ -5,7 +5,7 @@
       "add": "إضافة",
       "delete": "حذف",
       "cancel": "إلغاء",
-      "create": "أنشىء",
+      "create": "انشاء",
       "go": "اذهب",
       "search": "ابحث عن",
       "login": "تسجيل الدخول",
@@ -63,7 +63,8 @@
     "transactions": "المعاملات",
     "invoices": "الفواتير",
     "expenses": "المصروفات",
-    "createInvoice": "$t(common.actions.create) فاتورة"
+    "createSaleInvoice": "$t(common.actions.create) فاتورة مبيعات",
+    "createPurcahseInvoice": "$t(common.actions.create) فاتورة مشتريات"
   },
 
   "auth": {
@@ -161,6 +162,10 @@
   },
 
   "invoice": {
+    "types": {
+      "sale": "فواتير المبيعات",
+      "purchase": "فواتير المشتريات"
+    },
     "number": "$t(common.ui.number) الفاتورة",
     "createdSuccessfully": "تم إنشاء الفاتورة بنجاح",
     "addItemsTo": "أضف عناصر إلى الفاتورة",

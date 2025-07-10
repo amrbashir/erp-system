@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
 import { PaginationDto } from "../pagination.dto";
@@ -15,7 +15,6 @@ export class ExpenseController {
   constructor(private readonly service: ExpenseService) {}
 
   @Get("getAll")
-  @ApiQuery({ type: PaginationDto })
   @ApiOkResponse({ type: [ExpenseEntity] })
   async getAll(
     @Param("orgSlug") orgSlug: string,

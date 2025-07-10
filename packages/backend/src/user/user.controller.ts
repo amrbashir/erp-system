@@ -10,7 +10,7 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
 import type { JwtPayload } from "../auth/auth.dto";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
@@ -51,7 +51,6 @@ export class UserController {
   }
 
   @Get("getAll")
-  @ApiQuery({ type: PaginationDto })
   @ApiOkResponse({ type: [UserEntity] })
   async getAll(@Param("orgSlug") orgSlug: string, @Query() pagination?: PaginationDto) {
     const users = await this.userService.getAllUsers(orgSlug, { pagination });

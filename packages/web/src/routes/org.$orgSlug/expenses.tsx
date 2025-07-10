@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/shadcn/components/ui/table";
 
-import { formatCurrency } from "@/hooks/format-currency";
+import { useFormatCurrency } from "@/hooks/format-currency";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 
@@ -29,6 +29,7 @@ export const Route = createFileRoute("/org/$orgSlug/expenses")({
 function Expenses() {
   const { slug: orgSlug } = useOrg();
   const { t, i18n } = useTranslation();
+  const { formatCurrency } = useFormatCurrency();
 
   const { data: expenses } = useQuery({
     queryKey: ["expenses"],

@@ -1,9 +1,9 @@
-import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { BadRequestException } from "@nestjs/common";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { useRandomDatabase } from "../../e2e/utils";
 import { PrismaService } from "../prisma/prisma.service";
-import { CreateInvoiceDto } from "./invoice.dto";
+import { CreateSaleInvoiceDto } from "./invoice.dto";
 import { InvoiceService } from "./invoice.service";
 
 describe("InvoiceService", async () => {
@@ -84,154 +84,379 @@ describe("InvoiceService", async () => {
     return { org, user, store, customer, product1, product2 };
   }
 
-  it("should create an invoice with valid data", async () => {
-    const { customer, product1, product2, user } = await setupTestOrganization();
+  describe("createSale", () => {
+    it("should create an invoice with valid data", async () => {
+      const { customer, product1, product2, user } = await setupTestOrganization();
 
-    const createInvoiceDto: CreateInvoiceDto = {
-      customerId: Number(customer.id),
-      items: [
-        {
-          productId: product1.id,
-          quantity: 2,
-          discount_percent: 0,
-          discount_amount: 0,
-        },
-        {
-          productId: product2.id,
-          quantity: 1,
-          discount_percent: 10,
-          discount_amount: 5,
-        },
-      ],
-      discount_percent: 5,
-      discount_amount: 10,
-    };
+      const createInvoiceDto: CreateSaleInvoiceDto = {
+        customerId: customer.id,
+        items: [
+          {
+            productId: product1.id,
+            quantity: 2,
+            discount_percent: 0,
+            discount_amount: 0,
+          },
+          {
+            productId: product2.id,
+            quantity: 1,
+            discount_percent: 10,
+            discount_amount: 5,
+          },
+        ],
+        discount_percent: 5,
+        discount_amount: 10,
+      };
 
-    const invoice = await service.createInvoice(orgSlug, createInvoiceDto, user.id);
+      const invoice = await service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
 
-    // Verify invoice details
-    expect(invoice).toBeDefined();
-    expect(invoice.items.length).toBe(2);
-    expect(invoice.customer!.id).toBe(customer.id);
+      // Verify invoice details
+      expect(invoice).toBeDefined();
+      expect(invoice.items.length).toBe(2);
+      expect(invoice.customer!.id).toBe(customer.id);
 
-    // Verify product quantities have been updated
-    const updatedProduct1 = await prisma.product.findUnique({ where: { id: product1.id } });
-    const updatedProduct2 = await prisma.product.findUnique({ where: { id: product2.id } });
+      // Verify product quantities have been updated
+      const updatedProduct1 = await prisma.product.findUnique({ where: { id: product1.id } });
+      const updatedProduct2 = await prisma.product.findUnique({ where: { id: product2.id } });
 
-    expect(updatedProduct1!.stock_quantity).toBe(18); // 20 - 2
-    expect(updatedProduct2!.stock_quantity).toBe(14); // 15 - 1
+      expect(updatedProduct1!.stock_quantity).toBe(18); // 20 - 2
+      expect(updatedProduct2!.stock_quantity).toBe(14); // 15 - 1
 
-    // Verify transaction was created
-    const transaction = await prisma.transaction.findFirst({
-      where: { invoice: { id: invoice.id } },
+      // Verify transaction was created
+      const transaction = await prisma.transaction.findFirst({
+        where: { invoice: { id: invoice.id } },
+      });
+
+      expect(transaction).toBeDefined();
+      expect(transaction!.amount).toBe(invoice.total);
     });
 
-    expect(transaction).toBeDefined();
-    expect(transaction!.amount).toBe(invoice.total);
+    it("should throw BadRequestException when creating invoice with no items", async () => {
+      const { user } = await setupTestOrganization();
+
+      const createInvoiceDto: CreateSaleInvoiceDto = {
+        items: [],
+        discount_percent: 0,
+        discount_amount: 0,
+      };
+
+      await expect(service.createSaleInvoice(orgSlug, createInvoiceDto, user.id)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it("should throw BadRequestException when product has insufficient stock", async () => {
+      const { product1, user } = await setupTestOrganization();
+
+      const createInvoiceDto: CreateSaleInvoiceDto = {
+        items: [
+          {
+            productId: product1.id,
+            quantity: 25, // More than available stock (20)
+            discount_percent: 0,
+            discount_amount: 0,
+          },
+        ],
+        discount_percent: 0,
+        discount_amount: 0,
+      };
+
+      await expect(service.createSaleInvoice(orgSlug, createInvoiceDto, user.id)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it("should calculate discounts correctly", async () => {
+      const { product1, user } = await setupTestOrganization();
+
+      // Values are in base units (e.g., cents, piasters)
+      // Item price: 100 base units, Quantity: 5, Total before discount: 500 base units
+      // Item discount: 10% (50 base units) + 25 base units flat = 75 base units discount
+      // Item total after discount: 425 base units
+      // Invoice discount: 5% (21.25 base units) + 10 base units flat = 31.25 base units
+      // Final total: 393.75 base units
+
+      const createInvoiceDto: CreateSaleInvoiceDto = {
+        items: [
+          {
+            productId: product1.id,
+            quantity: 5,
+            discount_percent: 10,
+            discount_amount: 25,
+          },
+        ],
+        discount_percent: 5,
+        discount_amount: 10,
+      };
+
+      const invoice = await service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
+
+      // The calculation should match what happens in the service
+      expect(invoice.subtotal).toBe(425); // After item discounts (in base units)
+      expect(invoice.total).toBe(394); // After invoice discounts (in base units), rounded to nearest base unit
+    });
+
+    it("should increase organization balance after sale", async () => {
+      const { product1, user } = await setupTestOrganization();
+
+      const createInvoiceDto: CreateSaleInvoiceDto = {
+        items: [
+          {
+            productId: product1.id,
+            quantity: 1,
+            discount_percent: 0,
+            discount_amount: 0,
+          },
+        ],
+        discount_percent: 0,
+        discount_amount: 0,
+      };
+
+      await service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
+      await service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
+
+      const updatedOrg = await prisma.organization.findUnique({
+        where: { slug: orgSlug },
+      });
+
+      expect(updatedOrg!.balance).toBe(product1.selling_price * 2); // 2 invoices created, each with selling price of product1
+    });
+
+    it("should get all invoices for an organization", async () => {
+      const { product1, user } = await setupTestOrganization();
+
+      // Create multiple invoices
+      const createInvoiceDto1: CreateSaleInvoiceDto = {
+        items: [
+          {
+            productId: product1.id,
+            quantity: 1,
+            discount_percent: 0,
+            discount_amount: 0,
+          },
+        ],
+        discount_percent: 0,
+        discount_amount: 0,
+      };
+
+      const createInvoiceDto2: CreateSaleInvoiceDto = {
+        items: [
+          {
+            productId: product1.id,
+            quantity: 2,
+            discount_percent: 0,
+            discount_amount: 0,
+          },
+        ],
+        discount_percent: 0,
+        discount_amount: 0,
+      };
+
+      await service.createSaleInvoice(orgSlug, createInvoiceDto1, user.id);
+      await service.createSaleInvoice(orgSlug, createInvoiceDto2, user.id);
+
+      const invoices = await service.getAllInvoices(orgSlug);
+
+      expect(invoices.length).toBe(2);
+      expect(invoices[0].items.length).toBe(1);
+      expect(invoices[1].items.length).toBe(1);
+    });
   });
 
-  it("should throw BadRequestException when creating invoice with no items", async () => {
-    const { user } = await setupTestOrganization();
+  describe("createPurchase", () => {
+    it("should create a purchase invoice with valid data", async () => {
+      const { customer, user } = await setupTestOrganization();
 
-    const createInvoiceDto: CreateInvoiceDto = {
-      items: [],
-      discount_percent: 0,
-      discount_amount: 0,
-    };
+      const purchaseInvoiceDto = {
+        customerId: customer.id,
+        items: [
+          {
+            description: "New Product 1",
+            purchase_price: 40,
+            selling_price: 80,
+            quantity: 10,
+            discount_percent: 0,
+            discount_amount: 0,
+          },
+          {
+            description: "New Product 2",
+            purchase_price: 60,
+            selling_price: 120,
+            quantity: 5,
+            discount_percent: 5,
+            discount_amount: 10,
+          },
+        ],
+        discount_percent: 2,
+        discount_amount: 5,
+      };
 
-    await expect(service.createInvoice(orgSlug, createInvoiceDto, user.id)).rejects.toThrow(
-      BadRequestException,
-    );
-  });
+      const invoice = await service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
 
-  it("should throw BadRequestException when product has insufficient stock", async () => {
-    const { product1, user } = await setupTestOrganization();
+      // Verify invoice details
+      expect(invoice).toBeDefined();
+      expect(invoice.type).toBe("PURCHASE");
+      expect(invoice.items.length).toBe(2);
+      expect(invoice.customer!.id).toBe(customer.id);
 
-    const createInvoiceDto: CreateInvoiceDto = {
-      items: [
-        {
-          productId: product1.id,
-          quantity: 25, // More than available stock (20)
-          discount_percent: 0,
-          discount_amount: 0,
+      // Verify products were created
+      const product1 = await prisma.product.findFirst({
+        where: { 
+          description: "New Product 1",
+          organization: { slug: orgSlug }
+        }
+      });
+      
+      const product2 = await prisma.product.findFirst({
+        where: { 
+          description: "New Product 2",
+          organization: { slug: orgSlug }
+        }
+      });
+
+      expect(product1).toBeDefined();
+      expect(product1!.stock_quantity).toBe(10);
+      expect(product1!.purchase_price).toBe(40);
+      expect(product1!.selling_price).toBe(80);
+
+      expect(product2).toBeDefined();
+      expect(product2!.stock_quantity).toBe(5);
+      expect(product2!.purchase_price).toBe(60);
+      expect(product2!.selling_price).toBe(120);
+
+      // Verify transaction was created
+      const transaction = await prisma.transaction.findFirst({
+        where: { invoice: { id: invoice.id } },
+      });
+
+      expect(transaction).toBeDefined();
+      expect(transaction!.amount).toBe(-invoice.total); // Amount is negative for purchases
+    });
+
+    it("should update existing products when purchasing with the same description", async () => {
+      const { user } = await setupTestOrganization();
+
+      // First, create a product
+      const existingProduct = await prisma.product.create({
+        data: {
+          description: "Existing Product",
+          purchase_price: 50,
+          selling_price: 100,
+          stock_quantity: 5,
+          organization: { connect: { slug: orgSlug } },
         },
-      ],
-      discount_percent: 0,
-      discount_amount: 0,
-    };
+      });
 
-    await expect(service.createInvoice(orgSlug, createInvoiceDto, user.id)).rejects.toThrow(
-      BadRequestException,
-    );
-  });
+      // Now purchase more of the same product
+      const purchaseInvoiceDto = {
+        items: [
+          {
+            description: "Existing Product", // Same description as existing product
+            purchase_price: 45, // Updated purchase price
+            selling_price: 90, // Updated selling price
+            quantity: 8,
+            discount_percent: 0,
+            discount_amount: 0,
+          },
+        ],
+        discount_percent: 0,
+        discount_amount: 0,
+      };
 
-  it("should calculate discounts correctly", async () => {
-    const { product1, user } = await setupTestOrganization();
+      await service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
 
-    // Values are in base units (e.g., cents, piasters)
-    // Item price: 100 base units, Quantity: 5, Total before discount: 500 base units
-    // Item discount: 10% (50 base units) + 25 base units flat = 75 base units discount
-    // Item total after discount: 425 base units
-    // Invoice discount: 5% (21.25 base units) + 10 base units flat = 31.25 base units
-    // Final total: 393.75 base units
+      // Check that the product was updated, not created as new
+      const products = await prisma.product.findMany({
+        where: { 
+          description: "Existing Product",
+          organization: { slug: orgSlug }
+        }
+      });
 
-    const createInvoiceDto: CreateInvoiceDto = {
-      items: [
-        {
-          productId: product1.id,
-          quantity: 5,
-          discount_percent: 10,
-          discount_amount: 25,
-        },
-      ],
-      discount_percent: 5,
-      discount_amount: 10,
-    };
+      expect(products.length).toBe(1); // Only one product with this description
+      expect(products[0].id).toBe(existingProduct.id);
+      expect(products[0].stock_quantity).toBe(13); // 5 + 8
+      expect(products[0].purchase_price).toBe(45); // Updated
+      expect(products[0].selling_price).toBe(90); // Updated
+    });
 
-    const invoice = await service.createInvoice(orgSlug, createInvoiceDto, user.id);
+    it("should throw BadRequestException when creating purchase invoice with no items", async () => {
+      const { user } = await setupTestOrganization();
 
-    // The calculation should match what happens in the service
-    expect(invoice.subtotal).toBe(425); // After item discounts (in base units)
-    expect(invoice.total).toBe(394); // After invoice discounts (in base units), rounded to nearest base unit
-  });
+      const purchaseInvoiceDto = {
+        items: [],
+        discount_percent: 0,
+        discount_amount: 0,
+      };
 
-  it("should get all invoices for an organization", async () => {
-    const { product1, user } = await setupTestOrganization();
+      await expect(service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
 
-    // Create multiple invoices
-    const createInvoiceDto1: CreateInvoiceDto = {
-      items: [
-        {
-          productId: product1.id,
-          quantity: 1,
-          discount_percent: 0,
-          discount_amount: 0,
-        },
-      ],
-      discount_percent: 0,
-      discount_amount: 0,
-    };
+    it("should calculate discounts correctly for purchase invoices", async () => {
+      const { user } = await setupTestOrganization();
 
-    const createInvoiceDto2: CreateInvoiceDto = {
-      items: [
-        {
-          productId: product1.id,
-          quantity: 2,
-          discount_percent: 0,
-          discount_amount: 0,
-        },
-      ],
-      discount_percent: 0,
-      discount_amount: 0,
-    };
+      // Item price: 50 base units, Quantity: 5, Total before discount: 250 base units
+      // Item discount: 10% (25 base units) + 15 base units flat = 40 base units discount
+      // Item total after discount: 210 base units
+      // Invoice discount: 5% (10.5 base units) + 5 base units flat = 15.5 base units
+      // Final total: 195 base units (rounded)
 
-    await service.createInvoice(orgSlug, createInvoiceDto1, user.id);
-    await service.createInvoice(orgSlug, createInvoiceDto2, user.id);
+      const purchaseInvoiceDto = {
+        items: [
+          {
+            description: "Discount Test Product",
+            purchase_price: 50,
+            selling_price: 100,
+            quantity: 5,
+            discount_percent: 10,
+            discount_amount: 15,
+          },
+        ],
+        discount_percent: 5,
+        discount_amount: 5,
+      };
 
-    const invoices = await service.getAllInvoices(orgSlug);
+      const invoice = await service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
 
-    expect(invoices.length).toBe(2);
-    expect(invoices[0].items.length).toBe(1);
-    expect(invoices[1].items.length).toBe(1);
+      // The calculation should match what happens in the service
+      expect(invoice.subtotal).toBe(210); // After item discounts (in base units)
+      expect(invoice.total).toBe(195); // After invoice discounts (in base units), rounded to nearest base unit
+    });
+
+    it("should decrease organization balance after purchase", async () => {
+      const { user } = await setupTestOrganization();
+
+      // Initial balance should be 0
+      const initialOrg = await prisma.organization.findUnique({
+        where: { slug: orgSlug },
+      });
+      expect(initialOrg!.balance).toBe(0);
+
+      const purchaseInvoiceDto = {
+        items: [
+          {
+            description: "Balance Test Product",
+            purchase_price: 100,
+            selling_price: 200,
+            quantity: 1,
+            discount_percent: 0,
+            discount_amount: 0,
+          },
+        ],
+        discount_percent: 0,
+        discount_amount: 0,
+      };
+
+      await service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
+
+      // Check balance decreased by purchase amount
+      const updatedOrg = await prisma.organization.findUnique({
+        where: { slug: orgSlug },
+      });
+
+      expect(updatedOrg!.balance).toBe(-100); // Decreased by purchase amount
+    });
   });
 });

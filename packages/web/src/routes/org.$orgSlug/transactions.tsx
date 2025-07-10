@@ -14,7 +14,7 @@ import { cn } from "@/shadcn/lib/utils";
 
 import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
-import { formatCurrency } from "@/hooks/format-currency";
+import { useFormatCurrency } from "@/hooks/format-currency";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 
@@ -31,6 +31,7 @@ function Transactions() {
   const { slug: orgSlug } = useOrg();
 
   const { t, i18n } = useTranslation();
+  const { formatCurrency } = useFormatCurrency();
 
   const { data: transactions } = useQuery({
     queryKey: ["transactions"],

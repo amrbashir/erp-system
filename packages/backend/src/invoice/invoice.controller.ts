@@ -4,15 +4,18 @@ import {
   ApiCreatedResponse,
   ApiHeader,
   ApiOkResponse,
-  ApiQuery,
   ApiTags,
 } from "@nestjs/swagger";
 
 import type { JwtPayload } from "../auth/auth.dto";
-import type { Invoice } from "../prisma/generated/client";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
 import { PaginationDto } from "../pagination.dto";
-import { CreateInvoiceDto, InvoiceEntity } from "./invoice.dto";
+import {
+  CreatePurchaseInvoiceDto,
+  CreateSaleInvoiceDto,
+  GetAllInvoicesQueryDto,
+  InvoiceEntity,
+} from "./invoice.dto";
 import { InvoiceService } from "./invoice.service";
 
 @UseGuards(JwtAuthGuard)
@@ -23,25 +26,43 @@ import { InvoiceService } from "./invoice.service";
 export class InvoiceController {
   constructor(private readonly service: InvoiceService) {}
 
-  @Post("create")
+  @Post("createSale")
   @ApiCreatedResponse()
-  async create(
+  async createSale(
     @Param("orgSlug") orgSlug: string,
-    @Body() createInvoiceDto: CreateInvoiceDto,
+    @Body() createInvoiceDto: CreateSaleInvoiceDto,
     @Req() req: any,
   ): Promise<void> {
     const currentUser = req["user"] as JwtPayload;
-    await this.service.createInvoice(orgSlug, createInvoiceDto, currentUser.sub);
+    await this.service.createSaleInvoice(orgSlug, createInvoiceDto, currentUser.sub);
+  }
+
+  @Post("createPurchase")
+  @ApiCreatedResponse()
+  async createPurchase(
+    @Param("orgSlug") orgSlug: string,
+    @Body() createPurchaseInvoiceDto: CreatePurchaseInvoiceDto,
+    @Req() req: any,
+  ): Promise<void> {
+    const currentUser = req["user"] as JwtPayload;
+    await this.service.createPurchaseInvoice(orgSlug, createPurchaseInvoiceDto, currentUser.sub);
   }
 
   @Get("getAll")
-  @ApiQuery({ type: PaginationDto })
   @ApiOkResponse({ type: [InvoiceEntity] })
   async getAll(
     @Param("orgSlug") orgSlug: string,
-    @Query() paginationDto?: PaginationDto,
+    @Query() query?: GetAllInvoicesQueryDto,
   ): Promise<InvoiceEntity[]> {
-    const invoices = await this.service.getAllInvoices(orgSlug, paginationDto);
+    const invoices = await this.service.getAllInvoices(orgSlug, {
+      pagination: {
+        skip: query?.skip ?? 0,
+        take: query?.take ?? 30,
+      },
+      where: {
+        type: query?.type,
+      },
+    });
     return invoices.map((invoice) => new InvoiceEntity(invoice));
   }
 }

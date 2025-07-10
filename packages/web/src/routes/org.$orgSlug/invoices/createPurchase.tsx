@@ -1,0 +1,595 @@
+import {
+  CreatePurchaseInvoiceDto,
+  CreatePurchaseInvoiceItemDto,
+  CustomerEntity,
+} from "@erp-system/sdk/zod";
+import { toBaseUnits, toMajorUnits } from "@erp-system/utils";
+import { useForm, useStore } from "@tanstack/react-form";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
+import { CheckIcon, ChevronsUpDownIcon, Loader2Icon, PlusIcon, TrashIcon } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { Button } from "@/shadcn/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/shadcn/components/ui/command";
+import { Input } from "@/shadcn/components/ui/input";
+import { Label } from "@/shadcn/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn/components/ui/popover";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/shadcn/components/ui/resizable";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shadcn/components/ui/table";
+import { cn } from "@/shadcn/lib/utils";
+
+import type { AnyFieldApi, ReactFormApi } from "@tanstack/react-form";
+import type z from "zod";
+
+import { apiClient } from "@/api-client";
+import { AddCustomerDialog } from "@/components/add-customer-dialog";
+import { FormErrors } from "@/components/form-errors";
+import { InputNumpad } from "@/components/ui/input-numpad";
+import { useFormatCurrency } from "@/hooks/format-currency";
+import { useOrg } from "@/hooks/use-org";
+import i18n from "@/i18n";
+
+export const Route = createFileRoute("/org/$orgSlug/invoices/createPurchase")({
+  component: CreatePurchaseInvoice,
+  context: () => ({
+    title: i18n.t("routes.createPurcahseInvoice"),
+  }),
+});
+
+// Types
+type AnyReactFormApi = ReactFormApi<any, any, any, any, any, any, any, any, any, any>;
+type CreateInvoiceItem = z.infer<typeof CreatePurchaseInvoiceItemDto>;
+type Customer = z.infer<typeof CustomerEntity>;
+type Invoice = z.infer<ReturnType<(typeof CreatePurchaseInvoiceDto)["strict"]>> & {
+  items?: CreateInvoiceItem[];
+};
+type InvoiceItem = Invoice["items"][number];
+
+// Utility functions for calculations
+const calculateItemSubtotal = (item: InvoiceItem) => item.purchase_price * item.quantity;
+
+const calculateItemDiscount = (item: InvoiceItem) => {
+  const subtotal = calculateItemSubtotal(item);
+  const percentDiscount = ((item.discount_percent || 0) / 100) * subtotal;
+  return {
+    percentDiscount,
+    totalDiscount: percentDiscount + (item.discount_amount || 0),
+  };
+};
+
+const calculateItemTotal = (item: InvoiceItem) => {
+  const subtotal = calculateItemSubtotal(item);
+  const { totalDiscount } = calculateItemDiscount(item);
+  return Math.round(subtotal - totalDiscount);
+};
+
+const calculateInvoiceSubtotal = (items: InvoiceItem[]) =>
+  items.reduce((total, item) => total + calculateItemTotal(item), 0);
+
+const calculateInvoicePercentDiscount = (subtotal: number, discountPercent: number) =>
+  (subtotal * discountPercent) / 100;
+
+const calculateInvoiceTotal = (subtotal: number, discountPercent = 0, discountAmount = 0) => {
+  const percentDiscount = calculateInvoicePercentDiscount(subtotal, discountPercent);
+  return Math.round(Math.max(0, subtotal - percentDiscount - discountAmount));
+};
+
+// Main component
+function CreatePurchaseInvoice() {
+  const { slug: orgSlug } = useOrg();
+  const { t } = useTranslation();
+  const client = useQueryClient();
+  const navigate = useNavigate();
+  const router = useRouter();
+
+  const { data: customers } = useQuery({
+    queryKey: ["customers"],
+    queryFn: async () =>
+      apiClient.getThrowing("/org/{orgSlug}/customer/getAll", { params: { path: { orgSlug } } }),
+    select: (res) => res.data,
+  });
+
+  const form = useForm({
+    defaultValues: {
+      items: [],
+      customerId: undefined,
+      discount_percent: 0,
+      discount_amount: 0,
+    } as Invoice,
+    validators: {
+      onSubmit: ({ value, formApi }) => {
+        if (value.items.length === 0) return "invoiceMustHaveItems";
+
+        const errors = formApi.parseValuesWithSchema(CreatePurchaseInvoiceDto as any);
+        if (errors) return errors;
+      },
+    },
+    onSubmit: async ({ value, formApi }) => {
+      const { error } = await apiClient.post("/org/{orgSlug}/invoice/createPurchase", {
+        params: { path: { orgSlug } },
+        body: value,
+      });
+
+      if (error) {
+        formApi.setErrorMap({ onSubmit: error });
+        return;
+      }
+
+      toast.success(t("invoice.createdSuccessfully"));
+      client.invalidateQueries({ queryKey: ["invoices", "PURCHASE", orgSlug] });
+      navigate({ to: "/org/$orgSlug/invoices", params: { orgSlug } });
+    },
+  });
+
+  const [invoiceItems, invoiceDiscountPercent, invoiceDiscountAmount] = useStore(
+    form.store,
+    (state) => [state.values.items, state.values.discount_percent, state.values.discount_amount],
+  );
+
+  const handleAddItem = () => {
+    form.pushFieldValue("items", {
+      description: "",
+      purchase_price: 0,
+      selling_price: 0,
+      quantity: 1,
+      discount_percent: 0,
+      discount_amount: 0,
+    });
+    form.validate("change");
+  };
+
+  const handleRemoveItem = (index: number) => {
+    const newItems = [...form.getFieldValue("items")];
+    newItems.splice(index, 1);
+    form.setFieldValue("items", newItems);
+    form.validate("change");
+  };
+
+  const handleUpdateItemField = (
+    index: number,
+    field: keyof CreateInvoiceItem,
+    value: string | number,
+  ) => {
+    const newItems = [...invoiceItems];
+    newItems[index] = {
+      ...newItems[index],
+      [field]: value,
+    };
+    form.setFieldValue("items", newItems);
+    form.validate("change");
+  };
+
+  const handleUpdateInvoiceDiscount = (
+    field: "discount_percent" | "discount_amount",
+    value: any,
+  ) => {
+    form.setFieldValue(field, value);
+    form.validate("change");
+  };
+
+  return (
+    <form
+      className="h-full flex flex-col gap-2 pt-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <InvoiceHeader
+        form={form}
+        customers={customers}
+        hasItems={invoiceItems.length > 0}
+        onCancel={() => router.history.back()}
+        onAddItem={handleAddItem}
+      />
+
+      <ResizablePanelGroup direction="vertical">
+        <ResizablePanel className="p-2 overflow-y-auto!">
+          <InvoiceTable
+            items={invoiceItems}
+            invoiceDiscountAmount={invoiceDiscountAmount}
+            invoiceDiscountPercent={invoiceDiscountPercent}
+            onUpdateItemField={handleUpdateItemField}
+            onRemoveItem={handleRemoveItem}
+            onUpdateInvoiceDiscount={handleUpdateInvoiceDiscount}
+          />
+
+          <div className="mt-2">
+            <FormErrors formState={form.state} />
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </form>
+  );
+}
+
+// Header component with customer select and action buttons
+function InvoiceHeader({
+  form,
+  customers,
+  hasItems,
+  onCancel,
+  onAddItem,
+}: {
+  form: AnyReactFormApi;
+  customers: Customer[] | undefined;
+  hasItems: boolean;
+  onCancel: () => void;
+  onAddItem: () => void;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex justify-between gap-2 px-2">
+      <div className="flex gap-2">
+        <form.Field
+          name="customerId"
+          children={(field) => <CustomerSelect customers={customers} field={field} />}
+        />
+        <Button type="button" onClick={onAddItem} variant="outline">
+          <PlusIcon className="mr-2 h-4 w-4" />
+          {t("common.actions.add")}
+        </Button>
+      </div>
+
+      <div className="flex gap-2">
+        <form.Subscribe
+          selector={(state) => [state.canSubmit, state.isSubmitting]}
+          children={([canSubmit, isSubmitting]) => (
+            <>
+              <Button type="button" disabled={!canSubmit} variant="secondary" onClick={onCancel}>
+                {t("common.actions.cancel")}
+              </Button>
+              <Button type="submit" disabled={!canSubmit || !hasItems}>
+                {isSubmitting && <Loader2Icon className="animate-spin" />}
+                {t("common.actions.create")}
+              </Button>
+            </>
+          )}
+        />
+      </div>
+    </div>
+  );
+}
+
+// Customer selection dropdown component
+function CustomerSelect({
+  customers = [],
+  field,
+}: {
+  customers: Customer[] | undefined;
+  field: AnyFieldApi;
+}) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<string | undefined>(undefined);
+  const [customerSearch, setCustomerSearch] = useState("");
+
+  function handleCustomerCreated(customer: Customer) {
+    field.handleChange(customer.id);
+    setSelectedCustomer(customer.name);
+    setCustomerSearch(customer.name);
+    setOpen(false);
+  }
+
+  function handleCustomerSelect(customer: Customer) {
+    field.handleChange(customer.id);
+    setOpen(false);
+  }
+
+  return (
+    <div className="flex gap-2">
+      <Label htmlFor={field.name}>{t("customer.name")}</Label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-sm justify-between"
+          >
+            {field.state.value
+              ? customers?.find((c) => c.id === field.state.value)?.name
+              : t("customer.select")}
+            <ChevronsUpDownIcon className="opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-sm p-0">
+          <Command value={selectedCustomer} onValueChange={setSelectedCustomer}>
+            <div className="flex items-center *:first:flex-1 gap-2 p-1 *:data-[slot=command-input-wrapper]:px-0 *:data-[slot=command-input-wrapper]:ps-2">
+              <CommandInput
+                placeholder={t("customer.search")}
+                value={customerSearch}
+                onValueChange={(v) => setCustomerSearch(v)}
+              />
+              <AddCustomerDialog
+                initialName={customerSearch}
+                onCreated={handleCustomerCreated}
+                trigger={
+                  <Button variant="ghost" size="icon">
+                    <PlusIcon />
+                  </Button>
+                }
+              />
+            </div>
+            <CommandList>
+              <CommandEmpty>{t("customer.nomatches")}</CommandEmpty>
+              <CommandGroup>
+                {customers.map((customer) => (
+                  <CommandItem
+                    key={customer.id}
+                    value={customer.name}
+                    onSelect={() => handleCustomerSelect(customer)}
+                  >
+                    {customer.name}
+                    <CheckIcon
+                      className={cn(
+                        "ml-auto",
+                        field.state.value === customer.id ? "opacity-100" : "opacity-0",
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}
+
+// Main invoice table component
+function InvoiceTable({
+  items,
+  invoiceDiscountPercent = 0,
+  invoiceDiscountAmount = 0,
+  onUpdateItemField,
+  onRemoveItem,
+  onUpdateInvoiceDiscount,
+}: {
+  items: InvoiceItem[];
+  invoiceDiscountPercent?: number;
+  invoiceDiscountAmount?: number;
+  onUpdateItemField: (
+    index: number,
+    field: keyof CreateInvoiceItem,
+    value: string | number,
+  ) => void;
+  onRemoveItem: (index: number) => void;
+  onUpdateInvoiceDiscount: (field: "discount_percent" | "discount_amount", value: any) => void;
+}) {
+  const { t } = useTranslation();
+
+  // Calculate subtotal (before invoice-level discounts)
+  const subtotal = useMemo(() => calculateInvoiceSubtotal(items), [items]);
+
+  if (items.length === 0) {
+    return (
+      <div className="border rounded-lg">
+        <div className="p-4 text-center text-secondary-foreground/50">
+          {t("invoice.addItemsTo")}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="border rounded-lg">
+      <Table>
+        <TableHeader>
+          <TableRow className="*:font-bold">
+            <TableHead>{t("common.ui.number")}</TableHead>
+            <TableHead className="w-full">{t("common.form.description")}</TableHead>
+            <TableHead>{t("common.form.quantity")}</TableHead>
+            <TableHead>{t("common.form.price")} (Purchase)</TableHead>
+            <TableHead>{t("common.form.price")} (Selling)</TableHead>
+            <TableHead>{t("invoice.subtotal")}</TableHead>
+            <TableHead>{t("invoice.discountPercent")}</TableHead>
+            <TableHead></TableHead>
+            <TableHead>{t("invoice.discountAmount")}</TableHead>
+            <TableHead className="text-end!">{t("invoice.total")}</TableHead>
+            <TableHead></TableHead>
+          </TableRow>
+        </TableHeader>
+
+        <TableBody>
+          {items.map((item, index) => (
+            <InvoiceTableRow
+              key={index}
+              item={item}
+              index={index}
+              onUpdateItemField={onUpdateItemField}
+              onRemove={onRemoveItem}
+            />
+          ))}
+        </TableBody>
+
+        <InvoiceTableFooter
+          subtotal={subtotal}
+          discountPercent={invoiceDiscountPercent}
+          discountAmount={invoiceDiscountAmount}
+          onUpdateDiscount={onUpdateInvoiceDiscount}
+        />
+      </Table>
+    </div>
+  );
+}
+
+// Invoice table row component
+function InvoiceTableRow({
+  item,
+  index,
+  onUpdateItemField,
+  onRemove,
+}: {
+  item: InvoiceItem;
+  index: number;
+  onUpdateItemField: (
+    index: number,
+    field: keyof CreateInvoiceItem,
+    value: string | number,
+  ) => void;
+  onRemove: (index: number) => void;
+}) {
+  const { formatCurrency } = useFormatCurrency();
+
+  const itemSubtotal = calculateItemSubtotal(item);
+  const { percentDiscount } = calculateItemDiscount(item);
+  const itemTotal = calculateItemTotal(item);
+
+  return (
+    <TableRow>
+      <TableCell>{index + 1}</TableCell>
+      <TableCell>
+        <Input
+          value={item.description}
+          onChange={(e) => onUpdateItemField(index, "description", e.target.value)}
+          placeholder={`Product ${index + 1}`}
+        />
+      </TableCell>
+      <TableCell>
+        <InputNumpad
+          className="w-20"
+          value={item.quantity}
+          onChange={(e) => onUpdateItemField(index, "quantity", e.target.valueAsNumber)}
+          min={1}
+        />
+      </TableCell>
+      <TableCell>
+        <InputNumpad
+          className="w-20"
+          value={toMajorUnits(item.purchase_price)}
+          onChange={(e) =>
+            onUpdateItemField(index, "purchase_price", toBaseUnits(e.target.valueAsNumber))
+          }
+          min={0}
+        />
+      </TableCell>
+      <TableCell>
+        <InputNumpad
+          className="w-20"
+          value={toMajorUnits(item.selling_price)}
+          onChange={(e) =>
+            onUpdateItemField(index, "selling_price", toBaseUnits(e.target.valueAsNumber))
+          }
+          min={0}
+        />
+      </TableCell>
+      <TableCell>{formatCurrency(itemSubtotal)}</TableCell>
+      <TableCell>
+        <InputNumpad
+          className="w-20"
+          value={item.discount_percent || 0}
+          onChange={(e) => onUpdateItemField(index, "discount_percent", e.target.valueAsNumber)}
+          step={0.1}
+          min={0}
+          max={100}
+        />
+      </TableCell>
+      <TableCell>{formatCurrency(percentDiscount)}</TableCell>
+      <TableCell>
+        <InputNumpad
+          className="w-20"
+          value={toMajorUnits(item.discount_amount || 0)}
+          onChange={(e) =>
+            onUpdateItemField(index, "discount_amount", toBaseUnits(e.target.valueAsNumber))
+          }
+          min={0}
+          max={itemSubtotal}
+        />
+      </TableCell>
+      <TableCell className="text-end">{formatCurrency(itemTotal)}</TableCell>
+      <TableCell>
+        <Button type="button" onClick={() => onRemove(index)} variant="ghost" size="sm">
+          <TrashIcon />
+        </Button>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+// Invoice footer component with totals and discount inputs
+function InvoiceTableFooter({
+  subtotal,
+  discountPercent,
+  discountAmount,
+  onUpdateDiscount,
+}: {
+  subtotal: number;
+  discountPercent: number;
+  discountAmount: number;
+  onUpdateDiscount: (field: "discount_percent" | "discount_amount", value: number) => void;
+}) {
+  const { t } = useTranslation();
+  const { formatCurrency } = useFormatCurrency();
+
+  const percentDiscount = calculateInvoicePercentDiscount(subtotal, discountPercent);
+  const totalPrice = calculateInvoiceTotal(subtotal, discountPercent, discountAmount);
+
+  return (
+    <TableFooter className="*:*:font-bold">
+      <TableRow>
+        <TableCell colSpan={9}>{t("invoice.subtotal")}</TableCell>
+        <TableCell className="text-end">{formatCurrency(subtotal)}</TableCell>
+        <TableCell></TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell colSpan={5}></TableCell>
+        <TableCell>{t("invoice.discountPercent")}</TableCell>
+        <TableCell>
+          <InputNumpad
+            className="w-20"
+            value={discountPercent}
+            onChange={(e) => onUpdateDiscount("discount_percent", e.target.valueAsNumber)}
+            step={0.1}
+            min={0}
+            max={100}
+          />
+        </TableCell>
+        <TableCell>{formatCurrency(percentDiscount)}</TableCell>
+        <TableCell>{t("invoice.discountAmount")}</TableCell>
+        <TableCell>
+          <InputNumpad
+            className="w-20"
+            value={toMajorUnits(discountAmount)}
+            onChange={(e) =>
+              onUpdateDiscount("discount_amount", toBaseUnits(e.target.valueAsNumber))
+            }
+            min={0}
+            max={subtotal}
+          />
+        </TableCell>
+        <TableCell></TableCell>
+      </TableRow>
+
+      <TableRow>
+        <TableCell colSpan={9}>{t("invoice.total")}</TableCell>
+        <TableCell className="text-end">{formatCurrency(totalPrice)}</TableCell>
+        <TableCell></TableCell>
+      </TableRow>
+    </TableFooter>
+  );
+}

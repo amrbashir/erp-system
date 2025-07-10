@@ -1,6 +1,6 @@
 import {
-  CreateInvoiceDto,
-  CreateInvoiceItemDto,
+  CreateSaleInvoiceDto,
+  CreateSaleInvoiceItemDto,
   CustomerEntity,
   ProductEntity,
 } from "@erp-system/sdk/zod";
@@ -8,15 +8,8 @@ import { toBaseUnits, toMajorUnits } from "@erp-system/utils";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
-import {
-  CheckIcon,
-  ChevronsUpDownIcon,
-  Loader2Icon,
-  PlusIcon,
-  ReceiptTextIcon,
-  TrashIcon,
-} from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { CheckIcon, ChevronsUpDownIcon, Loader2Icon, PlusIcon, TrashIcon } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/components/ui/button";
@@ -55,24 +48,23 @@ import { apiClient } from "@/api-client";
 import { AddCustomerDialog } from "@/components/add-customer-dialog";
 import { FormErrors } from "@/components/form-errors";
 import { InputNumpad } from "@/components/ui/input-numpad";
-import { formatCurrency } from "@/hooks/format-currency";
+import { useFormatCurrency } from "@/hooks/format-currency";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 
-export const Route = createFileRoute("/org/$orgSlug/invoices/create")({
-  component: CreateInvoice,
+export const Route = createFileRoute("/org/$orgSlug/invoices/createSale")({
+  component: CreateSaleInvoice,
   context: () => ({
-    title: i18n.t("routes.createInvoice"),
-    icon: ReceiptTextIcon,
+    title: i18n.t("routes.createSaleInvoice"),
   }),
 });
 
 // Types
 type AnyReactFormApi = ReactFormApi<any, any, any, any, any, any, any, any, any, any>;
-type CreateInvoiceItem = z.infer<typeof CreateInvoiceItemDto>;
+type CreateInvoiceItem = z.infer<typeof CreateSaleInvoiceItemDto>;
 type Product = z.infer<typeof ProductEntity>;
 type Customer = z.infer<typeof CustomerEntity>;
-type Invoice = z.infer<ReturnType<(typeof CreateInvoiceDto)["strict"]>> & {
+type Invoice = z.infer<ReturnType<(typeof CreateSaleInvoiceDto)["strict"]>> & {
   items?: (CreateInvoiceItem & Product)[];
 };
 type InvoiceItem = Invoice["items"][number];
@@ -107,7 +99,7 @@ const calculateInvoiceTotal = (subtotal: number, discountPercent = 0, discountAm
 };
 
 // Main component
-function CreateInvoice() {
+function CreateSaleInvoice() {
   const { slug: orgSlug } = useOrg();
   const { t } = useTranslation();
   const client = useQueryClient();
@@ -139,12 +131,12 @@ function CreateInvoice() {
       onSubmit: ({ value, formApi }) => {
         if (value.items.length === 0) return "invoiceMustHaveItems";
 
-        const errors = formApi.parseValuesWithSchema(CreateInvoiceDto as any);
+        const errors = formApi.parseValuesWithSchema(CreateSaleInvoiceDto as any);
         if (errors) return errors;
       },
     },
     onSubmit: async ({ value, formApi }) => {
-      const { error } = await apiClient.post("/org/{orgSlug}/invoice/create", {
+      const { error } = await apiClient.post("/org/{orgSlug}/invoice/createSale", {
         params: { path: { orgSlug } },
         body: value,
       });
@@ -155,7 +147,7 @@ function CreateInvoice() {
       }
 
       toast.success(t("invoice.createdSuccessfully"));
-      client.invalidateQueries({ queryKey: ["invoices"] });
+      client.invalidateQueries({ queryKey: ["invoices", "SALE", orgSlug] });
       navigate({ to: "/org/$orgSlug/invoices", params: { orgSlug } });
     },
   });
@@ -239,8 +231,6 @@ function CreateInvoice() {
       <InvoiceHeader
         form={form}
         customers={customers}
-        canSubmit={form.state.canSubmit}
-        isSubmitting={form.state.isSubmitting}
         hasItems={invoiceItems.length > 0}
         onCancel={() => router.history.back()}
       />
@@ -276,15 +266,11 @@ function CreateInvoice() {
 function InvoiceHeader({
   form,
   customers,
-  canSubmit,
-  isSubmitting,
   hasItems,
   onCancel,
 }: {
   form: AnyReactFormApi;
   customers: Customer[] | undefined;
-  canSubmit: boolean;
-  isSubmitting: boolean;
   hasItems: boolean;
   onCancel: () => void;
 }) {
@@ -296,15 +282,21 @@ function InvoiceHeader({
         name="customerId"
         children={(field) => <CustomerSelect customers={customers} field={field} />}
       />
-
       <div className="flex gap-2">
-        <Button type="button" disabled={!canSubmit} variant="secondary" onClick={onCancel}>
-          {t("common.actions.cancel")}
-        </Button>
-        <Button type="submit" disabled={!canSubmit || !hasItems}>
-          {isSubmitting && <Loader2Icon className="animate-spin" />}
-          {t("common.actions.create")}
-        </Button>
+        <form.Subscribe
+          selector={(state) => [state.canSubmit, state.isSubmitting]}
+          children={([canSubmit, isSubmitting]) => (
+            <>
+              <Button type="button" disabled={!canSubmit} variant="secondary" onClick={onCancel}>
+                {t("common.actions.cancel")}
+              </Button>
+              <Button type="submit" disabled={!canSubmit || !hasItems}>
+                {isSubmitting && <Loader2Icon className="animate-spin" />}
+                {t("common.actions.create")}
+              </Button>
+            </>
+          )}
+        />
       </div>
     </div>
   );
@@ -341,6 +333,7 @@ function CustomerSelect({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
+            type="button"
             variant="outline"
             role="combobox"
             aria-expanded={open}
@@ -364,7 +357,7 @@ function CustomerSelect({
                 initialName={customerSearch}
                 onCreated={handleCustomerCreated}
                 trigger={
-                  <Button variant="ghost" size="icon">
+                  <Button type="button" variant="ghost" size="icon">
                     <PlusIcon />
                   </Button>
                 }
@@ -452,6 +445,7 @@ function ProductItem({
   invoiceItems: InvoiceItem[];
 }) {
   const { t } = useTranslation();
+  const { formatCurrency } = useFormatCurrency();
 
   const matchingInvoiceItem = invoiceItems.find((i) => i.id == product.id);
   const remainingStock = product.stock_quantity - (matchingInvoiceItem?.quantity ?? 0);
@@ -577,6 +571,8 @@ function InvoiceTableRow({
   ) => void;
   onRemove: (index: number) => void;
 }) {
+  const { formatCurrency } = useFormatCurrency();
+
   const itemSubtotal = calculateItemSubtotal(item);
   const { percentDiscount } = calculateItemDiscount(item);
   const itemTotal = calculateItemTotal(item);
@@ -641,6 +637,7 @@ function InvoiceTableFooter({
   onUpdateDiscount: (field: "discount_percent" | "discount_amount", value: number) => void;
 }) {
   const { t } = useTranslation();
+  const { formatCurrency } = useFormatCurrency();
 
   const percentDiscount = calculateInvoicePercentDiscount(subtotal, discountPercent);
   const totalPrice = calculateInvoiceTotal(subtotal, discountPercent, discountAmount);

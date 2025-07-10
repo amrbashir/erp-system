@@ -94,7 +94,7 @@ export const TransactionEntity = z
   })
   .passthrough();
 
-export const CreateInvoiceItemDto = z
+export const CreateSaleInvoiceItemDto = z
   .object({
     productId: z.string(),
     quantity: z.number(),
@@ -103,12 +103,32 @@ export const CreateInvoiceItemDto = z
   })
   .passthrough();
 
-export const CreateInvoiceDto = z
+export const CreateSaleInvoiceDto = z
   .object({
     customerId: z.number().optional(),
-    items: z.array(CreateInvoiceItemDto),
+    items: z.array(CreateSaleInvoiceItemDto),
     discount_percent: z.number().optional(),
     discount_amount: z.number().optional(),
+  })
+  .passthrough();
+
+export const CreatePurchaseInvoiceItemDto = z
+  .object({
+    description: z.string(),
+    purchase_price: z.number(),
+    selling_price: z.number(),
+    quantity: z.number(),
+    discount_percent: z.number().optional(),
+    discount_amount: z.number().optional(),
+  })
+  .passthrough();
+
+export const CreatePurchaseInvoiceDto = z
+  .object({
+    customerId: z.number().optional(),
+    discount_percent: z.number().optional(),
+    discount_amount: z.number().optional(),
+    items: z.array(CreatePurchaseInvoiceItemDto),
   })
   .passthrough();
 
@@ -128,6 +148,7 @@ export const InvoiceItemEntity = z
 export const InvoiceEntity = z
   .object({
     id: z.number(),
+    type: z.enum(["SALE", "PURCHASE"]),
     subtotal: z.number(),
     discount_percent: z.number(),
     discount_amount: z.number(),
