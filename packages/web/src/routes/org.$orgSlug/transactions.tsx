@@ -1,7 +1,7 @@
 import { formatCurrency } from "@erp-system/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowUpIcon, BanknoteIcon } from "lucide-react";
+import { BanknoteIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   Table,
@@ -58,13 +58,12 @@ function Transactions() {
                 <TableRow key={index}>
                   <TableCell>{transaction.id}</TableCell>
                   <TableCell>
-                    <span className="flex gap-2">
-                      <ArrowUpIcon
-                        className={cn(
-                          "-ms-8",
-                          transaction.amount >= 0 ? "text-green-300" : "-scale-y-100 text-red-300",
-                        )}
-                      />
+                    <span
+                      className={cn(
+                        "flex gap-2",
+                        transaction.amount >= 0 ? "text-green-300" : "text-red-300",
+                      )}
+                    >
                       {formatCurrency(transaction.amount)}
                     </span>
                   </TableCell>

@@ -441,7 +441,7 @@ function InvoiceTableFooter({
 
       <TableRow>
         <TableCell colSpan={10}>{t("invoice.total")}</TableCell>
-        <TableCell className="text-end">{formatCurrency(totalPrice)}</TableCell>
+        <TableCell className="text-end text-red-300">{formatCurrency(totalPrice)}</TableCell>
         <TableCell></TableCell>
       </TableRow>
     </TableFooter>

@@ -60,8 +60,12 @@ function Products() {
                   <TableCell>{product.stockQuantity}</TableCell>
                   <TableCell>{product.bardcode}</TableCell>
                   <TableCell>{product.description}</TableCell>
-                  <TableCell>{formatCurrency(product.purchasePrice)}</TableCell>
-                  <TableCell>{formatCurrency(product.sellingPrice)}</TableCell>
+                  <TableCell className="text-red-300">
+                    {formatCurrency(product.purchasePrice)}
+                  </TableCell>
+                  <TableCell className="text-green-300">
+                    {formatCurrency(product.sellingPrice)}
+                  </TableCell>
                   <TableCell>{new Date(product.createdAt).toLocaleString()}</TableCell>
                 </TableRow>
               ))}

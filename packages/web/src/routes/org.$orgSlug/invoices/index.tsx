@@ -126,7 +126,9 @@ function InvoiceRow({
         <TableCell>{formatCurrency(invoice.subtotal)}</TableCell>
         <TableCell>{invoice.discountPercent}%</TableCell>
         <TableCell>{formatCurrency(invoice.discountAmount)}</TableCell>
-        <TableCell>{formatCurrency(invoice.total)}</TableCell>
+        <TableCell className={invoice.type === "SALE" ? "text-green-300" : "text-red-300"}>
+          {formatCurrency(invoice.total)}
+        </TableCell>
         <TableCell className="text-end!">
           <Button onClick={() => setOpen((prev) => !prev)} variant="ghost" size="sm">
             {open ? <ChevronUpIcon /> : <ChevronDownIcon />}
@@ -162,7 +164,14 @@ function InvoiceRow({
                   <TableCell>{formatCurrency(item.subtotal)}</TableCell>
                   <TableCell>{item.discountPercent}%</TableCell>
                   <TableCell>{formatCurrency(item.discountAmount)}</TableCell>
-                  <TableCell className="text-end">{formatCurrency(item.total)}</TableCell>
+                  <TableCell
+                    className={cn(
+                      "text-end",
+                      invoice.type === "SALE" ? "text-green-300" : "text-red-300",
+                    )}
+                  >
+                    {formatCurrency(item.total)}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
