@@ -8,7 +8,8 @@ import {
   UserIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/shadcn/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/components/ui/card";
+import { cn } from "@/shadcn/lib/utils";
 
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
@@ -32,36 +33,41 @@ function Index() {
       title: t("routes.createSaleInvoice"),
       icon: FileTextIcon,
       path: `/org/${orgSlug}/invoices/createSale`,
-      color: "text-purple-500",
-      bgColor: "bg-purple-100 dark:bg-purple-950/50",
+      hoverBgColor: "hover:bg-green-50 dark:hover:bg-green-950/50",
+      iconColor: "text-green-500",
+      iconBgColor: "bg-green-100 dark:bg-green-950/50",
     },
     {
       title: t("routes.createPurchaseInvoice"),
       icon: FileTextIcon,
       path: `/org/${orgSlug}/invoices/createPurchase`,
-      color: "text-indigo-500",
-      bgColor: "bg-indigo-100 dark:bg-indigo-950/50",
+      hoverBgColor: "hover:bg-red-50 dark:hover:bg-red-950/50",
+      iconColor: "text-red-400",
+      iconBgColor: "bg-red-100 dark:bg-red-950/50",
     },
     {
       title: t("routes.products"),
       icon: PackageIcon,
       path: `/org/${orgSlug}/products`,
-      color: "text-blue-500",
-      bgColor: "bg-blue-100 dark:bg-blue-950/50",
+      hoverBgColor: "hover:bg-blue-50 dark:hover:bg-blue-950/50",
+      iconColor: "text-blue-500",
+      iconBgColor: "bg-blue-100 dark:bg-blue-950/50",
     },
     {
       title: t("routes.expenses"),
       icon: ShoppingCartIcon,
       path: `/org/${orgSlug}/expenses`,
-      color: "text-orange-500",
-      bgColor: "bg-orange-100 dark:bg-orange-950/50",
+      hoverBgColor: "hover:bg-orange-50 dark:hover:bg-orange-950/50",
+      iconColor: "text-orange-500",
+      iconBgColor: "bg-orange-100 dark:bg-orange-950/50",
     },
     {
       title: t("routes.customers"),
       icon: UserIcon,
       path: `/org/${orgSlug}/customers`,
-      color: "text-green-500",
-      bgColor: "bg-green-100 dark:bg-green-950/50",
+      hoverBgColor: "hover:bg-indigo-50 dark:hover:bg-indigo-950/50",
+      iconColor: "text-indigo-500",
+      iconBgColor: "bg-indigo-100 dark:bg-indigo-950/50",
     },
   ];
 
@@ -72,16 +78,24 @@ function Index() {
             title: t("routes.transactions"),
             icon: BanknoteIcon,
             path: `/org/${orgSlug}/transactions`,
-            color: "text-emerald-500",
-            bgColor: "bg-emerald-100 dark:bg-emerald-950/50",
+            hoverBgColor: "hover:bg-purple-50 dark:hover:bg-purple-950/50",
+            iconColor: "text-purple-500",
+            iconBgColor: "bg-purple-100 dark:bg-purple-950/50",
+          },
+          {
+            title: t("routes.users"),
+            icon: BanknoteIcon,
+            path: `/org/${orgSlug}/users`,
+            hoverBgColor: "hover:bg-cyan-50 dark:hover:bg-cyan-950/50",
+            iconColor: "text-cyan-500",
+            iconBgColor: "bg-cyan-100 dark:bg-cyan-950/50",
           },
         ]
       : [];
 
   return (
-    <div className="flex flex-col items-center h-full p-4 gap-8">
+    <div className="h-full flex flex-col items-center justify-center p-4 gap-4">
       <div className="text-center mb-4">
-        <HomeIcon className="w-20 h-20 mb-6 text-muted-foreground opacity-50 mx-auto" />
         <h1 className="text-3xl font-semibold text-center text-muted-foreground">
           {t("welcomeToErpOrg", { orgName })}
         </h1>
@@ -90,24 +104,58 @@ function Index() {
         </p>
       </div>
 
-      <div className="w-full max-w-5xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...quickActions, ...adminQuickActions].map((action) => (
-            <Link key={action.path} to={action.path} className="no-underline">
-              <Card className="h-full hover:shadow-md transition-shadow cursor-pointer">
-                <CardHeader className="pb-2">
-                  <div className={`p-3 rounded-full w-fit ${action.bgColor}`}>
-                    <action.icon className={action.color} />
-                  </div>
-                </CardHeader>
-                <CardContent className="pb-2">
-                  <CardTitle className="text-lg">{action.title}</CardTitle>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
+      <div className="w-full md:w-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {quickActions.map((action) => (
+          <QuickActionLink key={action.path} {...action} />
+        ))}
       </div>
+
+      {adminQuickActions.length > 0 && (
+        <>
+          <span className="mt-20">{t("adminSection")}</span>
+          <div className="w-full md:w-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {adminQuickActions.map((action) => (
+              <QuickActionLink key={action.path} {...action} />
+            ))}
+          </div>
+        </>
+      )}
     </div>
+  );
+}
+
+function QuickActionLink({
+  path,
+  title,
+  icon: Icon,
+  hoverBgColor,
+  iconColor,
+  iconBgColor,
+}: {
+  path: string;
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  hoverBgColor: string;
+  iconColor: string;
+  iconBgColor: string;
+}) {
+  return (
+    <Link to={path}>
+      <Card
+        className={cn(
+          "min-w-[16rem] min-h-[16rem] hover:shadow-md transition-shadow cursor-pointer md:items-center md:justify-center",
+          hoverBgColor,
+        )}
+      >
+        <CardHeader
+          className={cn("rounded-full flex justify-center items-center size-20", iconBgColor)}
+        >
+          <Icon className={iconColor} />
+        </CardHeader>
+        <CardContent>
+          <CardTitle className="text-lg">{title}</CardTitle>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }
