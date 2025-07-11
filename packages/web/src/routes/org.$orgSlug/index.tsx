@@ -6,6 +6,7 @@ import {
   PackageIcon,
   ShoppingCartIcon,
   UserIcon,
+  UsersIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/components/ui/card";
@@ -46,6 +47,14 @@ function Index() {
       iconBgColor: "bg-rose-100 dark:bg-rose-950/50",
     },
     {
+      title: t("routes.invoices"),
+      icon: FileTextIcon,
+      path: `/org/${orgSlug}/invoices`,
+      hoverBgColor: "hover:bg-cyan-50 dark:hover:bg-cyan-950/50",
+      iconColor: "text-cyan-500",
+      iconBgColor: "bg-cyan-100 dark:bg-cyan-950/50",
+    },
+    {
       title: t("routes.products"),
       icon: PackageIcon,
       path: `/org/${orgSlug}/products`,
@@ -84,11 +93,11 @@ function Index() {
           },
           {
             title: t("routes.users"),
-            icon: BanknoteIcon,
+            icon: UsersIcon,
             path: `/org/${orgSlug}/users`,
-            hoverBgColor: "hover:bg-cyan-50 dark:hover:bg-cyan-950/50",
-            iconColor: "text-cyan-500",
-            iconBgColor: "bg-cyan-100 dark:bg-cyan-950/50",
+            hoverBgColor: "hover:bg-lime-50 dark:hover:bg-lime-950/50",
+            iconColor: "text-lime-500",
+            iconBgColor: "bg-lime-100 dark:bg-lime-950/50",
           },
         ]
       : [];
