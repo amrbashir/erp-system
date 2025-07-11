@@ -86,7 +86,6 @@ function Users() {
                 <TableHead className="min-w-[50%]">{t("common.form.username")}</TableHead>
                 <TableHead>{t("user.role")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
-                <TableHead>{t("common.dates.updatedAt")}</TableHead>
                 <TableHead>{t("common.dates.deletedAt")}</TableHead>
                 <TableHead></TableHead>
               </TableRow>
@@ -100,10 +99,9 @@ function Users() {
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{user.username}</TableCell>
                   <TableCell>{t(`user.roles.${user.role}`)}</TableCell>
-                  <TableCell>{new Date(user.createdAt).toLocaleString(i18n.language)}</TableCell>
-                  <TableCell>{new Date(user.updatedAt).toLocaleString(i18n.language)}</TableCell>
+                  <TableCell>{new Date(user.createdAt).toLocaleString()}</TableCell>
                   <TableCell>
-                    {user.deletedAt ? new Date(user.deletedAt).toLocaleString(i18n.language) : ""}
+                    {user.deletedAt ? new Date(user.deletedAt).toLocaleString() : ""}
                   </TableCell>
                   <TableCell className="text-end">
                     <AlertDialog>

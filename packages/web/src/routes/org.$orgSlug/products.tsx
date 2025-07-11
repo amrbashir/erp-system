@@ -1,3 +1,4 @@
+import { formatCurrency } from "@erp-system/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { PackageIcon } from "lucide-react";
@@ -13,7 +14,6 @@ import {
 
 import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
-import { useFormatCurrency } from "@/hooks/format-currency";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 
@@ -29,7 +29,6 @@ function Products() {
   const { slug: orgSlug } = useOrg();
 
   const { t, i18n } = useTranslation();
-  const { formatCurrency } = useFormatCurrency();
 
   const { data: products } = useQuery({
     queryKey: ["products"],
@@ -52,20 +51,18 @@ function Products() {
                 <TableHead>{t("common.pricing.purchase")}</TableHead>
                 <TableHead>{t("common.pricing.selling")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
-                <TableHead>{t("common.dates.updatedAt")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {products.map((product, index) => (
                 <TableRow key={index}>
                   <TableCell>{index + 1}</TableCell>
-                  <TableCell>{product.stock_quantity}</TableCell>
+                  <TableCell>{product.stockQuantity}</TableCell>
                   <TableCell>{product.bardcode}</TableCell>
                   <TableCell>{product.description}</TableCell>
-                  <TableCell>{formatCurrency(product.purchase_price)}</TableCell>
-                  <TableCell>{formatCurrency(product.selling_price)}</TableCell>
-                  <TableCell>{new Date(product.createdAt).toLocaleString(i18n.language)}</TableCell>
-                  <TableCell>{new Date(product.updatedAt).toLocaleString(i18n.language)}</TableCell>
+                  <TableCell>{formatCurrency(product.purchasePrice)}</TableCell>
+                  <TableCell>{formatCurrency(product.sellingPrice)}</TableCell>
+                  <TableCell>{new Date(product.createdAt).toLocaleString()}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

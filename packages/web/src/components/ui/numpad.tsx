@@ -83,6 +83,7 @@ export function Numpad({
           ref={inputRef}
           type="text"
           inputMode="decimal"
+          lang="en-US"
           value={value}
           onChange={(e) => {
             setValue(e.target.value);

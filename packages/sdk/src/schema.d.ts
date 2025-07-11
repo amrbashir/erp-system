@@ -347,9 +347,9 @@ export interface components {
             id: string;
             bardcode?: string;
             description: string;
-            purchase_price: number;
-            selling_price: number;
-            stock_quantity: number;
+            purchasePrice: number;
+            sellingPrice: number;
+            stockQuantity: number;
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
@@ -365,39 +365,41 @@ export interface components {
         };
         CreateSaleInvoiceItemDto: {
             productId: string;
+            price: number;
             quantity: number;
-            discount_percent?: number;
-            discount_amount?: number;
+            discountPercent?: number;
+            discountAmount?: number;
         };
         CreateSaleInvoiceDto: {
             customerId?: number;
             items: components["schemas"]["CreateSaleInvoiceItemDto"][];
-            discount_percent?: number;
-            discount_amount?: number;
+            discountPercent?: number;
+            discountAmount?: number;
         };
         CreatePurchaseInvoiceItemDto: {
             barcode?: string;
             description: string;
-            purchase_price: number;
-            selling_price: number;
+            purchasePrice: number;
+            sellingPrice: number;
             quantity: number;
-            discount_percent?: number;
-            discount_amount?: number;
+            discountPercent?: number;
+            discountAmount?: number;
         };
         CreatePurchaseInvoiceDto: {
             customerId?: number;
-            discount_percent?: number;
-            discount_amount?: number;
+            discountPercent?: number;
+            discountAmount?: number;
             items: components["schemas"]["CreatePurchaseInvoiceItemDto"][];
         };
         InvoiceItemEntity: {
             barcode?: string;
             description: string;
-            purchase_price: number;
-            selling_price: number;
+            price: number;
+            purchasePrice: number;
+            sellingPrice: number;
             quantity: number;
-            discount_percent: number;
-            discount_amount: number;
+            discountPercent: number;
+            discountAmount: number;
             subtotal: number;
             total: number;
         };
@@ -406,8 +408,8 @@ export interface components {
             /** @enum {string} */
             type: "SALE" | "PURCHASE";
             subtotal: number;
-            discount_percent: number;
-            discount_amount: number;
+            discountPercent: number;
+            discountAmount: number;
             total: number;
             /** Format: date-time */
             createdAt: string;

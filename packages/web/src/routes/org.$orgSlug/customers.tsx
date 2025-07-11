@@ -53,7 +53,6 @@ function Customers() {
                 <TableHead>{t("common.form.address")}</TableHead>
                 <TableHead>{t("common.form.phone")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
-                <TableHead>{t("common.dates.updatedAt")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -63,12 +62,7 @@ function Customers() {
                   <TableCell>{customer.name}</TableCell>
                   <TableCell>{customer.address}</TableCell>
                   <TableCell>{customer.phone}</TableCell>
-                  <TableCell>
-                    {new Date(customer.createdAt).toLocaleString(i18n.language)}
-                  </TableCell>
-                  <TableCell>
-                    {new Date(customer.updatedAt).toLocaleString(i18n.language)}
-                  </TableCell>
+                  <TableCell>{new Date(customer.createdAt).toLocaleString()}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

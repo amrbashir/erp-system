@@ -12,6 +12,7 @@
       "logout": "Logout"
     },
     "dates": {
+      "date": "Date",
       "createdAt": "Created At",
       "updatedAt": "Updated At",
       "deletedAt": "Deleted At"
@@ -191,8 +192,8 @@
       "barcode": "$t(common.form.barcode)",
       "description": "$t(common.form.description)",
       "quantity": "$t(common.form.quantity)",
-      "purchase_price": "$t(common.pricing.purchase)",
-      "selling_price": "$t(common.pricing.selling)"
+      "purchasePrice": "$t(common.pricing.purchase)",
+      "sellingPrice": "$t(common.pricing.selling)"
     }
   },
 

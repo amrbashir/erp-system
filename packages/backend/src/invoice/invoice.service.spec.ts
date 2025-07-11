@@ -65,9 +65,9 @@ describe("InvoiceService", async () => {
       data: {
         barcode: randomId,
         description: "Product 1",
-        purchase_price: 50,
-        selling_price: 100,
-        stock_quantity: 20,
+        purchasePrice: 50,
+        sellingPrice: 100,
+        stockQuantity: 20,
         organization: { connect: { id: org.id } },
       },
     });
@@ -75,9 +75,9 @@ describe("InvoiceService", async () => {
     const product2 = await prisma.product.create({
       data: {
         description: "Product 2",
-        purchase_price: 75,
-        selling_price: 150,
-        stock_quantity: 15,
+        purchasePrice: 75,
+        sellingPrice: 150,
+        stockQuantity: 15,
         organization: { connect: { id: org.id } },
       },
     });
@@ -93,20 +93,22 @@ describe("InvoiceService", async () => {
         customerId: customer.id,
         items: [
           {
+            price: product1.sellingPrice,
             productId: product1.id,
             quantity: 2,
-            discount_percent: 0,
-            discount_amount: 0,
+            discountPercent: 0,
+            discountAmount: 0,
           },
           {
+            price: product1.sellingPrice,
             productId: product2.id,
             quantity: 1,
-            discount_percent: 10,
-            discount_amount: 5,
+            discountPercent: 10,
+            discountAmount: 5,
           },
         ],
-        discount_percent: 5,
-        discount_amount: 10,
+        discountPercent: 5,
+        discountAmount: 10,
       };
 
       const invoice = await service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
@@ -121,8 +123,8 @@ describe("InvoiceService", async () => {
       const updatedProduct1 = await prisma.product.findUnique({ where: { id: product1.id } });
       const updatedProduct2 = await prisma.product.findUnique({ where: { id: product2.id } });
 
-      expect(updatedProduct1!.stock_quantity).toBe(18); // 20 - 2
-      expect(updatedProduct2!.stock_quantity).toBe(14); // 15 - 1
+      expect(updatedProduct1!.stockQuantity).toBe(18); // 20 - 2
+      expect(updatedProduct2!.stockQuantity).toBe(14); // 15 - 1
 
       // Verify transaction was created
       const transaction = await prisma.transaction.findFirst({
@@ -138,8 +140,8 @@ describe("InvoiceService", async () => {
 
       const createInvoiceDto: CreateSaleInvoiceDto = {
         items: [],
-        discount_percent: 0,
-        discount_amount: 0,
+        discountPercent: 0,
+        discountAmount: 0,
       };
 
       await expect(service.createSaleInvoice(orgSlug, createInvoiceDto, user.id)).rejects.toThrow(
@@ -153,14 +155,15 @@ describe("InvoiceService", async () => {
       const createInvoiceDto: CreateSaleInvoiceDto = {
         items: [
           {
+            price: product1.sellingPrice,
             productId: product1.id,
             quantity: 25, // More than available stock (20)
-            discount_percent: 0,
-            discount_amount: 0,
+            discountPercent: 0,
+            discountAmount: 0,
           },
         ],
-        discount_percent: 0,
-        discount_amount: 0,
+        discountPercent: 0,
+        discountAmount: 0,
       };
 
       await expect(service.createSaleInvoice(orgSlug, createInvoiceDto, user.id)).rejects.toThrow(
@@ -181,14 +184,15 @@ describe("InvoiceService", async () => {
       const createInvoiceDto: CreateSaleInvoiceDto = {
         items: [
           {
+            price: product1.sellingPrice,
             productId: product1.id,
             quantity: 5,
-            discount_percent: 10,
-            discount_amount: 25,
+            discountPercent: 10,
+            discountAmount: 25,
           },
         ],
-        discount_percent: 5,
-        discount_amount: 10,
+        discountPercent: 5,
+        discountAmount: 10,
       };
 
       const invoice = await service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
@@ -204,14 +208,15 @@ describe("InvoiceService", async () => {
       const createInvoiceDto: CreateSaleInvoiceDto = {
         items: [
           {
+            price: product1.sellingPrice,
             productId: product1.id,
             quantity: 1,
-            discount_percent: 0,
-            discount_amount: 0,
+            discountPercent: 0,
+            discountAmount: 0,
           },
         ],
-        discount_percent: 0,
-        discount_amount: 0,
+        discountPercent: 0,
+        discountAmount: 0,
       };
 
       await service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
@@ -221,7 +226,7 @@ describe("InvoiceService", async () => {
         where: { slug: orgSlug },
       });
 
-      expect(updatedOrg!.balance).toBe(product1.selling_price * 2); // 2 invoices created, each with selling price of product1
+      expect(updatedOrg!.balance).toBe(product1.sellingPrice * 2); // 2 invoices created, each with selling price of product1
     });
 
     it("should get all invoices for an organization", async () => {
@@ -231,27 +236,29 @@ describe("InvoiceService", async () => {
       const createInvoiceDto1: CreateSaleInvoiceDto = {
         items: [
           {
+            price: product1.sellingPrice,
             productId: product1.id,
             quantity: 1,
-            discount_percent: 0,
-            discount_amount: 0,
+            discountPercent: 0,
+            discountAmount: 0,
           },
         ],
-        discount_percent: 0,
-        discount_amount: 0,
+        discountPercent: 0,
+        discountAmount: 0,
       };
 
       const createInvoiceDto2: CreateSaleInvoiceDto = {
         items: [
           {
+            price: product1.sellingPrice,
             productId: product1.id,
             quantity: 2,
-            discount_percent: 0,
-            discount_amount: 0,
+            discountPercent: 0,
+            discountAmount: 0,
           },
         ],
-        discount_percent: 0,
-        discount_amount: 0,
+        discountPercent: 0,
+        discountAmount: 0,
       };
 
       await service.createSaleInvoice(orgSlug, createInvoiceDto1, user.id);
@@ -274,23 +281,23 @@ describe("InvoiceService", async () => {
         items: [
           {
             description: "New Product 1",
-            purchase_price: 40,
-            selling_price: 80,
+            purchasePrice: 40,
+            sellingPrice: 80,
             quantity: 10,
-            discount_percent: 0,
-            discount_amount: 0,
+            discountPercent: 0,
+            discountAmount: 0,
           },
           {
             description: "New Product 2",
-            purchase_price: 60,
-            selling_price: 120,
+            purchasePrice: 60,
+            sellingPrice: 120,
             quantity: 5,
-            discount_percent: 5,
-            discount_amount: 10,
+            discountPercent: 5,
+            discountAmount: 10,
           },
         ],
-        discount_percent: 2,
-        discount_amount: 5,
+        discountPercent: 2,
+        discountAmount: 5,
       };
 
       const invoice = await service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
@@ -317,14 +324,14 @@ describe("InvoiceService", async () => {
       });
 
       expect(product1).toBeDefined();
-      expect(product1!.stock_quantity).toBe(10);
-      expect(product1!.purchase_price).toBe(40);
-      expect(product1!.selling_price).toBe(80);
+      expect(product1!.stockQuantity).toBe(10);
+      expect(product1!.purchasePrice).toBe(40);
+      expect(product1!.sellingPrice).toBe(80);
 
       expect(product2).toBeDefined();
-      expect(product2!.stock_quantity).toBe(5);
-      expect(product2!.purchase_price).toBe(60);
-      expect(product2!.selling_price).toBe(120);
+      expect(product2!.stockQuantity).toBe(5);
+      expect(product2!.purchasePrice).toBe(60);
+      expect(product2!.sellingPrice).toBe(120);
 
       // Verify transaction was created
       const transaction = await prisma.transaction.findFirst({
@@ -342,9 +349,9 @@ describe("InvoiceService", async () => {
       const existingProduct = await prisma.product.create({
         data: {
           description: "Existing Product",
-          purchase_price: 50,
-          selling_price: 100,
-          stock_quantity: 5,
+          purchasePrice: 50,
+          sellingPrice: 100,
+          stockQuantity: 5,
           organization: { connect: { slug: orgSlug } },
         },
       });
@@ -354,15 +361,15 @@ describe("InvoiceService", async () => {
         items: [
           {
             description: "Existing Product", // Same description as existing product
-            purchase_price: 45, // Updated purchase price
-            selling_price: 90, // Updated selling price
+            purchasePrice: 45, // Updated purchase price
+            sellingPrice: 90, // Updated selling price
             quantity: 8,
-            discount_percent: 0,
-            discount_amount: 0,
+            discountPercent: 0,
+            discountAmount: 0,
           },
         ],
-        discount_percent: 0,
-        discount_amount: 0,
+        discountPercent: 0,
+        discountAmount: 0,
       };
 
       await service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
@@ -377,9 +384,9 @@ describe("InvoiceService", async () => {
 
       expect(products.length).toBe(1); // Only one product with this description
       expect(products[0].id).toBe(existingProduct.id);
-      expect(products[0].stock_quantity).toBe(13); // 5 + 8
-      expect(products[0].purchase_price).toBe(45); // Updated
-      expect(products[0].selling_price).toBe(90); // Updated
+      expect(products[0].stockQuantity).toBe(13); // 5 + 8
+      expect(products[0].purchasePrice).toBe(45); // Updated
+      expect(products[0].sellingPrice).toBe(90); // Updated
     });
 
     it("should throw BadRequestException when creating purchase invoice with no items", async () => {
@@ -387,8 +394,8 @@ describe("InvoiceService", async () => {
 
       const purchaseInvoiceDto = {
         items: [],
-        discount_percent: 0,
-        discount_amount: 0,
+        discountPercent: 0,
+        discountAmount: 0,
       };
 
       await expect(
@@ -409,15 +416,15 @@ describe("InvoiceService", async () => {
         items: [
           {
             description: "Discount Test Product",
-            purchase_price: 50,
-            selling_price: 100,
+            purchasePrice: 50,
+            sellingPrice: 100,
             quantity: 5,
-            discount_percent: 10,
-            discount_amount: 15,
+            discountPercent: 10,
+            discountAmount: 15,
           },
         ],
-        discount_percent: 5,
-        discount_amount: 5,
+        discountPercent: 5,
+        discountAmount: 5,
       };
 
       const invoice = await service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
@@ -440,15 +447,15 @@ describe("InvoiceService", async () => {
         items: [
           {
             description: "Balance Test Product",
-            purchase_price: 100,
-            selling_price: 200,
+            purchasePrice: 100,
+            sellingPrice: 200,
             quantity: 1,
-            discount_percent: 0,
-            discount_amount: 0,
+            discountPercent: 0,
+            discountAmount: 0,
           },
         ],
-        discount_percent: 0,
-        discount_amount: 0,
+        discountPercent: 0,
+        discountAmount: 0,
       };
 
       await service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);

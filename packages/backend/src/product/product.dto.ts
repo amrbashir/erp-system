@@ -13,13 +13,13 @@ export class ProductEntity {
   description: string;
 
   @ApiProperty()
-  purchase_price: number;
+  purchasePrice: number;
 
   @ApiProperty()
-  selling_price: number;
+  sellingPrice: number;
 
   @ApiProperty()
-  stock_quantity: number;
+  stockQuantity: number;
 
   @ApiProperty()
   createdAt: Date;
@@ -31,9 +31,9 @@ export class ProductEntity {
     this.id = product.id;
     this.bardcode = product.barcode || undefined;
     this.description = product.description;
-    this.purchase_price = product.purchase_price;
-    this.selling_price = product.selling_price;
-    this.stock_quantity = product.stock_quantity;
+    this.purchasePrice = product.purchasePrice;
+    this.sellingPrice = product.sellingPrice;
+    this.stockQuantity = product.stockQuantity;
     this.createdAt = product.createdAt;
     this.updatedAt = product.updatedAt;
   }

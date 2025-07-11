@@ -55,8 +55,6 @@ export function FormErrors({
  * If the error is an array, it maps through each error and displays them.
  */
 function ErrorElement({ error, fieldName }: { error: any; fieldName?: string }) {
-  console.log("ErrorElement rendered with error:", error);
-
   if (!error) return null;
 
   const { t } = useTranslation();

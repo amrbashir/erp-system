@@ -50,27 +50,28 @@ export class InvoiceService {
             throw new BadRequestException(`Product with id ${item.productId} not found`);
           }
 
-          if (product.stock_quantity < item.quantity) {
+          if (product.stockQuantity < item.quantity) {
             throw new BadRequestException(
-              `Insufficient stock for product ${product.description}. Available: ${product.stock_quantity}, Requested: ${item.quantity}`,
+              `Insufficient stock for product ${product.description}. Available: ${product.stockQuantity}, Requested: ${item.quantity}`,
             );
           }
 
           // Calculate item subtotal (before invoice-level discount), rounding to base units to avoid fractions
-          const itemSubtotal = product.selling_price * item.quantity;
-          const itemPercentDiscount = (itemSubtotal * item.discount_percent) / 100;
+          const itemSubtotal = item.price * item.quantity;
+          const itemPercentDiscount = (itemSubtotal * item.discountPercent) / 100;
           const itemTotal = Math.round(
-            Math.max(0, itemSubtotal - itemPercentDiscount - item.discount_amount),
+            Math.max(0, itemSubtotal - itemPercentDiscount - item.discountAmount),
           );
 
           invoiceItems.push({
             barcode: product.barcode,
             description: product.description,
-            purchase_price: product.purchase_price,
-            selling_price: product.selling_price,
+            price: item.price,
+            purchasePrice: product.purchasePrice,
+            sellingPrice: product.sellingPrice,
             quantity: item.quantity,
-            discount_percent: item.discount_percent,
-            discount_amount: item.discount_amount,
+            discountPercent: item.discountPercent,
+            discountAmount: item.discountAmount,
             subtotal: itemSubtotal,
             total: itemTotal,
           });
@@ -79,8 +80,8 @@ export class InvoiceService {
         }
 
         // Apply invoice-level discount, rounding to base units to avoid fractions
-        const percentDiscount = (subtotal * dto.discount_percent) / 100;
-        const total = Math.round(Math.max(0, subtotal - percentDiscount - dto.discount_amount));
+        const percentDiscount = (subtotal * dto.discountPercent) / 100;
+        const total = Math.round(Math.max(0, subtotal - percentDiscount - dto.discountAmount));
 
         const organization = { connect: { slug: orgSlug } };
         const cashier = { connect: { id: userId } };
@@ -92,8 +93,8 @@ export class InvoiceService {
           data: {
             items: { create: invoiceItems },
             subtotal,
-            discount_percent: dto.discount_percent,
-            discount_amount: dto.discount_amount,
+            discountPercent: dto.discountPercent,
+            discountAmount: dto.discountAmount,
             total,
             cashier,
             customer,
@@ -129,7 +130,7 @@ export class InvoiceService {
           }
           await prisma.product.update({
             where: { id: product.id },
-            data: { stock_quantity: product.stock_quantity - item.quantity },
+            data: { stockQuantity: product.stockQuantity - item.quantity },
           });
         }
 
@@ -160,20 +161,21 @@ export class InvoiceService {
 
         for (const item of dto.items) {
           // Calculate item subtotal (before invoice-level discount), rounding to base units to avoid fractions
-          const itemSubtotal = item.purchase_price * item.quantity;
-          const itemPercentDiscount = (itemSubtotal * item.discount_percent) / 100;
+          const itemSubtotal = item.purchasePrice * item.quantity;
+          const itemPercentDiscount = (itemSubtotal * item.discountPercent) / 100;
           const itemTotal = Math.round(
-            Math.max(0, itemSubtotal - itemPercentDiscount - item.discount_amount),
+            Math.max(0, itemSubtotal - itemPercentDiscount - item.discountAmount),
           );
 
           invoiceItems.push({
+            price: 0, // Price is not used in purchase invoices
             barcode: item.barcode || null,
             description: item.description,
-            purchase_price: item.purchase_price,
-            selling_price: item.selling_price,
+            purchasePrice: item.purchasePrice,
+            sellingPrice: item.sellingPrice,
             quantity: item.quantity,
-            discount_percent: item.discount_percent,
-            discount_amount: item.discount_amount,
+            discountPercent: item.discountPercent,
+            discountAmount: item.discountAmount,
             subtotal: itemSubtotal,
             total: itemTotal,
           });
@@ -182,8 +184,8 @@ export class InvoiceService {
         }
 
         // Apply invoice-level discount, rounding to base units to avoid fractions
-        const percentDiscount = (subtotal * dto.discount_percent) / 100;
-        const total = Math.round(Math.max(0, subtotal - percentDiscount - dto.discount_amount));
+        const percentDiscount = (subtotal * dto.discountPercent) / 100;
+        const total = Math.round(Math.max(0, subtotal - percentDiscount - dto.discountAmount));
 
         const organization = { connect: { slug: orgSlug } };
         const cashier = { connect: { id: userId } };
@@ -195,8 +197,8 @@ export class InvoiceService {
             type: "PURCHASE",
             items: { create: invoiceItems },
             subtotal,
-            discount_percent: dto.discount_percent,
-            discount_amount: dto.discount_amount,
+            discountPercent: dto.discountPercent,
+            discountAmount: dto.discountAmount,
             total,
             cashier,
             customer,
@@ -251,9 +253,9 @@ export class InvoiceService {
             await prisma.product.update({
               where: { id: existingProduct.id },
               data: {
-                purchase_price: item.purchase_price,
-                selling_price: item.selling_price,
-                stock_quantity: { increment: item.quantity },
+                purchasePrice: item.purchasePrice,
+                sellingPrice: item.sellingPrice,
+                stockQuantity: { increment: item.quantity },
               },
             });
           } else {
@@ -262,9 +264,9 @@ export class InvoiceService {
               data: {
                 barcode: item.barcode,
                 description: item.description,
-                purchase_price: item.purchase_price,
-                selling_price: item.selling_price,
-                stock_quantity: item.quantity,
+                purchasePrice: item.purchasePrice,
+                sellingPrice: item.sellingPrice,
+                stockQuantity: item.quantity,
                 organizationId: org.id,
               },
             });

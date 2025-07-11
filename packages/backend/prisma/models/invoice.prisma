@@ -3,11 +3,11 @@ model Invoice {
 
   type InvoiceType @default(SALE)
 
-  items            InvoiceItem[]
-  subtotal         Int
-  discount_percent Int           @default(0)
-  discount_amount  Int           @default(0)
-  total            Int
+  items           InvoiceItem[]
+  subtotal        Int
+  discountPercent Int           @default(0)
+  discountAmount  Int           @default(0)
+  total           Int
 
   customer   Customer? @relation(fields: [customerId], references: [id])
   customerId Int?

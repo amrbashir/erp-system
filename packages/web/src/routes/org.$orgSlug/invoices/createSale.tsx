@@ -4,7 +4,7 @@ import {
   CustomerEntity,
   ProductEntity,
 } from "@erp-system/sdk/zod";
-import { toBaseUnits, toMajorUnits } from "@erp-system/utils";
+import { formatCurrency, toBaseUnits, toMajorUnits } from "@erp-system/utils";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -37,7 +37,6 @@ import { apiClient } from "@/api-client";
 import { FormErrors } from "@/components/form-errors";
 import { CustomerSelect } from "@/components/invoice-customer-select";
 import { InputNumpad } from "@/components/ui/input-numpad";
-import { useFormatCurrency } from "@/hooks/format-currency";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 
@@ -57,16 +56,18 @@ type Invoice = z.infer<ReturnType<(typeof CreateSaleInvoiceDto)["strict"]>> & {
   items?: (CreateInvoiceItem & Product)[];
 };
 type InvoiceItem = Invoice["items"][number];
+type InvoiceEditableField = "discountPercent" | "discountAmount";
+type InvoiceItemEditableField = "price" | InvoiceEditableField;
 
 // Utility functions for calculations
-const calculateItemSubtotal = (item: InvoiceItem) => item.selling_price * item.quantity;
+const calculateItemSubtotal = (item: InvoiceItem) => item.price * item.quantity;
 
 const calculateItemDiscount = (item: InvoiceItem) => {
   const subtotal = calculateItemSubtotal(item);
-  const percentDiscount = ((item.discount_percent || 0) / 100) * subtotal;
+  const percentDiscount = ((item.discountPercent || 0) / 100) * subtotal;
   return {
     percentDiscount,
-    totalDiscount: percentDiscount + (item.discount_amount || 0),
+    totalDiscount: percentDiscount + (item.discountAmount || 0),
   };
 };
 
@@ -111,8 +112,8 @@ function CreateSaleInvoice() {
     defaultValues: {
       items: [],
       customerId: undefined,
-      discount_percent: 0,
-      discount_amount: 0,
+      discountPercent: 0,
+      discountAmount: 0,
     } as Invoice,
     validators: {
       onSubmit: ({ value, formApi }) => {
@@ -141,7 +142,7 @@ function CreateSaleInvoice() {
 
   const [invoiceItems, invoiceDiscountPercent, invoiceDiscountAmount] = useStore(
     form.store,
-    (state) => [state.values.items, state.values.discount_percent, state.values.discount_amount],
+    (state) => [state.values.items, state.values.discountPercent, state.values.discountAmount],
   );
 
   const handleAddItem = (product: Product) => {
@@ -158,6 +159,7 @@ function CreateSaleInvoice() {
         ...product,
         quantity: 1,
         productId: product.id,
+        price: product.sellingPrice,
       });
     }
 
@@ -184,11 +186,7 @@ function CreateSaleInvoice() {
     form.validate("change");
   };
 
-  const handleUpdateItemDiscount = (
-    index: number,
-    field: "discount_percent" | "discount_amount",
-    value: number,
-  ) => {
+  const handleUpdateItemField = (index: number, field: InvoiceItemEditableField, value: number) => {
     const newItems = [...invoiceItems];
     newItems[index] = {
       ...newItems[index],
@@ -198,10 +196,7 @@ function CreateSaleInvoice() {
     form.validate("change");
   };
 
-  const handleUpdateInvoiceDiscount = (
-    field: "discount_percent" | "discount_amount",
-    value: any,
-  ) => {
+  const handleUpdateInvoiceField = (field: InvoiceEditableField, value: any) => {
     form.setFieldValue(field, value);
     form.validate("change");
   };
@@ -230,8 +225,8 @@ function CreateSaleInvoice() {
             invoiceDiscountPercent={invoiceDiscountPercent}
             onUpdateItemQuantity={handleUpdateItemQuantity}
             onRemoveItem={handleRemoveItem}
-            onUpdateItemDiscount={handleUpdateItemDiscount}
-            onUpdateInvoiceDiscount={handleUpdateInvoiceDiscount}
+            onUpdateItemField={handleUpdateItemField}
+            onUpdateInvoiceField={handleUpdateInvoiceField}
           />
 
           <div className="mt-2">
@@ -344,10 +339,9 @@ function ProductItem({
   invoiceItems: InvoiceItem[];
 }) {
   const { t } = useTranslation();
-  const { formatCurrency } = useFormatCurrency();
 
   const matchingInvoiceItem = invoiceItems.find((i) => i.id == product.id);
-  const remainingStock = product.stock_quantity - (matchingInvoiceItem?.quantity ?? 0);
+  const remainingStock = product.stockQuantity - (matchingInvoiceItem?.quantity ?? 0);
 
   return (
     <Button
@@ -360,10 +354,10 @@ function ProductItem({
       <h3>{product.description}</h3>
       <div className="w-full text-xs text-secondary-foreground/50 flex justify-around gap-2">
         <span className="text-chart-5">
-          {t("common.form.price")}: {formatCurrency(product.selling_price)}
+          {t("common.form.price")}: {formatCurrency(product.sellingPrice)}
         </span>
         <span className="text-chart-2">
-          {t("product.stock")}: {product.stock_quantity}
+          {t("product.stock")}: {product.stockQuantity}
         </span>
         <span className="text-chart-4">
           {t("product.remaining")}: {remainingStock}
@@ -380,20 +374,16 @@ function InvoiceTable({
   invoiceDiscountAmount = 0,
   onUpdateItemQuantity,
   onRemoveItem,
-  onUpdateItemDiscount,
-  onUpdateInvoiceDiscount,
+  onUpdateItemField,
+  onUpdateInvoiceField,
 }: {
   items: InvoiceItem[];
   invoiceDiscountPercent?: number;
   invoiceDiscountAmount?: number;
   onUpdateItemQuantity: (index: number, quantity: number) => void;
   onRemoveItem: (index: number) => void;
-  onUpdateItemDiscount: (
-    index: number,
-    field: "discount_percent" | "discount_amount",
-    value: number,
-  ) => void;
-  onUpdateInvoiceDiscount: (field: "discount_percent" | "discount_amount", value: any) => void;
+  onUpdateItemField: (index: number, field: InvoiceItemEditableField, value: number) => void;
+  onUpdateInvoiceField: (field: InvoiceEditableField, value: any) => void;
 }) {
   const { t } = useTranslation();
 
@@ -436,7 +426,7 @@ function InvoiceTable({
               item={item}
               index={index}
               onUpdateQuantity={onUpdateItemQuantity}
-              onUpdateDiscount={onUpdateItemDiscount}
+              onUpdateField={onUpdateItemField}
               onRemove={onRemoveItem}
             />
           ))}
@@ -446,7 +436,7 @@ function InvoiceTable({
           subtotal={subtotal}
           discountPercent={invoiceDiscountPercent}
           discountAmount={invoiceDiscountAmount}
-          onUpdateDiscount={onUpdateInvoiceDiscount}
+          onUpdateInvoiceField={onUpdateInvoiceField}
         />
       </Table>
     </div>
@@ -458,21 +448,15 @@ function InvoiceTableRow({
   item,
   index,
   onUpdateQuantity,
-  onUpdateDiscount,
+  onUpdateField,
   onRemove,
 }: {
   item: InvoiceItem;
   index: number;
   onUpdateQuantity: (index: number, quantity: number) => void;
-  onUpdateDiscount: (
-    index: number,
-    field: "discount_percent" | "discount_amount",
-    value: number,
-  ) => void;
+  onUpdateField: (index: number, field: InvoiceItemEditableField, value: number) => void;
   onRemove: (index: number) => void;
 }) {
-  const { formatCurrency } = useFormatCurrency();
-
   const itemSubtotal = calculateItemSubtotal(item);
   const { percentDiscount } = calculateItemDiscount(item);
   const itemTotal = calculateItemTotal(item);
@@ -488,16 +472,26 @@ function InvoiceTableRow({
           value={item.quantity}
           onChange={(e) => onUpdateQuantity(index, e.target.valueAsNumber)}
           min={1}
-          max={item.stock_quantity}
+          max={item.stockQuantity}
         />
       </TableCell>
-      <TableCell>{formatCurrency(item.selling_price)}</TableCell>
+      <TableCell>
+        {
+          <InputNumpad
+            className="w-20"
+            value={toMajorUnits(item.price || 0)}
+            onChange={(e) => onUpdateField(index, "price", toBaseUnits(e.target.valueAsNumber))}
+            min={0}
+            max={itemSubtotal}
+          />
+        }
+      </TableCell>
       <TableCell>{formatCurrency(itemSubtotal)}</TableCell>
       <TableCell>
         <InputNumpad
           className="w-20"
-          value={item.discount_percent || 0}
-          onChange={(e) => onUpdateDiscount(index, "discount_percent", e.target.valueAsNumber)}
+          value={item.discountPercent || 0}
+          onChange={(e) => onUpdateField(index, "discountPercent", e.target.valueAsNumber)}
           step={0.1}
           min={0}
           max={100}
@@ -507,9 +501,9 @@ function InvoiceTableRow({
       <TableCell>
         <InputNumpad
           className="w-20"
-          value={toMajorUnits(item.discount_amount || 0)}
+          value={toMajorUnits(item.discountAmount || 0)}
           onChange={(e) =>
-            onUpdateDiscount(index, "discount_amount", toBaseUnits(e.target.valueAsNumber))
+            onUpdateField(index, "discountAmount", toBaseUnits(e.target.valueAsNumber))
           }
           min={0}
           max={itemSubtotal}
@@ -530,15 +524,14 @@ function InvoiceTableFooter({
   subtotal,
   discountPercent,
   discountAmount,
-  onUpdateDiscount,
+  onUpdateInvoiceField,
 }: {
   subtotal: number;
   discountPercent: number;
   discountAmount: number;
-  onUpdateDiscount: (field: "discount_percent" | "discount_amount", value: number) => void;
+  onUpdateInvoiceField: (field: InvoiceEditableField, value: number) => void;
 }) {
   const { t } = useTranslation();
-  const { formatCurrency } = useFormatCurrency();
 
   const percentDiscount = calculateInvoicePercentDiscount(subtotal, discountPercent);
   const totalPrice = calculateInvoiceTotal(subtotal, discountPercent, discountAmount);
@@ -557,7 +550,7 @@ function InvoiceTableFooter({
           <InputNumpad
             className="w-20"
             value={discountPercent}
-            onChange={(e) => onUpdateDiscount("discount_percent", e.target.valueAsNumber)}
+            onChange={(e) => onUpdateInvoiceField("discountPercent", e.target.valueAsNumber)}
             step={0.1}
             min={0}
             max={100}
@@ -570,7 +563,7 @@ function InvoiceTableFooter({
             className="w-20"
             value={toMajorUnits(discountAmount)}
             onChange={(e) =>
-              onUpdateDiscount("discount_amount", toBaseUnits(e.target.valueAsNumber))
+              onUpdateInvoiceField("discountAmount", toBaseUnits(e.target.valueAsNumber))
             }
             min={0}
             max={subtotal}

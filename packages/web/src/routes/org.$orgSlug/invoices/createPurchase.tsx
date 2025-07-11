@@ -3,7 +3,7 @@ import {
   CreatePurchaseInvoiceItemDto,
   CustomerEntity,
 } from "@erp-system/sdk/zod";
-import { toBaseUnits, toMajorUnits } from "@erp-system/utils";
+import { formatCurrency, toBaseUnits, toMajorUnits } from "@erp-system/utils";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -30,7 +30,6 @@ import { AddProductDialog } from "@/components/add-product-dialog";
 import { FormErrors } from "@/components/form-errors";
 import { CustomerSelect } from "@/components/invoice-customer-select";
 import { InputNumpad } from "@/components/ui/input-numpad";
-import { useFormatCurrency } from "@/hooks/format-currency";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 
@@ -51,14 +50,14 @@ type Invoice = z.infer<ReturnType<(typeof CreatePurchaseInvoiceDto)["strict"]>> 
 type InvoiceItem = Invoice["items"][number];
 
 // Utility functions for calculations
-const calculateItemSubtotal = (item: InvoiceItem) => item.purchase_price * item.quantity;
+const calculateItemSubtotal = (item: InvoiceItem) => item.purchasePrice * item.quantity;
 
 const calculateItemDiscount = (item: InvoiceItem) => {
   const subtotal = calculateItemSubtotal(item);
-  const percentDiscount = ((item.discount_percent || 0) / 100) * subtotal;
+  const percentDiscount = ((item.discountPercent || 0) / 100) * subtotal;
   return {
     percentDiscount,
-    totalDiscount: percentDiscount + (item.discount_amount || 0),
+    totalDiscount: percentDiscount + (item.discountAmount || 0),
   };
 };
 
@@ -96,8 +95,8 @@ function CreatePurchaseInvoice() {
     defaultValues: {
       items: [],
       customerId: undefined,
-      discount_percent: 0,
-      discount_amount: 0,
+      discountPercent: 0,
+      discountAmount: 0,
     } as Invoice,
     validators: {
       onSubmit: ({ value, formApi }) => {
@@ -126,7 +125,7 @@ function CreatePurchaseInvoice() {
 
   const [invoiceItems, invoiceDiscountPercent, invoiceDiscountAmount] = useStore(
     form.store,
-    (state) => [state.values.items, state.values.discount_percent, state.values.discount_amount],
+    (state) => [state.values.items, state.values.discountPercent, state.values.discountAmount],
   );
 
   const handleAddItem = (item: InvoiceItem) => {
@@ -155,10 +154,7 @@ function CreatePurchaseInvoice() {
     form.validate("change");
   };
 
-  const handleUpdateInvoiceDiscount = (
-    field: "discount_percent" | "discount_amount",
-    value: any,
-  ) => {
+  const handleUpdateInvoiceDiscount = (field: "discountPercent" | "discountAmount", value: any) => {
     form.setFieldValue(field, value);
     form.validate("change");
   };
@@ -262,7 +258,7 @@ function InvoiceTable({
     value: string | number,
   ) => void;
   onRemoveItem: (index: number) => void;
-  onUpdateInvoiceDiscount: (field: "discount_percent" | "discount_amount", value: any) => void;
+  onUpdateInvoiceDiscount: (field: "discountPercent" | "discountAmount", value: any) => void;
 }) {
   const { t } = useTranslation();
 
@@ -338,8 +334,6 @@ function InvoiceTableRow({
   ) => void;
   onRemove: (index: number) => void;
 }) {
-  const { formatCurrency } = useFormatCurrency();
-
   const itemSubtotal = calculateItemSubtotal(item);
   const { percentDiscount } = calculateItemDiscount(item);
   const itemTotal = calculateItemTotal(item);
@@ -357,14 +351,14 @@ function InvoiceTableRow({
           min={1}
         />
       </TableCell>
-      <TableCell>{formatCurrency(item.purchase_price)}</TableCell>
-      <TableCell>{formatCurrency(item.selling_price)}</TableCell>
+      <TableCell>{formatCurrency(item.purchasePrice)}</TableCell>
+      <TableCell>{formatCurrency(item.sellingPrice)}</TableCell>
       <TableCell>{formatCurrency(itemSubtotal)}</TableCell>
       <TableCell>
         <InputNumpad
           className="w-20"
-          value={item.discount_percent || 0}
-          onChange={(e) => onUpdateItemField(index, "discount_percent", e.target.valueAsNumber)}
+          value={item.discountPercent || 0}
+          onChange={(e) => onUpdateItemField(index, "discountPercent", e.target.valueAsNumber)}
           step={0.1}
           min={0}
           max={100}
@@ -374,9 +368,9 @@ function InvoiceTableRow({
       <TableCell>
         <InputNumpad
           className="w-20"
-          value={toMajorUnits(item.discount_amount || 0)}
+          value={toMajorUnits(item.discountAmount || 0)}
           onChange={(e) =>
-            onUpdateItemField(index, "discount_amount", toBaseUnits(e.target.valueAsNumber))
+            onUpdateItemField(index, "discountAmount", toBaseUnits(e.target.valueAsNumber))
           }
           min={0}
           max={itemSubtotal}
@@ -402,10 +396,9 @@ function InvoiceTableFooter({
   subtotal: number;
   discountPercent: number;
   discountAmount: number;
-  onUpdateDiscount: (field: "discount_percent" | "discount_amount", value: number) => void;
+  onUpdateDiscount: (field: "discountPercent" | "discountAmount", value: number) => void;
 }) {
   const { t } = useTranslation();
-  const { formatCurrency } = useFormatCurrency();
 
   const percentDiscount = calculateInvoicePercentDiscount(subtotal, discountPercent);
   const totalPrice = calculateInvoiceTotal(subtotal, discountPercent, discountAmount);
@@ -424,7 +417,7 @@ function InvoiceTableFooter({
           <InputNumpad
             className="w-20"
             value={discountPercent}
-            onChange={(e) => onUpdateDiscount("discount_percent", e.target.valueAsNumber)}
+            onChange={(e) => onUpdateDiscount("discountPercent", e.target.valueAsNumber)}
             step={0.1}
             min={0}
             max={100}
@@ -437,7 +430,7 @@ function InvoiceTableFooter({
             className="w-20"
             value={toMajorUnits(discountAmount)}
             onChange={(e) =>
-              onUpdateDiscount("discount_amount", toBaseUnits(e.target.valueAsNumber))
+              onUpdateDiscount("discountAmount", toBaseUnits(e.target.valueAsNumber))
             }
             min={0}
             max={subtotal}

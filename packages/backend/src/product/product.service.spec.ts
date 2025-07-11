@@ -27,9 +27,9 @@ describe("ProductService", async () => {
 
     const createProductDto = {
       description: "Test Product",
-      purchase_price: 100,
-      selling_price: 150,
-      stock_quantity: 50,
+      purchasePrice: 100,
+      sellingPrice: 150,
+      stockQuantity: 50,
     };
 
     const product = await prisma.product.create({
@@ -38,9 +38,9 @@ describe("ProductService", async () => {
 
     expect(product).toBeDefined();
     expect(product.description).toBe(createProductDto.description);
-    expect(product.purchase_price).toBe(createProductDto.purchase_price);
-    expect(product.selling_price).toBe(createProductDto.selling_price);
-    expect(product.stock_quantity).toBe(createProductDto.stock_quantity);
+    expect(product.purchasePrice).toBe(createProductDto.purchasePrice);
+    expect(product.sellingPrice).toBe(createProductDto.sellingPrice);
+    expect(product.stockQuantity).toBe(createProductDto.stockQuantity);
     expect(product.organizationId).toBe(org.id);
     expect(product.storeId).toBeNull();
   });
@@ -52,9 +52,9 @@ describe("ProductService", async () => {
     const product1 = await prisma.product.create({
       data: {
         description: "Product One",
-        purchase_price: 100,
-        selling_price: 150,
-        stock_quantity: 50,
+        purchasePrice: 100,
+        sellingPrice: 150,
+        stockQuantity: 50,
         organizationId: org.id,
       },
     });
@@ -62,9 +62,9 @@ describe("ProductService", async () => {
     const product2 = await prisma.product.create({
       data: {
         description: "Product Two",
-        purchase_price: 100,
-        selling_price: 150,
-        stock_quantity: 50,
+        purchasePrice: 100,
+        sellingPrice: 150,
+        stockQuantity: 50,
         organizationId: org.id,
       },
     });

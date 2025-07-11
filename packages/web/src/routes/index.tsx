@@ -154,7 +154,7 @@ function LoginForm({
 
       try {
         await login(username, password, orgSlug);
-        navigate({ to: redirect || "/org/" + orgSlug + "/" });
+        navigate({ to: redirect || "/org/$orgSlug", params: { orgSlug }, reloadDocument: true });
       } catch (error: any) {
         formApi.setErrorMap({ onSubmit: error });
       }

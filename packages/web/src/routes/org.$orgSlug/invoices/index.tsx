@@ -1,4 +1,5 @@
 import { InvoiceEntity } from "@erp-system/sdk/zod";
+import { formatCurrency } from "@erp-system/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
@@ -20,7 +21,6 @@ import type z from "zod";
 
 import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
-import { useFormatCurrency } from "@/hooks/format-currency";
 import { useOrg } from "@/hooks/use-org";
 
 export const Route = createFileRoute("/org/$orgSlug/invoices/")({
@@ -90,8 +90,7 @@ function InvoiceList({ invoiceType }: { invoiceType: InvoiceType }) {
             <TableHead>{t("invoice.number")}</TableHead>
             <TableHead>{t("cashierName")}</TableHead>
             <TableHead>{t("customer.name")}</TableHead>
-            <TableHead>{t("common.dates.createdAt")}</TableHead>
-            <TableHead>{t("common.dates.updatedAt")}</TableHead>
+            <TableHead>{t("common.dates.date")}</TableHead>
             <TableHead>{t("invoice.subtotal")}</TableHead>
             <TableHead>{t("invoice.discountPercent")}</TableHead>
             <TableHead>{t("invoice.discountAmount")}</TableHead>
@@ -113,9 +112,8 @@ function InvoiceList({ invoiceType }: { invoiceType: InvoiceType }) {
 
 function InvoiceRow({
   invoice,
-}: React.ComponentProps<"tr"> & { invoice: z.infer<typeof InvoiceEntity>; index: number }) {
+}: { invoice: z.infer<typeof InvoiceEntity>; index: number } & React.ComponentProps<"tr">) {
   const { t, i18n } = useTranslation();
-  const { formatCurrency } = useFormatCurrency();
   const [open, setOpen] = useState(false);
 
   return (
@@ -124,11 +122,10 @@ function InvoiceRow({
         <TableCell>{invoice.id}</TableCell>
         <TableCell>{invoice.cashierName}</TableCell>
         <TableCell>{invoice.customerName}</TableCell>
-        <TableCell>{new Date(invoice.createdAt).toLocaleString(i18n.language)}</TableCell>
-        <TableCell>{new Date(invoice.updatedAt).toLocaleString(i18n.language)}</TableCell>
+        <TableCell>{new Date(invoice.createdAt).toLocaleString()}</TableCell>
         <TableCell>{formatCurrency(invoice.subtotal)}</TableCell>
-        <TableCell>{invoice.discount_percent}%</TableCell>
-        <TableCell>{formatCurrency(invoice.discount_amount)}</TableCell>
+        <TableCell>{invoice.discountPercent}%</TableCell>
+        <TableCell>{formatCurrency(invoice.discountAmount)}</TableCell>
         <TableCell>{formatCurrency(invoice.total)}</TableCell>
         <TableCell className="text-end!">
           <Button onClick={() => setOpen((prev) => !prev)} variant="ghost" size="sm">
@@ -159,10 +156,12 @@ function InvoiceRow({
                   <TableCell>{item.barcode}</TableCell>
                   <TableCell>{item.description}</TableCell>
                   <TableCell>{item.quantity}</TableCell>
-                  <TableCell>{formatCurrency(item.selling_price)}</TableCell>
+                  <TableCell>
+                    {formatCurrency(invoice.type === "SALE" ? item.price : item.purchasePrice)}
+                  </TableCell>
                   <TableCell>{formatCurrency(item.subtotal)}</TableCell>
-                  <TableCell>{item.discount_percent}%</TableCell>
-                  <TableCell>{formatCurrency(item.discount_amount)}</TableCell>
+                  <TableCell>{item.discountPercent}%</TableCell>
+                  <TableCell>{formatCurrency(item.discountAmount)}</TableCell>
                   <TableCell className="text-end">{formatCurrency(item.total)}</TableCell>
                 </TableRow>
               ))}

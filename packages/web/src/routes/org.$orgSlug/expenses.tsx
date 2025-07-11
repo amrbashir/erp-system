@@ -1,3 +1,4 @@
+import { formatCurrency } from "@erp-system/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ShoppingCartIcon } from "lucide-react";
@@ -11,7 +12,6 @@ import {
   TableRow,
 } from "@/shadcn/components/ui/table";
 
-import { useFormatCurrency } from "@/hooks/format-currency";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 
@@ -29,7 +29,6 @@ export const Route = createFileRoute("/org/$orgSlug/expenses")({
 function Expenses() {
   const { slug: orgSlug } = useOrg();
   const { t, i18n } = useTranslation();
-  const { formatCurrency } = useFormatCurrency();
 
   const { data: expenses } = useQuery({
     queryKey: ["expenses"],
@@ -50,7 +49,6 @@ function Expenses() {
                 <TableHead>{t("common.form.price")}</TableHead>
                 <TableHead>{t("cashierName")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
-                <TableHead>{t("common.dates.updatedAt")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -60,8 +58,7 @@ function Expenses() {
                   <TableCell>{expense.description}</TableCell>
                   <TableCell>{formatCurrency(expense.price)}</TableCell>
                   <TableCell>{expense.cashierName}</TableCell>
-                  <TableCell>{new Date(expense.createdAt).toLocaleString(i18n.language)}</TableCell>
-                  <TableCell>{new Date(expense.updatedAt).toLocaleString(i18n.language)}</TableCell>
+                  <TableCell>{new Date(expense.createdAt).toLocaleString()}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

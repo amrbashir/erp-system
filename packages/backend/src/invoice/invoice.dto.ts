@@ -26,6 +26,12 @@ export class CreateSaleInvoiceItemDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsInt()
+  @Min(0)
+  price: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsInt()
   @Min(1)
   quantity: number;
 
@@ -34,13 +40,13 @@ export class CreateSaleInvoiceItemDto {
   @IsInt()
   @Min(0)
   @Max(100)
-  discount_percent: number = 0;
+  discountPercent: number = 0;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsInt()
   @Min(0)
-  discount_amount: number = 0;
+  discountAmount: number = 0;
 }
 
 export class CreateSaleInvoiceDto {
@@ -60,13 +66,13 @@ export class CreateSaleInvoiceDto {
   @IsInt()
   @Min(0)
   @Max(100)
-  discount_percent: number = 0;
+  discountPercent: number = 0;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsInt()
   @Min(0)
-  discount_amount: number = 0;
+  discountAmount: number = 0;
 }
 
 export class CreatePurchaseInvoiceItemDto {
@@ -84,13 +90,13 @@ export class CreatePurchaseInvoiceItemDto {
   @IsNotEmpty()
   @IsInt()
   @Min(0)
-  purchase_price: number;
+  purchasePrice: number;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsInt()
   @Min(0)
-  selling_price: number;
+  sellingPrice: number;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -103,13 +109,13 @@ export class CreatePurchaseInvoiceItemDto {
   @IsInt()
   @Min(0)
   @Max(100)
-  discount_percent: number = 0;
+  discountPercent: number = 0;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsInt()
   @Min(0)
-  discount_amount: number = 0;
+  discountAmount: number = 0;
 }
 
 export class CreatePurchaseInvoiceDto extends OmitType(CreateSaleInvoiceDto, ["items"]) {
@@ -128,19 +134,22 @@ export class InvoiceItemEntity {
   description: string;
 
   @ApiProperty()
-  purchase_price: number;
+  price: number;
 
   @ApiProperty()
-  selling_price: number;
+  purchasePrice: number;
+
+  @ApiProperty()
+  sellingPrice: number;
 
   @ApiProperty()
   quantity: number;
 
   @ApiProperty()
-  discount_percent: number;
+  discountPercent: number;
 
   @ApiProperty()
-  discount_amount: number;
+  discountAmount: number;
 
   @ApiProperty()
   subtotal: number;
@@ -151,11 +160,12 @@ export class InvoiceItemEntity {
   constructor(item: InvoiceItem) {
     this.barcode = item.barcode || undefined;
     this.description = item.description;
-    this.purchase_price = item.purchase_price;
-    this.selling_price = item.selling_price;
+    this.price = item.price;
+    this.purchasePrice = item.purchasePrice;
+    this.sellingPrice = item.sellingPrice;
     this.quantity = item.quantity;
-    this.discount_percent = item.discount_percent;
-    this.discount_amount = item.discount_amount;
+    this.discountPercent = item.discountPercent;
+    this.discountAmount = item.discountAmount;
     this.subtotal = item.subtotal;
     this.total = item.total;
   }
@@ -172,10 +182,10 @@ export class InvoiceEntity {
   subtotal: number;
 
   @ApiProperty()
-  discount_percent: number;
+  discountPercent: number;
 
   @ApiProperty()
-  discount_amount: number;
+  discountAmount: number;
 
   @ApiProperty()
   total: number;
@@ -202,8 +212,8 @@ export class InvoiceEntity {
     this.id = invoice.id;
     this.type = invoice.type;
     this.subtotal = invoice.subtotal;
-    this.discount_percent = invoice.discount_percent;
-    this.discount_amount = invoice.discount_amount;
+    this.discountPercent = invoice.discountPercent;
+    this.discountAmount = invoice.discountAmount;
     this.total = invoice.total;
     this.createdAt = invoice.createdAt;
     this.updatedAt = invoice.updatedAt;

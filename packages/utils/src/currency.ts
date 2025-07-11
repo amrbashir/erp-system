@@ -7,7 +7,11 @@
  * @param locale The locale to use for formatting
  * @returns Formatted currency string in major units (e.g., dollars, euros, pounds)
  */
-export function formatCurrency(value: number, currency: string, locale: string): string {
+export function formatCurrency(
+  value: number,
+  currency: string = "EGP",
+  locale: string = "en-US",
+): string {
   // Convert from base units to major units (assuming 100 base units = 1 major unit)
   const valueInMajorUnits = toMajorUnits(value);
 

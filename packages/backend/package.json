@@ -14,7 +14,6 @@
     "migrate:db:dev": "dotenv -e .env.development prisma migrate dev",
     "prisma:generate": "prisma generate",
     "test": "docker compose up -d postgres-db && vitest run",
-    "test:watch": "vitest",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

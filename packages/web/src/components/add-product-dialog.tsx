@@ -1,4 +1,5 @@
 import { CreatePurchaseInvoiceItemDto } from "@erp-system/sdk/zod";
+import { toBaseUnits, toMajorUnits } from "@erp-system/utils";
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -34,8 +35,8 @@ export function AddProductDialog({ onSubmit }: { onSubmit: (product: InvoiceItem
       barcode: "",
       quantity: 1,
       description: "",
-      purchase_price: 0,
-      selling_price: 0,
+      purchasePrice: 0,
+      sellingPrice: 0,
     } as z.infer<ReturnType<(typeof CreatePurchaseInvoiceItemDto)["strict"]>>,
     validators: {
       onSubmit: CreatePurchaseInvoiceItemDto,
@@ -69,14 +70,14 @@ export function AddProductDialog({ onSubmit }: { onSubmit: (product: InvoiceItem
           <form.Field name="description" children={(field) => <InputField field={field} />} />
           <form.Field
             name="quantity"
+            children={(field) => <InputField type="number" noConversion field={field} />}
+          />
+          <form.Field
+            name="purchasePrice"
             children={(field) => <InputField type="number" field={field} />}
           />
           <form.Field
-            name="purchase_price"
-            children={(field) => <InputField type="number" field={field} />}
-          />
-          <form.Field
-            name="selling_price"
+            name="sellingPrice"
             children={(field) => <InputField type="number" field={field} />}
           />
 
@@ -103,7 +104,11 @@ export function AddProductDialog({ onSubmit }: { onSubmit: (product: InvoiceItem
   );
 }
 
-function InputField({ field, ...props }: { field: AnyFieldApi } & React.ComponentProps<"input">) {
+function InputField({
+  field,
+  noConversion,
+  ...props
+}: { field: AnyFieldApi; noConversion?: boolean } & React.ComponentProps<"input">) {
   const { t } = useTranslation();
 
   return (
@@ -113,8 +118,12 @@ function InputField({ field, ...props }: { field: AnyFieldApi } & React.Componen
         <InputNumpad
           id={field.name}
           name={field.name}
-          value={field.state.value}
-          onChange={(e) => field.handleChange(e.target.value)}
+          value={noConversion ? field.state.value : toMajorUnits(field.state.value)}
+          onChange={(e) =>
+            field.handleChange(
+              noConversion ? e.target.valueAsNumber : toBaseUnits(e.target.valueAsNumber),
+            )
+          }
           {...props}
         />
       ) : (
