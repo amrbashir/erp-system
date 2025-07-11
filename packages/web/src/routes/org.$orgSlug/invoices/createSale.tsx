@@ -7,7 +7,7 @@ import {
 import { toBaseUnits, toMajorUnits } from "@erp-system/utils";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Loader2Icon, TrashIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -92,8 +92,6 @@ function CreateSaleInvoice() {
   const { slug: orgSlug } = useOrg();
   const { t } = useTranslation();
   const client = useQueryClient();
-  const navigate = useNavigate();
-  const router = useRouter();
 
   const { data: products } = useQuery({
     queryKey: ["products"],
@@ -221,7 +219,7 @@ function CreateSaleInvoice() {
         form={form}
         customers={customers}
         hasItems={invoiceItems.length > 0}
-        onCancel={() => router.history.back()}
+        onReset={() => form.reset()}
       />
 
       <ResizablePanelGroup direction="vertical">
@@ -256,12 +254,12 @@ function InvoiceHeader({
   form,
   customers,
   hasItems,
-  onCancel,
+  onReset,
 }: {
   form: AnyReactFormApi;
   customers: Customer[] | undefined;
   hasItems: boolean;
-  onCancel: () => void;
+  onReset: () => void;
 }) {
   const { t } = useTranslation();
 
@@ -276,8 +274,8 @@ function InvoiceHeader({
           selector={(state) => [state.canSubmit, state.isSubmitting]}
           children={([canSubmit, isSubmitting]) => (
             <>
-              <Button disabled={isSubmitting} variant="secondary" onClick={onCancel}>
-                {t("common.actions.cancel")}
+              <Button type="button" disabled={isSubmitting} variant="secondary" onClick={onReset}>
+                {t("common.actions.delete")}
               </Button>
               <Button disabled={!canSubmit || !hasItems}>
                 {isSubmitting && <Loader2Icon className="animate-spin" />}

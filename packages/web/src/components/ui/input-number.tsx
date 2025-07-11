@@ -21,6 +21,7 @@ export function InputNumber({ className, ref, ...props }: React.ComponentProps<t
     <div className="flex-1 flex items-center">
       <div className="flex flex-col h-9!">
         <Button
+          type="button"
           variant="secondary"
           className="focus-visible:z-1 rounded-none rounded-ss p-2! h-4.5!"
           size="sm"
@@ -29,6 +30,7 @@ export function InputNumber({ className, ref, ...props }: React.ComponentProps<t
           <ChevronUpIcon />
         </Button>
         <Button
+          type="button"
           variant="secondary"
           className="focus-visible:z-1 rounded-none rounded-es p-2! h-4.5!"
           size="sm"

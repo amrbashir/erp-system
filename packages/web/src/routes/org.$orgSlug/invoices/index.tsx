@@ -51,7 +51,7 @@ function Invoices() {
               {t("routes.createSaleInvoice")}
             </Button>
             <Button onClick={() => navigate({ to: "/org/$orgSlug/invoices/createPurchase" })}>
-              {t("routes.createPurcahseInvoice")}
+              {t("routes.createPurchaseInvoice")}
             </Button>
           </div>
         </div>

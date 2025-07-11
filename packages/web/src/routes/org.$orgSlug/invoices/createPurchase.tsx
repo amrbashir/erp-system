@@ -6,13 +6,12 @@ import {
 import { toBaseUnits, toMajorUnits } from "@erp-system/utils";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
-import { Loader2Icon, PlusIcon, TrashIcon } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { Loader2Icon, TrashIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/components/ui/button";
-import { Input } from "@/shadcn/components/ui/input";
 import {
   Table,
   TableBody,
@@ -85,8 +84,6 @@ function CreatePurchaseInvoice() {
   const { slug: orgSlug } = useOrg();
   const { t } = useTranslation();
   const client = useQueryClient();
-  const navigate = useNavigate();
-  const router = useRouter();
 
   const { data: customers } = useQuery({
     queryKey: ["customers"],
@@ -179,7 +176,7 @@ function CreatePurchaseInvoice() {
         form={form}
         customers={customers}
         hasItems={invoiceItems.length > 0}
-        onCancel={() => router.history.back()}
+        onReset={() => form.reset()}
       />
 
       <div className="p-2 *:w-full">
@@ -211,12 +208,12 @@ function InvoiceHeader({
   form,
   customers,
   hasItems,
-  onCancel,
+  onReset,
 }: {
   form: AnyReactFormApi;
   customers: Customer[] | undefined;
   hasItems: boolean;
-  onCancel: () => void;
+  onReset: () => void;
 }) {
   const { t } = useTranslation();
 
@@ -232,8 +229,8 @@ function InvoiceHeader({
           selector={(state) => [state.canSubmit, state.isSubmitting]}
           children={([canSubmit, isSubmitting]) => (
             <>
-              <Button disabled={isSubmitting} variant="secondary" onClick={onCancel}>
-                {t("common.actions.cancel")}
+              <Button type="button" disabled={isSubmitting} variant="secondary" onClick={onReset}>
+                {t("common.actions.delete")}
               </Button>
               <Button disabled={!canSubmit || !hasItems}>
                 {isSubmitting && <Loader2Icon className="animate-spin" />}
