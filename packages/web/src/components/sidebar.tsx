@@ -1,4 +1,4 @@
-import { Link, useMatches, useRouter } from "@tanstack/react-router";
+import { Link, useLocation, useMatches, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Label } from "@/shadcn/components/ui/label";
 import {
@@ -12,31 +12,63 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
   useSidebar,
 } from "@/shadcn/components/ui/sidebar";
+import { cn } from "@/shadcn/lib/utils";
 
 import type { FileRoutesById } from "@/routeTree.gen";
 import { UserDropdown } from "@/components/user-dropdown";
 import { useOrg } from "@/hooks/use-org";
 import { useAuth } from "@/providers/auth";
 
+type Route = keyof FileRoutesById;
+
+interface RouteWithSubRoutes {
+  route: Route;
+  subRoutes: (Route | RouteWithSubRoutes)[];
+}
+
+interface RouteGroup {
+  label?: string;
+  routes: (Route | RouteWithSubRoutes)[];
+}
+
+interface RouteInfo {
+  url: string;
+  isActive: boolean;
+  hasActiveSubroute: boolean;
+  title: string;
+  icon?: React.ComponentType;
+  subroutes: RouteInfo[];
+}
+
 export function AppSideBar() {
   const { t, i18n } = useTranslation();
   const { open } = useSidebar();
-  const { slug: orgSlug, name: orgName } = useOrg();
+  const { name: orgName } = useOrg();
   const { user } = useAuth();
 
-  const topRoutes: (keyof FileRoutesById)[] = ["/org/$orgSlug/"];
-
-  const userRoutes: (keyof FileRoutesById)[] = [
-    "/org/$orgSlug/invoices",
-    "/org/$orgSlug/expenses",
-    "/org/$orgSlug/products",
-    "/org/$orgSlug/customers",
+  const routeGroups: (RouteGroup | undefined)[] = [
+    { routes: ["/org/$orgSlug/"] },
+    {
+      routes: [
+        {
+          route: "/org/$orgSlug/invoices",
+          subRoutes: ["/org/$orgSlug/invoices/createSale", "/org/$orgSlug/invoices/createPurchase"],
+        },
+        "/org/$orgSlug/expenses",
+        "/org/$orgSlug/products",
+        "/org/$orgSlug/customers",
+      ],
+    },
+    user?.role === "ADMIN"
+      ? {
+          label: t("adminSection"),
+          routes: ["/org/$orgSlug/transactions", "/org/$orgSlug/users"],
+        }
+      : undefined,
   ];
-
-  const adminRoutes: (keyof FileRoutesById)[] =
-    user?.role === "ADMIN" ? ["/org/$orgSlug/transactions", "/org/$orgSlug/users"] : [];
 
   return (
     <Sidebar variant="inset" collapsible="icon" side={i18n.dir() === "rtl" ? "right" : "left"}>
@@ -50,9 +82,9 @@ export function AppSideBar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <RoutesGroup routes={topRoutes} />
-        <RoutesGroup routes={userRoutes} />
-        <RoutesGroup label={t("adminSection")} routes={adminRoutes} />
+        {routeGroups.map((group, index) => (
+          <RoutesGroup key={index} group={group} />
+        ))}
       </SidebarContent>
 
       <SidebarFooter>
@@ -63,50 +95,78 @@ export function AppSideBar() {
 }
 
 function RoutesGroup({
-  routes,
-  label,
+  group,
   ...props
 }: React.ComponentProps<typeof SidebarGroup> & {
-  label?: string;
-  routes: (keyof FileRoutesById)[];
+  group?: RouteGroup;
 }) {
-  if (routes.length === 0) return null;
+  if (!group || group.routes.length === 0) return null;
 
+  const { slug: orgSlug } = useOrg();
   const { flatRoutes } = useRouter();
-  const matches = useMatches();
+  const pathname = useLocation({ select: (s) => s.pathname });
 
-  const routesData = routes.map((r) => {
-    const route = flatRoutes.find((route) => route.to === r);
+  const mapRoute = (r: Route | RouteWithSubRoutes): RouteInfo => {
+    const to = typeof r === "string" ? r : r.route;
+    const route = flatRoutes.find((route) => route.to === to);
     const data = route?.options.context();
-    const isActive = matches.some((m) => m.fullPath === route?.fullPath);
+    const subroutes = typeof r === "string" ? [] : r.subRoutes.map(mapRoute);
+    const isActive = pathname === route?.fullPath.replace("$orgSlug", orgSlug);
+    const hasActiveSubroute = subroutes.some((sub) => sub.isActive);
 
     return {
       url: route?.to,
       isActive,
+      hasActiveSubroute,
       title: data.title,
       icon: data.icon,
+      subroutes,
     };
-  });
+  };
+
+  const routesData = group.routes.map(mapRoute);
 
   return (
     <SidebarGroup {...props}>
-      {label && <SidebarGroupLabel>{label}</SidebarGroupLabel>}
+      {group.label && <SidebarGroupLabel>{group.label}</SidebarGroupLabel>}
 
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
-          {routesData.map(({ url, title, icon: RouteIcon, isActive }) => (
-            <SidebarMenuItem key={url}>
-              <SidebarMenuButton asChild isActive={isActive}>
-                <Link
-                  className="data-[active=true]:bg-primary! data-[active=true]:text-primary-foreground!"
-                  to={url}
-                >
-                  {RouteIcon && <RouteIcon />}
-                  <span>{title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          {routesData.map(
+            ({ url, title, icon: RouteIcon, isActive, subroutes, hasActiveSubroute }) => (
+              <SidebarMenuItem key={url}>
+                <SidebarMenuButton asChild isActive={isActive}>
+                  <Link
+                    className={cn(
+                      "data-[active=true]:bg-primary! data-[active=true]:text-primary-foreground!",
+                      hasActiveSubroute && "bg-secondary",
+                    )}
+                    to={url}
+                  >
+                    {RouteIcon && <RouteIcon />}
+                    <span>{title}</span>
+                  </Link>
+                </SidebarMenuButton>
+
+                {subroutes.length > 0 && (
+                  <SidebarMenuSub>
+                    {subroutes.map(({ url: subUrl, title: subTitle, isActive: subIsActive }) => (
+                      <SidebarMenuItem key={subUrl}>
+                        <SidebarMenuButton asChild isActive={subIsActive}>
+                          <Link
+                            className="data-[active=true]:bg-primary! data-[active=true]:text-primary-foreground!"
+                            to={subUrl}
+                          >
+                            <span>{subTitle}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenuSub>
+                )}
+              </SidebarMenuItem>
+            ),
+          )}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

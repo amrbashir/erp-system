@@ -246,3 +246,6 @@ html[dir="rtl"] [data-slot="table-head"] {
 html[dir="rtl"] [data-slot="sidebar-inset"] {
   @apply md:ml-2! md:mr-0!;
 }
+html[dir="rtl"] [data-slot="sidebar-menu-sub"] {
+  @apply border-l-0 border-s;
+}
