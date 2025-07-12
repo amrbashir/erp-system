@@ -23,7 +23,6 @@ export function InputNumpad({
     <div className="flex items-center border rounded">
       <InputNumber
         ref={inputRef}
-        type="number"
         value={value}
         onChange={onChange}
         {...props}

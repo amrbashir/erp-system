@@ -378,16 +378,6 @@ function InvoiceTable({
   // Calculate subtotal (before invoice-level discounts)
   const subtotal = useMemo(() => calculateInvoiceSubtotal(items, "SALE"), [items]);
 
-  if (items.length === 0) {
-    return (
-      <div className="border rounded-lg">
-        <div className="p-4 text-center text-secondary-foreground/50">
-          {t("invoice.addItemsTo")}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="border rounded-lg">
       <Table>
@@ -408,16 +398,24 @@ function InvoiceTable({
         </TableHeader>
 
         <TableBody>
-          {items.map((item, index) => (
-            <InvoiceTableRow
-              key={index}
-              item={item}
-              index={index}
-              onUpdateQuantity={onUpdateItemQuantity}
-              onUpdateField={onUpdateItemField}
-              onRemove={onRemoveItem}
-            />
-          ))}
+          {items.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={11} className="text-center text-secondary-foreground/50 p-20">
+                {t("invoice.addItemsTo")}
+              </TableCell>
+            </TableRow>
+          ) : (
+            items.map((item, index) => (
+              <InvoiceTableRow
+                key={index}
+                item={item}
+                index={index}
+                onUpdateQuantity={onUpdateItemQuantity}
+                onUpdateField={onUpdateItemField}
+                onRemove={onRemoveItem}
+              />
+            ))
+          )}
         </TableBody>
 
         <InvoiceTableFooter
