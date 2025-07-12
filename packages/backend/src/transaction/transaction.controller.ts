@@ -21,7 +21,8 @@ export class TransactionController {
   async getAll(
     @Param("orgSlug") orgSlug: string,
     @Query() paginationDto?: PaginationDto,
-  ): Promise<Transaction[]> {
-    return this.service.getAllTransactions(orgSlug, paginationDto);
+  ): Promise<TransactionEntity[]> {
+    const transactions = await this.service.getAllTransactions(orgSlug, paginationDto);
+    return transactions.map((transaction) => new TransactionEntity(transaction));
   }
 }

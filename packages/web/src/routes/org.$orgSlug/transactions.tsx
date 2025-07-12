@@ -32,7 +32,7 @@ export const Route = createFileRoute("/org/$orgSlug/transactions")({
 function Transactions() {
   const { slug: orgSlug } = useOrg();
 
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const { data: transactions } = useQuery({
     queryKey: ["transactions"],
