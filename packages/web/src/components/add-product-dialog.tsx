@@ -78,15 +78,15 @@ export function AddProductDialog({
           <form.Field name="description" children={(field) => <InputField field={field} />} />
           <form.Field
             name="quantity"
-            children={(field) => <InputField type="number" field={field} />}
+            children={(field) => <InputField type="number" min={1} field={field} />}
           />
           <form.Field
             name="purchasePrice"
-            children={(field) => <InputField type="number" field={field} />}
+            children={(field) => <InputField type="number" isString min={0} field={field} />}
           />
           <form.Field
             name="sellingPrice"
-            children={(field) => <InputField type="number" field={field} />}
+            children={(field) => <InputField type="number" isString min={0} field={field} />}
           />
 
           <form.Subscribe children={(state) => <FormErrors formState={state} />} />
@@ -112,7 +112,11 @@ export function AddProductDialog({
   );
 }
 
-function InputField({ field, ...props }: { field: AnyFieldApi } & React.ComponentProps<"input">) {
+function InputField({
+  field,
+  isString = false,
+  ...props
+}: { field: AnyFieldApi; isString?: boolean } & React.ComponentProps<"input">) {
   const { t } = useTranslation();
 
   return (
@@ -124,7 +128,7 @@ function InputField({ field, ...props }: { field: AnyFieldApi } & React.Componen
           name={field.name}
           value={field.state.value}
           onChange={(e) => {
-            if (typeof e.target.value === "string") {
+            if (isString) {
               field.handleChange(e.target.value);
             } else {
               field.handleChange(e.target.valueAsNumber);
