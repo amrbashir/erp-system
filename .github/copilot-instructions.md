@@ -12,10 +12,11 @@ applyTo: "**"
 - Database migrations is done using `pnpm -w backend migrate:db:dev`.
 - Regenerate the Prisma client using `pnpm -w backend prisma:generate`.
 - Don't try to run backend or frontend development, linting is enough.
-- Always fix typescript errors, and don't use `any` type.
+- Always fix typescript errors, and don't use `as any` or `as unknown` or any other type assertion to bypass type checking.
 - Use Prisma transaction (`$transaction`) for operations that modify multiple records.
 - Follow NestJS best practices for controller and service organization.
 - Ensure all database operations are properly error-handled with appropriate HTTP exceptions.
 - Use descriptive variable names and comments for complex business logic.
 - Keep code DRY (Don't Repeat Yourself) by extracting common functionality.
 - Don't create scripts to modify files and run them, instead modify the files directly.
+- Be concise in your replies and explanations, no need for yapping excessively.

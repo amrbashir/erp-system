@@ -1,5 +1,4 @@
 import { InvoiceEntity } from "@erp-system/sdk/zod";
-import { formatCurrency } from "@erp-system/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
@@ -22,6 +21,8 @@ import type z from "zod";
 import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
 import { useOrg } from "@/hooks/use-org";
+import { formatDate } from "@/utils/formatDate";
+import { formatMoney } from "@/utils/formatMoney";
 
 export const Route = createFileRoute("/org/$orgSlug/invoices/")({
   component: Invoices,
@@ -122,12 +123,12 @@ function InvoiceRow({
         <TableCell>{invoice.id}</TableCell>
         <TableCell>{invoice.cashierName}</TableCell>
         <TableCell>{invoice.customerName}</TableCell>
-        <TableCell>{new Date(invoice.createdAt).toLocaleString()}</TableCell>
-        <TableCell>{formatCurrency(invoice.subtotal)}</TableCell>
+        <TableCell>{formatDate(invoice.createdAt)}</TableCell>
+        <TableCell>{formatMoney(invoice.subtotal)}</TableCell>
         <TableCell>{invoice.discountPercent}%</TableCell>
-        <TableCell>{formatCurrency(invoice.discountAmount)}</TableCell>
+        <TableCell>{formatMoney(invoice.discountAmount)}</TableCell>
         <TableCell className={invoice.type === "SALE" ? "text-green-300" : "text-red-300"}>
-          {formatCurrency(invoice.total)}
+          {formatMoney(invoice.total)}
         </TableCell>
         <TableCell className="text-end!">
           <Button onClick={() => setOpen((prev) => !prev)} variant="ghost" size="sm">
@@ -159,18 +160,18 @@ function InvoiceRow({
                   <TableCell>{item.description}</TableCell>
                   <TableCell>{item.quantity}</TableCell>
                   <TableCell>
-                    {formatCurrency(invoice.type === "SALE" ? item.price : item.purchasePrice)}
+                    {formatMoney(invoice.type === "SALE" ? item.price : item.purchasePrice)}
                   </TableCell>
-                  <TableCell>{formatCurrency(item.subtotal)}</TableCell>
+                  <TableCell>{formatMoney(item.subtotal)}</TableCell>
                   <TableCell>{item.discountPercent}%</TableCell>
-                  <TableCell>{formatCurrency(item.discountAmount)}</TableCell>
+                  <TableCell>{formatMoney(item.discountAmount)}</TableCell>
                   <TableCell
                     className={cn(
                       "text-end",
                       invoice.type === "SALE" ? "text-green-300" : "text-red-300",
                     )}
                   >
-                    {formatCurrency(item.total)}
+                    {formatMoney(item.total)}
                   </TableCell>
                 </TableRow>
               ))}

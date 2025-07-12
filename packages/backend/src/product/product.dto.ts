@@ -12,11 +12,11 @@ export class ProductEntity {
   @ApiProperty()
   description: string;
 
-  @ApiProperty()
-  purchasePrice: number;
+  @ApiProperty({ format: "number" })
+  purchasePrice: string;
 
-  @ApiProperty()
-  sellingPrice: number;
+  @ApiProperty({ format: "number" })
+  sellingPrice: string;
 
   @ApiProperty()
   stockQuantity: number;
@@ -31,8 +31,8 @@ export class ProductEntity {
     this.id = product.id;
     this.bardcode = product.barcode || undefined;
     this.description = product.description;
-    this.purchasePrice = product.purchasePrice;
-    this.sellingPrice = product.sellingPrice;
+    this.purchasePrice = product.purchasePrice.toString();
+    this.sellingPrice = product.sellingPrice.toString();
     this.stockQuantity = product.stockQuantity;
     this.createdAt = product.createdAt;
     this.updatedAt = product.updatedAt;

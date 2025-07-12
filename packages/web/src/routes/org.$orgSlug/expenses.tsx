@@ -1,4 +1,3 @@
-import { formatCurrency } from "@erp-system/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ShoppingCartIcon } from "lucide-react";
@@ -14,6 +13,7 @@ import {
 
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
+import { formatDate } from "@/utils/formatDate";
 
 import { apiClient } from "../../api-client";
 import { EmptyTable } from "../../components/empty-table";
@@ -56,9 +56,9 @@ function Expenses() {
                 <TableRow key={expense.id}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{expense.description}</TableCell>
-                  <TableCell>{formatCurrency(expense.price)}</TableCell>
+                  <TableCell>{expense.price}</TableCell>
                   <TableCell>{expense.cashierName}</TableCell>
-                  <TableCell>{new Date(expense.createdAt).toLocaleString()}</TableCell>
+                  <TableCell>{formatDate(expense.createdAt)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

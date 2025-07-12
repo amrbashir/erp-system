@@ -57,7 +57,7 @@ export function CustomerSelect({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-[10rem] sm:w-sm justify-between"
+            className="flex-1 sm:w-sm justify-between"
           >
             {field.state.value
               ? customers?.find((c) => c.id === field.state.value)?.name
@@ -65,7 +65,7 @@ export function CustomerSelect({
             <ChevronsUpDownIcon className="opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-screen sm:w-sm p-0">
+        <PopoverContent className="w-[calc(100vw-1rem)] translate-x-[0.5rem]! sm:w-sm p-0">
           <Command value={selectedCustomer} onValueChange={setSelectedCustomer}>
             <div className="flex items-center *:first:flex-1 gap-2 p-1 *:data-[slot=command-input-wrapper]:px-0 *:data-[slot=command-input-wrapper]:ps-2">
               <CommandInput

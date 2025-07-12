@@ -4,10 +4,10 @@ model Invoice {
   type InvoiceType @default(SALE)
 
   items           InvoiceItem[]
-  subtotal        Int
+  subtotal        Decimal       @db.Decimal(20, 4)
   discountPercent Int           @default(0)
-  discountAmount  Int           @default(0)
-  total           Int
+  discountAmount  Decimal       @default(0) @db.Decimal(20, 4)
+  total           Decimal       @db.Decimal(20, 4)
 
   customer   Customer? @relation(fields: [customerId], references: [id])
   customerId Int?

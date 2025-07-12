@@ -7,8 +7,8 @@ export class TransactionEntity {
   @ApiProperty()
   id: number;
 
-  @ApiProperty()
-  amount: number;
+  @ApiProperty({ format: "number" })
+  amount: string;
 
   @ApiProperty()
   createdAt: Date;
@@ -21,7 +21,7 @@ export class TransactionEntity {
 
   constructor(transaction: TransactionWithRelations) {
     this.id = transaction.id;
-    this.amount = transaction.amount;
+    this.amount = transaction.amount.toString();
     this.createdAt = transaction.createdAt;
     this.username = transaction.cashier.username;
     this.customerName = transaction.customer?.name;

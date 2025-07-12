@@ -16,6 +16,7 @@ import { AddCustomerDialog } from "@/components/add-customer-dialog";
 import { EmptyTable } from "@/components/empty-table";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
+import { formatDate } from "@/utils/formatDate";
 
 export const Route = createFileRoute("/org/$orgSlug/customers")({
   component: Customers,
@@ -62,7 +63,7 @@ function Customers() {
                   <TableCell>{customer.name}</TableCell>
                   <TableCell>{customer.address}</TableCell>
                   <TableCell>{customer.phone}</TableCell>
-                  <TableCell>{new Date(customer.createdAt).toLocaleString()}</TableCell>
+                  <TableCell>{formatDate(customer.createdAt)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

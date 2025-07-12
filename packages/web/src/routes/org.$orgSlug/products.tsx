@@ -1,4 +1,3 @@
-import { formatCurrency } from "@erp-system/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { PackageIcon } from "lucide-react";
@@ -16,6 +15,8 @@ import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
+import { formatDate } from "@/utils/formatDate";
+import { formatMoney } from "@/utils/formatMoney";
 
 export const Route = createFileRoute("/org/$orgSlug/products")({
   component: Products,
@@ -61,12 +62,12 @@ function Products() {
                   <TableCell>{product.bardcode}</TableCell>
                   <TableCell>{product.description}</TableCell>
                   <TableCell className="text-red-300">
-                    {formatCurrency(product.purchasePrice)}
+                    {formatMoney(product.purchasePrice)}
                   </TableCell>
                   <TableCell className="text-green-300">
-                    {formatCurrency(product.sellingPrice)}
+                    {formatMoney(product.sellingPrice)}
                   </TableCell>
-                  <TableCell>{new Date(product.createdAt).toLocaleString()}</TableCell>
+                  <TableCell>{formatDate(product.createdAt)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

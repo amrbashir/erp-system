@@ -347,8 +347,10 @@ export interface components {
             id: string;
             bardcode?: string;
             description: string;
-            purchasePrice: number;
-            sellingPrice: number;
+            /** Format: number */
+            purchasePrice: string;
+            /** Format: number */
+            sellingPrice: string;
             stockQuantity: number;
             /** Format: date-time */
             createdAt: string;
@@ -357,7 +359,8 @@ export interface components {
         };
         TransactionEntity: {
             id: number;
-            amount: number;
+            /** Format: number */
+            amount: string;
             /** Format: date-time */
             createdAt: string;
             username: string;
@@ -365,52 +368,69 @@ export interface components {
         };
         CreateSaleInvoiceItemDto: {
             productId: string;
-            price: number;
+            /** Format: number */
+            price: string;
             quantity: number;
             discountPercent?: number;
-            discountAmount?: number;
+            /** Format: number */
+            discountAmount?: string;
         };
         CreateSaleInvoiceDto: {
             customerId?: number;
             items: components["schemas"]["CreateSaleInvoiceItemDto"][];
             discountPercent?: number;
-            discountAmount?: number;
+            /** Format: number */
+            discountAmount?: string;
         };
         CreatePurchaseInvoiceItemDto: {
             barcode?: string;
             description: string;
-            purchasePrice: number;
-            sellingPrice: number;
+            /** Format: number */
+            purchasePrice: string;
+            /** Format: number */
+            sellingPrice: string;
             quantity: number;
             discountPercent?: number;
-            discountAmount?: number;
+            /** Format: number */
+            discountAmount?: string;
         };
         CreatePurchaseInvoiceDto: {
             customerId?: number;
             discountPercent?: number;
-            discountAmount?: number;
+            /** Format: number */
+            discountAmount?: string;
             items: components["schemas"]["CreatePurchaseInvoiceItemDto"][];
         };
         InvoiceItemEntity: {
             barcode?: string;
             description: string;
-            price: number;
-            purchasePrice: number;
-            sellingPrice: number;
+            /** Format: number */
+            price: string;
+            /** Format: number */
+            purchasePrice: string;
+            /** Format: number */
+            sellingPrice: string;
             quantity: number;
+            /** Format: number */
             discountPercent: number;
-            discountAmount: number;
-            subtotal: number;
-            total: number;
+            /** Format: number */
+            discountAmount: string;
+            /** Format: number */
+            subtotal: string;
+            /** Format: number */
+            total: string;
         };
         InvoiceEntity: {
             id: number;
             /** @enum {string} */
             type: "SALE" | "PURCHASE";
-            subtotal: number;
+            /** Format: number */
+            subtotal: string;
             discountPercent: number;
-            discountAmount: number;
-            total: number;
+            /** Format: number */
+            discountAmount: string;
+            /** Format: number */
+            total: string;
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */
@@ -423,7 +443,8 @@ export interface components {
         ExpenseEntity: {
             id: number;
             description: string;
-            price: number;
+            /** Format: number */
+            price: string;
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */

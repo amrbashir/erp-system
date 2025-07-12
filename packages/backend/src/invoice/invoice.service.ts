@@ -6,6 +6,7 @@ import type {
   InvoiceOrderByWithRelationInput,
   InvoiceWhereInput,
 } from "../prisma/generated/models";
+import { Prisma } from "../prisma/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreatePurchaseInvoiceDto, CreateSaleInvoiceDto } from "./invoice.dto";
 
@@ -41,7 +42,7 @@ export class InvoiceService {
 
         // Check stock quantities and prepare invoice items
         const invoiceItems: Omit<InvoiceItem, "id" | "invoiceId">[] = [];
-        let subtotal = 0;
+        let subtotal = new Prisma.Decimal(0);
 
         for (const item of dto.items) {
           const product = products.find((p) => p.id === item.productId);
@@ -56,32 +57,32 @@ export class InvoiceService {
             );
           }
 
-          // Calculate item subtotal (before invoice-level discount), rounding to base units to avoid fractions
-          const itemSubtotal = item.price * item.quantity;
-          const itemPercentDiscount = (itemSubtotal * item.discountPercent) / 100;
-          const itemTotal = Math.round(
-            Math.max(0, itemSubtotal - itemPercentDiscount - item.discountAmount),
-          );
+          // Calculate item subtotal (before invoice-level discount)
+          const itemSubtotal = new Prisma.Decimal(item.price).mul(item.quantity);
+          const itemPercentDiscount = itemSubtotal.mul(item.discountPercent).div(100);
+          const itemTotal = itemSubtotal
+            .sub(itemPercentDiscount)
+            .sub(new Prisma.Decimal(item.discountAmount));
 
           invoiceItems.push({
             barcode: product.barcode,
             description: product.description,
-            price: item.price,
+            price: new Prisma.Decimal(item.price),
             purchasePrice: product.purchasePrice,
             sellingPrice: product.sellingPrice,
             quantity: item.quantity,
             discountPercent: item.discountPercent,
-            discountAmount: item.discountAmount,
+            discountAmount: new Prisma.Decimal(item.discountAmount),
             subtotal: itemSubtotal,
             total: itemTotal,
           });
 
-          subtotal += itemTotal;
+          subtotal = subtotal.add(itemTotal);
         }
 
-        // Apply invoice-level discount, rounding to base units to avoid fractions
-        const percentDiscount = (subtotal * dto.discountPercent) / 100;
-        const total = Math.round(Math.max(0, subtotal - percentDiscount - dto.discountAmount));
+        // Apply invoice-level discount
+        const percentDiscount = subtotal.mul(dto.discountPercent).div(100);
+        const total = subtotal.sub(percentDiscount).sub(new Prisma.Decimal(dto.discountAmount));
 
         const organization = { connect: { slug: orgSlug } };
         const cashier = { connect: { id: userId } };
@@ -94,7 +95,7 @@ export class InvoiceService {
             items: { create: invoiceItems },
             subtotal,
             discountPercent: dto.discountPercent,
-            discountAmount: dto.discountAmount,
+            discountAmount: new Prisma.Decimal(dto.discountAmount),
             total,
             cashier,
             customer,
@@ -157,35 +158,35 @@ export class InvoiceService {
       return await this.prisma.$transaction(async (prisma) => {
         // Prepare invoice items
         const invoiceItems: Omit<InvoiceItem, "id" | "invoiceId">[] = [];
-        let subtotal = 0;
+        let subtotal = new Prisma.Decimal(0);
 
         for (const item of dto.items) {
-          // Calculate item subtotal (before invoice-level discount), rounding to base units to avoid fractions
-          const itemSubtotal = item.purchasePrice * item.quantity;
-          const itemPercentDiscount = (itemSubtotal * item.discountPercent) / 100;
-          const itemTotal = Math.round(
-            Math.max(0, itemSubtotal - itemPercentDiscount - item.discountAmount),
-          );
+          // Calculate item subtotal (before invoice-level discount)
+          const itemSubtotal = new Prisma.Decimal(item.purchasePrice).mul(item.quantity);
+          const itemPercentDiscount = itemSubtotal.mul(item.discountPercent).div(100);
+          const itemTotal = itemSubtotal
+            .sub(itemPercentDiscount)
+            .sub(new Prisma.Decimal(item.discountAmount));
 
           invoiceItems.push({
-            price: 0, // Price is not used in purchase invoices
+            price: new Prisma.Decimal(0), // Price is not used in purchase invoices
             barcode: item.barcode || null,
             description: item.description,
-            purchasePrice: item.purchasePrice,
-            sellingPrice: item.sellingPrice,
+            purchasePrice: new Prisma.Decimal(item.purchasePrice),
+            sellingPrice: new Prisma.Decimal(item.sellingPrice),
             quantity: item.quantity,
             discountPercent: item.discountPercent,
-            discountAmount: item.discountAmount,
+            discountAmount: new Prisma.Decimal(item.discountAmount),
             subtotal: itemSubtotal,
             total: itemTotal,
           });
 
-          subtotal += itemTotal;
+          subtotal = subtotal.add(itemTotal);
         }
 
-        // Apply invoice-level discount, rounding to base units to avoid fractions
-        const percentDiscount = (subtotal * dto.discountPercent) / 100;
-        const total = Math.round(Math.max(0, subtotal - percentDiscount - dto.discountAmount));
+        // Apply invoice-level discount
+        const percentDiscount = subtotal.mul(dto.discountPercent).div(100);
+        const total = subtotal.sub(percentDiscount).sub(new Prisma.Decimal(dto.discountAmount));
 
         const organization = { connect: { slug: orgSlug } };
         const cashier = { connect: { id: userId } };
@@ -198,14 +199,14 @@ export class InvoiceService {
             items: { create: invoiceItems },
             subtotal,
             discountPercent: dto.discountPercent,
-            discountAmount: dto.discountAmount,
+            discountAmount: new Prisma.Decimal(dto.discountAmount),
             total,
             cashier,
             customer,
             organization,
             transaction: {
               create: {
-                amount: -total, // Negative amount because it's a purchase (money going out)
+                amount: total.mul(-1), // Negative amount because it's a purchase (money going out)
                 cashier,
                 customer,
                 organization,
@@ -222,9 +223,7 @@ export class InvoiceService {
         // Update organization balance (decrease since it's a purchase)
         await prisma.organization.update({
           where: { slug: orgSlug },
-          data: {
-            balance: { decrement: total },
-          },
+          data: { balance: { decrement: total } },
         });
 
         // Get organization ID once for all products
@@ -253,8 +252,8 @@ export class InvoiceService {
             await prisma.product.update({
               where: { id: existingProduct.id },
               data: {
-                purchasePrice: item.purchasePrice,
-                sellingPrice: item.sellingPrice,
+                purchasePrice: new Prisma.Decimal(item.purchasePrice),
+                sellingPrice: new Prisma.Decimal(item.sellingPrice),
                 stockQuantity: { increment: item.quantity },
               },
             });
@@ -264,8 +263,8 @@ export class InvoiceService {
               data: {
                 barcode: item.barcode,
                 description: item.description,
-                purchasePrice: item.purchasePrice,
-                sellingPrice: item.sellingPrice,
+                purchasePrice: new Prisma.Decimal(item.purchasePrice),
+                sellingPrice: new Prisma.Decimal(item.sellingPrice),
                 stockQuantity: item.quantity,
                 organizationId: org.id,
               },

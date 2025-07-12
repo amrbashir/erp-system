@@ -1,5 +1,4 @@
-import { CreatePurchaseInvoiceItemDto } from "@erp-system/sdk/zod";
-import { toBaseUnits, toMajorUnits } from "@erp-system/utils";
+import { CreatePurchaseInvoiceDto, CreatePurchaseInvoiceItemDto } from "@erp-system/sdk/zod";
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -24,9 +23,16 @@ import { InputNumpad } from "@/components/ui/input-numpad";
 
 import { FormErrors, FormFieldError } from "./form-errors";
 
-type InvoiceItem = z.infer<typeof CreatePurchaseInvoiceItemDto>;
+type CreateInvoiceItem = z.infer<typeof CreatePurchaseInvoiceItemDto>;
+type Invoice = z.infer<ReturnType<(typeof CreatePurchaseInvoiceDto)["strict"]>> & {
+  items?: CreateInvoiceItem[];
+};
+type InvoiceItem = Invoice["items"][number];
 
-export function AddProductDialog({ onSubmit }: { onSubmit: (product: InvoiceItem) => void }) {
+export function AddProductDialog({
+  onProductSubmit,
+  ...props
+}: { onProductSubmit: (product: InvoiceItem) => void } & React.ComponentProps<"button">) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
@@ -35,14 +41,16 @@ export function AddProductDialog({ onSubmit }: { onSubmit: (product: InvoiceItem
       barcode: "",
       quantity: 1,
       description: "",
-      purchasePrice: 0,
-      sellingPrice: 0,
-    } as z.infer<ReturnType<(typeof CreatePurchaseInvoiceItemDto)["strict"]>>,
+      purchasePrice: "0",
+      sellingPrice: "0",
+      discountPercent: 0,
+      discountAmount: "0",
+    } as InvoiceItem,
     validators: {
       onSubmit: CreatePurchaseInvoiceItemDto,
     },
     onSubmit: async ({ value, formApi }) => {
-      onSubmit(value);
+      onProductSubmit(value);
       formApi.reset();
       setOpen(false);
     },
@@ -51,7 +59,7 @@ export function AddProductDialog({ onSubmit }: { onSubmit: (product: InvoiceItem
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>{t("product.add")}</Button>
+        <Button {...props}>{t("product.add")}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -70,7 +78,7 @@ export function AddProductDialog({ onSubmit }: { onSubmit: (product: InvoiceItem
           <form.Field name="description" children={(field) => <InputField field={field} />} />
           <form.Field
             name="quantity"
-            children={(field) => <InputField type="number" noConversion field={field} />}
+            children={(field) => <InputField type="number" field={field} />}
           />
           <form.Field
             name="purchasePrice"
@@ -104,11 +112,7 @@ export function AddProductDialog({ onSubmit }: { onSubmit: (product: InvoiceItem
   );
 }
 
-function InputField({
-  field,
-  noConversion,
-  ...props
-}: { field: AnyFieldApi; noConversion?: boolean } & React.ComponentProps<"input">) {
+function InputField({ field, ...props }: { field: AnyFieldApi } & React.ComponentProps<"input">) {
   const { t } = useTranslation();
 
   return (
@@ -118,12 +122,14 @@ function InputField({
         <InputNumpad
           id={field.name}
           name={field.name}
-          value={noConversion ? field.state.value : toMajorUnits(field.state.value)}
-          onChange={(e) =>
-            field.handleChange(
-              noConversion ? e.target.valueAsNumber : toBaseUnits(e.target.valueAsNumber),
-            )
-          }
+          value={field.state.value}
+          onChange={(e) => {
+            if (typeof e.target.value === "string") {
+              field.handleChange(e.target.value);
+            } else {
+              field.handleChange(e.target.valueAsNumber);
+            }
+          }}
           {...props}
         />
       ) : (

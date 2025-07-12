@@ -4,7 +4,7 @@ import {
   IsEnum,
   IsInt,
   IsNotEmpty,
-  IsNumber,
+  IsNumberString,
   IsOptional,
   IsString,
   Max,
@@ -23,11 +23,10 @@ export class CreateSaleInvoiceItemDto {
   @IsString()
   productId: string;
 
-  @ApiProperty()
+  @ApiProperty({ format: "number" })
   @IsNotEmpty()
-  @IsInt()
-  @Min(0)
-  price: number;
+  @IsNumberString()
+  price: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -42,17 +41,16 @@ export class CreateSaleInvoiceItemDto {
   @Max(100)
   discountPercent: number = 0;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ format: "number" })
   @IsOptional()
-  @IsInt()
-  @Min(0)
-  discountAmount: number = 0;
+  @IsNumberString()
+  discountAmount: string = "0";
 }
 
 export class CreateSaleInvoiceDto {
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNumber()
+  @IsInt()
   customerId?: number;
 
   @ApiProperty({ type: [CreateSaleInvoiceItemDto] })
@@ -68,11 +66,10 @@ export class CreateSaleInvoiceDto {
   @Max(100)
   discountPercent: number = 0;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ format: "number" })
   @IsOptional()
-  @IsInt()
-  @Min(0)
-  discountAmount: number = 0;
+  @IsNumberString()
+  discountAmount: string = "0";
 }
 
 export class CreatePurchaseInvoiceItemDto {
@@ -86,17 +83,15 @@ export class CreatePurchaseInvoiceItemDto {
   @IsString()
   description: string;
 
-  @ApiProperty()
+  @ApiProperty({ format: "number" })
   @IsNotEmpty()
-  @IsInt()
-  @Min(0)
-  purchasePrice: number;
+  @IsNumberString()
+  purchasePrice: string;
 
-  @ApiProperty()
+  @ApiProperty({ format: "number" })
   @IsNotEmpty()
-  @IsInt()
-  @Min(0)
-  sellingPrice: number;
+  @IsNumberString()
+  sellingPrice: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -111,11 +106,10 @@ export class CreatePurchaseInvoiceItemDto {
   @Max(100)
   discountPercent: number = 0;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ format: "number" })
   @IsOptional()
-  @IsInt()
-  @Min(0)
-  discountAmount: number = 0;
+  @IsNumberString()
+  discountAmount: string = "0";
 }
 
 export class CreatePurchaseInvoiceDto extends OmitType(CreateSaleInvoiceDto, ["items"]) {
@@ -133,41 +127,41 @@ export class InvoiceItemEntity {
   @ApiProperty()
   description: string;
 
-  @ApiProperty()
-  price: number;
+  @ApiProperty({ format: "number" })
+  price: string;
 
-  @ApiProperty()
-  purchasePrice: number;
+  @ApiProperty({ format: "number" })
+  purchasePrice: string;
 
-  @ApiProperty()
-  sellingPrice: number;
+  @ApiProperty({ format: "number" })
+  sellingPrice: string;
 
   @ApiProperty()
   quantity: number;
 
-  @ApiProperty()
+  @ApiProperty({ format: "number" })
   discountPercent: number;
 
-  @ApiProperty()
-  discountAmount: number;
+  @ApiProperty({ format: "number" })
+  discountAmount: string;
 
-  @ApiProperty()
-  subtotal: number;
+  @ApiProperty({ format: "number" })
+  subtotal: string;
 
-  @ApiProperty()
-  total: number;
+  @ApiProperty({ format: "number" })
+  total: string;
 
   constructor(item: InvoiceItem) {
     this.barcode = item.barcode || undefined;
     this.description = item.description;
-    this.price = item.price;
-    this.purchasePrice = item.purchasePrice;
-    this.sellingPrice = item.sellingPrice;
+    this.price = item.price.toString();
+    this.purchasePrice = item.purchasePrice.toString();
+    this.sellingPrice = item.sellingPrice.toString();
     this.quantity = item.quantity;
     this.discountPercent = item.discountPercent;
-    this.discountAmount = item.discountAmount;
-    this.subtotal = item.subtotal;
-    this.total = item.total;
+    this.discountAmount = item.discountAmount.toString();
+    this.subtotal = item.subtotal.toString();
+    this.total = item.total.toString();
   }
 }
 
@@ -178,17 +172,17 @@ export class InvoiceEntity {
   @ApiProperty({ enum: InvoiceType })
   type: InvoiceType;
 
-  @ApiProperty()
-  subtotal: number;
+  @ApiProperty({ format: "number" })
+  subtotal: string;
 
   @ApiProperty()
   discountPercent: number;
 
-  @ApiProperty()
-  discountAmount: number;
+  @ApiProperty({ format: "number" })
+  discountAmount: string;
 
-  @ApiProperty()
-  total: number;
+  @ApiProperty({ format: "number" })
+  total: string;
 
   @ApiProperty()
   createdAt: Date;
@@ -211,10 +205,10 @@ export class InvoiceEntity {
   constructor(invoice: InvoiceWithRelations) {
     this.id = invoice.id;
     this.type = invoice.type;
-    this.subtotal = invoice.subtotal;
+    this.subtotal = invoice.subtotal.toString();
     this.discountPercent = invoice.discountPercent;
-    this.discountAmount = invoice.discountAmount;
-    this.total = invoice.total;
+    this.discountAmount = invoice.discountAmount.toString();
+    this.total = invoice.total.toString();
     this.createdAt = invoice.createdAt;
     this.updatedAt = invoice.updatedAt;
     this.cashierName = invoice.cashier.username;

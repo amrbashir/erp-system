@@ -9,8 +9,8 @@ export class ExpenseEntity {
   @ApiProperty()
   description: string;
 
-  @ApiProperty()
-  price: number;
+  @ApiProperty({ format: "number" })
+  price: string;
 
   @ApiProperty()
   createdAt: Date;
@@ -27,7 +27,7 @@ export class ExpenseEntity {
   constructor(expense: ExpenseWithRelations) {
     this.id = expense.id;
     this.description = expense.description;
-    this.price = expense.price;
+    this.price = expense.price.toString();
     this.createdAt = expense.createdAt;
     this.updatedAt = expense.updatedAt;
     this.cashierName = expense.cashier.username;

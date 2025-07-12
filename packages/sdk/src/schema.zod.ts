@@ -68,8 +68,8 @@ export const ProductEntity = z
     id: z.string(),
     bardcode: z.string().optional(),
     description: z.string(),
-    purchasePrice: z.number(),
-    sellingPrice: z.number(),
+    purchasePrice: z.string(),
+    sellingPrice: z.string(),
     stockQuantity: z.number(),
     createdAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true }),
@@ -79,7 +79,7 @@ export const ProductEntity = z
 export const TransactionEntity = z
   .object({
     id: z.number(),
-    amount: z.number(),
+    amount: z.string(),
     createdAt: z.string().datetime({ offset: true }),
     username: z.string(),
     customerName: z.string().optional(),
@@ -89,10 +89,10 @@ export const TransactionEntity = z
 export const CreateSaleInvoiceItemDto = z
   .object({
     productId: z.string(),
-    price: z.number(),
+    price: z.string(),
     quantity: z.number(),
     discountPercent: z.number().optional(),
-    discountAmount: z.number().optional(),
+    discountAmount: z.string().optional(),
   })
   .passthrough();
 
@@ -101,7 +101,7 @@ export const CreateSaleInvoiceDto = z
     customerId: z.number().optional(),
     items: z.array(CreateSaleInvoiceItemDto),
     discountPercent: z.number().optional(),
-    discountAmount: z.number().optional(),
+    discountAmount: z.string().optional(),
   })
   .passthrough();
 
@@ -109,11 +109,11 @@ export const CreatePurchaseInvoiceItemDto = z
   .object({
     barcode: z.string().optional(),
     description: z.string(),
-    purchasePrice: z.number(),
-    sellingPrice: z.number(),
+    purchasePrice: z.string(),
+    sellingPrice: z.string(),
     quantity: z.number(),
     discountPercent: z.number().optional(),
-    discountAmount: z.number().optional(),
+    discountAmount: z.string().optional(),
   })
   .passthrough();
 
@@ -121,7 +121,7 @@ export const CreatePurchaseInvoiceDto = z
   .object({
     customerId: z.number().optional(),
     discountPercent: z.number().optional(),
-    discountAmount: z.number().optional(),
+    discountAmount: z.string().optional(),
     items: z.array(CreatePurchaseInvoiceItemDto),
   })
   .passthrough();
@@ -130,14 +130,14 @@ export const InvoiceItemEntity = z
   .object({
     barcode: z.string().optional(),
     description: z.string(),
-    price: z.number(),
-    purchasePrice: z.number(),
-    sellingPrice: z.number(),
+    price: z.string(),
+    purchasePrice: z.string(),
+    sellingPrice: z.string(),
     quantity: z.number(),
     discountPercent: z.number(),
-    discountAmount: z.number(),
-    subtotal: z.number(),
-    total: z.number(),
+    discountAmount: z.string(),
+    subtotal: z.string(),
+    total: z.string(),
   })
   .passthrough();
 
@@ -145,10 +145,10 @@ export const InvoiceEntity = z
   .object({
     id: z.number(),
     type: z.enum(["SALE", "PURCHASE"]),
-    subtotal: z.number(),
+    subtotal: z.string(),
     discountPercent: z.number(),
-    discountAmount: z.number(),
-    total: z.number(),
+    discountAmount: z.string(),
+    total: z.string(),
     createdAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true }),
     cashierName: z.string(),
@@ -162,7 +162,7 @@ export const ExpenseEntity = z
   .object({
     id: z.number(),
     description: z.string(),
-    price: z.number(),
+    price: z.string(),
     createdAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true }),
     cashierName: z.string(),

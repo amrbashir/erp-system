@@ -4,8 +4,8 @@ model Product {
   barcode String?
 
   description   String
-  purchasePrice Int
-  sellingPrice  Int
+  purchasePrice Decimal @db.Decimal(20, 4)
+  sellingPrice  Decimal @db.Decimal(20, 4)
   stockQuantity Int
 
   createdAt DateTime @default(now())

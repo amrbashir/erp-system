@@ -44,7 +44,7 @@ describe("TransactionService", () => {
     const transaction = await createTransaction(100, org.slug, adminUser!.id);
 
     expect(transaction).toBeDefined();
-    expect(transaction.amount).toBe(100);
+    expect(transaction.amount.toNumber()).toBe(100);
     expect(transaction.cashierId).toBe(adminUser!.id);
     expect(transaction.organizationId).toBe(org.id);
   });
@@ -62,8 +62,8 @@ describe("TransactionService", () => {
 
     expect(result).toBeDefined();
     expect(result.length).toBe(2);
-    expect(result[0].amount).toBe(100);
-    expect(result[1].amount).toBe(-200);
+    expect(result[0].amount.toNumber()).toBe(100);
+    expect(result[1].amount.toNumber()).toBe(-200);
     expect(result[0].cashier.id).toBe(adminUser!.id);
     expect(result[1].cashier.id).toBe(adminUser!.id);
   });

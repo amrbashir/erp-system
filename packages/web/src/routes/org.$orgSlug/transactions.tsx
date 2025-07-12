@@ -1,4 +1,3 @@
-import { formatCurrency } from "@erp-system/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { BanknoteIcon } from "lucide-react";
@@ -17,6 +16,8 @@ import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
+import { formatDate } from "@/utils/formatDate";
+import { formatMoney } from "@/utils/formatMoney";
 
 export const Route = createFileRoute("/org/$orgSlug/transactions")({
   component: Transactions,
@@ -61,15 +62,15 @@ function Transactions() {
                     <span
                       className={cn(
                         "flex gap-2",
-                        transaction.amount >= 0 ? "text-green-300" : "text-red-300",
+                        transaction.amount.includes("-") ? "text-red-300" : "text-green-300",
                       )}
                     >
-                      {formatCurrency(transaction.amount)}
+                      {formatMoney(transaction.amount)}
                     </span>
                   </TableCell>
                   <TableCell>{transaction.username}</TableCell>
                   <TableCell>{transaction.customerName}</TableCell>
-                  <TableCell>{new Date(transaction.createdAt).toLocaleString()}</TableCell>
+                  <TableCell>{formatDate(transaction.createdAt)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

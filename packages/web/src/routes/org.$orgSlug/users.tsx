@@ -39,6 +39,7 @@ import { EmptyTable } from "@/components/empty-table";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 import { useAuth } from "@/providers/auth";
+import { formatDate } from "@/utils/formatDate";
 
 export const Route = createFileRoute("/org/$orgSlug/users")({
   component: Users,
@@ -99,10 +100,8 @@ function Users() {
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{user.username}</TableCell>
                   <TableCell>{t(`user.roles.${user.role}`)}</TableCell>
-                  <TableCell>{new Date(user.createdAt).toLocaleString()}</TableCell>
-                  <TableCell>
-                    {user.deletedAt ? new Date(user.deletedAt).toLocaleString() : ""}
-                  </TableCell>
+                  <TableCell>{formatDate(user.createdAt)}</TableCell>
+                  <TableCell>{user.deletedAt ? formatDate(user.deletedAt) : ""}</TableCell>
                   <TableCell className="text-end">
                     <AlertDialog>
                       <DropdownMenu>

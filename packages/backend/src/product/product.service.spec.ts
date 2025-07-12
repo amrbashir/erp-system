@@ -38,8 +38,8 @@ describe("ProductService", async () => {
 
     expect(product).toBeDefined();
     expect(product.description).toBe(createProductDto.description);
-    expect(product.purchasePrice).toBe(createProductDto.purchasePrice);
-    expect(product.sellingPrice).toBe(createProductDto.sellingPrice);
+    expect(product.purchasePrice.toNumber()).toBe(createProductDto.purchasePrice);
+    expect(product.sellingPrice.toNumber()).toBe(createProductDto.sellingPrice);
     expect(product.stockQuantity).toBe(createProductDto.stockQuantity);
     expect(product.organizationId).toBe(org.id);
     expect(product.storeId).toBeNull();

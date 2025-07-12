@@ -69,7 +69,7 @@ describe("ExpenseService", () => {
     expect(result.length).toBe(1);
     expect(result[0].id).toBe(expense.id);
     expect(result[0].description).toBe("Test Expense");
-    expect(result[0].price).toBe(100);
+    expect(result[0].price.toNumber()).toBe(100);
     expect(result[0].cashier.id).toBe(adminUser!.id);
     expect(result[0].transactionId).toBe(transaction.id);
   });
