@@ -41,6 +41,7 @@ import {
   calculateItemSubtotal,
   calculateItemTotal,
 } from "@/utils/invoice-calculator";
+import { SafeDecimal } from "@/utils/SafeDecimal";
 
 export const Route = createFileRoute("/org/$orgSlug/invoices/createPurchase")({
   component: CreatePurchaseInvoice,
@@ -224,8 +225,8 @@ function InvoiceHeader({
 // Main invoice table component
 function InvoiceTable({
   items,
-  invoiceDiscountPercent = 0,
-  invoiceDiscountAmount = "0",
+  invoiceDiscountPercent,
+  invoiceDiscountAmount,
   onUpdateItemField,
   onRemoveItem,
   onUpdateInvoiceDiscount,
@@ -355,7 +356,7 @@ function InvoiceTableRow({
       <TableCell>
         <InputNumpad
           className="w-20"
-          value={new Decimal(item.discountAmount ?? 0).toNumber()}
+          value={new SafeDecimal(item.discountAmount || 0).toNumber()}
           onChange={(e) => onUpdateItemField(index, "discountAmount", e.target.value)}
           min={0}
           max={itemSubtotal.toNumber()}
@@ -379,8 +380,8 @@ function InvoiceTableFooter({
   onUpdateDiscount,
 }: {
   subtotal: Decimal;
-  discountPercent: number;
-  discountAmount: string;
+  discountPercent?: number;
+  discountAmount?: string;
   onUpdateDiscount: (field: "discountPercent" | "discountAmount", value: number | string) => void;
 }) {
   const { t } = useTranslation();
@@ -412,7 +413,7 @@ function InvoiceTableFooter({
         <TableCell>
           <InputNumpad
             className="w-20"
-            value={new Decimal(discountAmount).toNumber()}
+            value={new SafeDecimal(discountAmount || 0).toNumber()}
             onChange={(e) => onUpdateDiscount("discountAmount", e.target.value)}
             min={0}
             max={subtotal.toNumber()}

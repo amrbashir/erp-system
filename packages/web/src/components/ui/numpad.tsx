@@ -29,7 +29,7 @@ export function Numpad({
   min?: number;
   max?: number;
 } & React.ComponentProps<"div">) {
-  const [value, setValue] = useState(outerValue ?? "0");
+  const [value, setValue] = useState(outerValue || "0");
   const [valueAsNumber, setValueAsNumber] = useState(parseFloat(value.toString()));
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -39,8 +39,8 @@ export function Numpad({
       let currentVal = value.toString();
       let newValue;
       let [start, end] = [
-        inputRef.current?.selectionStart ?? 0,
-        inputRef.current?.selectionEnd ?? 0,
+        inputRef.current?.selectionStart || 0,
+        inputRef.current?.selectionEnd || 0,
       ];
 
       if (key === "Del") {

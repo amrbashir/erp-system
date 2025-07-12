@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { Decimal } from "decimal.js";
 import { BanknoteIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
@@ -62,7 +63,9 @@ function Transactions() {
                     <span
                       className={cn(
                         "flex gap-2",
-                        transaction.amount.includes("-") ? "text-red-300" : "text-green-300",
+                        new Decimal(transaction.amount).isNegative()
+                          ? "text-red-300"
+                          : "text-green-300",
                       )}
                     >
                       {formatMoney(transaction.amount)}

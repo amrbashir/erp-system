@@ -56,7 +56,7 @@ export class InvoiceController {
   ): Promise<InvoiceEntity[]> {
     const invoices = await this.service.getAllInvoices(orgSlug, {
       pagination: {
-        skip: query?.skip ?? 0,
+        skip: query?.skip || 0,
         take: query?.take ?? 30,
       },
       where: {

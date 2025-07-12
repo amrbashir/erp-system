@@ -1,7 +1,9 @@
 import { Decimal } from "decimal.js";
 
+import { SafeDecimal } from "./SafeDecimal";
+
 export function calculateItemSubtotal(price: string | number, quantity: number) {
-  return new Decimal(price).mul(quantity);
+  return new SafeDecimal(price).mul(quantity);
 }
 
 export function calculateItemDiscount(
@@ -9,11 +11,11 @@ export function calculateItemDiscount(
   discountPercent?: number,
   discountAmount?: string | number,
 ) {
-  const subtotalDecimal = subtotal instanceof Decimal ? subtotal : new Decimal(subtotal);
+  const subtotalDecimal = subtotal instanceof Decimal ? subtotal : new SafeDecimal(subtotal);
   const percentDiscount = subtotalDecimal.mul((discountPercent || 0) / 100);
   return {
     percentDiscount,
-    totalDiscount: new Decimal(discountAmount ?? 0).add(percentDiscount),
+    totalDiscount: percentDiscount.add(discountAmount || 0),
   };
 }
 
@@ -43,26 +45,27 @@ export function calculateInvoiceSubtotal(
     return calculateItemTotal(
       price || 0,
       item.quantity,
-      item.discountPercent ?? 0,
-      item.discountAmount ?? "0",
+      item.discountPercent || 0,
+      item.discountAmount || "0",
     ).add(total);
   }, new Decimal(0));
 }
 
 export function calculateInvoicePercentDiscount(
   subtotal: number | Decimal,
-  discountPercent: number,
+  discountPercent?: number,
 ) {
-  const subtotalDecimal = subtotal instanceof Decimal ? subtotal : new Decimal(subtotal);
-  return subtotalDecimal.mul(discountPercent).div(100);
+  const subtotalDecimal = subtotal instanceof Decimal ? subtotal : new SafeDecimal(subtotal);
+  return subtotalDecimal.mul(discountPercent || 0).div(100);
 }
 
 export function calculateInvoiceTotal(
   subtotal: number | Decimal,
-  discountPercent: number = 0,
-  discountAmount: string | number = 0,
+  discountPercent?: number,
+  discountAmount?: string | number,
 ) {
+  const discountAmountDecimal = new SafeDecimal(discountAmount || 0);
   const subtotalDecimal = subtotal instanceof Decimal ? subtotal : new Decimal(subtotal);
   const percentDiscount = calculateInvoicePercentDiscount(subtotal, discountPercent);
-  return subtotalDecimal.minus(percentDiscount).minus(discountAmount);
+  return subtotalDecimal.minus(percentDiscount).minus(discountAmountDecimal);
 }

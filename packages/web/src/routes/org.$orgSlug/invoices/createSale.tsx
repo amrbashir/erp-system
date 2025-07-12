@@ -48,6 +48,7 @@ import {
   calculateItemSubtotal,
   calculateItemTotal,
 } from "@/utils/invoice-calculator";
+import { SafeDecimal } from "@/utils/SafeDecimal";
 
 export const Route = createFileRoute("/org/$orgSlug/invoices/createSale")({
   component: CreateSaleInvoice,
@@ -325,7 +326,7 @@ function ProductItem({
   const { t } = useTranslation();
 
   const matchingInvoiceItem = invoiceItems.find((i) => i.id == product.id);
-  const remainingStock = product.stockQuantity - (matchingInvoiceItem?.quantity ?? 0);
+  const remainingStock = product.stockQuantity - (matchingInvoiceItem?.quantity || 0);
 
   return (
     <Button
@@ -354,8 +355,8 @@ function ProductItem({
 // Main invoice table component
 function InvoiceTable({
   items,
-  invoiceDiscountPercent = 0,
-  invoiceDiscountAmount = "0",
+  invoiceDiscountPercent,
+  invoiceDiscountAmount,
   onUpdateItemQuantity,
   onRemoveItem,
   onUpdateItemField,
@@ -473,7 +474,7 @@ function InvoiceTableRow({
       <TableCell>
         <InputNumpad
           className="w-20"
-          value={new Decimal(item.price).toNumber()}
+          value={new SafeDecimal(item.price).toNumber()}
           onChange={(e) => onUpdateField(index, "price", e.target.value)}
           min={0}
         />
@@ -492,7 +493,7 @@ function InvoiceTableRow({
       <TableCell>
         <InputNumpad
           className="w-20"
-          value={new Decimal(item.discountAmount ?? 0).toNumber()}
+          value={new SafeDecimal(item.discountAmount || 0).toNumber()}
           onChange={(e) => onUpdateField(index, "discountAmount", e.target.value)}
           min={0}
           max={itemSubtotal.toNumber()}
@@ -516,8 +517,8 @@ function InvoiceTableFooter({
   onUpdateInvoiceField,
 }: {
   subtotal: Decimal;
-  discountPercent: number;
-  discountAmount: string;
+  discountPercent?: number;
+  discountAmount?: string;
   onUpdateInvoiceField: (field: InvoiceEditableField, value: number | string) => void;
 }) {
   const { t } = useTranslation();
@@ -549,7 +550,7 @@ function InvoiceTableFooter({
         <TableCell>
           <InputNumpad
             className="w-20"
-            value={new Decimal(discountAmount).toNumber()}
+            value={new SafeDecimal(discountAmount || 0).toNumber()}
             onChange={(e) => onUpdateInvoiceField("discountAmount", e.target.value)}
             min={0}
             max={subtotal.toNumber()}
