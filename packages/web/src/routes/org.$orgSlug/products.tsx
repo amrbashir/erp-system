@@ -59,7 +59,7 @@ function Products() {
                 <TableRow key={index}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{product.stockQuantity}</TableCell>
-                  <TableCell>{product.bardcode}</TableCell>
+                  <TableCell>{product.barcode}</TableCell>
                   <TableCell>{product.description}</TableCell>
                   <TableCell className="text-red-300">
                     {formatMoney(product.purchasePrice)}

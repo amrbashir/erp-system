@@ -1,17 +1,25 @@
-import { CheckIcon, DeleteIcon } from "lucide-react";
+import { CornerDownLeftIcon, DeleteIcon } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
-import { set } from "zod";
 import { Button } from "@/shadcn/components/ui/button";
 import { Input } from "@/shadcn/components/ui/input";
 import { cn } from "@/shadcn/lib/utils";
 
 // prettier-ignore
 const KEYS = [
-  "1", "2", "3",
-  "4", "5", "6",
-  "7", "8", "9",
-  "Del", "0", "."
-] as const;
+  { key: "1", gridSpan: "row-start-1 col-start-1" },
+  { key: "2", gridSpan: "row-start-1 col-start-2" },
+  { key: "3", gridSpan: "row-start-1 col-start-3" },
+  { key: "Del", gridSpan: "row-start-1 col-start-4 text-red-300 hover:text-red-300", icon: DeleteIcon },
+  { key: "4", gridSpan: "row-start-2 col-start-1" },
+  { key: "5", gridSpan: "row-start-2 col-start-2" },
+  { key: "6", gridSpan: "row-start-2 col-start-3" },
+  { key: "Enter", gridSpan: "row-start-2 row-end-5 col-start-4 text-green-300 hover:text-green-300", icon: CornerDownLeftIcon },
+  { key: "7", gridSpan: "row-start-3 col-start-1" },
+  { key: "8", gridSpan: "row-start-3 col-start-2" },
+  { key: "9", gridSpan: "row-start-3 col-start-3" },
+  { key: "0", gridSpan: "row-start-4 col-start-1 col-span-2" },
+  { key: ".", gridSpan: "row-start-4 col-start-3" },
+]
 
 type OnSubmit = (values: {
   value: string | number | readonly string[] | undefined;
@@ -78,35 +86,31 @@ export function Numpad({
 
   return (
     <div className={cn("flex flex-col gap-2", className)} {...props}>
-      <div className="flex items-center gap-2">
-        <Input
-          ref={inputRef}
-          type="text"
-          inputMode="decimal"
-          lang="en-US"
-          value={value}
-          onChange={(e) => {
-            setValue(e.target.value);
-            setValueAsNumber(parseFloat(e.target.value));
-          }}
-        />
-        <Button
-          variant="ghost"
-          className="text-green-300 hover:text-green-300"
-          onClick={() => onSubmit?.({ value, valueAsNumber })}
-        >
-          <CheckIcon />
-        </Button>
-      </div>
-      <div className="grid grid-cols-3 gap-2" dir="ltr">
-        {KEYS.map((key) => (
+      <input
+        ref={inputRef}
+        type="text"
+        inputMode="decimal"
+        lang="en-US"
+        value={value}
+        className="p-4 text-center outline-none bg-transparent border rounded"
+        readOnly
+        onChange={(e) => {
+          setValue(e.target.value);
+          setValueAsNumber(parseFloat(e.target.value));
+        }}
+      />
+
+      <div className="grid grid-cols-4 grid-rows-4 gap-[1px]" dir="ltr">
+        {KEYS.map(({ key, gridSpan, icon: Icon }) => (
           <Button
-            className={cn("p-10!", key === "Del" && "text-red-300 hover:text-red-300")}
-            variant={key === "Del" || key === "." ? "ghost" : "secondary"}
+            className={cn("min-h-20 min-w-20 h-full rounded-none", gridSpan)}
+            variant="secondary"
             key={key}
-            onClick={() => handleKey(key)}
+            onClick={() =>
+              key === "Enter" ? onSubmit?.({ value, valueAsNumber }) : handleKey(key)
+            }
           >
-            {key === "Del" ? <DeleteIcon /> : <span>{key}</span>}
+            {Icon ? <Icon /> : <span>{key}</span>}
           </Button>
         ))}
       </div>

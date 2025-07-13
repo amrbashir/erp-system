@@ -105,10 +105,7 @@ function Users() {
                   <TableCell className="text-end">
                     <AlertDialog>
                       <DropdownMenu>
-                        <DropdownMenuTrigger
-                          className="text-muted-foreground hover:text-primary"
-                          asChild
-                        >
+                        <DropdownMenuTrigger className="text-muted-foreground" asChild>
                           <Button variant="ghost" size="sm">
                             {isUserDeletePending && deleteVariables.username === user.username ? (
                               <Loader2Icon className="animate-spin" />

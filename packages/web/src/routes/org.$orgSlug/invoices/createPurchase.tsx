@@ -7,7 +7,7 @@ import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Decimal } from "decimal.js";
-import { Loader2Icon, TrashIcon } from "lucide-react";
+import { Loader2Icon, XIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -29,7 +29,7 @@ import type z from "zod";
 
 import { apiClient } from "@/api-client";
 import { FormErrors } from "@/components/form-errors";
-import { CustomerSelect } from "@/components/invoice-customer-select";
+import { CustomerSelector } from "@/components/invoice-customer-selector";
 import { InputNumpad } from "@/components/ui/input-numpad";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
@@ -147,7 +147,7 @@ function CreatePurchaseInvoice() {
 
   const handleUpdateItemField = (
     index: number,
-    field: keyof CreateInvoiceItem,
+    field: keyof InvoiceItem,
     value: string | number,
   ) => {
     const newItems = [...invoiceItems];
@@ -159,7 +159,7 @@ function CreatePurchaseInvoice() {
     form.validate("change");
   };
 
-  const handleUpdateInvoiceDiscount = (field: "discountPercent" | "discountAmount", value: any) => {
+  const handleUpdateInvoiceField = (field: keyof Invoice, value: any) => {
     form.setFieldValue(field, value);
     form.validate("change");
   };
@@ -194,7 +194,7 @@ function CreatePurchaseInvoice() {
         subtotal={subtotal}
         discountPercent={invoiceDiscountPercent}
         discountAmount={invoiceDiscountAmount}
-        onUpdateDiscount={handleUpdateInvoiceDiscount}
+        onUpdateInvoiceField={handleUpdateInvoiceField}
       />
     </form>
   );
@@ -218,7 +218,7 @@ function InvoiceHeader({
     <div className="h-fit flex flex-col md:flex-row md:justify-between gap-2">
       <form.Field
         name="customerId"
-        children={(field) => <CustomerSelect customers={customers} field={field} />}
+        children={(field) => <CustomerSelector customers={customers} field={field} />}
       />
 
       <div className="flex gap-2 justify-end *:flex-1 md:*:flex-none">
@@ -244,17 +244,13 @@ function InvoiceHeader({
 // Main invoice table component
 function InvoiceTable({
   items,
-  onUpdateItemField,
   onRemoveItem,
+  onUpdateItemField,
   ...props
 }: {
   items: InvoiceItem[];
-  onUpdateItemField: (
-    index: number,
-    field: keyof CreateInvoiceItem,
-    value: string | number,
-  ) => void;
   onRemoveItem: (index: number) => void;
+  onUpdateItemField: (index: number, field: keyof InvoiceItem, value: string | number) => void;
 } & React.ComponentProps<typeof Table>) {
   const { t } = useTranslation();
 
@@ -272,7 +268,7 @@ function InvoiceTable({
           <TableHead className="w-40">{t("invoice.discountPercent")}</TableHead>
           <TableHead></TableHead>
           <TableHead className="w-40">{t("invoice.discountAmount")}</TableHead>
-          <TableHead className="text-end!">{t("invoice.total")}</TableHead>
+          <TableHead>{t("invoice.total")}</TableHead>
           <TableHead></TableHead>
         </TableRow>
       </TableHeader>
@@ -301,11 +297,7 @@ function InvoiceTableRow({
 }: {
   item: InvoiceItem;
   index: number;
-  onUpdateItemField: (
-    index: number,
-    field: keyof CreateInvoiceItem,
-    value: string | number,
-  ) => void;
+  onUpdateItemField: (index: number, field: keyof InvoiceItem, value: string | number) => void;
   onRemove: (index: number) => void;
 }) {
   const itemSubtotal = calculateItemSubtotal(item.purchasePrice, item.quantity);
@@ -338,6 +330,7 @@ function InvoiceTableRow({
       </TableCell>
       <TableCell>
         <InputNumpad
+          className="w-20"
           value={item.quantity}
           onChange={(e) => onUpdateItemField(index, "quantity", e.target.valueAsNumber)}
           min={1}
@@ -345,6 +338,7 @@ function InvoiceTableRow({
       </TableCell>
       <TableCell>
         <InputNumpad
+          className="w-20"
           value={new SafeDecimal(item.purchasePrice).toNumber()}
           onChange={(e) => onUpdateItemField(index, "purchasePrice", e.target.value)}
           min={0}
@@ -352,6 +346,7 @@ function InvoiceTableRow({
       </TableCell>
       <TableCell>
         <InputNumpad
+          className="w-20"
           value={new SafeDecimal(item.sellingPrice).toNumber()}
           onChange={(e) => onUpdateItemField(index, "sellingPrice", e.target.value)}
           min={0}
@@ -360,6 +355,7 @@ function InvoiceTableRow({
       <TableCell>{formatMoney(itemSubtotal)}</TableCell>
       <TableCell>
         <InputNumpad
+          className="w-20"
           value={item.discountPercent || 0}
           onChange={(e) => onUpdateItemField(index, "discountPercent", e.target.valueAsNumber)}
           min={0}
@@ -369,16 +365,23 @@ function InvoiceTableRow({
       <TableCell>{formatMoney(percentDiscount)}</TableCell>
       <TableCell>
         <InputNumpad
+          className="w-20"
           value={new SafeDecimal(item.discountAmount || 0).toNumber()}
           onChange={(e) => onUpdateItemField(index, "discountAmount", e.target.value)}
           min={0}
           max={itemSubtotal.toNumber()}
         />
       </TableCell>
-      <TableCell className="text-end">{formatMoney(itemTotal)}</TableCell>
+      <TableCell>{formatMoney(itemTotal)}</TableCell>
       <TableCell>
-        <Button onClick={() => onRemove(index)} variant="ghost" size="sm">
-          <TrashIcon />
+        <Button
+          type="button"
+          onClick={() => onRemove(index)}
+          variant="ghost"
+          size="sm"
+          className="text-muted-foreground"
+        >
+          <XIcon />
         </Button>
       </TableCell>
     </TableRow>
@@ -390,12 +393,12 @@ function InvoiceFooter({
   subtotal,
   discountPercent,
   discountAmount,
-  onUpdateDiscount,
+  onUpdateInvoiceField,
 }: {
   subtotal: Decimal;
   discountPercent?: number;
   discountAmount?: string;
-  onUpdateDiscount: (field: "discountPercent" | "discountAmount", value: number | string) => void;
+  onUpdateInvoiceField: (field: keyof Invoice, value: number | string) => void;
 }) {
   const { t } = useTranslation();
 
@@ -407,27 +410,27 @@ function InvoiceFooter({
       <CardContent className="grid grid-cols-[auto_1fr_auto] grid-rows-3 items-center gap-x-4 gap-y-1">
         <span>{t("invoice.subtotal")}:</span>
         <span></span>
-        <span>{formatMoney(subtotal)}</span>
+        <span className="text-end">{formatMoney(subtotal)}</span>
 
         <span>{t("invoice.discountPercent")}:</span>
         <InputNumpad
           className="w-20"
           value={discountPercent}
-          onChange={(e) => onUpdateDiscount("discountPercent", e.target.valueAsNumber)}
+          onChange={(e) => onUpdateInvoiceField("discountPercent", e.target.valueAsNumber)}
           min={0}
           max={100}
         />
-        <span>{formatMoney(subtotal.minus(percentDiscount))}</span>
+        <span className="text-end">-{formatMoney(percentDiscount)}</span>
 
         <span>{t("invoice.discountAmount")}:</span>
         <InputNumpad
           className="w-20"
           value={new SafeDecimal(discountAmount || 0).toNumber()}
-          onChange={(e) => onUpdateDiscount("discountAmount", e.target.value)}
+          onChange={(e) => onUpdateInvoiceField("discountAmount", e.target.value)}
           min={0}
           max={subtotal.toNumber()}
         />
-        <span>{formatMoney(percentDiscount.add(discountAmount ?? 0))}</span>
+        <span className="text-end">-{formatMoney(discountAmount ?? 0)}</span>
       </CardContent>
 
       <Separator />

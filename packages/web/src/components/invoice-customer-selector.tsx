@@ -24,7 +24,7 @@ import { AddCustomerDialog } from "./add-customer-dialog";
 type Customer = z.infer<typeof CustomerEntity>;
 
 // Customer selection dropdown component
-export function CustomerSelect({
+export function CustomerSelector({
   customers = [],
   field,
 }: {
@@ -65,7 +65,7 @@ export function CustomerSelect({
             <ChevronsUpDownIcon className="opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[calc(100vw-1rem)] translate-x-[0.5rem]! sm:w-sm p-0">
+        <PopoverContent className="w-[calc(100vw-1rem)] translate-x-[0.5rem]! sm:w-sm sm:translate-x-0! p-0">
           <Command value={selectedCustomer} onValueChange={setSelectedCustomer}>
             <div className="flex items-center *:first:flex-1 gap-2 p-1 *:data-[slot=command-input-wrapper]:px-0 *:data-[slot=command-input-wrapper]:ps-2">
               <CommandInput

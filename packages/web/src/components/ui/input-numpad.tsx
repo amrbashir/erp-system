@@ -36,7 +36,7 @@ export function InputNumpad({
               <PhNumpadIcon />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="bg-card">
+          <PopoverContent className="bg-card w-fit">
             <Numpad
               value={value}
               onSubmit={(values) => {
