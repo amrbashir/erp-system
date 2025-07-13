@@ -7,7 +7,7 @@ export class ProductEntity {
   id: string;
 
   @ApiPropertyOptional()
-  bardcode?: string;
+  barcode?: string;
 
   @ApiProperty()
   description: string;
@@ -29,7 +29,7 @@ export class ProductEntity {
 
   constructor(product: Product) {
     this.id = product.id;
-    this.bardcode = product.barcode || undefined;
+    this.barcode = product.barcode || undefined;
     this.description = product.description;
     this.purchasePrice = product.purchasePrice.toString();
     this.sellingPrice = product.sellingPrice.toString();

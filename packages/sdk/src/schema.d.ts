@@ -345,7 +345,7 @@ export interface components {
         };
         ProductEntity: {
             id: string;
-            bardcode?: string;
+            barcode?: string;
             description: string;
             /** Format: number */
             purchasePrice: string;

@@ -66,7 +66,7 @@ export const CustomerEntity = z
 export const ProductEntity = z
   .object({
     id: z.string(),
-    bardcode: z.string().optional(),
+    barcode: z.string().optional(),
     description: z.string(),
     purchasePrice: z.string(),
     sellingPrice: z.string(),
