@@ -46,7 +46,7 @@ export function InputNumber({ className, ref, ...props }: React.ComponentProps<t
         lang="en-US"
         className={cn(
           "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
-          "focus-visible:z-1 border-none rounded-none rounded-e",
+          "focus-visible:z-1 border-none rounded-none rounded-e flex-1",
           className,
         )}
         {...props}

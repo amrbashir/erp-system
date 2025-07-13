@@ -12,11 +12,13 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/shadcn/components/ui/card";
+import { Input } from "@/shadcn/components/ui/input";
+import { Separator } from "@/shadcn/components/ui/separator";
 import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -26,7 +28,6 @@ import type { ReactFormApi } from "@tanstack/react-form";
 import type z from "zod";
 
 import { apiClient } from "@/api-client";
-import { AddProductDialog } from "@/components/add-product-dialog";
 import { FormErrors } from "@/components/form-errors";
 import { CustomerSelect } from "@/components/invoice-customer-select";
 import { InputNumpad } from "@/components/ui/input-numpad";
@@ -59,6 +60,14 @@ type Invoice = z.infer<ReturnType<(typeof CreatePurchaseInvoiceDto)["strict"]>> 
 };
 type InvoiceItem = Invoice["items"][number];
 
+const DEFAULT_INVOICE_ITEM = {
+  description: "",
+  quantity: 1,
+  purchasePrice: "0",
+  price: "0",
+  sellingPrice: "0",
+};
+
 // Main component
 function CreatePurchaseInvoice() {
   const { slug: orgSlug } = useOrg();
@@ -74,23 +83,32 @@ function CreatePurchaseInvoice() {
 
   const form = useForm({
     defaultValues: {
-      items: [],
+      items: Array.from({ length: 20 }, () => ({ ...DEFAULT_INVOICE_ITEM })),
       customerId: undefined,
       discountPercent: 0,
       discountAmount: "0",
     } as Invoice,
     validators: {
+      onChange: ({ value, formApi }) => {
+        if (!!value.items[value.items.length - 1].description) {
+          formApi.pushFieldValue("items", { ...DEFAULT_INVOICE_ITEM });
+        }
+      },
+
       onSubmit: ({ value, formApi }) => {
-        if (value.items.length === 0) return "invoiceMustHaveItems";
+        const validItems = value.items.filter((i) => !!i.description);
+        if (validItems.length === 0) return "invoiceMustHaveItems";
 
         const errors = formApi.parseValuesWithSchema(CreatePurchaseInvoiceDto as any);
         if (errors) return errors;
       },
     },
     onSubmit: async ({ value, formApi }) => {
+      const validItems = value.items.filter((i) => !!i.description);
+
       const { error } = await apiClient.post("/org/{orgSlug}/invoice/createPurchase", {
         params: { path: { orgSlug } },
-        body: value,
+        body: { ...value, items: validItems },
       });
 
       if (error) {
@@ -104,15 +122,21 @@ function CreatePurchaseInvoice() {
     },
   });
 
-  const [invoiceItems, invoiceDiscountPercent, invoiceDiscountAmount] = useStore(
+  const [invoiceItems, validInvoiceItems, invoiceDiscountPercent, invoiceDiscountAmount] = useStore(
     form.store,
-    (state) => [state.values.items, state.values.discountPercent, state.values.discountAmount],
+    (state) => [
+      state.values.items,
+      state.values.items.filter((i) => !!i.description && i.quantity > 0),
+      state.values.discountPercent,
+      state.values.discountAmount,
+    ],
   );
 
-  const handleAddItem = (item: InvoiceItem) => {
-    form.pushFieldValue("items", item);
-    form.validate("change");
-  };
+  // Calculate subtotal (before invoice-level discounts)
+  const subtotal = useMemo(
+    () => calculateInvoiceSubtotal(validInvoiceItems, "PURCHASE"),
+    [validInvoiceItems],
+  );
 
   const handleRemoveItem = (index: number) => {
     const newItems = [...form.getFieldValue("items")];
@@ -142,7 +166,7 @@ function CreatePurchaseInvoice() {
 
   return (
     <form
-      className="h-full flex flex-col gap-2 pt-2"
+      className="h-full p-2 flex flex-col gap-2"
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -152,27 +176,26 @@ function CreatePurchaseInvoice() {
       <InvoiceHeader
         form={form}
         customers={customers}
-        hasItems={invoiceItems.length > 0}
+        hasItems={validInvoiceItems.length > 0}
         onReset={() => form.reset()}
-        onAddItem={handleAddItem}
       />
 
-      <div className="flex flex-col w-full h-full overflow-hidden">
-        <div className="flex-1 basis-0 p-2 overflow-x-hidden overflow-y-auto">
-          <InvoiceTable
-            items={invoiceItems}
-            invoiceDiscountAmount={invoiceDiscountAmount}
-            invoiceDiscountPercent={invoiceDiscountPercent}
-            onUpdateItemField={handleUpdateItemField}
-            onRemoveItem={handleRemoveItem}
-            onUpdateInvoiceDiscount={handleUpdateInvoiceDiscount}
-          />
-
-          <div className="mt-2">
-            <form.Subscribe children={(state) => <FormErrors formState={state} />} />
-          </div>
-        </div>
+      <div className="h-full flex flex-col overflow-hidden border rounded-lg *:flex-1 *:basis-0">
+        <InvoiceTable
+          items={invoiceItems}
+          onUpdateItemField={handleUpdateItemField}
+          onRemoveItem={handleRemoveItem}
+        />
       </div>
+
+      <form.Subscribe children={(state) => <FormErrors formState={state} />} />
+
+      <InvoiceFooter
+        subtotal={subtotal}
+        discountPercent={invoiceDiscountPercent}
+        discountAmount={invoiceDiscountAmount}
+        onUpdateDiscount={handleUpdateInvoiceDiscount}
+      />
     </form>
   );
 }
@@ -183,26 +206,22 @@ function InvoiceHeader({
   customers,
   hasItems,
   onReset,
-  onAddItem,
 }: {
   form: AnyReactFormApi;
   customers: Customer[] | undefined;
   hasItems: boolean;
   onReset: () => void;
-  onAddItem: (item: InvoiceItem) => void;
 }) {
   const { t } = useTranslation();
 
   return (
-    <div className="grid grid-rows-3 sm:grid-rows-none sm:grid-cols-[auto_auto_1fr] gap-2 px-2">
+    <div className="h-fit flex flex-col md:flex-row md:justify-between gap-2">
       <form.Field
         name="customerId"
         children={(field) => <CustomerSelect customers={customers} field={field} />}
       />
 
-      <AddProductDialog className="row-start-3 sm:row-start-auto" onProductSubmit={onAddItem} />
-
-      <div className="row-start-1 sm:row-start-auto flex gap-2 justify-end *:flex-1 md:*:flex-none">
+      <div className="flex gap-2 justify-end *:flex-1 md:*:flex-none">
         <form.Subscribe
           selector={(state) => [state.canSubmit, state.isSubmitting]}
           children={([canSubmit, isSubmitting]) => (
@@ -225,76 +244,51 @@ function InvoiceHeader({
 // Main invoice table component
 function InvoiceTable({
   items,
-  invoiceDiscountPercent,
-  invoiceDiscountAmount,
   onUpdateItemField,
   onRemoveItem,
-  onUpdateInvoiceDiscount,
+  ...props
 }: {
   items: InvoiceItem[];
-  invoiceDiscountPercent?: number;
-  invoiceDiscountAmount?: string;
   onUpdateItemField: (
     index: number,
     field: keyof CreateInvoiceItem,
     value: string | number,
   ) => void;
   onRemoveItem: (index: number) => void;
-  onUpdateInvoiceDiscount: (field: "discountPercent" | "discountAmount", value: any) => void;
-}) {
+} & React.ComponentProps<typeof Table>) {
   const { t } = useTranslation();
 
-  // Calculate subtotal (before invoice-level discounts)
-  const subtotal = useMemo(() => calculateInvoiceSubtotal(items, "PURCHASE"), [items]);
-
   return (
-    <div className="border rounded-lg">
-      <Table>
-        <TableHeader className="bg-muted">
-          <TableRow className="*:font-bold">
-            <TableHead>{t("common.ui.number")}</TableHead>
-            <TableHead>{t("common.form.barcode")}</TableHead>
-            <TableHead className="w-full">{t("common.form.description")}</TableHead>
-            <TableHead>{t("common.form.quantity")}</TableHead>
-            <TableHead>{t("common.pricing.purchase")}</TableHead>
-            <TableHead>{t("common.pricing.selling")}</TableHead>
-            <TableHead>{t("invoice.subtotal")}</TableHead>
-            <TableHead>{t("invoice.discountPercent")}</TableHead>
-            <TableHead></TableHead>
-            <TableHead>{t("invoice.discountAmount")}</TableHead>
-            <TableHead className="text-end!">{t("invoice.total")}</TableHead>
-            <TableHead></TableHead>
-          </TableRow>
-        </TableHeader>
+    <Table {...props}>
+      <TableHeader className="bg-muted">
+        <TableRow className="*:font-bold">
+          <TableHead>{t("common.ui.number")}</TableHead>
+          <TableHead className="min-w-3xs">{t("common.form.barcode")}</TableHead>
+          <TableHead className="min-w-3xs">{t("common.form.description")}</TableHead>
+          <TableHead className="w-40">{t("common.form.quantity")}</TableHead>
+          <TableHead className="w-40">{t("common.pricing.purchase")}</TableHead>
+          <TableHead className="w-40">{t("common.pricing.selling")}</TableHead>
+          <TableHead>{t("invoice.subtotal")}</TableHead>
+          <TableHead className="w-40">{t("invoice.discountPercent")}</TableHead>
+          <TableHead></TableHead>
+          <TableHead className="w-40">{t("invoice.discountAmount")}</TableHead>
+          <TableHead className="text-end!">{t("invoice.total")}</TableHead>
+          <TableHead></TableHead>
+        </TableRow>
+      </TableHeader>
 
-        <TableBody>
-          {items.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={11} className="text-center text-secondary-foreground/50 p-20">
-                {t("invoice.addItemsTo")}
-              </TableCell>
-            </TableRow>
-          ) : (
-            items.map((item, index) => (
-              <InvoiceTableRow
-                key={index}
-                item={item}
-                index={index}
-                onUpdateItemField={onUpdateItemField}
-                onRemove={onRemoveItem}
-              />
-            ))
-          )}
-        </TableBody>
-
-        <InvoiceTableFooter
-          subtotal={subtotal}
-          discountPercent={invoiceDiscountPercent}
-          discountAmount={invoiceDiscountAmount}
-          onUpdateDiscount={onUpdateInvoiceDiscount}
-        />
-      </Table>
-    </div>
+      <TableBody>
+        {items.map((item, index) => (
+          <InvoiceTableRow
+            key={index}
+            item={item}
+            index={index}
+            onUpdateItemField={onUpdateItemField}
+            onRemove={onRemoveItem}
+          />
+        ))}
+      </TableBody>
+    </Table>
   );
 }
 
@@ -330,22 +324,42 @@ function InvoiceTableRow({
   return (
     <TableRow>
       <TableCell>{index + 1}</TableCell>
-      <TableCell>{item.barcode}</TableCell>
-      <TableCell>{item.description}</TableCell>
+      <TableCell>
+        <Input
+          value={item.barcode}
+          onChange={(e) => onUpdateItemField(index, "barcode", e.target.value)}
+        />
+      </TableCell>
+      <TableCell>
+        <Input
+          value={item.description}
+          onChange={(e) => onUpdateItemField(index, "description", e.target.value)}
+        />
+      </TableCell>
       <TableCell>
         <InputNumpad
-          className="w-20"
           value={item.quantity}
           onChange={(e) => onUpdateItemField(index, "quantity", e.target.valueAsNumber)}
           min={1}
         />
       </TableCell>
-      <TableCell>{formatMoney(item.purchasePrice)}</TableCell>
-      <TableCell>{formatMoney(item.sellingPrice)}</TableCell>
+      <TableCell>
+        <InputNumpad
+          value={new SafeDecimal(item.purchasePrice).toNumber()}
+          onChange={(e) => onUpdateItemField(index, "purchasePrice", e.target.value)}
+          min={0}
+        />
+      </TableCell>
+      <TableCell>
+        <InputNumpad
+          value={new SafeDecimal(item.sellingPrice).toNumber()}
+          onChange={(e) => onUpdateItemField(index, "sellingPrice", e.target.value)}
+          min={0}
+        />
+      </TableCell>
       <TableCell>{formatMoney(itemSubtotal)}</TableCell>
       <TableCell>
         <InputNumpad
-          className="w-20"
           value={item.discountPercent || 0}
           onChange={(e) => onUpdateItemField(index, "discountPercent", e.target.valueAsNumber)}
           min={0}
@@ -355,7 +369,6 @@ function InvoiceTableRow({
       <TableCell>{formatMoney(percentDiscount)}</TableCell>
       <TableCell>
         <InputNumpad
-          className="w-20"
           value={new SafeDecimal(item.discountAmount || 0).toNumber()}
           onChange={(e) => onUpdateItemField(index, "discountAmount", e.target.value)}
           min={0}
@@ -373,7 +386,7 @@ function InvoiceTableRow({
 }
 
 // Invoice footer component with totals and discount inputs
-function InvoiceTableFooter({
+function InvoiceFooter({
   subtotal,
   discountPercent,
   discountAmount,
@@ -390,43 +403,39 @@ function InvoiceTableFooter({
   const totalPrice = calculateInvoiceTotal(subtotal, discountPercent, discountAmount);
 
   return (
-    <TableFooter className="*:*:font-bold">
-      <TableRow>
-        <TableCell colSpan={10}>{t("invoice.subtotal")}</TableCell>
-        <TableCell className="text-end">{formatMoney(subtotal)}</TableCell>
-        <TableCell></TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell colSpan={6}></TableCell>
-        <TableCell>{t("invoice.discountPercent")}</TableCell>
-        <TableCell>
-          <InputNumpad
-            className="w-20"
-            value={discountPercent}
-            onChange={(e) => onUpdateDiscount("discountPercent", e.target.valueAsNumber)}
-            min={0}
-            max={100}
-          />
-        </TableCell>
-        <TableCell>{formatMoney(percentDiscount)}</TableCell>
-        <TableCell>{t("invoice.discountAmount")}</TableCell>
-        <TableCell>
-          <InputNumpad
-            className="w-20"
-            value={new SafeDecimal(discountAmount || 0).toNumber()}
-            onChange={(e) => onUpdateDiscount("discountAmount", e.target.value)}
-            min={0}
-            max={subtotal.toNumber()}
-          />
-        </TableCell>
-        <TableCell></TableCell>
-      </TableRow>
+    <Card className="md:w-fit md:ms-auto">
+      <CardContent className="grid grid-cols-[auto_1fr_auto] grid-rows-3 items-center gap-x-4 gap-y-1">
+        <span>{t("invoice.subtotal")}:</span>
+        <span></span>
+        <span>{formatMoney(subtotal)}</span>
 
-      <TableRow>
-        <TableCell colSpan={10}>{t("invoice.total")}</TableCell>
-        <TableCell className="text-end text-red-300">{formatMoney(totalPrice)}</TableCell>
-        <TableCell></TableCell>
-      </TableRow>
-    </TableFooter>
+        <span>{t("invoice.discountPercent")}:</span>
+        <InputNumpad
+          className="w-20"
+          value={discountPercent}
+          onChange={(e) => onUpdateDiscount("discountPercent", e.target.valueAsNumber)}
+          min={0}
+          max={100}
+        />
+        <span>{formatMoney(subtotal.minus(percentDiscount))}</span>
+
+        <span>{t("invoice.discountAmount")}:</span>
+        <InputNumpad
+          className="w-20"
+          value={new SafeDecimal(discountAmount || 0).toNumber()}
+          onChange={(e) => onUpdateDiscount("discountAmount", e.target.value)}
+          min={0}
+          max={subtotal.toNumber()}
+        />
+        <span>{formatMoney(percentDiscount.add(discountAmount ?? 0))}</span>
+      </CardContent>
+
+      <Separator />
+
+      <CardFooter className="justify-between gap-2">
+        <span>{t("invoice.total")}:</span>
+        <span className="text-red-300">{formatMoney(totalPrice)}</span>
+      </CardFooter>
+    </Card>
   );
 }

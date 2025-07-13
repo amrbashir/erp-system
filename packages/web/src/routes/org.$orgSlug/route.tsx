@@ -48,7 +48,7 @@ function Org() {
   return (
     <AppSidebarProvider>
       <AppSideBar />
-      <SidebarInset>
+      <SidebarInset className="overflow-hidden">
         <OrgHeader />
         <Outlet />
       </SidebarInset>
