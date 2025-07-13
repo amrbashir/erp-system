@@ -1,6 +1,6 @@
 import { LoginUserDto } from "@erp-system/sdk/zod";
 import { useMutation } from "@tanstack/react-query";
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { z } from "zod";
 
 import type { ReactNode } from "react";
@@ -23,15 +23,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isAuthenticated = !!user;
 
   // Handle storage changes to update the user state
-  const storageChange = useCallback(
-    (e: StorageEvent) => (e.key === USER_KEY ? setUser(e.newValue ? getStoredUser() : null) : {}),
-    [setUser],
-  );
+  const storageChange = (e: StorageEvent) =>
+    e.key === USER_KEY ? setUser(e.newValue ? getStoredUser() : null) : {};
 
   useEffect(() => {
     window.addEventListener("storage", storageChange);
     return () => window.removeEventListener("storage", storageChange);
-  }, [storageChange]);
+  }, []);
 
   // login
   const loginMutation = useMutation({
@@ -42,21 +40,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }),
   });
 
-  const login = useCallback(
-    async (username: string, password: string, orgSlug: string) => {
-      const { data: user, error } = await loginMutation.mutateAsync({
-        username,
-        password,
-        orgSlug,
-      });
+  const login = async (username: string, password: string, orgSlug: string) => {
+    const { data: user, error } = await loginMutation.mutateAsync({
+      username,
+      password,
+      orgSlug,
+    });
 
-      if (error) throw error;
+    if (error) throw error;
 
-      setStoredUser(user);
-      setUser(user);
-    },
-    [setUser],
-  );
+    setStoredUser(user);
+    setUser(user);
+  };
 
   // logout
   const logoutMutation = useMutation({
@@ -67,15 +62,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }),
   });
 
-  const logout = useCallback(
-    async (orgSlug: string) => {
-      await logoutMutation.mutateAsync(orgSlug);
+  const logout = async (orgSlug: string) => {
+    await logoutMutation.mutateAsync(orgSlug);
 
-      setStoredUser(null);
-      setUser(null);
-    },
-    [setUser],
-  );
+    setStoredUser(null);
+    setUser(null);
+  };
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>

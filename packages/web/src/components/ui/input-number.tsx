@@ -25,7 +25,7 @@ export function InputNumber({ className, ref, ...props }: React.ComponentProps<t
           variant="secondary"
           className="focus-visible:z-1 rounded-none rounded-ss p-2! h-4.5!"
           size="sm"
-          onClick={stepUp}
+          onClick={() => stepUp()}
         >
           <ChevronUpIcon />
         </Button>
@@ -34,7 +34,7 @@ export function InputNumber({ className, ref, ...props }: React.ComponentProps<t
           variant="secondary"
           className="focus-visible:z-1 rounded-none rounded-es p-2! h-4.5!"
           size="sm"
-          onClick={stepDown}
+          onClick={() => stepDown()}
         >
           <ChevronDownIcon />
         </Button>

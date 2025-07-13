@@ -152,17 +152,15 @@ function QuickActionLink({
     <Link to={path}>
       <Card
         className={cn(
-          "min-w-[16rem] min-h-[16rem] hover:shadow-md transition-shadow cursor-pointer md:items-center md:justify-center",
+          "min-w-[16rem] min-h-[16rem] hover:shadow-md transition-shadow cursor-pointer md:items-center justify-center",
           hoverBgColor,
         )}
       >
-        <CardHeader
-          className={cn("rounded-full flex justify-center items-center size-20", iconBgColor)}
-        >
-          <Icon className={iconColor} />
-        </CardHeader>
-        <CardContent>
-          <CardTitle className="text-lg">{title}</CardTitle>
+        <CardContent className="flex flex-col md:items-center justify-center gap-4">
+          <div className={cn("rounded-full flex items-center justify-center size-20", iconBgColor)}>
+            <Icon className={iconColor} />
+          </div>
+          <p className="text-lg">{title}</p>
         </CardContent>
       </Card>
     </Link>

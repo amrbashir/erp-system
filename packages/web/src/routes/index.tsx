@@ -3,7 +3,7 @@ import { slugify } from "@erp-system/utils";
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Loader2Icon } from "lucide-react";
-import { useCallback, useRef } from "react";
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/components/ui/button";
@@ -98,15 +98,15 @@ function LoginExistingOrg({
   const { t } = useTranslation();
   const { logout: authLogout } = useAuth();
 
-  const logout = useCallback(() => {
+  const logout = () => {
     authLogout(user.orgSlug);
     navigate({
       to: "/",
       search: { loginOrgSlug: user.orgSlug, loginUsername: user.username },
     });
-  }, [authLogout, navigate]);
+  };
 
-  const goToOrg = useCallback(() => navigate({ to: "/org/" + user.orgSlug + "/" }), [navigate]);
+  const goToOrg = () => navigate({ to: "/org/" + user.orgSlug + "/" });
 
   return (
     <Card {...props}>

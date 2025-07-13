@@ -1,6 +1,6 @@
 import { Popover } from "@radix-ui/react-popover";
 import { CheckIcon, ChevronsUpDownIcon, PlusIcon } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
 import {
@@ -40,17 +40,23 @@ export function CustomerSelector({
   const [customerSearch, setCustomerSearch] = useState("");
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  function handleCustomerCreated(customer: Customer) {
-    field.handleChange(customer.id);
-    setSelectedCustomer(customer.name);
-    setCustomerSearch(customer.name);
-    setOpen(false);
-  }
+  const handleCustomerCreated = useCallback(
+    (customer: Customer) => {
+      field.handleChange(customer.id);
+      setSelectedCustomer(customer.name);
+      setCustomerSearch(customer.name);
+      setOpen(false);
+    },
+    [field],
+  );
 
-  function handleCustomerSelect(customer: Customer) {
-    field.handleChange(customer.id);
-    setOpen(false);
-  }
+  const handleCustomerSelect = useCallback(
+    (customer: Customer) => {
+      field.handleChange(customer.id);
+      setOpen(false);
+    },
+    [field],
+  );
 
   const ButtonTrigger = (
     <Button

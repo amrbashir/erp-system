@@ -90,7 +90,9 @@ export function UserDropdown() {
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem onClick={logout}>{t("common.actions.logout")}</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => logout()}>
+              {t("common.actions.logout")}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

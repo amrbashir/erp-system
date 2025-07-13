@@ -1,6 +1,6 @@
 import { InvoiceEntity } from "@erp-system/sdk/zod";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -32,7 +32,7 @@ type InvoiceType = z.infer<typeof InvoiceEntity>["type"];
 
 function Invoices() {
   const { t } = useTranslation();
-  const navigate = Route.useNavigate();
+  const { slug: orgSlug } = useOrg();
 
   return (
     <div className="p-4">
@@ -48,11 +48,15 @@ function Invoices() {
           </TabsList>
 
           <div className="flex items-center gap-2">
-            <Button onClick={() => navigate({ to: "/org/$orgSlug/invoices/createSale" })}>
-              {t("routes.createSaleInvoice")}
+            <Button>
+              <Link to="/org/$orgSlug/invoices/createSale" params={{ orgSlug }}>
+                {t("routes.createSaleInvoice")}
+              </Link>
             </Button>
-            <Button onClick={() => navigate({ to: "/org/$orgSlug/invoices/createPurchase" })}>
-              {t("routes.createPurchaseInvoice")}
+            <Button>
+              <Link to="/org/$orgSlug/invoices/createPurchase" params={{ orgSlug }}>
+                {t("routes.createPurchaseInvoice")}
+              </Link>
             </Button>
           </div>
         </div>
