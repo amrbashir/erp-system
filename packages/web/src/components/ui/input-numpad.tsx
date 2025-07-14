@@ -37,8 +37,11 @@ export function InputNumpad({
             <Button
               type="button"
               tabIndex={-1}
-              variant="secondary"
-              className={cn("focus-visible:z-1 rounded-none", rounded && "rounded-e")}
+              variant="ghost"
+              className={cn(
+                "bg-input dark:bg-input/30 focus-visible:z-1 rounded-none",
+                rounded && "rounded-e",
+              )}
             >
               <PhNumpadIcon />
             </Button>
