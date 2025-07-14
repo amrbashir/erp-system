@@ -226,7 +226,12 @@ function InvoiceHeader({
           selector={(state) => [state.canSubmit, state.isSubmitting]}
           children={([canSubmit, isSubmitting]) => (
             <>
-              <Button type="button" disabled={isSubmitting} variant="secondary" onClick={onReset}>
+              <Button
+                type="button"
+                disabled={isSubmitting}
+                variant="secondary"
+                onClick={() => onReset()}
+              >
                 {t("common.actions.delete")}
               </Button>
               <Button disabled={!canSubmit || !hasItems}>
@@ -406,8 +411,8 @@ function InvoiceFooter({
   const totalPrice = calculateInvoiceTotal(subtotal, discountPercent, discountAmount);
 
   return (
-    <Card className="md:w-fit md:ms-auto">
-      <CardContent className="grid grid-cols-[auto_1fr_auto] grid-rows-3 items-center gap-x-4 gap-y-1">
+    <Card className="md:w-fit md:ms-auto gap-2 p-2">
+      <CardContent className="grid grid-cols-[auto_1fr_auto] grid-rows-3 items-center gap-2 p-2">
         <span>{t("invoice.subtotal")}:</span>
         <span></span>
         <span className="text-end">{formatMoney(subtotal)}</span>
@@ -435,7 +440,7 @@ function InvoiceFooter({
 
       <Separator />
 
-      <CardFooter className="justify-between gap-2">
+      <CardFooter className="justify-between gap-2 p-2">
         <span>{t("invoice.total")}:</span>
         <span className="text-red-300">{formatMoney(totalPrice)}</span>
       </CardFooter>

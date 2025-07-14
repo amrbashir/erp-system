@@ -111,7 +111,8 @@
     "search": "$t(common.actions.search) products...",
     "stock": "Stock",
     "remaining": "Remaining",
-    "insufficientStock": "Insufficient stock for the product"
+    "insufficientStock": "Insufficient stock for the product",
+    "select": "Select a product"
   },
 
   "theme": {

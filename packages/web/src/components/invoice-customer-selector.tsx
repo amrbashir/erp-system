@@ -14,7 +14,6 @@ import {
 import { Drawer, DrawerContent, DrawerTrigger } from "@/shadcn/components/ui/drawer";
 import { Label } from "@/shadcn/components/ui/label";
 import { PopoverContent, PopoverTrigger } from "@/shadcn/components/ui/popover";
-import { cn } from "@/shadcn/lib/utils";
 
 import type { CustomerEntity } from "@erp-system/sdk/zod";
 import type { AnyFieldApi } from "@tanstack/react-form";
@@ -44,7 +43,6 @@ export function CustomerSelector({
     (customer: Customer) => {
       field.handleChange(customer.id);
       setSelectedCustomer(customer.name);
-      setCustomerSearch(customer.name);
       setOpen(false);
     },
     [field],
@@ -63,18 +61,24 @@ export function CustomerSelector({
       variant="outline"
       role="combobox"
       aria-expanded={open}
-      className="flex-1 sm:w-sm justify-between"
+      className="w-full md:w-sm flex-1 justify-between"
     >
-      {field.state.value
-        ? customers?.find((c) => c.id === field.state.value)?.name
-        : t("customer.select")}
+      {field.state.value ? (
+        customers?.find((c) => c.id === field.state.value)?.name
+      ) : (
+        <span className="opacity-50">{t("customer.select")}</span>
+      )}
       <ChevronsUpDownIcon className="opacity-50" />
     </Button>
   );
 
-  const CustomersCommanList = (
-    <Command value={selectedCustomer} onValueChange={setSelectedCustomer}>
-      <div className="flex items-center *:first:flex-1 gap-2 p-1 *:data-[slot=command-input-wrapper]:px-0 *:data-[slot=command-input-wrapper]:ps-2">
+  const CustomersCommandList = (
+    <Command
+      value={selectedCustomer}
+      onValueChange={setSelectedCustomer}
+      className="w-(--radix-popover-trigger-width) p-2"
+    >
+      <div className="flex justify-between">
         <CommandInput
           placeholder={t("customer.search")}
           value={customerSearch}
@@ -92,23 +96,18 @@ export function CustomerSelector({
       </div>
       <CommandList>
         <CommandEmpty>{t("customer.nomatches")}</CommandEmpty>
-        <CommandGroup>
-          {customers.map((customer) => (
-            <CommandItem
-              key={customer.id}
-              value={customer.name}
-              onSelect={() => handleCustomerSelect(customer)}
-            >
-              {customer.name}
-              <CheckIcon
-                className={cn(
-                  "ml-auto",
-                  field.state.value === customer.id ? "opacity-100" : "opacity-0",
-                )}
-              />
-            </CommandItem>
-          ))}
-        </CommandGroup>
+        {customers.map((customer) => (
+          <CommandItem
+            key={customer.id}
+            value={customer.name}
+            onSelect={() => handleCustomerSelect(customer)}
+          >
+            <CheckIcon
+              className={field.state.value === customer.id ? "opacity-100" : "opacity-0"}
+            />
+            {customer.name}
+          </CommandItem>
+        ))}
       </CommandList>
     </Command>
   );
@@ -119,9 +118,7 @@ export function CustomerSelector({
         <Label htmlFor={field.name}>{t("customer.name")}</Label>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>{ButtonTrigger}</PopoverTrigger>
-          <PopoverContent className="w-[calc(100vw-1rem)] translate-x-[0.5rem]! sm:w-sm sm:translate-x-0! p-0">
-            {CustomersCommanList}
-          </PopoverContent>
+          <PopoverContent asChild>{CustomersCommandList}</PopoverContent>
         </Popover>
       </div>
     );
@@ -130,7 +127,7 @@ export function CustomerSelector({
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>{ButtonTrigger}</DrawerTrigger>
-      <DrawerContent className="bg-popover">{CustomersCommanList}</DrawerContent>
+      <DrawerContent className="bg-popover p-2">{CustomersCommandList}</DrawerContent>
     </Drawer>
   );
 }

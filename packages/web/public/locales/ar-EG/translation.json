@@ -116,7 +116,8 @@
     "search": "$t(common.actions.search) المنتجات...",
     "stock": "المخزون",
     "remaining": "المتبقي",
-    "insufficientStock": "لا يوجد مخزون كافٍ للمنتج"
+    "insufficientStock": "لا يوجد مخزون كافٍ للمنتج",
+    "select": "اختر منتجًا"
   },
 
   "theme": {
