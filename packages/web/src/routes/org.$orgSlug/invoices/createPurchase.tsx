@@ -357,7 +357,7 @@ function InvoiceTableRow({
   );
 
   return (
-    <TableRow className="[&>td]:border">
+    <TableRow className="[&>td]:border-e [&>td:last-child]:border-none">
       <TableCell className="p-0">
         <Button
           type="button"
