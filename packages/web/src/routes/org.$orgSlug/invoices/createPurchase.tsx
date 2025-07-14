@@ -285,7 +285,7 @@ function InvoiceTable({
 
   return (
     <Table {...props}>
-      <TableHeader className="bg-muted">
+      <TableHeader className="bg-muted sticky top-0 z-10">
         <TableRow className="*:font-bold">
           <TableHead></TableHead>
           <TableHead>{t("common.ui.number")}</TableHead>
@@ -318,7 +318,7 @@ function InvoiceTable({
             <Button
               type="button"
               variant="ghost"
-              className="w-full rounded-none"
+              className="w-full rounded-none bg-secondary/50"
               onClick={() => onAddEmptyItem()}
             >
               <PlusIcon />
