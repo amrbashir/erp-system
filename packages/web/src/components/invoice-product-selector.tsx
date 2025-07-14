@@ -6,12 +6,10 @@ import { Button } from "@/shadcn/components/ui/button";
 import { Command, CommandInput, CommandItem, CommandList } from "@/shadcn/components/ui/command";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/shadcn/components/ui/drawer";
 import { Popover, PopoverContent } from "@/shadcn/components/ui/popover";
-import { cn } from "@/shadcn/lib/utils";
 
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 export function ProductSelector({
-  rounded = true,
   items,
   onItemSelect,
   value,
@@ -27,13 +25,10 @@ export function ProductSelector({
 
   const ButtonTrigger = (
     <Button
-      variant="outline"
+      variant="ghost"
       role="combobox"
       aria-expanded={open}
-      className={cn(
-        "w-full flex-1 justify-between rounded-none focus-visible:z-1 relative",
-        rounded && "rounded",
-      )}
+      className="w-full flex-1 justify-between border-none rounded-none focus-visible:z-1 relative"
     >
       {value || <span className="opacity-50">{t("product.select")}</span>}
       <ChevronsUpDownIcon className="opacity-50" />

@@ -31,6 +31,7 @@ import { apiClient } from "@/api-client";
 import { FormErrors } from "@/components/form-errors";
 import { CustomerSelector } from "@/components/invoice-customer-selector";
 import { InputNumpad } from "@/components/ui/input-numpad";
+import { InputNumpadFlat } from "@/components/ui/input-numpad-flat";
 import { useHotkeys } from "@/hooks/use-hotkeys";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
@@ -197,13 +198,13 @@ function CreatePurchaseInvoice() {
         onReset={() => form.reset()}
       />
 
-      <div className="h-full flex flex-col overflow-hidden border rounded-lg *:flex-1 *:basis-0">
+      <Card className="h-full flex flex-col overflow-hidden *:flex-1 *:basis-0 p-0">
         <InvoiceTable
           items={invoiceItems}
           onUpdateItemField={handleUpdateItemField}
           onRemoveItem={handleRemoveItem}
         />
-      </div>
+      </Card>
 
       <form.Subscribe children={(state) => <FormErrors formState={state} />} />
 
@@ -282,6 +283,7 @@ function InvoiceTable({
     <Table {...props}>
       <TableHeader className="bg-muted">
         <TableRow className="*:font-bold">
+          <TableHead></TableHead>
           <TableHead>{t("common.ui.number")}</TableHead>
           <TableHead className="min-w-3xs">{t("common.form.barcode")}</TableHead>
           <TableHead className="min-w-3xs">{t("common.form.description")}</TableHead>
@@ -293,7 +295,6 @@ function InvoiceTable({
           <TableHead></TableHead>
           <TableHead className="w-40">{t("invoice.discountAmount")}</TableHead>
           <TableHead>{t("invoice.total")}</TableHead>
-          <TableHead></TableHead>
         </TableRow>
       </TableHeader>
 
@@ -338,24 +339,34 @@ function InvoiceTableRow({
   );
 
   return (
-    <TableRow>
+    <TableRow className="[&>td]:border">
+      <TableCell className="p-0">
+        <Button
+          type="button"
+          variant="ghost"
+          className="rounded-none"
+          onClick={() => onRemove(index)}
+        >
+          <XIcon className="size-4" />
+        </Button>
+      </TableCell>
       <TableCell>{index + 1}</TableCell>
       <TableCell className="p-0">
         <Input
-          className="rounded-none focus-visible:z-1 relative"
+          className="rounded-none border-none bg-transparent! focus-visible:z-1 relative"
           value={item.barcode}
           onChange={(e) => onUpdateItemField(index, "barcode", e.target.value)}
         />
       </TableCell>
       <TableCell className="p-0">
         <Input
-          className="rounded-none focus-visible:z-1 relative"
+          className="rounded-none border-none bg-transparent! focus-visible:z-1 relative"
           value={item.description}
           onChange={(e) => onUpdateItemField(index, "description", e.target.value)}
         />
       </TableCell>
       <TableCell className="p-0">
-        <InputNumpad
+        <InputNumpadFlat
           rounded={false}
           className="w-20"
           value={item.quantity}
@@ -364,7 +375,7 @@ function InvoiceTableRow({
         />
       </TableCell>
       <TableCell className="p-0">
-        <InputNumpad
+        <InputNumpadFlat
           rounded={false}
           className="w-20"
           value={new SafeDecimal(item.purchasePrice).toNumber()}
@@ -373,7 +384,7 @@ function InvoiceTableRow({
         />
       </TableCell>
       <TableCell className="p-0">
-        <InputNumpad
+        <InputNumpadFlat
           rounded={false}
           className="w-20"
           value={new SafeDecimal(item.sellingPrice).toNumber()}
@@ -383,7 +394,7 @@ function InvoiceTableRow({
       </TableCell>
       <TableCell>{formatMoney(itemSubtotal)}</TableCell>
       <TableCell className="p-0">
-        <InputNumpad
+        <InputNumpadFlat
           rounded={false}
           className="w-20"
           value={item.discountPercent || 0}
@@ -394,7 +405,7 @@ function InvoiceTableRow({
       </TableCell>
       <TableCell>{formatMoney(percentDiscount)}</TableCell>
       <TableCell className="p-0">
-        <InputNumpad
+        <InputNumpadFlat
           rounded={false}
           className="w-20"
           value={new SafeDecimal(item.discountAmount || 0).toNumber()}
@@ -404,17 +415,6 @@ function InvoiceTableRow({
         />
       </TableCell>
       <TableCell>{formatMoney(itemTotal)}</TableCell>
-      <TableCell className="py-0 text-end">
-        <Button
-          type="button"
-          onClick={() => onRemove(index)}
-          variant="ghost"
-          size="sm"
-          className="text-muted-foreground"
-        >
-          <XIcon />
-        </Button>
-      </TableCell>
     </TableRow>
   );
 }

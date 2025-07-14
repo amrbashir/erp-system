@@ -80,7 +80,8 @@ export function InputNumber({
         className={cn(
           "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
           "focus-visible:z-1 border-none rounded-none flex-1",
-          rounded && "rounded-e",
+          rounded && "rounded-es",
+          !rounded && "bg-transparent! shadow-none",
           className,
         )}
         {...props}

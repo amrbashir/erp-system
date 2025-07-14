@@ -21,14 +21,14 @@ export function InputNumpad({
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
-    <div className={cn("flex items-center border", rounded && "rounded")}>
+    <div className={cn("flex items-center", rounded && "border rounded")}>
       <InputNumber
         rounded={rounded}
         ref={inputRef}
         value={value}
         onChange={onChange}
-        {...props}
         className={cn("rounded-e-none", className)}
+        {...props}
       />
 
       {!isMobile ? (
@@ -39,8 +39,8 @@ export function InputNumpad({
               tabIndex={-1}
               variant="ghost"
               className={cn(
-                "bg-input dark:bg-input/30 focus-visible:z-1 rounded-none",
-                rounded && "rounded-e",
+                "focus-visible:z-1 rounded-none",
+                rounded && "bg-input dark:bg-input/30 rounded-e",
               )}
             >
               <PhNumpadIcon />
