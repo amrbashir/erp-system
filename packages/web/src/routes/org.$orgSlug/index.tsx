@@ -4,6 +4,7 @@ import {
   FileTextIcon,
   HomeIcon,
   PackageIcon,
+  PlusIcon,
   ShoppingCartIcon,
   UserIcon,
   UsersIcon,
@@ -33,6 +34,7 @@ function Index() {
     {
       title: t("routes.invoice.createSale"),
       icon: FileTextIcon,
+      plusIcon: true,
       path: `/org/${orgSlug}/invoices/createSale`,
       hoverBgColor: "hover:bg-green-50 dark:hover:bg-green-950/50",
       iconColor: "text-green-500",
@@ -41,6 +43,7 @@ function Index() {
     {
       title: t("routes.invoice.createPurchase"),
       icon: FileTextIcon,
+      plusIcon: true,
       path: `/org/${orgSlug}/invoices/createPurchase`,
       hoverBgColor: "hover:bg-rose-50 dark:hover:bg-rose-950/50",
       iconColor: "text-rose-500",
@@ -137,6 +140,7 @@ function QuickActionLink({
   path,
   title,
   icon: Icon,
+  plusIcon = false,
   hoverBgColor,
   iconColor,
   iconBgColor,
@@ -144,6 +148,7 @@ function QuickActionLink({
   path: string;
   title: string;
   icon: React.ComponentType<{ className?: string }>;
+  plusIcon?: boolean;
   hoverBgColor: string;
   iconColor: string;
   iconBgColor: string;
@@ -157,8 +162,15 @@ function QuickActionLink({
         )}
       >
         <CardContent className="flex flex-col md:items-center justify-center gap-4">
-          <div className={cn("rounded-full flex items-center justify-center size-20", iconBgColor)}>
-            <Icon className={iconColor} />
+          <div
+            className={cn(
+              "rounded-full flex items-center justify-center size-20 relative",
+              iconBgColor,
+              iconColor,
+            )}
+          >
+            <Icon />
+            {plusIcon && <PlusIcon className="absolute bottom-1 start-1 size-4" />}
           </div>
           <p className="text-lg">{title}</p>
         </CardContent>
