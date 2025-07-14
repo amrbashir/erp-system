@@ -362,7 +362,7 @@ function InvoiceTableRow({
         <Button
           type="button"
           variant="ghost"
-          className="rounded-none"
+          className="rounded-none text-red-300"
           onClick={() => onRemove(index)}
         >
           <XIcon className="size-4" />
