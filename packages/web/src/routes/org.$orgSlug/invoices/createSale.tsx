@@ -426,7 +426,7 @@ function InvoiceTableRow({
       </TableCell>
       <TableCell className="p-0">
         <InputNumpad
-          variant="flat"
+          variant="ghost"
           className="w-20"
           value={item.quantity}
           onChange={(e) => onUpdateItemField(index, "quantity", e.target.valueAsNumber)}
@@ -436,7 +436,7 @@ function InvoiceTableRow({
       </TableCell>
       <TableCell className="p-0">
         <InputNumpad
-          variant="flat"
+          variant="ghost"
           className="w-20"
           value={new SafeDecimal(item.price).toNumber()}
           onChange={(e) => onUpdateItemField(index, "price", e.target.value)}
@@ -446,7 +446,7 @@ function InvoiceTableRow({
       <TableCell>{formatMoney(itemSubtotal)}</TableCell>
       <TableCell className="p-0">
         <InputNumpad
-          variant="flat"
+          variant="ghost"
           className="w-20"
           value={item.discountPercent || 0}
           onChange={(e) => onUpdateItemField(index, "discountPercent", e.target.valueAsNumber)}
@@ -457,7 +457,7 @@ function InvoiceTableRow({
       <TableCell>{formatMoney(percentDiscount)}</TableCell>
       <TableCell className="p-0">
         <InputNumpad
-          variant="flat"
+          variant="ghost"
           value={new SafeDecimal(item.discountAmount || 0).toNumber()}
           onChange={(e) => onUpdateItemField(index, "discountAmount", e.target.value)}
           min={0}

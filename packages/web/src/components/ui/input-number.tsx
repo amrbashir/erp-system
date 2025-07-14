@@ -10,7 +10,7 @@ export function InputNumber({
   ref,
   ...props
 }: {
-  variant?: "default" | "flat";
+  variant?: "default" | "ghost";
 } & React.ComponentProps<typeof Input>) {
   const inputRef = useRef<HTMLInputElement>(null);
   useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
@@ -63,7 +63,7 @@ export function InputNumber({
           "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
           "focus-visible:z-1 border-none rounded-none flex-1",
           variant === "default" && "rounded-es",
-          variant === "flat" && "bg-transparent! shadow-none",
+          variant === "ghost" && "bg-transparent! shadow-none",
           className,
         )}
         {...props}

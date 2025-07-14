@@ -16,7 +16,7 @@ export function InputNumpad({
   className,
   ...props
 }: {
-  variant?: "default" | "flat";
+  variant?: "default" | "ghost";
 } & React.ComponentProps<typeof Input>) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
