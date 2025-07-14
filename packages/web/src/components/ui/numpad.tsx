@@ -100,10 +100,10 @@ export function Numpad({
         }}
       />
 
-      <div className="grid grid-cols-4 grid-rows-4 gap-[1px]" dir="ltr">
+      <div className="grid grid-cols-4 grid-rows-4 gap-[1px] overflow-hidden" dir="ltr">
         {KEYS.map(({ key, gridSpan, icon: Icon }) => (
           <Button
-            className={cn("min-h-20 min-w-20 h-full rounded-none", gridSpan)}
+            className={cn("min-h-15 min-w-15 h-full rounded-none", gridSpan)}
             variant="secondary"
             key={key}
             onClick={() =>
