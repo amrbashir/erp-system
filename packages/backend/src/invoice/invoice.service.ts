@@ -84,12 +84,10 @@ export class InvoiceService {
         const percentDiscount = subtotal.mul(dto.discountPercent).div(100);
         const total = subtotal.sub(percentDiscount).sub(new Prisma.Decimal(dto.discountAmount));
 
+        // Create invoice with items and a transaction
         const organization = { connect: { slug: orgSlug } };
         const cashier = { connect: { id: userId } };
         const customer = dto.customerId ? { connect: { id: dto.customerId } } : undefined;
-
-        // Create invoice with items in a transaction
-        // Create the invoice
         const invoice = await prisma.invoice.create({
           data: {
             items: { create: invoiceItems },
@@ -156,6 +154,76 @@ export class InvoiceService {
 
     try {
       return await this.prisma.$transaction(async (prisma) => {
+        // Get organization ID once for all products
+        const org = await prisma.organization.findUnique({
+          where: { slug: orgSlug },
+          select: { id: true },
+        });
+
+        if (!org) {
+          throw new NotFoundException("Organization with this slug does not exist");
+        }
+
+        // Create or update products based on purchased items
+        for (const item of dto.items) {
+          // Find existing product by description or barcode
+          const existingProduct = await prisma.product.findFirst({
+            where: {
+              OR: [
+                {
+                  description: item.description,
+                  organizationId: org.id,
+                },
+                item.barcode
+                  ? {
+                      barcode: item.barcode,
+                      organizationId: org.id,
+                    }
+                  : {},
+              ],
+            },
+            select: { id: true, description: true, barcode: true },
+          });
+
+          if (existingProduct) {
+            if (item.barcode) {
+              if (existingProduct.description !== item.description) {
+                throw new BadRequestException(
+                  `Product with barcode ${item.barcode} already exists with a different description: ${existingProduct.description}`,
+                );
+              }
+
+              if (existingProduct.barcode !== item.barcode) {
+                throw new BadRequestException(
+                  `Product with description ${item.description} already exists with a different barcode: ${existingProduct.barcode}`,
+                );
+              }
+            }
+
+            // Update existing product
+            await prisma.product.update({
+              where: { id: existingProduct.id },
+              data: {
+                purchasePrice: new Prisma.Decimal(item.purchasePrice),
+                sellingPrice: new Prisma.Decimal(item.sellingPrice),
+                stockQuantity: { increment: item.quantity },
+              },
+            });
+          } else {
+            // Create new product
+            await prisma.product.create({
+              data: {
+                barcode: item.barcode,
+                description: item.description,
+                purchasePrice: new Prisma.Decimal(item.purchasePrice),
+                sellingPrice: new Prisma.Decimal(item.sellingPrice),
+                stockQuantity: item.quantity,
+                organizationId: org.id,
+              },
+            });
+          }
+        }
+
         // Prepare invoice items
         const invoiceItems: Omit<InvoiceItem, "id" | "invoiceId">[] = [];
         let subtotal = new Prisma.Decimal(0);
@@ -188,11 +256,10 @@ export class InvoiceService {
         const percentDiscount = subtotal.mul(dto.discountPercent).div(100);
         const total = subtotal.sub(percentDiscount).sub(new Prisma.Decimal(dto.discountAmount));
 
+        // Create invoice with items and a transaction
         const organization = { connect: { slug: orgSlug } };
         const cashier = { connect: { id: userId } };
         const customer = dto.customerId ? { connect: { id: dto.customerId } } : undefined;
-
-        // Create invoice with items in a transaction
         const invoice = await prisma.invoice.create({
           data: {
             type: "PURCHASE",
@@ -225,52 +292,6 @@ export class InvoiceService {
           where: { slug: orgSlug },
           data: { balance: { decrement: total } },
         });
-
-        // Get organization ID once for all products
-        const org = await prisma.organization.findUnique({
-          where: { slug: orgSlug },
-          select: { id: true },
-        });
-
-        if (!org) {
-          throw new NotFoundException("Organization with this slug does not exist");
-        }
-
-        // Create or update products based on purchased items
-        for (const item of dto.items) {
-          // Find existing product
-          const existingProduct = await prisma.product.findFirst({
-            where: {
-              description: item.description,
-              organizationId: org.id,
-            },
-            select: { id: true },
-          });
-
-          if (existingProduct) {
-            // Update existing product
-            await prisma.product.update({
-              where: { id: existingProduct.id },
-              data: {
-                purchasePrice: new Prisma.Decimal(item.purchasePrice),
-                sellingPrice: new Prisma.Decimal(item.sellingPrice),
-                stockQuantity: { increment: item.quantity },
-              },
-            });
-          } else {
-            // Create new product
-            await prisma.product.create({
-              data: {
-                barcode: item.barcode,
-                description: item.description,
-                purchasePrice: new Prisma.Decimal(item.purchasePrice),
-                sellingPrice: new Prisma.Decimal(item.sellingPrice),
-                stockQuantity: item.quantity,
-                organizationId: org.id,
-              },
-            });
-          }
-        }
 
         return invoice;
       });

@@ -62,8 +62,8 @@ describe("TransactionService", () => {
 
     expect(result).toBeDefined();
     expect(result.length).toBe(2);
-    expect(result[0].amount.toNumber()).toBe(100);
-    expect(result[1].amount.toNumber()).toBe(-200);
+    expect(result[0].amount.toNumber()).toBe(-200);
+    expect(result[1].amount.toNumber()).toBe(100);
     expect(result[0].cashier.id).toBe(adminUser!.id);
     expect(result[1].cashier.id).toBe(adminUser!.id);
   });

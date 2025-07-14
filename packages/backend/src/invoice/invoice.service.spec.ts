@@ -4,7 +4,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { generateRandomOrgData, useRandomDatabase } from "../../e2e/utils";
 import { Prisma } from "../prisma/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
-import { CreateSaleInvoiceDto } from "./invoice.dto";
+import { CreatePurchaseInvoiceDto, CreateSaleInvoiceDto } from "./invoice.dto";
 import { InvoiceService } from "./invoice.service";
 
 describe("InvoiceService", async () => {
@@ -473,5 +473,78 @@ describe("InvoiceService", async () => {
 
       expect(updatedOrg!.balance).toStrictEqual(new Prisma.Decimal(-100)); // Decreased by purchase amount
     });
+  });
+
+  it("should throw BadRequestException when trying to create an invoice with the same barcode as an existing product", async () => {
+    const { user, orgSlug } = await setupTestOrganization();
+
+    // Create a product with a specific barcode
+    const existingProduct = await prisma.product.create({
+      data: {
+        barcode: "123456",
+        description: "Existing Product",
+        purchasePrice: new Prisma.Decimal("50"),
+        sellingPrice: new Prisma.Decimal("100"),
+        stockQuantity: 10,
+        organization: { connect: { slug: orgSlug } },
+      },
+    });
+
+    // Attempt to create an invoice with the same barcode
+    const createInvoiceDto: CreatePurchaseInvoiceDto = {
+      items: [
+        {
+          barcode: existingProduct.barcode ?? undefined, // Same barcode as existing product
+          purchasePrice: "60",
+          sellingPrice: "120",
+          description: "New Product with Existing Barcode",
+          quantity: 1,
+          discountPercent: 0,
+          discountAmount: "0",
+        },
+      ],
+      discountPercent: 0,
+      discountAmount: "0",
+    };
+
+    await expect(service.createPurchaseInvoice(orgSlug, createInvoiceDto, user.id)).rejects.toThrow(
+      BadRequestException,
+    );
+  });
+
+  it("should throw BadRequestException when trying to create an invoice with the same description as an existing product but with different barcode", async () => {
+    const { user, orgSlug } = await setupTestOrganization();
+
+    // Create a product with a specific description
+    const existingProduct = await prisma.product.create({
+      data: {
+        description: "Unique Product",
+        purchasePrice: new Prisma.Decimal("50"),
+        sellingPrice: new Prisma.Decimal("100"),
+        stockQuantity: 10,
+        organization: { connect: { slug: orgSlug } },
+      },
+    });
+
+    // Attempt to create an invoice with the same description
+    const createInvoiceDto: CreatePurchaseInvoiceDto = {
+      items: [
+        {
+          barcode: "789012", // Different barcode
+          description: existingProduct.description, // Same description as existing product
+          purchasePrice: "60",
+          sellingPrice: "120",
+          quantity: 1,
+          discountPercent: 0,
+          discountAmount: "0",
+        },
+      ],
+      discountPercent: 0,
+      discountAmount: "0",
+    };
+
+    await expect(service.createPurchaseInvoice(orgSlug, createInvoiceDto, user.id)).rejects.toThrow(
+      BadRequestException,
+    );
   });
 });
