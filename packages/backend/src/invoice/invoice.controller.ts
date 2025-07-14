@@ -62,6 +62,7 @@ export class InvoiceController {
       where: {
         type: query?.type,
       },
+      orderBy: { createdAt: "desc" },
     });
     return invoices.map((invoice) => new InvoiceEntity(invoice));
   }

@@ -26,6 +26,7 @@ export class TransactionService {
           customer: true,
           cashier: true,
         },
+        orderBy: { createdAt: "desc" },
       });
     } catch (error: any) {
       if (error.code === "P2025") {

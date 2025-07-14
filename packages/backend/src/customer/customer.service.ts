@@ -42,6 +42,7 @@ export class CustomerService {
         where: { organization: { slug: orgSlug } },
         skip: paginationDto?.skip,
         take: paginationDto?.take,
+        orderBy: { createdAt: "desc" },
       });
     } catch (error: any) {
       if (error.code === "P2025") {

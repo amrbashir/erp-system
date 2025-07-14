@@ -24,6 +24,7 @@ export class ExpenseService {
         include: {
           cashier: true,
         },
+        orderBy: { createdAt: "desc" },
       });
     } catch (error: any) {
       if (error.code === "P2025") {
