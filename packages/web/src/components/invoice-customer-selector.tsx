@@ -49,8 +49,8 @@ export function CustomerSelector({
   );
 
   const handleCustomerSelect = useCallback(
-    (customer: Customer) => {
-      field.handleChange(customer.id);
+    (customer: Customer | undefined) => {
+      field.handleChange(customer?.id);
       setOpen(false);
     },
     [field],
@@ -66,7 +66,7 @@ export function CustomerSelector({
       {field.state.value ? (
         customers?.find((c) => c.id === field.state.value)?.name
       ) : (
-        <span className="opacity-50">{t("customer.select")}</span>
+        <span className="opacity-50">{t("customer.without")}</span>
       )}
       <ChevronsUpDownIcon className="opacity-50" />
     </Button>
@@ -96,6 +96,10 @@ export function CustomerSelector({
       </div>
       <CommandList>
         <CommandEmpty>{t("customer.nomatches")}</CommandEmpty>
+        <CommandItem onSelect={() => handleCustomerSelect(undefined)}>
+          <CheckIcon className={field.state.value === undefined ? "opacity-100" : "opacity-0"} />
+          {t("customer.without")}
+        </CommandItem>
         {customers.map((customer) => (
           <CommandItem
             key={customer.id}
