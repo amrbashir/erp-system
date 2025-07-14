@@ -23,6 +23,12 @@ export function ProductSelector({
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
+  const handleItemSelect = (item: string) => {
+    setSelected(item);
+    onItemSelect(item);
+    setOpen(false);
+  };
+
   const ButtonTrigger = (
     <Button
       variant="ghost"
@@ -40,14 +46,7 @@ export function ProductSelector({
       <CommandInput placeholder={t("product.search")} />
       <CommandList>
         {items.map((item, index) => (
-          <CommandItem
-            key={index}
-            value={item}
-            onSelect={() => {
-              setSelected(item);
-              onItemSelect(item);
-            }}
-          >
+          <CommandItem key={index} value={item} onSelect={() => handleItemSelect(item)}>
             <CheckIcon className={selected == item ? "opacity-100" : "opacity-0"} />
             {item}
           </CommandItem>
