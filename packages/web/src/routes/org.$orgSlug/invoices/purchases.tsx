@@ -18,12 +18,15 @@ function RouteComponent() {
 
   return (
     <div className="p-4 flex flex-col gap-4">
-      <Button asChild>
-        <Link to="/org/$orgSlug/invoices/createPurchase" params={{ orgSlug }}>
-          <PlusIcon />
-          {i18n.t("routes.invoice.createPurchase")}
-        </Link>
-      </Button>
+      <div>
+        <Button asChild>
+          <Link to="/org/$orgSlug/invoices/createPurchase" params={{ orgSlug }}>
+            <PlusIcon />
+            {i18n.t("routes.invoice.createPurchase")}
+          </Link>
+        </Button>
+      </div>
+
       <InvoicesTable invoiceType="PURCHASE" />
     </div>
   );
