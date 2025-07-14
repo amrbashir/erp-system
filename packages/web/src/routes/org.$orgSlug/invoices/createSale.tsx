@@ -100,6 +100,12 @@ function CreateSaleInvoice() {
       discountAmount: "0",
     } as Invoice,
     validators: {
+      onChange: ({ value, formApi }) => {
+        if (!!value.items[value.items.length - 1].description) {
+          formApi.pushFieldValue("items", { ...DEFAULT_INVOICE_ITEM } as any);
+        }
+      },
+
       onSubmit: ({ value, formApi }) => {
         const validItems = value.items.filter((i) => !!i.description);
         if (validItems.length === 0) return "invoiceMustHaveItems";
@@ -152,6 +158,8 @@ function CreateSaleInvoice() {
   const handleRemoveItem = (index: number) => {
     const newItems = [...form.getFieldValue("items")];
     newItems.splice(index, 1);
+    // Ensure at least one item exists
+    if (newItems.length === 0) newItems.push({ ...DEFAULT_INVOICE_ITEM } as any);
     form.setFieldValue("items", newItems);
     form.validate("change");
   };
