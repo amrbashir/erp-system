@@ -36,7 +36,8 @@
       "oops": "Oops!",
       "areYouSure": "Are you sure?",
       "number": "No.",
-      "or": "or"
+      "or": "or",
+      "row": "Row"
     },
     "pricing": {
       "purchase": "Purchase $t(common.form.price)",
@@ -200,7 +201,8 @@
       "quantity": "$t(common.form.quantity)",
       "purchasePrice": "$t(common.pricing.purchase)",
       "sellingPrice": "$t(common.pricing.selling)"
-    }
+    },
+    "addRow": "$t(common.actions.add) $t(common.ui.row)"
   },
 
   "welcomeToErp": "$t(common.welcome) to erp-system",

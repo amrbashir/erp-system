@@ -8,7 +8,7 @@ import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Decimal } from "decimal.js";
-import { Loader2Icon, XIcon } from "lucide-react";
+import { Loader2Icon, PlusIcon, XIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -167,6 +167,13 @@ function CreateSaleInvoice() {
     form.validate("change");
   };
 
+  const addEmptyItem = () => {
+    const newItems = [...form.getFieldValue("items")];
+    newItems.push({ ...DEFAULT_INVOICE_ITEM } as any);
+    form.setFieldValue("items", newItems);
+    form.validate("change");
+  };
+
   const handleAddItem = (index: number, product: Product) => {
     form.replaceFieldValue("items", index, {
       ...DEFAULT_INVOICE_ITEM,
@@ -231,6 +238,7 @@ function CreateSaleInvoice() {
           items={invoiceItems}
           products={products}
           onAddItem={handleAddItem}
+          onAddEmptyItem={addEmptyItem}
           onRemoveItem={handleRemoveItem}
           onUpdateItemField={handleUpdateItemField}
         />
@@ -300,6 +308,7 @@ function InvoiceTable({
   items,
   products,
   onAddItem,
+  onAddEmptyItem,
   onRemoveItem,
   onUpdateItemField,
   ...props
@@ -307,6 +316,7 @@ function InvoiceTable({
   items: InvoiceItem[];
   products: Product[] | undefined;
   onAddItem: (index: number, product: Product) => void;
+  onAddEmptyItem: () => void;
   onRemoveItem: (index: number) => void;
   onUpdateItemField: (index: number, field: keyof InvoiceItem, value: number | string) => void;
 } & React.ComponentProps<typeof Table>) {
@@ -342,6 +352,20 @@ function InvoiceTable({
             onUpdateItemField={onUpdateItemField}
           />
         ))}
+
+        <TableRow>
+          <TableCell colSpan={11} className="p-0">
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full rounded-none"
+              onClick={() => onAddEmptyItem()}
+            >
+              <PlusIcon />
+              {t("invoice.addRow")}
+            </Button>
+          </TableCell>
+        </TableRow>
       </TableBody>
     </Table>
   );
