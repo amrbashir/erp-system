@@ -29,7 +29,7 @@ export const Route = createFileRoute("/org/$orgSlug/customers")({
 function Customers() {
   const { slug: orgSlug } = useOrg();
 
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const { data: customers } = useQuery({
     queryKey: ["customers"],

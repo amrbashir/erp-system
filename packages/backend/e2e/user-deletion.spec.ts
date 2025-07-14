@@ -11,7 +11,6 @@ describe("UserDeletion", async () => {
   afterAll(closeApp);
 
   let accessToken: string;
-  let cookies: string[] = [];
 
   beforeAll(async () => {
     // create organization and login to get access token
@@ -41,7 +40,6 @@ describe("UserDeletion", async () => {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
-        Cookie: cookies.join("; "),
       },
       body: JSON.stringify({
         username: "testuser",
@@ -58,7 +56,6 @@ describe("UserDeletion", async () => {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
-        Cookie: cookies.join("; "),
       },
       body: JSON.stringify({
         username: "testuser",
@@ -75,7 +72,6 @@ describe("UserDeletion", async () => {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
-        Cookie: cookies.join("; "),
       },
       body: JSON.stringify({
         username: orgData.username,

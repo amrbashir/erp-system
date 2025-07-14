@@ -1,7 +1,6 @@
 import { CornerDownLeftIcon, DeleteIcon } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { Button } from "@/shadcn/components/ui/button";
-import { Input } from "@/shadcn/components/ui/input";
 import { cn } from "@/shadcn/lib/utils";
 
 // prettier-ignore
@@ -44,12 +43,10 @@ export function Numpad({
 
   const handleKey = useCallback(
     (key: string) => {
-      let currentVal = value.toString();
+      const currentVal = value.toString();
       let newValue;
-      let [start, end] = [
-        inputRef.current?.selectionStart || 0,
-        inputRef.current?.selectionEnd || 0,
-      ];
+      const start = inputRef.current?.selectionStart || 0;
+      const end = inputRef.current?.selectionEnd || 0;
 
       if (key === "Del") {
         if (start === end) {

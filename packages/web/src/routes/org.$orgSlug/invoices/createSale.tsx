@@ -410,7 +410,7 @@ function InvoiceTableRow({
           value={item.barcode}
           onItemSelect={(item) => {
             const product = products?.find((i) => i.barcode === item);
-            product && onAdd(index, product);
+            if (product) onAdd(index, product);
           }}
         />
       </TableCell>
@@ -420,7 +420,7 @@ function InvoiceTableRow({
           value={item.description}
           onItemSelect={(item) => {
             const product = products?.find((i) => i.description === item);
-            product && onAdd(index, product);
+            if (product) onAdd(index, product);
           }}
         />
       </TableCell>

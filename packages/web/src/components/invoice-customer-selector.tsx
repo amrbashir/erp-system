@@ -6,7 +6,6 @@ import { Button } from "@/shadcn/components/ui/button";
 import {
   Command,
   CommandEmpty,
-  CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,

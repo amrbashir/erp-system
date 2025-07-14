@@ -48,7 +48,7 @@ export const Route = createFileRoute("/org/$orgSlug/users")({
 
 function Users() {
   const { slug: orgSlug } = useOrg();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { user } = useAuth();
 
   const { data: users, refetch: refetchUsers } = useQuery({

@@ -53,7 +53,7 @@ export function AddUserDialog() {
     onSubmit: async ({ value, formApi }) => {
       const { username, password, role } = value;
       const { error } = await apiClient.post("/org/{orgSlug}/user/create", {
-        params: { path: { orgSlug: orgSlug! } },
+        params: { path: { orgSlug: orgSlug } },
         body: { username, password, role },
       });
 

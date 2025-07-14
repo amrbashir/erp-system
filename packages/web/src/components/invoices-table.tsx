@@ -71,7 +71,7 @@ export function InvoicesTable({ invoiceType }: { invoiceType: InvoiceType }) {
 function InvoiceRow({
   invoice,
 }: { invoice: z.infer<typeof InvoiceEntity>; index: number } & React.ComponentProps<"tr">) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   return (

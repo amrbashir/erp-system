@@ -9,7 +9,7 @@ export class SafeDecimal extends Decimal {
   constructor(value: Decimal.Value) {
     try {
       super(value);
-    } catch (_) {
+    } catch {
       super(0);
     }
   }

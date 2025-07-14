@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 
+import type { DependencyList } from "react";
+
 export function useHotkeys(
   keys: Record<string, (event: KeyboardEvent) => void>,
-  deps: any[] = [],
+  deps: DependencyList = [],
 ): void {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

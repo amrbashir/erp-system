@@ -11,6 +11,7 @@ import "@/i18n";
 
 const router = createRouter({
   routeTree,
+  // eslint-disable-next-line
   context: undefined!,
 });
 

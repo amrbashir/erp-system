@@ -33,7 +33,7 @@ describe("UserService", async () => {
     };
     const user = await service.createUser(createUserDto, org.slug);
     expect(user).toBeDefined();
-    expect(user!.username).toBe(createUserDto.username);
+    expect(user.username).toBe(createUserDto.username);
   });
 
   it("should throw an error when creating a user with an existing username", async () => {
@@ -97,8 +97,8 @@ describe("UserService", async () => {
       orderBy,
     });
     expect(users3).toHaveLength(2);
-    expect(users3[0].username).toBe(user2!.username);
-    expect(users3[1].username).toBe(user3!.username);
+    expect(users3[0].username).toBe(user2.username);
+    expect(users3[1].username).toBe(user3.username);
   });
 
   it("should delete a user", async () => {
