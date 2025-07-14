@@ -141,11 +141,7 @@ function CreatePurchaseInvoice() {
   };
 
   const handleRemoveItem = (index: number) => {
-    const newItems = [...form.getFieldValue("items")];
-    newItems.splice(index, 1);
-    // Ensure at least one item exists
-    if (newItems.length === 0) newItems.push({ ...DEFAULT_INVOICE_ITEM });
-    form.setFieldValue("items", newItems);
+    form.replaceFieldValue("items", index, { ...DEFAULT_INVOICE_ITEM } as any);
     form.validate("change");
   };
 
@@ -357,11 +353,11 @@ function InvoiceTableRow({
 
   return (
     <TableRow className="[&>td]:border-e [&>td:last-child]:border-none">
-      <TableCell className="p-0">
+      <TableCell className="p-0 w-0">
         <Button
           type="button"
           variant="ghost"
-          className="rounded-none text-red-300"
+          className="w-9 rounded-none text-red-300"
           onClick={() => onRemove(index)}
         >
           <XIcon className="size-4" />
