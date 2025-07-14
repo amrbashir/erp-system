@@ -84,7 +84,7 @@ function CreatePurchaseInvoice() {
 
   const form = useForm({
     defaultValues: {
-      items: Array.from({ length: 20 }, () => ({ ...DEFAULT_INVOICE_ITEM })),
+      items: Array.from({ length: 30 }, () => ({ ...DEFAULT_INVOICE_ITEM })),
       customerId: undefined,
       discountPercent: 0,
       discountAmount: "0",
