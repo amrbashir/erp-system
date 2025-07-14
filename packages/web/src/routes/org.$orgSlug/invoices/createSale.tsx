@@ -33,6 +33,7 @@ import { FormErrors } from "@/components/form-errors";
 import { CustomerSelector } from "@/components/invoice-customer-selector";
 import { ProductSelector } from "@/components/invoice-product-selector";
 import { InputNumpad } from "@/components/ui/input-numpad";
+import { useHotkeys } from "@/hooks/use-hotkeys";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 import { formatMoney } from "@/utils/formatMoney";
@@ -193,6 +194,20 @@ function CreateSaleInvoice() {
     form.validate("change");
   };
 
+  useHotkeys(
+    {
+      F7: (event) => {
+        event.preventDefault();
+        form.reset();
+      },
+      F8: (event) => {
+        event.preventDefault();
+        form.handleSubmit();
+      },
+    },
+    [form],
+  );
+
   return (
     <form
       className="h-full p-2 flex flex-col gap-2"
@@ -262,10 +277,12 @@ function InvoiceHeader({
                 variant="secondary"
                 onClick={() => onReset()}
               >
+                <kbd className="bg-background/50 py-0.5 px-1 text-xs rounded">F7</kbd>
                 {t("common.actions.delete")}
               </Button>
               <Button disabled={!canSubmit || !hasItems}>
                 {isSubmitting && <Loader2Icon className="animate-spin" />}
+                <kbd className="bg-background/50 py-0.5 px-1 text-xs rounded">F8</kbd>
                 {t("common.actions.create")}
               </Button>
             </>
