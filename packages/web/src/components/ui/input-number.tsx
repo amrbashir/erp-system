@@ -1,43 +1,19 @@
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import { useEffect, useImperativeHandle, useRef, useState } from "react";
-import { set } from "zod";
+import { useImperativeHandle, useRef } from "react";
 import { Button } from "@/shadcn/components/ui/button";
 import { Input } from "@/shadcn/components/ui/input";
 import { cn } from "@/shadcn/lib/utils";
 
 export function InputNumber({
-  rounded = true,
+  variant = "default",
   className,
   ref,
   ...props
 }: {
-  rounded?: boolean;
+  variant?: "default" | "flat";
 } & React.ComponentProps<typeof Input>) {
   const inputRef = useRef<HTMLInputElement>(null);
   useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
-
-  const [shitPressed, setShitPressed] = useState(false);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Shift") {
-        setShitPressed(true);
-      }
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === "Shift") {
-        setShitPressed(false);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, []);
 
   const stepUp = () => {
     inputRef.current?.stepUp();
@@ -55,7 +31,10 @@ export function InputNumber({
           tabIndex={-1}
           type="button"
           variant="secondary"
-          className={cn("focus-visible:z-1 p-2! h-4.5! rounded-none", rounded && "rounded-ss")}
+          className={cn(
+            "focus-visible:z-1 p-2! h-4.5! rounded-none",
+            variant === "default" && "rounded-ss",
+          )}
           size="sm"
           onClick={() => stepUp()}
         >
@@ -65,7 +44,10 @@ export function InputNumber({
           tabIndex={-1}
           type="button"
           variant="secondary"
-          className={cn("focus-visible:z-1 p-2! h-4.5! rounded-none", rounded && "rounded-es")}
+          className={cn(
+            "focus-visible:z-1 p-2! h-4.5! rounded-none",
+            variant === "default" && "rounded-es",
+          )}
           size="sm"
           onClick={() => stepDown()}
         >
@@ -80,8 +62,8 @@ export function InputNumber({
         className={cn(
           "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
           "focus-visible:z-1 border-none rounded-none flex-1",
-          rounded && "rounded-es",
-          !rounded && "bg-transparent! shadow-none",
+          variant === "default" && "rounded-es",
+          variant === "flat" && "bg-transparent! shadow-none",
           className,
         )}
         {...props}

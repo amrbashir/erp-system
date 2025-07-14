@@ -10,20 +10,22 @@ import { Numpad } from "@/components/ui/numpad";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 export function InputNumpad({
-  rounded = true,
+  variant = "default",
   value,
   onChange,
   className,
   ...props
-}: { rounded?: boolean } & React.ComponentProps<typeof Input>) {
+}: {
+  variant?: "default" | "flat";
+} & React.ComponentProps<typeof Input>) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
-    <div className={cn("flex items-center", rounded && "border rounded")}>
+    <div className={cn("flex items-center", variant === "default" && "border rounded")}>
       <InputNumber
-        rounded={rounded}
+        variant={variant}
         ref={inputRef}
         value={value}
         onChange={onChange}
@@ -40,7 +42,7 @@ export function InputNumpad({
               variant="ghost"
               className={cn(
                 "focus-visible:z-1 rounded-none",
-                rounded && "bg-input dark:bg-input/30 rounded-e",
+                variant === "default" && "bg-input dark:bg-input/30 rounded-e",
               )}
             >
               <PhNumpadIcon />

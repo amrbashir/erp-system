@@ -14,7 +14,6 @@ export function ProductSelector({
   onItemSelect,
   value,
 }: {
-  rounded?: boolean;
   items: string[];
   onItemSelect: (item: string) => void;
 } & React.ComponentProps<typeof CommandInput>) {

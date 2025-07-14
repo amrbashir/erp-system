@@ -31,7 +31,6 @@ import { apiClient } from "@/api-client";
 import { FormErrors } from "@/components/form-errors";
 import { CustomerSelector } from "@/components/invoice-customer-selector";
 import { InputNumpad } from "@/components/ui/input-numpad";
-import { InputNumpadFlat } from "@/components/ui/input-numpad-flat";
 import { useHotkeys } from "@/hooks/use-hotkeys";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
@@ -384,8 +383,8 @@ function InvoiceTableRow({
         />
       </TableCell>
       <TableCell className="p-0">
-        <InputNumpadFlat
-          rounded={false}
+        <InputNumpad
+          variant="flat"
           className="w-20"
           value={item.quantity}
           onChange={(e) => onUpdateItemField(index, "quantity", e.target.valueAsNumber)}
@@ -393,8 +392,8 @@ function InvoiceTableRow({
         />
       </TableCell>
       <TableCell className="p-0">
-        <InputNumpadFlat
-          rounded={false}
+        <InputNumpad
+          variant="flat"
           className="w-20"
           value={new SafeDecimal(item.purchasePrice).toNumber()}
           onChange={(e) => onUpdateItemField(index, "purchasePrice", e.target.value)}
@@ -402,8 +401,8 @@ function InvoiceTableRow({
         />
       </TableCell>
       <TableCell className="p-0">
-        <InputNumpadFlat
-          rounded={false}
+        <InputNumpad
+          variant="flat"
           className="w-20"
           value={new SafeDecimal(item.sellingPrice).toNumber()}
           onChange={(e) => onUpdateItemField(index, "sellingPrice", e.target.value)}
@@ -412,8 +411,8 @@ function InvoiceTableRow({
       </TableCell>
       <TableCell>{formatMoney(itemSubtotal)}</TableCell>
       <TableCell className="p-0">
-        <InputNumpadFlat
-          rounded={false}
+        <InputNumpad
+          variant="flat"
           className="w-20"
           value={item.discountPercent || 0}
           onChange={(e) => onUpdateItemField(index, "discountPercent", e.target.valueAsNumber)}
@@ -423,8 +422,8 @@ function InvoiceTableRow({
       </TableCell>
       <TableCell>{formatMoney(percentDiscount)}</TableCell>
       <TableCell className="p-0">
-        <InputNumpadFlat
-          rounded={false}
+        <InputNumpad
+          variant="flat"
           className="w-20"
           value={new SafeDecimal(item.discountAmount || 0).toNumber()}
           onChange={(e) => onUpdateItemField(index, "discountAmount", e.target.value)}

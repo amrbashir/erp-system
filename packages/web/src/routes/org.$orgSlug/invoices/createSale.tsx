@@ -14,7 +14,6 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/shadcn/components/ui/card";
-import { Input } from "@/shadcn/components/ui/input";
 import { Separator } from "@/shadcn/components/ui/separator";
 import {
   Table,
@@ -24,7 +23,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/shadcn/components/ui/table";
-import { cn } from "@/shadcn/lib/utils";
 
 import type { ReactFormApi } from "@tanstack/react-form";
 import type z from "zod";
@@ -34,7 +32,6 @@ import { FormErrors } from "@/components/form-errors";
 import { CustomerSelector } from "@/components/invoice-customer-selector";
 import { ProductSelector } from "@/components/invoice-product-selector";
 import { InputNumpad } from "@/components/ui/input-numpad";
-import { InputNumpadFlat } from "@/components/ui/input-numpad-flat";
 import { useHotkeys } from "@/hooks/use-hotkeys";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
@@ -428,7 +425,8 @@ function InvoiceTableRow({
         />
       </TableCell>
       <TableCell className="p-0">
-        <InputNumpadFlat
+        <InputNumpad
+          variant="flat"
           className="w-20"
           value={item.quantity}
           onChange={(e) => onUpdateItemField(index, "quantity", e.target.valueAsNumber)}
@@ -437,7 +435,8 @@ function InvoiceTableRow({
         />
       </TableCell>
       <TableCell className="p-0">
-        <InputNumpadFlat
+        <InputNumpad
+          variant="flat"
           className="w-20"
           value={new SafeDecimal(item.price).toNumber()}
           onChange={(e) => onUpdateItemField(index, "price", e.target.value)}
@@ -446,7 +445,8 @@ function InvoiceTableRow({
       </TableCell>
       <TableCell>{formatMoney(itemSubtotal)}</TableCell>
       <TableCell className="p-0">
-        <InputNumpadFlat
+        <InputNumpad
+          variant="flat"
           className="w-20"
           value={item.discountPercent || 0}
           onChange={(e) => onUpdateItemField(index, "discountPercent", e.target.valueAsNumber)}
@@ -456,7 +456,8 @@ function InvoiceTableRow({
       </TableCell>
       <TableCell>{formatMoney(percentDiscount)}</TableCell>
       <TableCell className="p-0">
-        <InputNumpadFlat
+        <InputNumpad
+          variant="flat"
           value={new SafeDecimal(item.discountAmount || 0).toNumber()}
           onChange={(e) => onUpdateItemField(index, "discountAmount", e.target.value)}
           min={0}
