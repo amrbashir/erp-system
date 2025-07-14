@@ -103,12 +103,6 @@ function CreateSaleInvoice() {
       discountAmount: "0",
     } as Invoice,
     validators: {
-      onChange: ({ value, formApi }) => {
-        if (!!value.items[value.items.length - 1].description) {
-          formApi.pushFieldValue("items", { ...DEFAULT_INVOICE_ITEM } as any);
-        }
-      },
-
       onSubmit: ({ value, formApi }) => {
         const validItems = value.items.filter((i) => !!i.description);
         if (validItems.length === 0) return "invoiceMustHaveItems";
