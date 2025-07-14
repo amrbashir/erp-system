@@ -63,10 +63,14 @@
     "customers": "العملاء",
     "products": "المنتجات",
     "transactions": "المعاملات",
-    "invoices": "الفواتير",
     "expenses": "المصروفات",
-    "createSaleInvoice": "$t(common.actions.create) فاتورة مبيعات",
-    "createPurchaseInvoice": "$t(common.actions.create) فاتورة مشتريات"
+    "invoices": "الفواتير",
+    "invoice": {
+      "sale": "فواتير المبيعات",
+      "purchase": "فواتير المشتريات",
+      "createSale": "$t(common.actions.create) فاتورة مبيعات",
+      "createPurchase": "$t(common.actions.create) فاتورة مشتريات"
+    }
   },
 
   "auth": {

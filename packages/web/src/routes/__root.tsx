@@ -92,7 +92,7 @@ function NotFound404() {
         <p>404 - {t("notFound404")}</p>
         <br />
         <br />
-        <Button>
+        <Button asChild>
           <Link to="/">{t("goBackHome")}</Link>
         </Button>
       </div>
@@ -113,7 +113,7 @@ function ErrorComponent({ error }: { error: Error }) {
           <p>{error.message}</p>
           <br />
           <br />
-          <Button>
+          <Button asChild>
             <Link to="/">{t("goBackHome")}</Link>
           </Button>
         </div>

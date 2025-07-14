@@ -55,7 +55,12 @@ export function AppSideBar() {
       routes: [
         {
           route: "/org/$orgSlug/invoices",
-          subRoutes: ["/org/$orgSlug/invoices/createSale", "/org/$orgSlug/invoices/createPurchase"],
+          subRoutes: [
+            "/org/$orgSlug/invoices/createSale",
+            "/org/$orgSlug/invoices/createPurchase",
+            "/org/$orgSlug/invoices/sales",
+            "/org/$orgSlug/invoices/purchases",
+          ],
         },
         "/org/$orgSlug/expenses",
         "/org/$orgSlug/products",

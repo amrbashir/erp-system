@@ -31,7 +31,7 @@ function Index() {
 
   const quickActions = [
     {
-      title: t("routes.createSaleInvoice"),
+      title: t("routes.invoice.createSale"),
       icon: FileTextIcon,
       path: `/org/${orgSlug}/invoices/createSale`,
       hoverBgColor: "hover:bg-green-50 dark:hover:bg-green-950/50",
@@ -39,7 +39,7 @@ function Index() {
       iconBgColor: "bg-green-100 dark:bg-green-950/50",
     },
     {
-      title: t("routes.createPurchaseInvoice"),
+      title: t("routes.invoice.createPurchase"),
       icon: FileTextIcon,
       path: `/org/${orgSlug}/invoices/createPurchase`,
       hoverBgColor: "hover:bg-rose-50 dark:hover:bg-rose-950/50",

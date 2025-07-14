@@ -59,10 +59,14 @@
     "customers": "Customers",
     "products": "Products",
     "transactions": "Transactions",
-    "invoices": "Invoices",
     "expenses": "Expenses",
-    "createSaleInvoice": "$t(common.actions.create) Sale Invoice",
-    "createPurchaseInvoice": "$t(common.actions.create) Purchase Invoice"
+    "invoices": "Invoices",
+    "invoice": {
+      "sale": "Sale Invoices",
+      "purchase": "Purchase Invoices",
+      "createSale": "$t(common.actions.create) Sale Invoice",
+      "createPurchase": "$t(common.actions.create) Purchase Invoice"
+    }
   },
 
   "auth": {

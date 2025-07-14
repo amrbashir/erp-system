@@ -47,7 +47,7 @@ import { SafeDecimal } from "@/utils/SafeDecimal";
 export const Route = createFileRoute("/org/$orgSlug/invoices/createPurchase")({
   component: CreatePurchaseInvoice,
   context: () => ({
-    title: i18n.t("routes.createPurchaseInvoice"),
+    title: i18n.t("routes.invoice.createPurchase"),
   }),
 });
 
