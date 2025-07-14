@@ -50,7 +50,7 @@ export function AppSideBar() {
   const { user } = useAuth();
 
   const routeGroups: (RouteGroup | undefined)[] = [
-    { routes: ["/org/$orgSlug/"] },
+    { routes: ["/org/$orgSlug"] },
     {
       routes: [
         {

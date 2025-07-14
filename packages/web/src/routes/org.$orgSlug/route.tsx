@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { HomeIcon } from "lucide-react";
 import { SidebarInset } from "@/shadcn/components/ui/sidebar";
 
 import { apiClient } from "@/api-client";
@@ -13,6 +14,10 @@ interface OrgSearch {
 
 export const Route = createFileRoute("/org/$orgSlug")({
   component: Org,
+  context: () => ({
+    title: i18n.t("routes.home"),
+    icon: HomeIcon,
+  }),
   validateSearch: ({ search }) => search as OrgSearch,
   beforeLoad: async ({ context, location, search, params }) => {
     // redirect to home if not authenticated

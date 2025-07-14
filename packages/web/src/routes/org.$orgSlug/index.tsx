@@ -9,7 +9,7 @@ import {
   UsersIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/components/ui/card";
+import { Card, CardContent } from "@/shadcn/components/ui/card";
 import { cn } from "@/shadcn/lib/utils";
 
 import { useOrg } from "@/hooks/use-org";
