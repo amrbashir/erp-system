@@ -424,7 +424,7 @@ function InvoiceTableRow({
         />
       </TableCell>
       <TableCell>{formatMoney(itemTotal)}</TableCell>
-      <TableCell className="p-0 text-end">
+      <TableCell className="py-0 text-end">
         <Button
           type="button"
           onClick={() => onRemove(index)}

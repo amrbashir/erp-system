@@ -35,6 +35,8 @@ export function InputNumpad({
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
+              type="button"
+              tabIndex={-1}
               variant="secondary"
               className={cn("focus-visible:z-1 rounded-none", rounded && "rounded-e")}
             >

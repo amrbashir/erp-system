@@ -30,7 +30,10 @@ export function ProductSelector({
       variant="outline"
       role="combobox"
       aria-expanded={open}
-      className={cn("w-full flex-1 justify-between rounded-none", rounded && "rounded")}
+      className={cn(
+        "w-full flex-1 justify-between rounded-none focus-visible:z-1 relative",
+        rounded && "rounded",
+      )}
     >
       {value || <span className="opacity-50">{t("product.select")}</span>}
       <ChevronsUpDownIcon className="opacity-50" />
