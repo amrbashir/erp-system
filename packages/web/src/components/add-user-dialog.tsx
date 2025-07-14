@@ -1,7 +1,7 @@
 import { CreateUserDto } from "@erp-system/sdk/zod";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader2Icon } from "lucide-react";
+import { Loader2Icon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
@@ -76,7 +76,10 @@ export function AddUserDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button>{t("user.add")}</Button>
+        <Button>
+          <PlusIcon />
+          {t("user.add")}
+        </Button>
       </DialogTrigger>
 
       <DialogContent>

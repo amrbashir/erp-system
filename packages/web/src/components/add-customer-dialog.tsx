@@ -1,7 +1,7 @@
 import { CreateCustomerDto, CustomerEntity } from "@erp-system/sdk/zod";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader2Icon } from "lucide-react";
+import { Loader2Icon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
@@ -78,7 +78,14 @@ export function AddCustomerDialog({
       }}
     >
       <DialogTrigger asChild>
-        {trigger ? trigger : <Button>{t("customer.add")}</Button>}
+        {trigger ? (
+          trigger
+        ) : (
+          <Button>
+            <PlusIcon />
+            {t("customer.add")}
+          </Button>
+        )}
       </DialogTrigger>
 
       <DialogContent>
