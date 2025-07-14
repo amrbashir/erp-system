@@ -10,18 +10,20 @@ import { Numpad } from "@/components/ui/numpad";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 export function InputNumpad({
+  rounded = true,
   value,
   onChange,
   className,
   ...props
-}: React.ComponentProps<typeof Input>) {
+}: { rounded?: boolean } & React.ComponentProps<typeof Input>) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
-    <div className="flex items-center border rounded">
+    <div className={cn("flex items-center border", rounded && "rounded")}>
       <InputNumber
+        rounded={rounded}
         ref={inputRef}
         value={value}
         onChange={onChange}
@@ -32,7 +34,10 @@ export function InputNumpad({
       {!isMobile ? (
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <Button variant="secondary" className="focus-visible:z-1 rounded-none rounded-e">
+            <Button
+              variant="secondary"
+              className={cn("focus-visible:z-1 rounded-none", rounded && "rounded-e")}
+            >
               <PhNumpadIcon />
             </Button>
           </PopoverTrigger>

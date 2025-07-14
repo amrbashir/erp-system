@@ -6,14 +6,17 @@ import { Button } from "@/shadcn/components/ui/button";
 import { Command, CommandInput, CommandItem, CommandList } from "@/shadcn/components/ui/command";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/shadcn/components/ui/drawer";
 import { Popover, PopoverContent } from "@/shadcn/components/ui/popover";
+import { cn } from "@/shadcn/lib/utils";
 
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 export function ProductSelector({
+  rounded = true,
   items,
   onItemSelect,
   value,
 }: {
+  rounded?: boolean;
   items: string[];
   onItemSelect: (item: string) => void;
 } & React.ComponentProps<typeof CommandInput>) {
@@ -27,7 +30,7 @@ export function ProductSelector({
       variant="outline"
       role="combobox"
       aria-expanded={open}
-      className="w-full flex-1 justify-between"
+      className={cn("w-full flex-1 justify-between rounded-none", rounded && "rounded")}
     >
       {value || <span className="opacity-50">{t("product.select")}</span>}
       <ChevronsUpDownIcon className="opacity-50" />

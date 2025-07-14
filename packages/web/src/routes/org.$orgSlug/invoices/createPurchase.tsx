@@ -321,36 +321,41 @@ function InvoiceTableRow({
   return (
     <TableRow>
       <TableCell>{index + 1}</TableCell>
-      <TableCell>
+      <TableCell className="p-0">
         <Input
+          className="rounded-none focus-visible:z-1 relative"
           value={item.barcode}
           onChange={(e) => onUpdateItemField(index, "barcode", e.target.value)}
         />
       </TableCell>
-      <TableCell>
+      <TableCell className="p-0">
         <Input
+          className="rounded-none focus-visible:z-1 relative"
           value={item.description}
           onChange={(e) => onUpdateItemField(index, "description", e.target.value)}
         />
       </TableCell>
-      <TableCell>
+      <TableCell className="p-0">
         <InputNumpad
+          rounded={false}
           className="w-20"
           value={item.quantity}
           onChange={(e) => onUpdateItemField(index, "quantity", e.target.valueAsNumber)}
           min={1}
         />
       </TableCell>
-      <TableCell>
+      <TableCell className="p-0">
         <InputNumpad
+          rounded={false}
           className="w-20"
           value={new SafeDecimal(item.purchasePrice).toNumber()}
           onChange={(e) => onUpdateItemField(index, "purchasePrice", e.target.value)}
           min={0}
         />
       </TableCell>
-      <TableCell>
+      <TableCell className="p-0">
         <InputNumpad
+          rounded={false}
           className="w-20"
           value={new SafeDecimal(item.sellingPrice).toNumber()}
           onChange={(e) => onUpdateItemField(index, "sellingPrice", e.target.value)}
@@ -358,8 +363,9 @@ function InvoiceTableRow({
         />
       </TableCell>
       <TableCell>{formatMoney(itemSubtotal)}</TableCell>
-      <TableCell>
+      <TableCell className="p-0">
         <InputNumpad
+          rounded={false}
           className="w-20"
           value={item.discountPercent || 0}
           onChange={(e) => onUpdateItemField(index, "discountPercent", e.target.valueAsNumber)}
@@ -368,8 +374,9 @@ function InvoiceTableRow({
         />
       </TableCell>
       <TableCell>{formatMoney(percentDiscount)}</TableCell>
-      <TableCell>
+      <TableCell className="p-0">
         <InputNumpad
+          rounded={false}
           className="w-20"
           value={new SafeDecimal(item.discountAmount || 0).toNumber()}
           onChange={(e) => onUpdateItemField(index, "discountAmount", e.target.value)}
@@ -378,7 +385,7 @@ function InvoiceTableRow({
         />
       </TableCell>
       <TableCell>{formatMoney(itemTotal)}</TableCell>
-      <TableCell>
+      <TableCell className="p-0 text-end">
         <Button
           type="button"
           onClick={() => onRemove(index)}

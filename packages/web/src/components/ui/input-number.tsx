@@ -4,7 +4,14 @@ import { Button } from "@/shadcn/components/ui/button";
 import { Input } from "@/shadcn/components/ui/input";
 import { cn } from "@/shadcn/lib/utils";
 
-export function InputNumber({ className, ref, ...props }: React.ComponentProps<typeof Input>) {
+export function InputNumber({
+  rounded = true,
+  className,
+  ref,
+  ...props
+}: {
+  rounded?: boolean;
+} & React.ComponentProps<typeof Input>) {
   const inputRef = useRef<HTMLInputElement>(null);
   useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
 
@@ -23,7 +30,7 @@ export function InputNumber({ className, ref, ...props }: React.ComponentProps<t
         <Button
           type="button"
           variant="secondary"
-          className="focus-visible:z-1 rounded-none rounded-ss p-2! h-4.5!"
+          className={cn("focus-visible:z-1 p-2! h-4.5! rounded-none", rounded && "rounded-ss")}
           size="sm"
           onClick={() => stepUp()}
         >
@@ -32,7 +39,7 @@ export function InputNumber({ className, ref, ...props }: React.ComponentProps<t
         <Button
           type="button"
           variant="secondary"
-          className="focus-visible:z-1 rounded-none rounded-es p-2! h-4.5!"
+          className={cn("focus-visible:z-1 p-2! h-4.5! rounded-none", rounded && "rounded-es")}
           size="sm"
           onClick={() => stepDown()}
         >
@@ -46,7 +53,8 @@ export function InputNumber({ className, ref, ...props }: React.ComponentProps<t
         lang="en-US"
         className={cn(
           "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
-          "focus-visible:z-1 border-none rounded-none rounded-e flex-1",
+          "focus-visible:z-1 border-none rounded-none flex-1",
+          rounded && "rounded-e",
           className,
         )}
         {...props}
