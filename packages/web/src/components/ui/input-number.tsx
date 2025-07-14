@@ -30,7 +30,7 @@ export function InputNumber({
         <Button
           tabIndex={-1}
           type="button"
-          variant="secondary"
+          variant={variant === "default" ? "secondary" : "ghost"}
           className={cn(
             "focus-visible:z-1 p-2! h-4.5! rounded-none",
             variant === "default" && "rounded-ss",
@@ -43,7 +43,7 @@ export function InputNumber({
         <Button
           tabIndex={-1}
           type="button"
-          variant="secondary"
+          variant={variant === "default" ? "secondary" : "ghost"}
           className={cn(
             "focus-visible:z-1 p-2! h-4.5! rounded-none",
             variant === "default" && "rounded-es",
