@@ -40,7 +40,7 @@ function Expenses() {
   return (
     <div className="flex flex-col gap-4 p-4">
       {expenses && expenses.length > 0 ? (
-        <div className="rounded-lg border">
+        <div className="rounded border">
           <Table>
             <TableHeader className="bg-muted">
               <TableRow className="*:font-bold">

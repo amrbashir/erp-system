@@ -56,7 +56,7 @@ function NavigationBreadcrumbs() {
 
 export function OrgHeader() {
   return (
-    <header className="sticky top-0 z-10 h-(--header-height) shrink-0 border-b transition-[width,height] ease-linear px-4  bg-background/50 backdrop-blur-md rounded-t-lg flex items-center justify-between">
+    <header className="sticky top-0 z-10 h-(--header-height) shrink-0 border-b transition-[width,height] ease-linear px-4  bg-background/50 backdrop-blur-md rounded-t flex items-center justify-between">
       <div className="flex items-center gap-2">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mx-2 h-4!" />

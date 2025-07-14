@@ -1,7 +1,7 @@
 import { CreateOrgDto, LoginUserDto } from "@erp-system/sdk/zod";
 import { slugify } from "@erp-system/utils";
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Loader2Icon } from "lucide-react";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -106,8 +106,6 @@ function LoginExistingOrg({
     });
   };
 
-  const goToOrg = () => navigate({ to: "/org/" + user.orgSlug + "/" });
-
   return (
     <Card {...props}>
       <CardHeader className="flex flex-col items-center gap-10">
@@ -119,8 +117,10 @@ function LoginExistingOrg({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Button className="w-full" onClick={() => goToOrg()}>
-          {t("common.actions.go")}
+        <Button asChild className="w-full">
+          <Link to="/org/$orgSlug" params={{ orgSlug: user.orgSlug }}>
+            {t("common.actions.go")}
+          </Link>
         </Button>
 
         <Button variant="outline" className="w-full mt-4" onClick={() => logout()}>

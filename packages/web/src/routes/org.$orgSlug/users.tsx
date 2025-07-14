@@ -79,7 +79,7 @@ function Users() {
       </div>
 
       {users?.length && users.length > 0 ? (
-        <div className="rounded-lg border">
+        <div className="rounded border">
           <Table>
             <TableHeader className="bg-muted">
               <TableRow className="*:font-bold">

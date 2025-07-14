@@ -5,7 +5,7 @@ export function EmptyTable() {
   const { t } = useTranslation();
 
   return (
-    <div className="w-full h-full rounded-lg border flex flex-col items-center justify-center">
+    <div className="w-full h-full rounded border flex flex-col items-center justify-center">
       <GhostIcon className="text-muted-foreground opacity-50 size-[20%]" />
       <span className="text-muted-foreground">{t("common.ui.noData")}</span>
     </div>
