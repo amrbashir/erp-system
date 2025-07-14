@@ -2,7 +2,7 @@ import { ConflictException, Injectable, NotFoundException } from "@nestjs/common
 
 import type { PaginationDto } from "../pagination.dto";
 import type { Customer } from "../prisma/generated/client";
-import type { CreateCustomerDto } from "./customer.dto";
+import type { CreateCustomerDto, UpdateCustomerDto } from "./customer.dto";
 import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
@@ -30,6 +30,29 @@ export class CustomerService {
     } catch (error: any) {
       if (error.code === "P2025") {
         throw new NotFoundException("Organization with this slug does not exist");
+      }
+
+      throw error; // Re-throw other errors
+    }
+  }
+
+  async updateCustomer(
+    id: number,
+    updateCustomerDto: UpdateCustomerDto,
+    orgSlug: string,
+  ): Promise<Customer> {
+    try {
+      return await this.prisma.customer.update({
+        where: { id, organization: { slug: orgSlug } },
+        data: {
+          name: updateCustomerDto.name,
+          phone: updateCustomerDto.phone,
+          address: updateCustomerDto.address,
+        },
+      });
+    } catch (error: any) {
+      if (error.code === "P2025") {
+        throw new NotFoundException("Customer with this ID does not exist in the organization");
       }
 
       throw error; // Re-throw other errors

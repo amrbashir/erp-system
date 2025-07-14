@@ -20,6 +20,8 @@ export class CreateCustomerDto {
   phone?: string;
 }
 
+export class UpdateCustomerDto extends CreateCustomerDto {}
+
 export class CustomerEntity {
   @ApiProperty()
   id: number;

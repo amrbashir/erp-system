@@ -1,8 +1,8 @@
 import { CreateCustomerDto, CustomerEntity } from "@erp-system/sdk/zod";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader2Icon, PlusIcon } from "lucide-react";
-import { useState } from "react";
+import { EditIcon, Loader2Icon, PlusIcon } from "lucide-react";
+import { act, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
 import {
@@ -27,13 +27,15 @@ import { useOrg } from "@/hooks/use-org";
 
 type Customer = z.infer<typeof CustomerEntity>;
 
-export function AddCustomerDialog({
-  trigger,
-  initialName,
+export function CustomerDialog({
+  action = "create",
+  iconOnly = false,
+  customer,
   onCreated,
 }: {
-  trigger?: React.ReactNode;
-  initialName?: string;
+  action?: "create" | "edit";
+  iconOnly?: boolean;
+  customer?: Customer;
   onCreated?: (customer: Customer) => void;
 }) {
   const { slug: orgSlug } = useOrg();
@@ -44,16 +46,19 @@ export function AddCustomerDialog({
 
   const form = useForm({
     defaultValues: {
-      name: initialName || "",
-      address: undefined,
-      phone: undefined,
+      name: customer?.name || "",
+      address: customer?.address || "",
+      phone: customer?.phone || "",
     } as z.infer<ReturnType<(typeof CreateCustomerDto)["strict"]>>,
     validators: {
       onSubmit: CreateCustomerDto,
     },
     onSubmit: async ({ value, formApi }) => {
-      const { error, data } = await apiClient.post("/org/{orgSlug}/customer/create", {
-        params: { path: { orgSlug: orgSlug } },
+      const apiPath =
+        `/org/{orgSlug}/customer/${action === "create" ? "create" : "update/{id}"}` as const;
+
+      const { error, data } = await apiClient.post(apiPath, {
+        params: { path: { orgSlug: orgSlug, id: customer?.id } },
         body: value,
       });
 
@@ -69,6 +74,19 @@ export function AddCustomerDialog({
     },
   });
 
+  const actionDescription = action === "create" ? t("customer.add") : t("customer.edit");
+  const ActionIcon = action === "create" ? <PlusIcon /> : <EditIcon />;
+  const Trigger = iconOnly ? (
+    <Button variant="ghost" size="icon">
+      {ActionIcon}
+    </Button>
+  ) : (
+    <Button>
+      {ActionIcon}
+      {actionDescription}
+    </Button>
+  );
+
   return (
     <Dialog
       open={open}
@@ -77,16 +95,7 @@ export function AddCustomerDialog({
         form.reset();
       }}
     >
-      <DialogTrigger asChild>
-        {trigger ? (
-          trigger
-        ) : (
-          <Button>
-            <PlusIcon />
-            {t("customer.add")}
-          </Button>
-        )}
-      </DialogTrigger>
+      <DialogTrigger asChild>{Trigger}</DialogTrigger>
 
       <DialogContent>
         <DialogHeader>
@@ -120,7 +129,7 @@ export function AddCustomerDialog({
                   </DialogClose>
                   <Button disabled={!canSubmit}>
                     {isSubmitting && <Loader2Icon className="animate-spin" />}
-                    {t("common.actions.add")}
+                    {action === "edit" ? t("common.actions.edit") : t("common.actions.add")}
                   </Button>
                 </>
               )}

@@ -12,7 +12,7 @@ import {
 } from "@/shadcn/components/ui/table";
 
 import { apiClient } from "@/api-client";
-import { AddCustomerDialog } from "@/components/add-customer-dialog";
+import { CustomerDialog } from "@/components/customer-dialog";
 import { EmptyTable } from "@/components/empty-table";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
@@ -41,7 +41,7 @@ function Customers() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <div>
-        <AddCustomerDialog />
+        <CustomerDialog />
       </div>
 
       {customers?.length && customers.length > 0 ? (
@@ -54,6 +54,7 @@ function Customers() {
                 <TableHead>{t("common.form.address")}</TableHead>
                 <TableHead>{t("common.form.phone")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -64,6 +65,9 @@ function Customers() {
                   <TableCell>{customer.address}</TableCell>
                   <TableCell>{customer.phone}</TableCell>
                   <TableCell>{formatDate(customer.createdAt)}</TableCell>
+                  <TableCell>
+                    <CustomerDialog action="edit" customer={customer} iconOnly />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

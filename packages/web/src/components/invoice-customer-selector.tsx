@@ -18,9 +18,8 @@ import type { CustomerEntity } from "@erp-system/sdk/zod";
 import type { AnyFieldApi } from "@tanstack/react-form";
 import type z from "zod";
 
+import { CustomerDialog } from "@/components/customer-dialog";
 import { useMediaQuery } from "@/hooks/use-media-query";
-
-import { AddCustomerDialog } from "./add-customer-dialog";
 
 type Customer = z.infer<typeof CustomerEntity>;
 
@@ -83,14 +82,10 @@ export function CustomerSelector({
           value={customerSearch}
           onValueChange={(v) => setCustomerSearch(v)}
         />
-        <AddCustomerDialog
-          initialName={customerSearch}
+        <CustomerDialog
+          iconOnly
+          customer={{ name: customerSearch } as Customer}
           onCreated={handleCustomerCreated}
-          trigger={
-            <Button variant="ghost" size="icon">
-              <PlusIcon />
-            </Button>
-          }
         />
       </div>
       <CommandList>

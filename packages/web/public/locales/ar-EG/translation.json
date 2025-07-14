@@ -3,6 +3,7 @@
     "welcome": "مرحبًا بك",
     "actions": {
       "add": "إضافة",
+      "edit": "تعديل",
       "delete": "حذف",
       "cancel": "إلغاء",
       "create": "انشاء",
@@ -107,6 +108,7 @@
   "customer": {
     "add": "$t(common.actions.add) عميل",
     "addDescription": "يمكنك إضافة عملاء جدد إلى النظام. يرجى ملء التفاصيل أدناه",
+    "edit": "$t(common.actions.edit) عميل",
     "name": "اسم العميل",
     "search": "$t(common.actions.search) العملاء...",
     "select": "اختر عميلًا",

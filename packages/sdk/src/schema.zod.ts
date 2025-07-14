@@ -63,6 +63,10 @@ export const CustomerEntity = z
   })
   .passthrough();
 
+export const UpdateCustomerDto = z
+  .object({ name: z.string(), address: z.string().optional(), phone: z.string().optional() })
+  .passthrough();
+
 export const ProductEntity = z
   .object({
     id: z.string(),

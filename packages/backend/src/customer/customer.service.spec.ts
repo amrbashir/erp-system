@@ -1,3 +1,4 @@
+import { NotFoundException } from "@nestjs/common";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import type { CreateCustomerDto } from "./customer.dto";
@@ -56,5 +57,41 @@ describe("CustomerService", async () => {
     expect(customers).toContainEqual(expect.objectContaining({ id: customer2.id }));
     expect(customers[0].organizationId).toBe(org!.id);
     expect(customers[1].organizationId).toBe(org!.id);
+  });
+
+  it("should update a customer", async () => {
+    const orgData = generateRandomOrgData();
+    const org = await orgService.create(orgData);
+
+    const createCustomerDto: CreateCustomerDto = {
+      name: "Customer to Update",
+      address: "123 Update St",
+      phone: "0987654321",
+    };
+
+    const customer = await service.createCustomer(createCustomerDto, org.slug);
+
+    const updateCustomerDto = {
+      name: "Updated Customer",
+      address: "456 Updated St",
+      phone: "1122334455",
+    };
+
+    const updatedCustomer = await service.updateCustomer(customer.id, updateCustomerDto, org.slug);
+    expect(updatedCustomer).toBeDefined();
+    expect(updatedCustomer.name).toBe(updateCustomerDto.name);
+    expect(updatedCustomer.address).toBe(updateCustomerDto.address);
+    expect(updatedCustomer.phone).toBe(updateCustomerDto.phone);
+  });
+
+  it("should throw an error when updating a customer that does not exist", async () => {
+    const orgData = generateRandomOrgData();
+    const org = await orgService.create(orgData);
+
+    const nonExistentCustomerId = 9999; // Assuming this ID does not exist
+
+    await expect(
+      service.updateCustomer(nonExistentCustomerId, { name: "Non Existent" }, org.slug),
+    ).rejects.toThrow(NotFoundException);
   });
 });

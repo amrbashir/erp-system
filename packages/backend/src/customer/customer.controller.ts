@@ -10,7 +10,7 @@ import {
 import type { Customer } from "../prisma/generated/client";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
 import { PaginationDto } from "../pagination.dto";
-import { CreateCustomerDto, CustomerEntity } from "./customer.dto";
+import { CreateCustomerDto, CustomerEntity, UpdateCustomerDto } from "./customer.dto";
 import { CustomerService } from "./customer.service";
 
 @UseGuards(JwtAuthGuard)
@@ -28,6 +28,16 @@ export class CustomerController {
     @Body() createCustomerDto: CreateCustomerDto,
   ): Promise<Customer> {
     return this.service.createCustomer(createCustomerDto, orgSlug);
+  }
+
+  @Post("update/:id")
+  @ApiOkResponse({ type: CustomerEntity })
+  update(
+    @Param("orgSlug") orgSlug: string,
+    @Param("id") id: number,
+    @Body() updateCustomerDto: UpdateCustomerDto,
+  ): Promise<Customer> {
+    return this.service.updateCustomer(id, updateCustomerDto, orgSlug);
   }
 
   @Get("getAll")

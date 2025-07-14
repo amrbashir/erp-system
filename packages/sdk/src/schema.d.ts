@@ -148,6 +148,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/org/{orgSlug}/customer/update/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CustomerController$1_update"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/org/{orgSlug}/customer/getAll": {
         parameters: {
             query?: never;
@@ -342,6 +358,11 @@ export interface components {
             updatedAt: string;
             /** Format: date-time */
             deletedAt?: string;
+        };
+        UpdateCustomerDto: {
+            name: string;
+            address?: string;
+            phone?: string;
         };
         ProductEntity: {
             id: string;
@@ -660,6 +681,34 @@ export interface operations {
         };
         responses: {
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerEntity"];
+                };
+            };
+        };
+    };
+    CustomerController$1_update: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCustomerDto"];
+            };
+        };
+        responses: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };

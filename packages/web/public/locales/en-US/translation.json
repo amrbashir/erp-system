@@ -3,6 +3,7 @@
     "welcome": "Welcome",
     "actions": {
       "add": "Add",
+      "edit": "Edit",
       "delete": "Delete",
       "cancel": "Cancel",
       "create": "Create",
@@ -103,6 +104,7 @@
   "customer": {
     "add": "$t(common.actions.add) Customer",
     "addDescription": "You can add new customers to the system. Please fill in the details below",
+    "edit": "$t(common.actions.edit) Customer",
     "name": "Customer $t(common.form.name)",
     "search": "$t(common.actions.search) customers...",
     "select": "Select a customer",
