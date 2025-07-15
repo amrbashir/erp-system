@@ -64,11 +64,11 @@ function Transactions() {
                       className={cn(
                         "flex gap-2",
                         new Decimal(transaction.amount).isNegative()
-                          ? "text-red-300"
-                          : "text-green-300",
+                          ? "text-red-500 dark:text-red-300"
+                          : "text-green-500 dark:text-green-300",
                       )}
                     >
-                      {formatMoney(transaction.amount)}
+                      {formatMoney(transaction.amount, { signDisplay: "always" })}
                     </span>
                   </TableCell>
                   <TableCell>{transaction.username}</TableCell>

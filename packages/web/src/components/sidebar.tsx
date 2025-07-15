@@ -144,7 +144,7 @@ function RoutesGroup({
                   <Link
                     className={cn(
                       "data-[active=true]:bg-primary! data-[active=true]:text-primary-foreground!",
-                      hasActiveSubroute && "bg-secondary",
+                      hasActiveSubroute && "bg-sidebar-accent",
                     )}
                     to={url}
                   >

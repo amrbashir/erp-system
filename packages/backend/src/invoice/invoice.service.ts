@@ -244,7 +244,7 @@ export class InvoiceService {
         const customer = dto.customerId ? { connect: { id: dto.customerId } } : undefined;
         const transaction = {
           create: {
-            amount: total.mul(-1), // Negative amount because it's a purchase (money going out)
+            amount: total.negated(), // Negative amount because it's a purchase (money going out)
             cashier,
             customer,
             organization,

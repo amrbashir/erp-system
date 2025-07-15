@@ -31,6 +31,7 @@ import { apiClient } from "@/api-client";
 import { FormErrors } from "@/components/form-errors";
 import { CustomerSelector } from "@/components/invoice-customer-selector";
 import { InputNumpad } from "@/components/ui/input-numpad";
+import { Kbd } from "@/components/ui/kbd";
 import { useHotkeys } from "@/hooks/use-hotkeys";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
@@ -248,12 +249,13 @@ function InvoiceHeader({
                 variant="secondary"
                 onClick={() => onReset()}
               >
-                <kbd className="bg-background/50 py-0.5 px-1 text-xs rounded">F7</kbd>
+                <Kbd>F7</Kbd>
+
                 {t("common.actions.delete")}
               </Button>
               <Button disabled={!canSubmit || !hasItems}>
                 {isSubmitting && <Loader2Icon className="animate-spin" />}
-                <kbd className="bg-background/50 py-0.5 px-1 text-xs rounded">F8</kbd>
+                <Kbd>F8</Kbd>
                 {t("common.actions.create")}
               </Button>
             </>
@@ -358,7 +360,7 @@ function InvoiceTableRow({
         <Button
           type="button"
           variant="ghost"
-          className="w-9 rounded-none text-red-300"
+          className="w-9 rounded-none text-red-500 dark:text-red-300"
           onClick={() => onRemove(index)}
         >
           <XIcon className="size-4" />
@@ -406,7 +408,7 @@ function InvoiceTableRow({
           min={0}
         />
       </TableCell>
-      <TableCell>{formatMoney(itemSubtotal)}</TableCell>
+      <TableCell className="font-semibold">{formatMoney(itemSubtotal)}</TableCell>
       <TableCell className="p-0">
         <InputNumpad
           variant="ghost"
@@ -428,7 +430,7 @@ function InvoiceTableRow({
           max={itemSubtotal.toNumber()}
         />
       </TableCell>
-      <TableCell>{formatMoney(itemTotal)}</TableCell>
+      <TableCell className="font-bold">{formatMoney(itemTotal)}</TableCell>
     </TableRow>
   );
 }
@@ -453,9 +455,9 @@ function InvoiceFooter({
   return (
     <Card className="md:w-fit md:ms-auto gap-2 p-2">
       <CardContent className="grid grid-cols-[auto_1fr_auto] grid-rows-3 items-center gap-2 p-2">
-        <span>{t("invoice.subtotal")}:</span>
+        <span className="font-semibold">{t("invoice.subtotal")}:</span>
         <span></span>
-        <span className="text-end">{formatMoney(subtotal)}</span>
+        <span className="text-end font-semibold">{formatMoney(subtotal)}</span>
 
         <span>{t("invoice.discountPercent")}:</span>
         <InputNumpad
@@ -480,9 +482,9 @@ function InvoiceFooter({
 
       <Separator />
 
-      <CardFooter className="justify-between gap-2 p-2">
+      <CardFooter className="justify-between gap-2 p-2 font-bold">
         <span>{t("invoice.total")}:</span>
-        <span className="text-red-300">{formatMoney(totalPrice)}</span>
+        <span className="text-red-500 dark:text-red-300">{formatMoney(totalPrice)}</span>
       </CardFooter>
     </Card>
   );

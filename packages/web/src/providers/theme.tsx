@@ -1,8 +1,10 @@
-import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
+import { MoonIcon, SunIcon } from "lucide-react";
 import { createContext, useContext, useEffect, useState } from "react";
 
+import { DarkLightIcon } from "@/components/icons/DarkLightIcon";
+
 export const THEME_VARIANTS = [
-  { theme: "system", icon: MonitorIcon },
+  { theme: "system", icon: DarkLightIcon },
   { theme: "dark", icon: MoonIcon },
   { theme: "light", icon: SunIcon },
 ] as const;

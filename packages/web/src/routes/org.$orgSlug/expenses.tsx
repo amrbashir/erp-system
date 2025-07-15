@@ -14,6 +14,7 @@ import {
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 import { formatDate } from "@/utils/formatDate";
+import { formatMoney } from "@/utils/formatMoney";
 
 import { apiClient } from "../../api-client";
 import { EmptyTable } from "../../components/empty-table";
@@ -56,7 +57,7 @@ function Expenses() {
                 <TableRow key={expense.id}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{expense.description}</TableCell>
-                  <TableCell>{expense.price}</TableCell>
+                  <TableCell>{formatMoney(expense.price, { signDisplay: "always" })}</TableCell>
                   <TableCell>{expense.cashierName}</TableCell>
                   <TableCell>{formatDate(expense.createdAt)}</TableCell>
                 </TableRow>

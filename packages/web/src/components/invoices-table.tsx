@@ -1,5 +1,6 @@
 import { InvoiceEntity } from "@erp-system/sdk/zod";
 import { useQuery } from "@tanstack/react-query";
+import { Decimal } from "decimal.js";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -84,8 +85,17 @@ function InvoiceRow({
         <TableCell>{formatMoney(invoice.subtotal)}</TableCell>
         <TableCell>{invoice.discountPercent}%</TableCell>
         <TableCell>{formatMoney(invoice.discountAmount)}</TableCell>
-        <TableCell className={invoice.type === "SALE" ? "text-green-300" : "text-red-300"}>
-          {formatMoney(invoice.total)}
+        <TableCell
+          className={
+            invoice.type === "SALE"
+              ? "text-green-500 dark:text-green-300"
+              : "text-red-500 dark:text-red-300"
+          }
+        >
+          {formatMoney(
+            invoice.type === "SALE" ? invoice.total : new Decimal(invoice.total).negated(),
+            { signDisplay: "always" },
+          )}
         </TableCell>
         <TableCell className="text-end!">
           <Button onClick={() => setOpen((prev) => !prev)} variant="ghost" size="sm">
@@ -122,14 +132,7 @@ function InvoiceRow({
                   <TableCell>{formatMoney(item.subtotal)}</TableCell>
                   <TableCell>{item.discountPercent}%</TableCell>
                   <TableCell>{formatMoney(item.discountAmount)}</TableCell>
-                  <TableCell
-                    className={cn(
-                      "text-end",
-                      invoice.type === "SALE" ? "text-green-300" : "text-red-300",
-                    )}
-                  >
-                    {formatMoney(item.total)}
-                  </TableCell>
+                  <TableCell className="text-end font-bold">{formatMoney(item.total)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

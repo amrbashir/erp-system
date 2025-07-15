@@ -63,10 +63,10 @@ function Products() {
                   <TableCell>{product.stockQuantity}</TableCell>
                   <TableCell>{product.barcode}</TableCell>
                   <TableCell>{product.description}</TableCell>
-                  <TableCell className="text-red-300">
+                  <TableCell className="text-red-500 dark:text-red-300">
                     {formatMoney(product.purchasePrice)}
                   </TableCell>
-                  <TableCell className="text-green-300">
+                  <TableCell className="text-green-500 dark:text-green-300">
                     {formatMoney(product.sellingPrice)}
                   </TableCell>
                   <TableCell>{formatDate(product.createdAt)}</TableCell>
