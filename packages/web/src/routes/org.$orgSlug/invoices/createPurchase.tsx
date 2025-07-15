@@ -62,6 +62,7 @@ type Invoice = z.infer<ReturnType<(typeof CreatePurchaseInvoiceDto)["strict"]>> 
 type InvoiceItem = Invoice["items"][number];
 
 const DEFAULT_INVOICE_ITEM = {
+  barcode: "",
   description: "",
   quantity: 1,
   purchasePrice: "0",
