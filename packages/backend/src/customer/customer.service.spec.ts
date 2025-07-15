@@ -84,6 +84,28 @@ describe("CustomerService", async () => {
     expect(updatedCustomer.phone).toBe(updateCustomerDto.phone);
   });
 
+  it("should only update provided fields", async () => {
+    const orgData = generateRandomOrgData();
+    const org = await orgService.create(orgData);
+
+    const createCustomerDto: CreateCustomerDto = {
+      name: "Partial Update Customer",
+      address: "789 Partial St",
+      phone: "1231231234",
+    };
+    const customer = await service.createCustomer(createCustomerDto, org.slug);
+
+    const updateCustomerDto = {
+      name: "Partially Updated Customer",
+    };
+    const updatedCustomer = await service.updateCustomer(customer.id, updateCustomerDto, org.slug);
+
+    expect(updatedCustomer).toBeDefined();
+    expect(updatedCustomer.name).toBe(updateCustomerDto.name);
+    expect(updatedCustomer.address).toBe(createCustomerDto.address);
+    expect(updatedCustomer.phone).toBe(createCustomerDto.phone);
+  });
+
   it("should throw an error when updating a customer that does not exist", async () => {
     const orgData = generateRandomOrgData();
     const org = await orgService.create(orgData);

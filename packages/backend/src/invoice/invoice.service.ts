@@ -130,9 +130,7 @@ export class InvoiceService {
 
         await prisma.organization.update({
           where: { slug: orgSlug },
-          data: {
-            balance: { increment: total },
-          },
+          data: { balance: { increment: total } },
         });
 
         return invoice;

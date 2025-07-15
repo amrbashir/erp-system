@@ -20,7 +20,22 @@ export class CreateCustomerDto {
   phone?: string;
 }
 
-export class UpdateCustomerDto extends CreateCustomerDto {}
+export class UpdateCustomerDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  name?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  address?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  phone?: string;
+}
 
 export class CustomerEntity {
   @ApiProperty()

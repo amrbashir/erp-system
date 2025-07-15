@@ -44,11 +44,7 @@ export class CustomerService {
     try {
       return await this.prisma.customer.update({
         where: { id, organization: { slug: orgSlug } },
-        data: {
-          name: updateCustomerDto.name,
-          phone: updateCustomerDto.phone,
-          address: updateCustomerDto.address,
-        },
+        data: updateCustomerDto,
       });
     } catch (error: any) {
       if (error.code === "P2025") {
