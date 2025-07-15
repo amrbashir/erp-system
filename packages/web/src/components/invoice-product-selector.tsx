@@ -1,10 +1,15 @@
 import { PopoverTrigger } from "@radix-ui/react-popover";
-import { CommandEmpty } from "cmdk";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
-import { Command, CommandInput, CommandItem, CommandList } from "@/shadcn/components/ui/command";
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/shadcn/components/ui/command";
 import {
   Drawer,
   DrawerContent,
@@ -60,7 +65,10 @@ export function ProductSelector({
         onInputValueChange?.(v);
       }}
       placeholder={isDesktop ? undefined : t("product.search")}
-      className={cn(isDesktop && "px-2")}
+      className={cn(
+        isDesktop &&
+          "py-1 px-3 focus-visible:border focus-visible:border-ring! focus-visible:ring-ring/50! focus-visible:ring-[3px]! rounded-none",
+      )}
     />
   );
 
@@ -80,8 +88,9 @@ export function ProductSelector({
     return (
       <Command
         className={cn(
-          "p-0 bg-transparent",
-          "[&>[data-slot=command-input-wrapper]]:border-none [&>[data-slot=command-input-wrapper]]:p-0 [&>[data-slot=command-input-wrapper]>svg]:hidden",
+          "p-0 bg-transparent rounded-none overflow-visible",
+          "[&>[data-slot=command-input-wrapper]]:border-none [&>[data-slot=command-input-wrapper]]:rounded-none",
+          "[&>[data-slot=command-input-wrapper]]:p-0! [&>[data-slot=command-input-wrapper]>svg]:hidden",
         )}
       >
         <Popover open={open} onOpenChange={setOpen}>
