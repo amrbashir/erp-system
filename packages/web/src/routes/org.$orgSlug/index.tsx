@@ -164,7 +164,7 @@ function QuickActionLink({
         <CardContent className="flex flex-col md:items-center justify-center gap-4">
           <div
             className={cn(
-              "rounded flex items-center justify-center size-20 relative",
+              "rounded-full flex items-center justify-center size-20 relative",
               iconBgColor,
               iconColor,
             )}
