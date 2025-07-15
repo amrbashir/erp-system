@@ -74,14 +74,20 @@ export class CreateSaleInvoiceDto {
 
 export class CreatePurchaseInvoiceItemDto {
   @ApiPropertyOptional()
+  @IsNotEmpty()
+  @IsString()
+  productId?: string;
+
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   barcode?: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsNotEmpty()
   @IsString()
-  description: string;
+  @IsOptional()
+  description?: string;
 
   @ApiProperty({ format: "number" })
   @IsNotEmpty()

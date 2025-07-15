@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 
 import type { PaginationDto } from "../pagination.dto";
 import type { Customer, Invoice, InvoiceItem, User } from "../prisma/generated/client";
@@ -129,7 +134,9 @@ export class InvoiceService {
           }
           await prisma.product.update({
             where: { id: product.id },
-            data: { stockQuantity: product.stockQuantity - item.quantity },
+            data: {
+              stockQuantity: { decrement: item.quantity },
+            },
           });
         }
 
@@ -154,53 +161,38 @@ export class InvoiceService {
 
     try {
       return await this.prisma.$transaction(async (prisma) => {
-        // Get organization ID once for all products
+        // Find organization and select its ID
         const org = await prisma.organization.findUnique({
           where: { slug: orgSlug },
           select: { id: true },
         });
+        if (!org) throw new NotFoundException("Organization with this slug does not exist");
 
-        if (!org) {
-          throw new NotFoundException("Organization with this slug does not exist");
-        }
+        // Prepare invoice items
+        const invoiceItems: Omit<InvoiceItem, "id" | "invoiceId" | "price">[] = [];
+        let subtotal = new Prisma.Decimal(0);
 
-        // Create or update products based on purchased items
-        for (const item of dto.items) {
-          // Find existing product by description or barcode
-          const existingProduct = await prisma.product.findFirst({
-            where: {
-              OR: [
-                {
-                  description: item.description,
+        for (let item of dto.items) {
+          let barcode = item.barcode || null;
+          let description = item.description;
+
+          // Find existing product and select its ID, barcode, and description
+          const existingProduct = item.productId
+            ? await prisma.product.findUnique({
+                where: {
+                  id: item.productId,
                   organizationId: org.id,
                 },
-                item.barcode
-                  ? {
-                      barcode: item.barcode,
-                      organizationId: org.id,
-                    }
-                  : {},
-              ],
-            },
-            select: { id: true, description: true, barcode: true },
-          });
+                select: { id: true, barcode: true, description: true },
+              })
+            : null;
 
           if (existingProduct) {
-            if (item.barcode) {
-              if (existingProduct.description !== item.description) {
-                throw new BadRequestException(
-                  `Product with barcode ${item.barcode} already exists with a different description: ${existingProduct.description}`,
-                );
-              }
+            // Use existing product's barcode and description
+            barcode = existingProduct.barcode;
+            description = existingProduct.description;
 
-              if (existingProduct.barcode !== item.barcode) {
-                throw new BadRequestException(
-                  `Product with description ${item.description} already exists with a different barcode: ${existingProduct.barcode}`,
-                );
-              }
-            }
-
-            // Update existing product
+            // Update existing product with new prices and stock quantity
             await prisma.product.update({
               where: { id: existingProduct.id },
               data: {
@@ -210,11 +202,15 @@ export class InvoiceService {
               },
             });
           } else {
+            if (!description) {
+              throw new BadRequestException("Description is required for new products");
+            }
+
             // Create new product
             await prisma.product.create({
               data: {
-                barcode: item.barcode,
-                description: item.description,
+                barcode: barcode,
+                description: description,
                 purchasePrice: new Prisma.Decimal(item.purchasePrice),
                 sellingPrice: new Prisma.Decimal(item.sellingPrice),
                 stockQuantity: item.quantity,
@@ -222,13 +218,7 @@ export class InvoiceService {
               },
             });
           }
-        }
 
-        // Prepare invoice items
-        const invoiceItems: Omit<InvoiceItem, "id" | "invoiceId">[] = [];
-        let subtotal = new Prisma.Decimal(0);
-
-        for (const item of dto.items) {
           // Calculate item subtotal (before invoice-level discount)
           const itemSubtotal = new Prisma.Decimal(item.purchasePrice).mul(item.quantity);
           const itemPercentDiscount = itemSubtotal.mul(item.discountPercent).div(100);
@@ -237,9 +227,8 @@ export class InvoiceService {
             .sub(new Prisma.Decimal(item.discountAmount));
 
           invoiceItems.push({
-            price: new Prisma.Decimal(0), // Price is not used in purchase invoices
-            barcode: item.barcode || null,
-            description: item.description,
+            barcode: barcode,
+            description: description,
             purchasePrice: new Prisma.Decimal(item.purchasePrice),
             sellingPrice: new Prisma.Decimal(item.sellingPrice),
             quantity: item.quantity,
@@ -256,10 +245,20 @@ export class InvoiceService {
         const percentDiscount = subtotal.mul(dto.discountPercent).div(100);
         const total = subtotal.sub(percentDiscount).sub(new Prisma.Decimal(dto.discountAmount));
 
-        // Create invoice with items and a transaction
+        // Prepare transaction data
         const organization = { connect: { slug: orgSlug } };
         const cashier = { connect: { id: userId } };
         const customer = dto.customerId ? { connect: { id: dto.customerId } } : undefined;
+        const transaction = {
+          create: {
+            amount: total.mul(-1), // Negative amount because it's a purchase (money going out)
+            cashier,
+            customer,
+            organization,
+          },
+        };
+
+        // Create invoice
         const invoice = await prisma.invoice.create({
           data: {
             type: "PURCHASE",
@@ -271,14 +270,7 @@ export class InvoiceService {
             cashier,
             customer,
             organization,
-            transaction: {
-              create: {
-                amount: total.mul(-1), // Negative amount because it's a purchase (money going out)
-                cashier,
-                customer,
-                organization,
-              },
-            },
+            transaction,
           },
           include: {
             customer: true,

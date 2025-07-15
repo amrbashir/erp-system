@@ -1,4 +1,4 @@
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException, ConflictException } from "@nestjs/common";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { generateRandomOrgData, useRandomDatabase } from "../../e2e/utils";
@@ -366,7 +366,7 @@ describe("InvoiceService", async () => {
       const purchaseInvoiceDto = {
         items: [
           {
-            description: "Existing Product", // Same description as existing product
+            productId: existingProduct.id, // Use existing product ID
             purchasePrice: "45", // Updated purchase price
             sellingPrice: "90", // Updated selling price
             quantity: 8,
@@ -381,18 +381,17 @@ describe("InvoiceService", async () => {
       await service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
 
       // Check that the product was updated, not created as new
-      const products = await prisma.product.findMany({
+      const product = await prisma.product.findFirstOrThrow({
         where: {
           description: "Existing Product",
           organization: { slug: orgSlug },
         },
       });
 
-      expect(products.length).toBe(1); // Only one product with this description
-      expect(products[0].id).toBe(existingProduct.id);
-      expect(products[0].stockQuantity).toBe(13); // 5 + 8
-      expect(products[0].purchasePrice.toNumber()).toBe(45); // Updated
-      expect(products[0].sellingPrice.toNumber()).toBe(90); // Updated
+      expect(product.id).toBe(existingProduct.id);
+      expect(product.stockQuantity).toBe(13); // 5 + 8
+      expect(product.purchasePrice.toNumber()).toBe(45); // Updated
+      expect(product.sellingPrice.toNumber()).toBe(90); // Updated
     });
 
     it("should throw BadRequestException when creating purchase invoice with no items", async () => {
@@ -475,10 +474,10 @@ describe("InvoiceService", async () => {
     });
   });
 
-  it("should throw BadRequestException when trying to create an invoice with the same barcode as an existing product", async () => {
+  it("should create invoice with existing product id", async () => {
     const { user, orgSlug } = await setupTestOrganization();
 
-    // Create a product with a specific barcode
+    // Create a product
     const existingProduct = await prisma.product.create({
       data: {
         barcode: "123456",
@@ -490,14 +489,14 @@ describe("InvoiceService", async () => {
       },
     });
 
-    // Attempt to create an invoice with the same barcode
-    const createInvoiceDto: CreatePurchaseInvoiceDto = {
+    const purchaseInvoiceDto = {
       items: [
         {
-          barcode: existingProduct.barcode ?? undefined, // Same barcode as existing product
-          purchasePrice: "60",
-          sellingPrice: "120",
-          description: "New Product with Existing Barcode",
+          productId: existingProduct.id, // Use existing product ID
+          description: "Balance Test Product", // should be ignored
+          barcode: "979", // should be ignored
+          purchasePrice: "100",
+          sellingPrice: "200",
           quantity: 1,
           discountPercent: 0,
           discountAmount: "0",
@@ -507,33 +506,28 @@ describe("InvoiceService", async () => {
       discountAmount: "0",
     };
 
-    await expect(service.createPurchaseInvoice(orgSlug, createInvoiceDto, user.id)).rejects.toThrow(
-      BadRequestException,
-    );
+    const invoice = await service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
+
+    expect(invoice).toBeDefined();
+    expect(invoice.items.length).toBe(1);
+
+    expect(invoice.items[0].description).toBe(existingProduct.description); // should use existing product description
+    expect(invoice.items[0].barcode).toBe(existingProduct.barcode); // should use existing product barcode
+
+    expect(invoice.items[0].purchasePrice.toString()).toBe("100");
+    expect(invoice.items[0].sellingPrice.toString()).toBe("200");
+    expect(invoice.items[0].quantity).toBe(1);
+    expect(invoice.items[0].discountPercent).toBe(0);
+    expect(invoice.items[0].discountAmount.toString()).toBe("0");
   });
 
-  it("should throw BadRequestException when trying to create an invoice with the same description as an existing product but with different barcode", async () => {
+  it("should throw BadRequestException when creating invoice without description", async () => {
     const { user, orgSlug } = await setupTestOrganization();
-
-    // Create a product with a specific description
-    const existingProduct = await prisma.product.create({
-      data: {
-        description: "Unique Product",
-        purchasePrice: new Prisma.Decimal("50"),
-        sellingPrice: new Prisma.Decimal("100"),
-        stockQuantity: 10,
-        organization: { connect: { slug: orgSlug } },
-      },
-    });
-
-    // Attempt to create an invoice with the same description
-    const createInvoiceDto: CreatePurchaseInvoiceDto = {
+    const purchaseInvoiceDto = {
       items: [
         {
-          barcode: "789012", // Different barcode
-          description: existingProduct.description, // Same description as existing product
-          purchasePrice: "60",
-          sellingPrice: "120",
+          purchasePrice: "100",
+          sellingPrice: "200",
           quantity: 1,
           discountPercent: 0,
           discountAmount: "0",
@@ -542,9 +536,8 @@ describe("InvoiceService", async () => {
       discountPercent: 0,
       discountAmount: "0",
     };
-
-    await expect(service.createPurchaseInvoice(orgSlug, createInvoiceDto, user.id)).rejects.toThrow(
-      BadRequestException,
-    );
+    await expect(
+      service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id),
+    ).rejects.toThrow(BadRequestException);
   });
 });
