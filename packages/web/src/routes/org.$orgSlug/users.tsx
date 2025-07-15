@@ -30,7 +30,7 @@ import {
   TableRow,
 } from "@/shadcn/components/ui/table";
 
-import type { DeleteUserDto } from "@erp-system/sdk/zod";
+import type { DeleteUserDto, UserEntity } from "@erp-system/sdk/zod";
 import type z from "zod";
 
 import { apiClient } from "@/api-client";
@@ -46,6 +46,8 @@ export const Route = createFileRoute("/org/$orgSlug/users")({
   context: () => ({ title: i18n.t("routes.users"), icon: UsersIcon, roleRequirement: "ADMIN" }),
 });
 
+type User = z.infer<typeof UserEntity>;
+
 function Users() {
   const { slug: orgSlug } = useOrg();
   const { t } = useTranslation();
@@ -56,20 +58,6 @@ function Users() {
     queryFn: async () =>
       apiClient.getThrowing("/org/{orgSlug}/user/getAll", { params: { path: { orgSlug } } }),
     select: (res) => res.data,
-  });
-
-  const {
-    isPending: isUserDeletePending,
-    variables: deleteVariables,
-    mutateAsync: deleteUser,
-  } = useMutation({
-    mutationFn: async (body: z.infer<typeof DeleteUserDto>) =>
-      await apiClient.deleteThrowing("/org/{orgSlug}/user/delete", {
-        params: { path: { orgSlug } },
-        body,
-      }),
-    onSuccess: () => refetchUsers(),
-    onError: (error) => toast.error(t(`errors.${error.message}` as any)),
   });
 
   return (
@@ -103,41 +91,7 @@ function Users() {
                   <TableCell>{formatDate(user.createdAt)}</TableCell>
                   <TableCell>{user.deletedAt ? formatDate(user.deletedAt) : ""}</TableCell>
                   <TableCell className="text-end">
-                    <AlertDialog>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger className="text-muted-foreground" asChild>
-                          <Button variant="ghost" size="sm">
-                            {isUserDeletePending && deleteVariables.username === user.username ? (
-                              <Loader2Icon className="animate-spin" />
-                            ) : (
-                              <EllipsisVerticalIcon />
-                            )}
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <AlertDialogTrigger asChild>
-                            <DropdownMenuItem disabled={!!user.deletedAt} variant="destructive">
-                              {t("common.actions.delete")}
-                            </DropdownMenuItem>
-                          </AlertDialogTrigger>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>{t("common.ui.areYouSure")}</AlertDialogTitle>
-                        </AlertDialogHeader>
-                        <AlertDialogDescription>
-                          {t("user.deleteDescription", { username: user.username })}
-                        </AlertDialogDescription>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>{t("common.actions.cancel")}</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => deleteUser(user)}>
-                            {t("common.actions.delete")}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <UserDropdownMenu user={user} refetchUsers={refetchUsers} />
                   </TableCell>
                 </TableRow>
               ))}
@@ -148,5 +102,61 @@ function Users() {
         <EmptyTable />
       )}
     </div>
+  );
+}
+
+function UserDropdownMenu({ user, refetchUsers }: { user: User; refetchUsers: () => void }) {
+  const { t } = useTranslation();
+  const { slug: orgSlug } = useOrg();
+  const {
+    isPending: isUserDeletePending,
+    variables: deleteVariables,
+    mutateAsync: deleteUser,
+  } = useMutation({
+    mutationFn: async (body: z.infer<typeof DeleteUserDto>) =>
+      await apiClient.deleteThrowing("/org/{orgSlug}/user/delete", {
+        params: { path: { orgSlug } },
+        body,
+      }),
+    onSuccess: () => refetchUsers(),
+    onError: (error) => toast.error(t(`errors.${error.message}` as any)),
+  });
+
+  return (
+    <AlertDialog>
+      <DropdownMenu>
+        <DropdownMenuTrigger className="text-muted-foreground" asChild>
+          <Button variant="ghost" size="sm">
+            {isUserDeletePending && deleteVariables.username === user.username ? (
+              <Loader2Icon className="animate-spin" />
+            ) : (
+              <EllipsisVerticalIcon />
+            )}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <AlertDialogTrigger asChild>
+            <DropdownMenuItem disabled={!!user.deletedAt} variant="destructive">
+              {t("common.actions.delete")}
+            </DropdownMenuItem>
+          </AlertDialogTrigger>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t("common.ui.areYouSure")}</AlertDialogTitle>
+        </AlertDialogHeader>
+        <AlertDialogDescription>
+          {t("user.deleteDescription", { username: user.username })}
+        </AlertDialogDescription>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{t("common.actions.cancel")}</AlertDialogCancel>
+          <AlertDialogAction onClick={() => deleteUser(user)}>
+            {t("common.actions.delete")}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

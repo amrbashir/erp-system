@@ -18,7 +18,7 @@ import {
 import { cn } from "@/shadcn/lib/utils";
 
 import type { FileRoutesById } from "@/routeTree.gen";
-import { UserDropdown } from "@/components/user-dropdown";
+import { SidebarUserMenu } from "@/components/sidebar-user-menu";
 import { useOrg } from "@/hooks/use-org";
 import { useAuth } from "@/providers/auth";
 
@@ -93,7 +93,7 @@ export function AppSideBar() {
       </SidebarContent>
 
       <SidebarFooter>
-        <UserDropdown />
+        <SidebarUserMenu />
       </SidebarFooter>
     </Sidebar>
   );

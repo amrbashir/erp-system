@@ -22,7 +22,7 @@ import { ThemeSelector } from "@/components/theme-selector";
 import { useOrg } from "@/hooks/use-org";
 import { useAuth } from "@/providers/auth";
 
-export function UserDropdown() {
+export function SidebarUserMenu() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
