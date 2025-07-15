@@ -34,12 +34,13 @@ import type { DeleteUserDto, UserEntity } from "@erp-system/sdk/zod";
 import type z from "zod";
 
 import { apiClient } from "@/api-client";
-import { AddUserDialog } from "@/components/add-user-dialog";
 import { EmptyTable } from "@/components/empty-table";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 import { useAuth } from "@/providers/auth";
 import { formatDate } from "@/utils/formatDate";
+
+import { AddUserDialog } from "./-add-user-dialog";
 
 export const Route = createFileRoute("/org/$orgSlug/users")({
   component: Users,

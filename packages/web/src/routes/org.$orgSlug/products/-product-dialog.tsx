@@ -25,7 +25,7 @@ import { apiClient } from "@/api-client";
 import { InputNumpad } from "@/components/ui/input-numpad";
 import { useOrg } from "@/hooks/use-org";
 
-import { FormErrors, FormFieldError } from "./form-errors";
+import { FormErrors, FormFieldError } from "../../../components/form-errors";
 
 type Product = z.infer<typeof ProductEntity>;
 

@@ -29,8 +29,6 @@ import type z from "zod";
 
 import { apiClient } from "@/api-client";
 import { FormErrors } from "@/components/form-errors";
-import { CustomerSelector } from "@/components/invoice-customer-selector";
-import { ProductSelector } from "@/components/invoice-product-selector";
 import { InputNumpad } from "@/components/ui/input-numpad";
 import { Hotkey } from "@/components/ui/kbd";
 import { useHotkeys } from "@/hooks/use-hotkeys";
@@ -46,6 +44,9 @@ import {
   calculateItemTotal,
 } from "@/utils/invoice-calculator";
 import { SafeDecimal } from "@/utils/SafeDecimal";
+
+import { CustomerSelector } from "./-customer-selector";
+import { ProductSelector } from "./-product-selector";
 
 export const Route = createFileRoute("/org/$orgSlug/invoices/createSale")({
   component: CreateSaleInvoice,

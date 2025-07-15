@@ -18,8 +18,9 @@ import type { CustomerEntity } from "@erp-system/sdk/zod";
 import type { AnyFieldApi } from "@tanstack/react-form";
 import type z from "zod";
 
-import { CustomerDialog } from "@/components/customer-dialog";
 import { useMediaQuery } from "@/hooks/use-media-query";
+
+import { CustomerDialog } from "../customers/-customer-dialog";
 
 type Customer = z.infer<typeof CustomerEntity>;
 

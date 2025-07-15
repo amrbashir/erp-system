@@ -12,11 +12,12 @@ import {
 } from "@/shadcn/components/ui/table";
 
 import { apiClient } from "@/api-client";
-import { CustomerDialog } from "@/components/customer-dialog";
 import { EmptyTable } from "@/components/empty-table";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 import { formatDate } from "@/utils/formatDate";
+
+import { CustomerDialog } from "./-customer-dialog";
 
 export const Route = createFileRoute("/org/$orgSlug/customers")({
   component: Customers,

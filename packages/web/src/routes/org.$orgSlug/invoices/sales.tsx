@@ -2,9 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PlusIcon } from "lucide-react";
 import { Button } from "@/shadcn/components/ui/button";
 
-import { InvoicesTable } from "@/components/invoices-table";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
+
+import { InvoicesTable } from "./-invoices-table";
 
 export const Route = createFileRoute("/org/$orgSlug/invoices/sales")({
   component: RouteComponent,

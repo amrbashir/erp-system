@@ -13,11 +13,12 @@ import {
 
 import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
-import { ProductDialog } from "@/components/product-dialog";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 import { formatDate } from "@/utils/formatDate";
 import { formatMoney } from "@/utils/formatMoney";
+
+import { ProductDialog } from "./-product-dialog";
 
 export const Route = createFileRoute("/org/$orgSlug/products")({
   component: Products,
