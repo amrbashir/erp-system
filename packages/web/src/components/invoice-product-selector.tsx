@@ -1,11 +1,20 @@
 import { PopoverTrigger } from "@radix-ui/react-popover";
+import { CommandEmpty } from "cmdk";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
 import { Command, CommandInput, CommandItem, CommandList } from "@/shadcn/components/ui/command";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/shadcn/components/ui/drawer";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/shadcn/components/ui/drawer";
 import { Popover, PopoverContent } from "@/shadcn/components/ui/popover";
+import { cn } from "@/shadcn/lib/utils";
 
 import { useMediaQuery } from "@/hooks/use-media-query";
 
@@ -13,10 +22,13 @@ export function ProductSelector({
   items,
   onItemSelect,
   value,
+  onInputValueChange,
 }: {
   items: string[];
+  value?: string;
   onItemSelect: (item: string) => void;
-} & React.ComponentProps<typeof CommandInput>) {
+  onInputValueChange?: (value: string) => void;
+}) {
   const { t } = useTranslation();
   const [selected, setSelected] = useState("");
   const [open, setOpen] = useState(false);
@@ -40,33 +52,65 @@ export function ProductSelector({
     </Button>
   );
 
-  const ProductsCommandList = (
-    <Command className="w-(--radix-popover-trigger-width) p-2">
-      <CommandInput placeholder={t("product.search")} />
-      <CommandList>
-        {items.map((item, index) => (
-          <CommandItem key={index} value={item} onSelect={() => handleItemSelect(item)}>
-            <CheckIcon className={selected == item ? "opacity-100" : "opacity-0"} />
-            {item}
-          </CommandItem>
-        ))}
-      </CommandList>
-    </Command>
+  const ProductsInput = (
+    <CommandInput
+      value={value}
+      onValueChange={(v) => {
+        setOpen(!!v); // keep the dropdown open if there's input
+        onInputValueChange?.(v);
+      }}
+      placeholder={isDesktop ? undefined : t("product.search")}
+      className={cn(isDesktop && "px-2")}
+    />
+  );
+
+  const ProductsList = (
+    <CommandList>
+      <CommandEmpty>{t("common.ui.noMatches")}</CommandEmpty>
+      {items.map((item, index) => (
+        <CommandItem key={index} value={item} onSelect={() => handleItemSelect(item)}>
+          <CheckIcon className={selected == item ? "opacity-100" : "opacity-0"} />
+          {item}
+        </CommandItem>
+      ))}
+    </CommandList>
   );
 
   if (isDesktop) {
     return (
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>{ButtonTrigger}</PopoverTrigger>
-        <PopoverContent asChild>{ProductsCommandList}</PopoverContent>
-      </Popover>
+      <Command
+        className={cn(
+          "p-0 bg-transparent",
+          "[&>[data-slot=command-input-wrapper]]:border-none [&>[data-slot=command-input-wrapper]]:p-0 [&>[data-slot=command-input-wrapper]>svg]:hidden",
+        )}
+      >
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>{ProductsInput}</PopoverTrigger>
+          <PopoverContent
+            className="w-(--radix-popover-trigger-width) p-2"
+            asChild
+            onOpenAutoFocus={(e) => e.preventDefault()}
+          >
+            {ProductsList}
+          </PopoverContent>
+        </Popover>
+      </Command>
     );
   }
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>{ButtonTrigger}</DrawerTrigger>
-      <DrawerContent className="bg-popover p-2">{ProductsCommandList}</DrawerContent>
+      <DrawerContent className="bg-popover p-2">
+        <DrawerHeader>
+          <DrawerTitle>{t("product.select")}</DrawerTitle>
+          <DrawerDescription>{t("product.selectDescription")}</DrawerDescription>
+        </DrawerHeader>
+        <Command>
+          {ProductsInput}
+          {ProductsList}
+        </Command>
+      </DrawerContent>
     </Drawer>
   );
 }

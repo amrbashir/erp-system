@@ -38,7 +38,8 @@
       "areYouSure": "Are you sure?",
       "number": "No.",
       "or": "or",
-      "row": "Row"
+      "row": "Row",
+      "noMatches": "No matching item found"
     },
     "pricing": {
       "purchase": "Purchase $t(common.form.price)",
@@ -110,7 +111,6 @@
     "search": "$t(common.actions.search) customers...",
     "select": "Select a customer",
     "without": "Without a Customer",
-    "nomatches": "No customers found",
     "id": "Customer ID"
   },
 
@@ -124,6 +124,7 @@
     "remaining": "Remaining",
     "insufficientStock": "Insufficient stock for the product",
     "select": "Select a product",
+    "selectDescription": "Select a product from the list",
     "form": {
       "barcode": "$t(common.form.barcode)",
       "description": "$t(common.form.description)",

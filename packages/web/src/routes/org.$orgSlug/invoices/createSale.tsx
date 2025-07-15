@@ -32,7 +32,7 @@ import { FormErrors } from "@/components/form-errors";
 import { CustomerSelector } from "@/components/invoice-customer-selector";
 import { ProductSelector } from "@/components/invoice-product-selector";
 import { InputNumpad } from "@/components/ui/input-numpad";
-import { Kbd } from "@/components/ui/kbd";
+import { Hotkey } from "@/components/ui/kbd";
 import { useHotkeys } from "@/hooks/use-hotkeys";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
@@ -150,7 +150,7 @@ function CreateSaleInvoice() {
   // Calculate subtotal (before invoice-level discounts)
   const subtotal = useMemo(() => calculateInvoiceSubtotal(invoiceItems, "SALE"), [invoiceItems]);
 
-  const handleRemoveItem = (index: number) => {
+  const handleResetItem = (index: number) => {
     form.replaceFieldValue("items", index, { ...DEFAULT_INVOICE_ITEM } as any);
     form.validate("change");
   };
@@ -177,12 +177,11 @@ function CreateSaleInvoice() {
     field: keyof InvoiceItem,
     value: number | string,
   ) => {
-    const newItems = [...invoiceItems];
-    newItems[index] = {
+    const newItems = [...form.getFieldValue("items")];
+    form.replaceFieldValue("items", index, {
       ...newItems[index],
       [field]: value,
-    };
-    form.setFieldValue("items", newItems);
+    });
     form.validate("change");
   };
 
@@ -227,7 +226,7 @@ function CreateSaleInvoice() {
           products={products}
           onAddItem={handleAddItem}
           onAddEmptyItem={addEmptyItem}
-          onRemoveItem={handleRemoveItem}
+          onResetItem={handleResetItem}
           onUpdateItemField={handleUpdateItemField}
         />
       </Card>
@@ -275,12 +274,13 @@ function InvoiceHeader({
                 variant="secondary"
                 onClick={() => onReset()}
               >
-                <Kbd>F7</Kbd>
+                <Hotkey>F7</Hotkey>
                 {t("common.actions.delete")}
               </Button>
               <Button disabled={!canSubmit || !hasItems}>
                 {isSubmitting && <Loader2Icon className="animate-spin" />}
-                <Kbd>F8</Kbd>
+                <Hotkey>F8</Hotkey>
+                {t("common.actions.create")}
               </Button>
             </>
           )}
@@ -296,7 +296,7 @@ function InvoiceTable({
   products,
   onAddItem,
   onAddEmptyItem,
-  onRemoveItem,
+  onResetItem,
   onUpdateItemField,
   ...props
 }: {
@@ -304,7 +304,7 @@ function InvoiceTable({
   products: Product[] | undefined;
   onAddItem: (index: number, product: Product) => void;
   onAddEmptyItem: () => void;
-  onRemoveItem: (index: number) => void;
+  onResetItem: (index: number) => void;
   onUpdateItemField: (index: number, field: keyof InvoiceItem, value: number | string) => void;
 } & React.ComponentProps<typeof Table>) {
   const { t } = useTranslation();
@@ -335,7 +335,7 @@ function InvoiceTable({
             index={index}
             products={products}
             onAdd={onAddItem}
-            onRemove={onRemoveItem}
+            onReset={onResetItem}
             onUpdateItemField={onUpdateItemField}
           />
         ))}
@@ -364,14 +364,14 @@ function InvoiceTableRow({
   index,
   products,
   onUpdateItemField,
-  onRemove,
+  onReset,
   onAdd,
 }: {
   item: InvoiceItem;
   index: number;
   products: Product[] | undefined;
   onUpdateItemField: (index: number, field: keyof InvoiceItem, value: number | string) => void;
-  onRemove: (index: number) => void;
+  onReset: (index: number) => void;
   onAdd: (index: number, product: Product) => void;
 }) {
   const itemSubtotal = calculateItemSubtotal(item.price, item.quantity);
@@ -394,7 +394,7 @@ function InvoiceTableRow({
           type="button"
           variant="ghost"
           className="w-9 rounded-none text-red-500 dark:text-red-300"
-          onClick={() => onRemove(index)}
+          onClick={() => onReset(index)}
         >
           <XIcon className="size-4" />
         </Button>
@@ -404,6 +404,10 @@ function InvoiceTableRow({
         <ProductSelector
           items={products?.map((p) => p.barcode).filter((b) => b !== undefined) || []}
           value={item.barcode}
+          onInputValueChange={(value) => {
+            onReset(index);
+            onUpdateItemField(index, "barcode", value);
+          }}
           onItemSelect={(item) => {
             const product = products?.find((i) => i.barcode === item);
             if (product) onAdd(index, product);
@@ -414,6 +418,10 @@ function InvoiceTableRow({
         <ProductSelector
           items={products?.map((p) => p.description) || []}
           value={item.description}
+          onInputValueChange={(value) => {
+            onReset(index);
+            onUpdateItemField(index, "description", value);
+          }}
           onItemSelect={(item) => {
             const product = products?.find((i) => i.description === item);
             if (product) onAdd(index, product);

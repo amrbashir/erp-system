@@ -90,7 +90,7 @@ export function CustomerSelector({
         />
       </div>
       <CommandList>
-        <CommandEmpty>{t("customer.nomatches")}</CommandEmpty>
+        <CommandEmpty>{t("common.ui.noMatches")}</CommandEmpty>
         <CommandItem onSelect={() => handleCustomerSelect(undefined)}>
           <CheckIcon className={field.state.value === undefined ? "opacity-100" : "opacity-0"} />
           {t("customer.without")}

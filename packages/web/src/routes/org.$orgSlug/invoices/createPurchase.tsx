@@ -31,7 +31,7 @@ import { apiClient } from "@/api-client";
 import { FormErrors } from "@/components/form-errors";
 import { CustomerSelector } from "@/components/invoice-customer-selector";
 import { InputNumpad } from "@/components/ui/input-numpad";
-import { Kbd } from "@/components/ui/kbd";
+import { Hotkey } from "@/components/ui/kbd";
 import { useHotkeys } from "@/hooks/use-hotkeys";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
@@ -249,13 +249,13 @@ function InvoiceHeader({
                 variant="secondary"
                 onClick={() => onReset()}
               >
-                <Kbd>F7</Kbd>
+                <Hotkey>F7</Hotkey>
 
                 {t("common.actions.delete")}
               </Button>
               <Button disabled={!canSubmit || !hasItems}>
                 {isSubmitting && <Loader2Icon className="animate-spin" />}
-                <Kbd>F8</Kbd>
+                <Hotkey>F8</Hotkey>
                 {t("common.actions.create")}
               </Button>
             </>

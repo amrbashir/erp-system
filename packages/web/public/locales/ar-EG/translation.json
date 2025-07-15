@@ -38,7 +38,8 @@
       "areYouSure": "هل أنت متأكد؟",
       "number": "رقم",
       "or": "أو",
-      "row": "صف"
+      "row": "صف",
+      "noMatches": "لم يتم العثور على عنصر مطابق"
     },
     "pricing": {
       "purchase": "سعر الشراء",
@@ -114,7 +115,6 @@
     "search": "$t(common.actions.search) العملاء...",
     "select": "اختر عميلًا",
     "without": "بدون عميل",
-    "nomatches": "لا يوجد عملاء",
     "id": "كود العميل"
   },
 
@@ -129,6 +129,7 @@
     "remaining": "المتبقي",
     "insufficientStock": "لا يوجد مخزون كافٍ للمنتج",
     "select": "اختر منتجًا",
+    "selectDescription": "اختر منتجًا من القائمة",
     "form": {
       "stockQuantity": "كمية المخزون"
     }
