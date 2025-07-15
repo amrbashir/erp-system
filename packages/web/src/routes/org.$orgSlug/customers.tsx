@@ -41,7 +41,7 @@ function Customers() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <div>
-        <CustomerDialog />
+        <CustomerDialog action="create" />
       </div>
 
       {customers?.length && customers.length > 0 ? (

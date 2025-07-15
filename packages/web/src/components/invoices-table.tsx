@@ -29,7 +29,7 @@ export function InvoicesTable({ invoiceType }: { invoiceType: InvoiceType }) {
   const { slug: orgSlug } = useOrg();
 
   const { data: invoices } = useQuery({
-    queryKey: ["invoices", invoiceType, orgSlug],
+    queryKey: ["invoices"],
     queryFn: async () =>
       apiClient.getThrowing("/org/{orgSlug}/invoice/getAll", {
         params: {

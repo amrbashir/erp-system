@@ -28,12 +28,12 @@ import { useOrg } from "@/hooks/use-org";
 type Customer = z.infer<typeof CustomerEntity>;
 
 export function CustomerDialog({
-  action = "create",
+  action,
   iconOnly = false,
   customer,
   onCreated,
 }: {
-  action?: "create" | "edit";
+  action: "create" | "edit";
   iconOnly?: boolean;
   customer?: Customer;
   onCreated?: (customer: Customer) => void;
@@ -74,7 +74,10 @@ export function CustomerDialog({
     },
   });
 
-  const actionDescription = action === "create" ? t("customer.add") : t("customer.edit");
+  const actionLabel = action === "create" ? t("customer.add") : t("customer.edit");
+  const actionLabelShort = action === "edit" ? t("common.actions.edit") : t("common.actions.add");
+  const actionDescription =
+    action === "create" ? t("customer.addDescription") : t("customer.editDescription");
   const ActionIcon = action === "create" ? <PlusIcon /> : <EditIcon />;
   const Trigger = iconOnly ? (
     <Button variant="ghost" size="icon">
@@ -83,7 +86,7 @@ export function CustomerDialog({
   ) : (
     <Button>
       {ActionIcon}
-      {actionDescription}
+      {actionLabel}
     </Button>
   );
 
@@ -99,8 +102,8 @@ export function CustomerDialog({
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("customer.add")}</DialogTitle>
-          <DialogDescription>{t("customer.addDescription")}</DialogDescription>
+          <DialogTitle>{actionLabel}</DialogTitle>
+          <DialogDescription>{actionDescription}</DialogDescription>
         </DialogHeader>
 
         <form
@@ -129,7 +132,7 @@ export function CustomerDialog({
                   </DialogClose>
                   <Button disabled={!canSubmit}>
                     {isSubmitting && <Loader2Icon className="animate-spin" />}
-                    {action === "edit" ? t("common.actions.edit") : t("common.actions.add")}
+                    {actionLabelShort}
                   </Button>
                 </>
               )}

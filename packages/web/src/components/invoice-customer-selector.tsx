@@ -83,6 +83,7 @@ export function CustomerSelector({
           onValueChange={(v) => setCustomerSearch(v)}
         />
         <CustomerDialog
+          action="create"
           iconOnly
           customer={{ name: customerSearch } as Customer}
           onCreated={handleCustomerCreated}

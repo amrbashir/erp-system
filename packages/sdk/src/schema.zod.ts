@@ -67,6 +67,17 @@ export const UpdateCustomerDto = z
   .object({ name: z.string(), address: z.string().optional(), phone: z.string().optional() })
   .passthrough();
 
+export const UpdateProductDto = z
+  .object({
+    barcode: z.string(),
+    description: z.string(),
+    purchasePrice: z.string(),
+    sellingPrice: z.string(),
+    stockQuantity: z.number(),
+  })
+  .partial()
+  .passthrough();
+
 export const ProductEntity = z
   .object({
     id: z.string(),
@@ -111,8 +122,9 @@ export const CreateSaleInvoiceDto = z
 
 export const CreatePurchaseInvoiceItemDto = z
   .object({
+    productId: z.string().optional(),
     barcode: z.string().optional(),
-    description: z.string(),
+    description: z.string().optional(),
     purchasePrice: z.string(),
     sellingPrice: z.string(),
     quantity: z.number(),

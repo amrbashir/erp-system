@@ -1,5 +1,7 @@
-import { CreatePurchaseInvoiceDto, CreatePurchaseInvoiceItemDto } from "@erp-system/sdk/zod";
+import { ProductEntity, UpdateProductDto } from "@erp-system/sdk/zod";
 import { useForm } from "@tanstack/react-form";
+import { useQueryClient } from "@tanstack/react-query";
+import { EditIcon, Loader2Icon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
@@ -19,52 +21,79 @@ import { Label } from "@/shadcn/components/ui/label";
 import type { AnyFieldApi } from "@tanstack/react-form";
 import type z from "zod";
 
+import { apiClient } from "@/api-client";
 import { InputNumpad } from "@/components/ui/input-numpad";
+import { useOrg } from "@/hooks/use-org";
 
 import { FormErrors, FormFieldError } from "./form-errors";
 
-type CreateInvoiceItem = z.infer<typeof CreatePurchaseInvoiceItemDto>;
-type Invoice = z.infer<ReturnType<(typeof CreatePurchaseInvoiceDto)["strict"]>> & {
-  items?: CreateInvoiceItem[];
-};
-type InvoiceItem = Invoice["items"][number];
+type Product = z.infer<typeof ProductEntity>;
 
-export function AddProductDialog({
-  onProductSubmit,
-  ...props
-}: { onProductSubmit: (product: InvoiceItem) => void } & React.ComponentProps<"button">) {
+export function ProductDialog({
+  action,
+  product,
+  iconOnly = false,
+}: {
+  action: "edit";
+  product: Product;
+  iconOnly?: boolean;
+}) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const { slug: orgSlug } = useOrg();
+  const client = useQueryClient();
 
   const form = useForm({
     defaultValues: {
-      barcode: "",
-      quantity: 1,
-      description: "",
-      purchasePrice: "0",
-      sellingPrice: "0",
-      discountPercent: 0,
-      discountAmount: "0",
-    } as InvoiceItem,
+      barcode: product?.barcode || "",
+      description: product?.description || "",
+      purchasePrice: product?.purchasePrice || "0",
+      sellingPrice: product?.sellingPrice || "0",
+      stockQuantity: product?.stockQuantity || 0,
+    } as z.infer<ReturnType<(typeof UpdateProductDto)["strict"]>>,
     validators: {
-      onSubmit: CreatePurchaseInvoiceItemDto,
+      onSubmit: UpdateProductDto,
     },
     onSubmit: async ({ value, formApi }) => {
-      onProductSubmit(value);
+      const { error, data } = await apiClient.post("/org/{orgSlug}/product/update/{id}", {
+        params: { path: { orgSlug: orgSlug, id: product.id } },
+        body: value,
+      });
+
+      if (error) {
+        formApi.setErrorMap({ onSubmit: error });
+        return;
+      }
+
+      client.invalidateQueries({ queryKey: ["products"] });
+
       formApi.reset();
       setOpen(false);
     },
   });
 
+  const actionLabel = t("product.edit");
+  const actionLabelShort = t("common.actions.edit");
+  const actionDescription = t("product.editDescription");
+
+  const Trigger = iconOnly ? (
+    <Button variant="ghost" size="icon">
+      <EditIcon />
+    </Button>
+  ) : (
+    <Button>
+      <EditIcon />
+      {actionLabel}
+    </Button>
+  );
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button {...props}>{t("product.add")}</Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{Trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("product.add")}</DialogTitle>
-          <DialogDescription>{t("product.addDescription")}</DialogDescription>
+          <DialogTitle>{actionLabel}</DialogTitle>
+          <DialogDescription>{actionDescription}</DialogDescription>
         </DialogHeader>
         <form
           className="flex flex-col gap-6"
@@ -77,8 +106,8 @@ export function AddProductDialog({
           <form.Field name="barcode" children={(field) => <InputField field={field} />} />
           <form.Field name="description" children={(field) => <InputField field={field} />} />
           <form.Field
-            name="quantity"
-            children={(field) => <InputField type="number" min={1} field={field} />}
+            name="stockQuantity"
+            children={(field) => <InputField type="number" min={0} field={field} />}
           />
           <form.Field
             name="purchasePrice"
@@ -101,7 +130,10 @@ export function AddProductDialog({
                       {t("common.actions.cancel")}
                     </Button>
                   </DialogClose>
-                  <Button disabled={!canSubmit}>{t("common.actions.add")}</Button>
+                  <Button disabled={!canSubmit}>
+                    {isSubmitting && <Loader2Icon className="animate-spin" />}
+                    {actionLabelShort}
+                  </Button>
                 </>
               )}
             />
@@ -121,7 +153,7 @@ function InputField({
 
   return (
     <div className="flex flex-col gap-3">
-      <Label htmlFor={field.name}>{t(`invoice.form.${field.name}` as any)}</Label>
+      <Label htmlFor={field.name}>{t(`product.form.${field.name}` as any)}</Label>
       {props.type === "number" ? (
         <InputNumpad
           id={field.name}

@@ -105,6 +105,7 @@
     "add": "$t(common.actions.add) Customer",
     "addDescription": "You can add new customers to the system. Please fill in the details below",
     "edit": "$t(common.actions.edit) Customer",
+    "editDescription": "You can edit the customer's details. Please fill in the details below",
     "name": "Customer $t(common.form.name)",
     "search": "$t(common.actions.search) customers...",
     "select": "Select a customer",
@@ -116,11 +117,21 @@
   "product": {
     "add": "$t(common.actions.add) Product",
     "addDescription": "You can add new products to the system. Please fill in the details below",
+    "edit": "$t(common.actions.edit) Product",
+    "editDescription": "You can edit the product's details. Please fill in the details",
     "search": "$t(common.actions.search) products...",
     "stock": "Stock",
     "remaining": "Remaining",
     "insufficientStock": "Insufficient stock for the product",
-    "select": "Select a product"
+    "select": "Select a product",
+    "form": {
+      "barcode": "$t(common.form.barcode)",
+      "description": "$t(common.form.description)",
+      "quantity": "$t(common.form.quantity)",
+      "purchasePrice": "$t(common.pricing.purchase)",
+      "sellingPrice": "$t(common.pricing.selling)",
+      "stockQuantity": "$t(product.stock) $t(common.form.quantity)"
+    }
   },
 
   "theme": {
@@ -164,6 +175,10 @@
       "404": "Not Found",
       "500": "Internal Server Error"
     },
+    "products": {
+      "barcodeExists": "A product with this barcode already exists",
+      "descriptionExists": "Product with this description already exists"
+    },
 
     "Username or password is incorrect": "$t(errors.auth.incorrectCredentials)",
     "Cannot delete the last admin user in the organization": "$t(errors.users.cannotDeleteLastAdmin)",
@@ -177,7 +192,9 @@
     "notAuthorized": "$t(errors.auth.notAuthorized)",
     "invoiceMustHaveItems": "$t(errors.invoice.mustHaveItems)",
     "Invoice must have at least one item": "$t(errors.invoice.mustHaveItems)",
-    "Customer with this name already exists": "$t(errors.customers.nameExists)"
+    "Customer with this name already exists": "$t(errors.customers.nameExists)",
+    "A product with this barcode already exists": "$t(errors.products.barcodeExists)",
+    "A product with this description already exists": "$t(errors.products.descriptionExists)"
   },
 
   "validationErrors": {
@@ -197,13 +214,6 @@
     "subtotal": "Subtotal",
     "discountPercent": "Discount %",
     "discountAmount": "Discount Amount",
-    "form": {
-      "barcode": "$t(common.form.barcode)",
-      "description": "$t(common.form.description)",
-      "quantity": "$t(common.form.quantity)",
-      "purchasePrice": "$t(common.pricing.purchase)",
-      "sellingPrice": "$t(common.pricing.selling)"
-    },
     "addRow": "$t(common.actions.add) $t(common.ui.row)"
   },
 

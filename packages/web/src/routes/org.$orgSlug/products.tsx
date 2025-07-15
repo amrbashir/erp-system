@@ -13,6 +13,7 @@ import {
 
 import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
+import { ProductDialog } from "@/components/product-dialog";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 import { formatDate } from "@/utils/formatDate";
@@ -52,6 +53,7 @@ function Products() {
                 <TableHead>{t("common.pricing.purchase")}</TableHead>
                 <TableHead>{t("common.pricing.selling")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -68,6 +70,9 @@ function Products() {
                     {formatMoney(product.sellingPrice)}
                   </TableCell>
                   <TableCell>{formatDate(product.createdAt)}</TableCell>
+                  <TableCell>
+                    <ProductDialog action="edit" product={product} iconOnly />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

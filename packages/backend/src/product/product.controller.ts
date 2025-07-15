@@ -1,9 +1,9 @@
-import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
 import { PaginationDto } from "../pagination.dto";
-import { ProductEntity } from "./product.dto";
+import { ProductEntity, UpdateProductDto } from "./product.dto";
 import { ProductService } from "./product.service";
 
 @UseGuards(JwtAuthGuard)
@@ -13,6 +13,17 @@ import { ProductService } from "./product.service";
 @Controller("/org/:orgSlug/product")
 export class ProductController {
   constructor(private readonly service: ProductService) {}
+
+  @Post("update/:id")
+  @ApiOkResponse({ type: ProductEntity })
+  async update(
+    @Param("orgSlug") orgSlug: string,
+    @Param("id") id: string,
+    @Body() updateProductDto: UpdateProductDto,
+  ): Promise<ProductEntity> {
+    const product = await this.service.updateProduct(id, updateProductDto, orgSlug);
+    return new ProductEntity(product);
+  }
 
   @Get("getAll")
   @ApiOkResponse({ type: [ProductEntity] })

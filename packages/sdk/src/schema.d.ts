@@ -180,6 +180,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/org/{orgSlug}/product/update/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ProductController$1_update"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/org/{orgSlug}/product/getAll": {
         parameters: {
             query?: never;
@@ -364,6 +380,15 @@ export interface components {
             address?: string;
             phone?: string;
         };
+        UpdateProductDto: {
+            barcode?: string;
+            description?: string;
+            /** Format: number */
+            purchasePrice?: string;
+            /** Format: number */
+            sellingPrice?: string;
+            stockQuantity?: number;
+        };
         ProductEntity: {
             id: string;
             barcode?: string;
@@ -404,8 +429,9 @@ export interface components {
             discountAmount?: string;
         };
         CreatePurchaseInvoiceItemDto: {
+            productId?: string;
             barcode?: string;
-            description: string;
+            description?: string;
             /** Format: number */
             purchasePrice: string;
             /** Format: number */
@@ -740,6 +766,34 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CustomerEntity"][];
+                };
+            };
+        };
+    };
+    ProductController$1_update: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateProductDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductEntity"];
                 };
             };
         };

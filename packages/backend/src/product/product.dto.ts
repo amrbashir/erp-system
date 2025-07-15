@@ -1,6 +1,34 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsInt, IsNotEmpty, IsNumberString, IsOptional, IsString } from "class-validator";
 
 import type { Product } from "../prisma/generated/client";
+
+export class UpdateProductDto {
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  barcode?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @ApiPropertyOptional({ format: "number" })
+  @IsNumberString()
+  @IsOptional()
+  purchasePrice?: string;
+
+  @ApiPropertyOptional({ format: "number" })
+  @IsNumberString()
+  @IsOptional()
+  sellingPrice?: string;
+
+  @ApiPropertyOptional()
+  @IsInt()
+  @IsOptional()
+  stockQuantity?: number;
+}
 
 export class ProductEntity {
   @ApiProperty()

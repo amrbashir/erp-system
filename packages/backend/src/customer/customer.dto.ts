@@ -22,7 +22,6 @@ export class CreateCustomerDto {
 
 export class UpdateCustomerDto {
   @ApiProperty()
-  @IsNotEmpty()
   @IsString()
   name?: string;
 
