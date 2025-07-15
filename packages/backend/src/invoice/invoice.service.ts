@@ -36,21 +36,22 @@ export class InvoiceService {
 
     try {
       return await this.prisma.$transaction(async (prisma) => {
-        // Fetch all products information
-        const productIds = dto.items.map((item) => item.productId);
-        const products = await prisma.product.findMany({
-          where: {
-            id: { in: productIds },
-            organization: { slug: orgSlug },
-          },
-        });
-
         // Check stock quantities and prepare invoice items
         const invoiceItems: Omit<InvoiceItem, "id" | "invoiceId">[] = [];
         let subtotal = new Prisma.Decimal(0);
 
         for (const item of dto.items) {
-          const product = products.find((p) => p.id === item.productId);
+          const product = await prisma.product.findUnique({
+            where: { id: item.productId, organization: { slug: orgSlug } },
+            select: {
+              id: true,
+              barcode: true,
+              description: true,
+              purchasePrice: true,
+              sellingPrice: true,
+              stockQuantity: true,
+            },
+          });
 
           if (!product) {
             throw new BadRequestException(`Product with id ${item.productId} not found`);
@@ -61,6 +62,14 @@ export class InvoiceService {
               `Insufficient stock for product ${product.description}. Available: ${product.stockQuantity}, Requested: ${item.quantity}`,
             );
           }
+
+          // Update stock quantity
+          await prisma.product.update({
+            where: { id: product.id },
+            data: {
+              stockQuantity: { decrement: item.quantity },
+            },
+          });
 
           // Calculate item subtotal (before invoice-level discount)
           const itemSubtotal = new Prisma.Decimal(item.price).mul(item.quantity);
@@ -126,20 +135,6 @@ export class InvoiceService {
           },
         });
 
-        // Update product stock quantities
-        for (const item of dto.items) {
-          const product = products.find((p) => p.id === item.productId);
-          if (!product) {
-            throw new BadRequestException(`Product with id ${item.productId} not found`);
-          }
-          await prisma.product.update({
-            where: { id: product.id },
-            data: {
-              stockQuantity: { decrement: item.quantity },
-            },
-          });
-        }
-
         return invoice;
       });
     } catch (error: any) {
@@ -172,7 +167,7 @@ export class InvoiceService {
         const invoiceItems: Omit<InvoiceItem, "id" | "invoiceId" | "price">[] = [];
         let subtotal = new Prisma.Decimal(0);
 
-        for (let item of dto.items) {
+        for (const [index, item] of dto.items.entries()) {
           let barcode = item.barcode || null;
           let description = item.description;
 
@@ -203,7 +198,7 @@ export class InvoiceService {
             });
           } else {
             if (!description) {
-              throw new BadRequestException("Description is required for new products");
+              throw new BadRequestException(`Description is required for new product at ${index}`);
             }
 
             // Create new product
