@@ -76,7 +76,7 @@ export function CustomerSelector({
       onValueChange={setSelectedCustomer}
       className="w-(--radix-popover-trigger-width) p-2"
     >
-      <div className="flex justify-between">
+      <div className="flex justify- *:first:flex-1">
         <CommandInput
           placeholder={t("customer.search")}
           value={customerSearch}
