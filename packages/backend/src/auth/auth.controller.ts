@@ -44,7 +44,6 @@ export class AuthController {
     return { username: user.username, role: user.role, accessToken: tokens.accessToken, orgSlug };
   }
 
-  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiHeader({ name: "Authorization" })

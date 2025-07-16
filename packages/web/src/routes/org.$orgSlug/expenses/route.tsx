@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import Decimal from "decimal.js";
 import { ShoppingCartIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {

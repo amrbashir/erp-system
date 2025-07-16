@@ -2,6 +2,10 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 
 import type { PaginationDto } from "../pagination.dto";
 import type { Customer, Transaction, User } from "../prisma/generated/client";
+import type {
+  TransactionOrderByWithRelationInput,
+  TransactionWhereInput,
+} from "../prisma/generated/models";
 import { PrismaService } from "../prisma/prisma.service";
 
 export type TransactionWithRelations = Transaction & {
@@ -15,18 +19,28 @@ export class TransactionService {
 
   async getAllTransactions(
     orgSlug: string,
-    paginationDto?: PaginationDto,
+    options?: {
+      pagination?: PaginationDto;
+      where?: TransactionWhereInput;
+      orderBy?:
+        | TransactionOrderByWithRelationInput
+        | TransactionOrderByWithRelationInput[]
+        | undefined;
+    },
   ): Promise<TransactionWithRelations[]> {
     try {
       return await this.prisma.transaction.findMany({
-        where: { organization: { slug: orgSlug } },
-        skip: paginationDto?.skip,
-        take: paginationDto?.take,
+        where: {
+          ...options?.where,
+          organization: { slug: orgSlug },
+        },
+        skip: options?.pagination?.skip,
+        take: options?.pagination?.take,
         include: {
           customer: true,
           cashier: true,
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
     } catch (error: any) {
       if (error.code === "P2025") {

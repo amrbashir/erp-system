@@ -6,11 +6,15 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { generateRandomOrgData, useRandomDatabase } from "../../e2e/utils";
 import { UserRole } from "../prisma/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
+import { TransactionService } from "../transaction/transaction.service";
+import { UserService } from "../user/user.service";
 import { OrgService } from "./org.service";
 
 describe("OrgService", async () => {
   let service: OrgService;
   let prisma: PrismaService;
+  let userService: UserService;
+  let transactionService: TransactionService;
 
   const { createDatabase, dropDatabase } = useRandomDatabase();
 
@@ -18,6 +22,8 @@ describe("OrgService", async () => {
     await createDatabase();
     prisma = new PrismaService();
     service = new OrgService(prisma);
+    userService = new UserService(prisma);
+    transactionService = new TransactionService(prisma);
   });
 
   afterAll(dropDatabase);
@@ -89,5 +95,34 @@ describe("OrgService", async () => {
 
     expect(retrieved1).toBeDefined();
     expect(retrieved2).toBeDefined();
+  });
+
+  it("should add balance to an organization", async () => {
+    const orgData = generateRandomOrgData();
+    const org = await service.create(orgData);
+    const adminUser = await userService.findByUsernameInOrg("admin", org.slug);
+
+    const addBalanceDto = { amount: "100", description: "Initial balance" };
+    await service.addBalance(org.slug, addBalanceDto, adminUser!.id);
+
+    const updatedOrg = await service.findOrgBySlug(org.slug);
+    expect(updatedOrg).toBeDefined();
+    expect(updatedOrg!.balance.toNumber()).toBe(100);
+
+    const addBalanceDto2 = { amount: "10", description: "Adding balance 2nd time" };
+    await service.addBalance(org.slug, addBalanceDto2, adminUser!.id);
+
+    const updatedOrg2 = await service.findOrgBySlug(org.slug);
+    expect(updatedOrg2).toBeDefined();
+    expect(updatedOrg2!.balance.toNumber()).toBe(110);
+
+    const transactions = await transactionService.getAllTransactions(org.slug, {
+      orderBy: { createdAt: "asc" },
+    });
+    expect(transactions.length).toBe(2);
+    expect(transactions[0].amount.toNumber()).toBe(100);
+    expect(transactions[1].amount.toNumber()).toBe(10);
+    expect(transactions[0].cashierId).toBe(adminUser!.id);
+    expect(transactions[1].cashierId).toBe(adminUser!.id);
   });
 });

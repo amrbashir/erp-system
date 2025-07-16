@@ -39,7 +39,8 @@
       "number": "رقم",
       "or": "أو",
       "row": "صف",
-      "noMatches": "لم يتم العثور على عنصر مطابق"
+      "noMatches": "لم يتم العثور على عنصر مطابق",
+      "balance": "الرصيد"
     },
     "pricing": {
       "purchase": "سعر الشراء",
@@ -83,7 +84,8 @@
       "purchase": "فواتير المشتريات",
       "createSale": "$t(common.actions.create) فاتورة مبيعات",
       "createPurchase": "$t(common.actions.create) فاتورة مشتريات"
-    }
+    },
+    "overview": "نظرة عامة"
   },
 
   "auth": {
@@ -102,7 +104,9 @@
     "goToYours": "$t(common.actions.go) إلى مؤسستك",
     "goToYoursDescription": "ادخل اسم المؤسسة الخاصة بك للمتابعة",
     "goToYoursDescription2": "انت بالفعل مسجل الدخول إلى {{orgSlug}}",
-    "createdSuccessfully": "تم إنشاء المؤسسة بنجاح"
+    "createdSuccessfully": "تم إنشاء المؤسسة بنجاح",
+    "addBalance": "$t(common.actions.add) رصيد",
+    "addBalanceDescription": "يمكنك إضافة رصيد إلى مؤسستك. يرجى ملء التفاصيل أدناه"
   },
 
   "user": {

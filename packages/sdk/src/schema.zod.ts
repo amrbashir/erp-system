@@ -9,8 +9,10 @@ export const CreateOrgDto = z
   })
   .passthrough();
 
+export const AddBalanceDto = z.object({ amount: z.string() }).passthrough();
+
 export const OrganizationEntity = z
-  .object({ id: z.string(), name: z.string(), slug: z.string() })
+  .object({ id: z.string(), name: z.string(), slug: z.string(), balance: z.string().optional() })
   .passthrough();
 
 export const CreateUserDto = z

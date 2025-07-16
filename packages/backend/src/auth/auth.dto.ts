@@ -43,4 +43,5 @@ export type JwtPayload = {
   sub: string; // User ID
   username: string;
   organizationId: string;
+  role: UserRole;
 };

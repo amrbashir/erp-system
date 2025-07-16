@@ -70,7 +70,7 @@ export function AppSideBar() {
     user?.role === "ADMIN"
       ? {
           label: t("adminSection"),
-          routes: ["/org/$orgSlug/transactions", "/org/$orgSlug/users"],
+          routes: ["/org/$orgSlug/overview", "/org/$orgSlug/transactions", "/org/$orgSlug/users"],
         }
       : undefined,
   ];

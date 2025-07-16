@@ -38,7 +38,6 @@ describe("TransactionService", () => {
   it("should create a transaction ", async () => {
     const orgData = generateRandomOrgData();
     const org = await orgService.create(orgData);
-
     const adminUser = await userService.findByUsernameInOrg(orgData.username, org.slug);
 
     const transaction = await createTransaction(100, org.slug, adminUser!.id);
@@ -52,18 +51,17 @@ describe("TransactionService", () => {
   it("should return transactions with customer and cashier relations", async () => {
     const orgData = generateRandomOrgData();
     const org = await orgService.create(orgData);
-
     const adminUser = await userService.findByUsernameInOrg(orgData.username, org.slug);
 
     await createTransaction(100, org.slug, adminUser!.id);
     await createTransaction(-200, org.slug, adminUser!.id);
 
-    const result = await service.getAllTransactions(org.slug);
+    const result = await service.getAllTransactions(org.slug, { orderBy: { createdAt: "asc" } });
 
     expect(result).toBeDefined();
     expect(result.length).toBe(2);
-    expect(result[0].amount.toNumber()).toBe(-200);
-    expect(result[1].amount.toNumber()).toBe(100);
+    expect(result[0].amount.toNumber()).toBe(100);
+    expect(result[1].amount.toNumber()).toBe(-200);
     expect(result[0].cashier.id).toBe(adminUser!.id);
     expect(result[1].cashier.id).toBe(adminUser!.id);
   });

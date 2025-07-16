@@ -39,7 +39,8 @@
       "number": "No.",
       "or": "or",
       "row": "Row",
-      "noMatches": "No matching item found"
+      "noMatches": "No matching item found",
+      "balance": "Balance"
     },
     "pricing": {
       "purchase": "Purchase $t(common.form.price)",
@@ -79,7 +80,8 @@
       "purchase": "Purchase Invoices",
       "createSale": "$t(common.actions.create) Sale Invoice",
       "createPurchase": "$t(common.actions.create) Purchase Invoice"
-    }
+    },
+    "overview": "Overview"
   },
 
   "auth": {
@@ -98,7 +100,9 @@
     "goToYours": "$t(common.actions.go) to Your Organization",
     "goToYoursDescription": "Enter your organization's unique ID to access it",
     "goToYoursDescription2": "You are already logged in to {{orgSlug}}",
-    "createdSuccessfully": "Organization created successfully"
+    "createdSuccessfully": "Organization created successfully",
+    "addBalance": "$t(common.actions.add) Balance",
+    "addBalanceDescription": "You can add balance to your organization. Please fill in the details below"
   },
 
   "user": {

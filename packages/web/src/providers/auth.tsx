@@ -33,7 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // login
   const loginMutation = useMutation({
-    mutationFn: async (value: z.input<typeof LoginUserDto> & { orgSlug: string }) =>
+    mutationFn: async (value: z.infer<typeof LoginUserDto> & { orgSlug: string }) =>
       apiClient.post("/org/{orgSlug}/auth/login", {
         params: { path: { orgSlug: value.orgSlug } },
         body: value,

@@ -50,7 +50,6 @@ describe("ExpenseService", () => {
     // Create an organization
     const orgData = generateRandomOrgData();
     const org = await orgService.create(orgData);
-
     const adminUser = await userService.findByUsernameInOrg("admin", org.slug);
 
     const expense = await service.createExpense(

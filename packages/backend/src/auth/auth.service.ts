@@ -57,6 +57,7 @@ export class AuthService {
       sub: user.id,
       username: user.username,
       organizationId: user.organizationId,
+      role: user.role,
     };
 
     return this.jwtService.signAsync(payload, {
@@ -70,6 +71,7 @@ export class AuthService {
       sub: user.id,
       username: user.username,
       organizationId: user.organizationId,
+      role: user.role,
     };
 
     return this.jwtService.signAsync(payload, {

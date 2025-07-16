@@ -1,7 +1,6 @@
 import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
-import type { Transaction } from "../prisma/generated/client";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
 import { PaginationDto } from "../pagination.dto";
 import { AdminGuard } from "../user/user.admin.guard";
@@ -20,9 +19,9 @@ export class TransactionController {
   @ApiOkResponse({ type: [TransactionEntity] })
   async getAll(
     @Param("orgSlug") orgSlug: string,
-    @Query() paginationDto?: PaginationDto,
+    @Query() pagination?: PaginationDto,
   ): Promise<TransactionEntity[]> {
-    const transactions = await this.service.getAllTransactions(orgSlug, paginationDto);
+    const transactions = await this.service.getAllTransactions(orgSlug, { pagination });
     return transactions.map((transaction) => new TransactionEntity(transaction));
   }
 }
