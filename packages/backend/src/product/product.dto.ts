@@ -5,28 +5,32 @@ import type { Product } from "../prisma/generated/client";
 
 export class UpdateProductDto {
   @ApiPropertyOptional()
-  @IsString()
   @IsOptional()
+  @IsNotEmpty()
+  @IsString()
   barcode?: string;
 
   @ApiPropertyOptional()
-  @IsString()
   @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   description?: string;
 
   @ApiPropertyOptional({ format: "number" })
-  @IsNumberString()
   @IsOptional()
+  @IsNumberString()
+  @IsNotEmpty()
   purchasePrice?: string;
 
   @ApiPropertyOptional({ format: "number" })
-  @IsNumberString()
   @IsOptional()
+  @IsNumberString()
+  @IsNotEmpty()
   sellingPrice?: string;
 
   @ApiPropertyOptional()
-  @IsInt()
   @IsOptional()
+  @IsInt()
   stockQuantity?: number;
 }
 

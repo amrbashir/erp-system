@@ -7,6 +7,7 @@ import {
   IsNumberString,
   IsOptional,
   IsString,
+  IsUUID,
   Max,
   Min,
   ValidateNested,
@@ -19,8 +20,7 @@ import { InvoiceType } from "../prisma/generated/client";
 
 export class CreateSaleInvoiceItemDto {
   @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
+  @IsUUID()
   productId: string;
 
   @ApiProperty({ format: "number" })
@@ -44,6 +44,7 @@ export class CreateSaleInvoiceItemDto {
   @ApiPropertyOptional({ format: "number" })
   @IsOptional()
   @IsNumberString()
+  @IsNotEmpty()
   discountAmount: string = "0";
 }
 
@@ -69,34 +70,36 @@ export class CreateSaleInvoiceDto {
   @ApiPropertyOptional({ format: "number" })
   @IsOptional()
   @IsNumberString()
+  @IsNotEmpty()
   discountAmount: string = "0";
 }
 
 export class CreatePurchaseInvoiceItemDto {
   @ApiPropertyOptional()
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
+  @IsUUID()
   productId?: string;
 
   @ApiPropertyOptional()
-  @IsString()
   @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   barcode?: string;
 
   @ApiPropertyOptional()
-  @IsNotEmpty()
-  @IsString()
   @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   description?: string;
 
   @ApiProperty({ format: "number" })
-  @IsNotEmpty()
   @IsNumberString()
+  @IsNotEmpty()
   purchasePrice: string;
 
   @ApiProperty({ format: "number" })
-  @IsNotEmpty()
   @IsNumberString()
+  @IsNotEmpty()
   sellingPrice: string;
 
   @ApiProperty()
@@ -113,8 +116,9 @@ export class CreatePurchaseInvoiceItemDto {
   discountPercent: number = 0;
 
   @ApiPropertyOptional({ format: "number" })
-  @IsOptional()
   @IsNumberString()
+  @IsOptional()
+  @IsNotEmpty()
   discountAmount: string = "0";
 }
 

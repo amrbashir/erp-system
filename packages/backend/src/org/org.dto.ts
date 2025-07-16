@@ -17,13 +17,14 @@ export class CreateOrgDto {
   name: string;
 
   @ApiPropertyOptional()
-  @IsAscii()
   @IsOptional()
+  @IsAscii()
+  @IsNotEmpty()
   slug?: string;
 
   @ApiProperty()
   @IsAlphanumeric()
-  @IsNotEmpty()
+  @MinLength(3)
   username: string;
 
   @ApiProperty({ minLength: 8 })

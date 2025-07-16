@@ -10,8 +10,8 @@ export class LoginUserDto {
   username: string;
 
   @ApiProperty()
-  @IsNotEmpty()
   @IsAscii()
+  @IsNotEmpty()
   password: string;
 }
 

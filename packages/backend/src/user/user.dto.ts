@@ -12,9 +12,9 @@ import type { User } from "../prisma/generated/client";
 import { UserRole } from "../prisma/generated/client";
 
 export class CreateUserDto {
-  @ApiProperty()
+  @ApiProperty({ minLength: 3 })
   @IsAlphanumeric()
-  @IsNotEmpty()
+  @MinLength(3)
   username: string;
 
   @ApiProperty({ minLength: 8 })

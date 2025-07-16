@@ -5,18 +5,20 @@ import type { Customer } from "../prisma/generated/client";
 
 export class CreateCustomerDto {
   @ApiProperty()
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   name: string;
 
   @ApiPropertyOptional()
-  @IsString()
   @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   address?: string;
 
   @ApiPropertyOptional()
-  @IsString()
   @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   phone?: string;
 }
 
@@ -26,13 +28,15 @@ export class UpdateCustomerDto {
   name?: string;
 
   @ApiPropertyOptional()
-  @IsString()
   @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   address?: string;
 
   @ApiPropertyOptional()
-  @IsString()
   @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   phone?: string;
 }
 
