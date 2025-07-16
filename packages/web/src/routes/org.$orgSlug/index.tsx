@@ -4,15 +4,15 @@ import {
   FileTextIcon,
   HomeIcon,
   PackageIcon,
-  PlusIcon,
   ShoppingCartIcon,
   UserIcon,
   UsersIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Card, CardContent } from "@/shadcn/components/ui/card";
-import { cn } from "@/shadcn/lib/utils";
+import { Separator } from "@/shadcn/components/ui/separator";
 
+import type { QuickActionLinkCardProps } from "@/components/quick-action-link-card";
+import { QuickActionLinkCard } from "@/components/quick-action-link-card";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 import { useAuth } from "@/providers/auth";
@@ -30,29 +30,32 @@ function Index() {
   const { user } = useAuth();
   const { t } = useTranslation();
 
-  const quickActions = [
+  const miniQuickActions: QuickActionLinkCardProps[] = [
     {
       title: t("routes.invoice.createSale"),
       icon: FileTextIcon,
-      plusIcon: true,
-      path: `/org/${orgSlug}/invoices/createSale`,
+      to: `/org/${orgSlug}/invoices/createSale`,
       hoverBgColor: "hover:bg-green-50 dark:hover:bg-green-950/50",
       iconColor: "text-green-500",
       iconBgColor: "bg-green-100 dark:bg-green-950/50",
+      size: "sm",
     },
     {
       title: t("routes.invoice.createPurchase"),
       icon: FileTextIcon,
-      plusIcon: true,
-      path: `/org/${orgSlug}/invoices/createPurchase`,
+      to: `/org/${orgSlug}/invoices/createPurchase`,
       hoverBgColor: "hover:bg-rose-50 dark:hover:bg-rose-950/50",
       iconColor: "text-rose-500",
       iconBgColor: "bg-rose-100 dark:bg-rose-950/50",
+      size: "sm",
     },
+  ];
+
+  const quickActions: QuickActionLinkCardProps[] = [
     {
       title: t("routes.invoices"),
       icon: FileTextIcon,
-      path: `/org/${orgSlug}/invoices`,
+      to: `/org/${orgSlug}/invoices`,
       hoverBgColor: "hover:bg-cyan-50 dark:hover:bg-cyan-950/50",
       iconColor: "text-cyan-500",
       iconBgColor: "bg-cyan-100 dark:bg-cyan-950/50",
@@ -60,7 +63,7 @@ function Index() {
     {
       title: t("routes.products"),
       icon: PackageIcon,
-      path: `/org/${orgSlug}/products`,
+      to: `/org/${orgSlug}/products`,
       hoverBgColor: "hover:bg-blue-50 dark:hover:bg-blue-950/50",
       iconColor: "text-blue-500",
       iconBgColor: "bg-blue-100 dark:bg-blue-950/50",
@@ -68,7 +71,7 @@ function Index() {
     {
       title: t("routes.expenses"),
       icon: ShoppingCartIcon,
-      path: `/org/${orgSlug}/expenses`,
+      to: `/org/${orgSlug}/expenses`,
       hoverBgColor: "hover:bg-orange-50 dark:hover:bg-orange-950/50",
       iconColor: "text-orange-500",
       iconBgColor: "bg-orange-100 dark:bg-orange-950/50",
@@ -76,20 +79,20 @@ function Index() {
     {
       title: t("routes.customers"),
       icon: UserIcon,
-      path: `/org/${orgSlug}/customers`,
+      to: `/org/${orgSlug}/customers`,
       hoverBgColor: "hover:bg-indigo-50 dark:hover:bg-indigo-950/50",
       iconColor: "text-indigo-500",
       iconBgColor: "bg-indigo-100 dark:bg-indigo-950/50",
     },
   ];
 
-  const adminQuickActions =
+  const adminQuickActions: QuickActionLinkCardProps[] =
     user?.role === "ADMIN"
       ? [
           {
             title: t("routes.transactions"),
             icon: BanknoteIcon,
-            path: `/org/${orgSlug}/transactions`,
+            to: `/org/${orgSlug}/transactions`,
             hoverBgColor: "hover:bg-teal-50 dark:hover:bg-teal-950/50",
             iconColor: "text-teal-500",
             iconBgColor: "bg-teal-100 dark:bg-teal-950/50",
@@ -97,7 +100,7 @@ function Index() {
           {
             title: t("routes.users"),
             icon: UsersIcon,
-            path: `/org/${orgSlug}/users`,
+            to: `/org/${orgSlug}/users`,
             hoverBgColor: "hover:bg-lime-50 dark:hover:bg-lime-950/50",
             iconColor: "text-lime-500",
             iconBgColor: "bg-lime-100 dark:bg-lime-950/50",
@@ -106,7 +109,7 @@ function Index() {
       : [];
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-4 gap-4">
+    <div className="mt-20 h-full flex flex-col items-center p-4 gap-4">
       <div className="text-center mb-4">
         <h1 className="text-3xl font-semibold text-center text-muted-foreground">
           {t("welcomeToErpOrg", { orgName })}
@@ -116,65 +119,24 @@ function Index() {
         </p>
       </div>
 
-      <div className="w-full md:w-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {quickActions.map((action) => (
-          <QuickActionLink key={action.path} {...action} />
+      <div className="w-full md:w-auto grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {miniQuickActions.map((action, index) => (
+          <QuickActionLinkCard key={index} {...action} className="col-span-1" />
+        ))}
+
+        <div className="hidden lg:block lg:col-span-1" />
+        <div className="hidden lg:block lg:col-span-1" />
+
+        {quickActions.map((action, index) => (
+          <QuickActionLinkCard key={index} {...action} className="col-span-2 md:col-span-1" />
+        ))}
+
+        <Separator className="col-span-2 lg:col-span-4" />
+
+        {adminQuickActions.map((action, index) => (
+          <QuickActionLinkCard key={index} {...action} className="col-span-2 md:col-span-1" />
         ))}
       </div>
-
-      {adminQuickActions.length > 0 && (
-        <>
-          <span className="mt-20">{t("adminSection")}</span>
-          <div className="w-full md:w-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {adminQuickActions.map((action) => (
-              <QuickActionLink key={action.path} {...action} />
-            ))}
-          </div>
-        </>
-      )}
     </div>
-  );
-}
-
-function QuickActionLink({
-  path,
-  title,
-  icon: Icon,
-  plusIcon = false,
-  hoverBgColor,
-  iconColor,
-  iconBgColor,
-}: {
-  path: string;
-  title: string;
-  icon: React.ComponentType<{ className?: string }>;
-  plusIcon?: boolean;
-  hoverBgColor: string;
-  iconColor: string;
-  iconBgColor: string;
-}) {
-  return (
-    <Link to={path}>
-      <Card
-        className={cn(
-          "min-w-[16rem] min-h-[16rem] hover:shadow-md transition-shadow cursor-pointer md:items-center justify-center",
-          hoverBgColor,
-        )}
-      >
-        <CardContent className="flex flex-col md:items-center justify-center gap-4">
-          <div
-            className={cn(
-              "rounded-full flex items-center justify-center size-20 relative",
-              iconBgColor,
-              iconColor,
-            )}
-          >
-            <Icon />
-            {plusIcon && <PlusIcon className="absolute bottom-1 start-1 size-4" />}
-          </div>
-          <p className="text-lg">{title}</p>
-        </CardContent>
-      </Card>
-    </Link>
   );
 }
