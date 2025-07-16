@@ -11,7 +11,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/shadcn/components/ui/table";
-import { cn } from "@/shadcn/lib/utils";
 
 import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
@@ -59,17 +58,14 @@ function Transactions() {
               {transactions.map((transaction, index) => (
                 <TableRow key={index}>
                   <TableCell>{transaction.id}</TableCell>
-                  <TableCell>
-                    <span
-                      className={cn(
-                        "flex gap-2",
-                        new Decimal(transaction.amount).isNegative()
-                          ? "text-red-500 dark:text-red-300"
-                          : "text-green-500 dark:text-green-300",
-                      )}
-                    >
-                      {formatMoney(transaction.amount, { signDisplay: "always" })}
-                    </span>
+                  <TableCell
+                    className={
+                      new Decimal(transaction.amount).isNegative()
+                        ? "text-red-500 dark:text-red-300"
+                        : "text-green-500 dark:text-green-300"
+                    }
+                  >
+                    {formatMoney(transaction.amount, { signDisplay: "always" })}
                   </TableCell>
                   <TableCell>{transaction.username}</TableCell>
                   <TableCell>{transaction.customerName}</TableCell>

@@ -13,10 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as OrgOrgSlugRouteRouteImport } from './routes/org.$orgSlug/route'
 import { Route as OrgOrgSlugIndexRouteImport } from './routes/org.$orgSlug/index'
 import { Route as OrgOrgSlugTransactionsRouteImport } from './routes/org.$orgSlug/transactions'
-import { Route as OrgOrgSlugExpensesRouteImport } from './routes/org.$orgSlug/expenses'
 import { Route as OrgOrgSlugUsersRouteRouteImport } from './routes/org.$orgSlug/users/route'
 import { Route as OrgOrgSlugProductsRouteRouteImport } from './routes/org.$orgSlug/products/route'
 import { Route as OrgOrgSlugInvoicesRouteRouteImport } from './routes/org.$orgSlug/invoices/route'
+import { Route as OrgOrgSlugExpensesRouteRouteImport } from './routes/org.$orgSlug/expenses/route'
 import { Route as OrgOrgSlugCustomersRouteRouteImport } from './routes/org.$orgSlug/customers/route'
 import { Route as OrgOrgSlugInvoicesIndexRouteImport } from './routes/org.$orgSlug/invoices/index'
 import { Route as OrgOrgSlugInvoicesSalesRouteImport } from './routes/org.$orgSlug/invoices/sales'
@@ -44,11 +44,6 @@ const OrgOrgSlugTransactionsRoute = OrgOrgSlugTransactionsRouteImport.update({
   path: '/transactions',
   getParentRoute: () => OrgOrgSlugRouteRoute,
 } as any)
-const OrgOrgSlugExpensesRoute = OrgOrgSlugExpensesRouteImport.update({
-  id: '/expenses',
-  path: '/expenses',
-  getParentRoute: () => OrgOrgSlugRouteRoute,
-} as any)
 const OrgOrgSlugUsersRouteRoute = OrgOrgSlugUsersRouteRouteImport.update({
   id: '/users',
   path: '/users',
@@ -62,6 +57,11 @@ const OrgOrgSlugProductsRouteRoute = OrgOrgSlugProductsRouteRouteImport.update({
 const OrgOrgSlugInvoicesRouteRoute = OrgOrgSlugInvoicesRouteRouteImport.update({
   id: '/invoices',
   path: '/invoices',
+  getParentRoute: () => OrgOrgSlugRouteRoute,
+} as any)
+const OrgOrgSlugExpensesRouteRoute = OrgOrgSlugExpensesRouteRouteImport.update({
+  id: '/expenses',
+  path: '/expenses',
   getParentRoute: () => OrgOrgSlugRouteRoute,
 } as any)
 const OrgOrgSlugCustomersRouteRoute =
@@ -103,10 +103,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/org/$orgSlug': typeof OrgOrgSlugRouteRouteWithChildren
   '/org/$orgSlug/customers': typeof OrgOrgSlugCustomersRouteRoute
+  '/org/$orgSlug/expenses': typeof OrgOrgSlugExpensesRouteRoute
   '/org/$orgSlug/invoices': typeof OrgOrgSlugInvoicesRouteRouteWithChildren
   '/org/$orgSlug/products': typeof OrgOrgSlugProductsRouteRoute
   '/org/$orgSlug/users': typeof OrgOrgSlugUsersRouteRoute
-  '/org/$orgSlug/expenses': typeof OrgOrgSlugExpensesRoute
   '/org/$orgSlug/transactions': typeof OrgOrgSlugTransactionsRoute
   '/org/$orgSlug/': typeof OrgOrgSlugIndexRoute
   '/org/$orgSlug/invoices/createPurchase': typeof OrgOrgSlugInvoicesCreatePurchaseRoute
@@ -118,9 +118,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/org/$orgSlug/customers': typeof OrgOrgSlugCustomersRouteRoute
+  '/org/$orgSlug/expenses': typeof OrgOrgSlugExpensesRouteRoute
   '/org/$orgSlug/products': typeof OrgOrgSlugProductsRouteRoute
   '/org/$orgSlug/users': typeof OrgOrgSlugUsersRouteRoute
-  '/org/$orgSlug/expenses': typeof OrgOrgSlugExpensesRoute
   '/org/$orgSlug/transactions': typeof OrgOrgSlugTransactionsRoute
   '/org/$orgSlug': typeof OrgOrgSlugIndexRoute
   '/org/$orgSlug/invoices/createPurchase': typeof OrgOrgSlugInvoicesCreatePurchaseRoute
@@ -134,10 +134,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/org/$orgSlug': typeof OrgOrgSlugRouteRouteWithChildren
   '/org/$orgSlug/customers': typeof OrgOrgSlugCustomersRouteRoute
+  '/org/$orgSlug/expenses': typeof OrgOrgSlugExpensesRouteRoute
   '/org/$orgSlug/invoices': typeof OrgOrgSlugInvoicesRouteRouteWithChildren
   '/org/$orgSlug/products': typeof OrgOrgSlugProductsRouteRoute
   '/org/$orgSlug/users': typeof OrgOrgSlugUsersRouteRoute
-  '/org/$orgSlug/expenses': typeof OrgOrgSlugExpensesRoute
   '/org/$orgSlug/transactions': typeof OrgOrgSlugTransactionsRoute
   '/org/$orgSlug/': typeof OrgOrgSlugIndexRoute
   '/org/$orgSlug/invoices/createPurchase': typeof OrgOrgSlugInvoicesCreatePurchaseRoute
@@ -152,10 +152,10 @@ export interface FileRouteTypes {
     | '/'
     | '/org/$orgSlug'
     | '/org/$orgSlug/customers'
+    | '/org/$orgSlug/expenses'
     | '/org/$orgSlug/invoices'
     | '/org/$orgSlug/products'
     | '/org/$orgSlug/users'
-    | '/org/$orgSlug/expenses'
     | '/org/$orgSlug/transactions'
     | '/org/$orgSlug/'
     | '/org/$orgSlug/invoices/createPurchase'
@@ -167,9 +167,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/org/$orgSlug/customers'
+    | '/org/$orgSlug/expenses'
     | '/org/$orgSlug/products'
     | '/org/$orgSlug/users'
-    | '/org/$orgSlug/expenses'
     | '/org/$orgSlug/transactions'
     | '/org/$orgSlug'
     | '/org/$orgSlug/invoices/createPurchase'
@@ -182,10 +182,10 @@ export interface FileRouteTypes {
     | '/'
     | '/org/$orgSlug'
     | '/org/$orgSlug/customers'
+    | '/org/$orgSlug/expenses'
     | '/org/$orgSlug/invoices'
     | '/org/$orgSlug/products'
     | '/org/$orgSlug/users'
-    | '/org/$orgSlug/expenses'
     | '/org/$orgSlug/transactions'
     | '/org/$orgSlug/'
     | '/org/$orgSlug/invoices/createPurchase'
@@ -230,13 +230,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrgOrgSlugTransactionsRouteImport
       parentRoute: typeof OrgOrgSlugRouteRoute
     }
-    '/org/$orgSlug/expenses': {
-      id: '/org/$orgSlug/expenses'
-      path: '/expenses'
-      fullPath: '/org/$orgSlug/expenses'
-      preLoaderRoute: typeof OrgOrgSlugExpensesRouteImport
-      parentRoute: typeof OrgOrgSlugRouteRoute
-    }
     '/org/$orgSlug/users': {
       id: '/org/$orgSlug/users'
       path: '/users'
@@ -256,6 +249,13 @@ declare module '@tanstack/react-router' {
       path: '/invoices'
       fullPath: '/org/$orgSlug/invoices'
       preLoaderRoute: typeof OrgOrgSlugInvoicesRouteRouteImport
+      parentRoute: typeof OrgOrgSlugRouteRoute
+    }
+    '/org/$orgSlug/expenses': {
+      id: '/org/$orgSlug/expenses'
+      path: '/expenses'
+      fullPath: '/org/$orgSlug/expenses'
+      preLoaderRoute: typeof OrgOrgSlugExpensesRouteRouteImport
       parentRoute: typeof OrgOrgSlugRouteRoute
     }
     '/org/$orgSlug/customers': {
@@ -328,20 +328,20 @@ const OrgOrgSlugInvoicesRouteRouteWithChildren =
 
 interface OrgOrgSlugRouteRouteChildren {
   OrgOrgSlugCustomersRouteRoute: typeof OrgOrgSlugCustomersRouteRoute
+  OrgOrgSlugExpensesRouteRoute: typeof OrgOrgSlugExpensesRouteRoute
   OrgOrgSlugInvoicesRouteRoute: typeof OrgOrgSlugInvoicesRouteRouteWithChildren
   OrgOrgSlugProductsRouteRoute: typeof OrgOrgSlugProductsRouteRoute
   OrgOrgSlugUsersRouteRoute: typeof OrgOrgSlugUsersRouteRoute
-  OrgOrgSlugExpensesRoute: typeof OrgOrgSlugExpensesRoute
   OrgOrgSlugTransactionsRoute: typeof OrgOrgSlugTransactionsRoute
   OrgOrgSlugIndexRoute: typeof OrgOrgSlugIndexRoute
 }
 
 const OrgOrgSlugRouteRouteChildren: OrgOrgSlugRouteRouteChildren = {
   OrgOrgSlugCustomersRouteRoute: OrgOrgSlugCustomersRouteRoute,
+  OrgOrgSlugExpensesRouteRoute: OrgOrgSlugExpensesRouteRoute,
   OrgOrgSlugInvoicesRouteRoute: OrgOrgSlugInvoicesRouteRouteWithChildren,
   OrgOrgSlugProductsRouteRoute: OrgOrgSlugProductsRouteRoute,
   OrgOrgSlugUsersRouteRoute: OrgOrgSlugUsersRouteRoute,
-  OrgOrgSlugExpensesRoute: OrgOrgSlugExpensesRoute,
   OrgOrgSlugTransactionsRoute: OrgOrgSlugTransactionsRoute,
   OrgOrgSlugIndexRoute: OrgOrgSlugIndexRoute,
 }

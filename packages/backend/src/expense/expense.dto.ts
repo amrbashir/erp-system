@@ -1,6 +1,19 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEmpty, IsNumberString, IsString } from "class-validator";
 
 import type { ExpenseWithRelations } from "./expense.service";
+
+export class CreateExpenseDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @ApiProperty({ format: "number" })
+  @IsNumberString()
+  @IsNotEmpty()
+  amount: string;
+}
 
 export class ExpenseEntity {
   @ApiProperty()
@@ -10,7 +23,7 @@ export class ExpenseEntity {
   description: string;
 
   @ApiProperty({ format: "number" })
-  price: string;
+  amount: string;
 
   @ApiProperty()
   createdAt: Date;
@@ -27,7 +40,7 @@ export class ExpenseEntity {
   constructor(expense: ExpenseWithRelations) {
     this.id = expense.id;
     this.description = expense.description;
-    this.price = expense.price.toString();
+    this.amount = expense.amount.toString();
     this.createdAt = expense.createdAt;
     this.updatedAt = expense.updatedAt;
     this.cashierName = expense.cashier.username;

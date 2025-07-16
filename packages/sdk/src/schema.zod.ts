@@ -15,7 +15,7 @@ export const OrganizationEntity = z
 
 export const CreateUserDto = z
   .object({
-    username: z.string(),
+    username: z.string().min(3),
     password: z.string().min(8),
     role: z.enum(["USER", "ADMIN"]).optional(),
   })
@@ -174,11 +174,15 @@ export const InvoiceEntity = z
   })
   .passthrough();
 
+export const CreateExpenseDto = z
+  .object({ description: z.string(), amount: z.string() })
+  .passthrough();
+
 export const ExpenseEntity = z
   .object({
     id: z.number(),
     description: z.string(),
-    price: z.string(),
+    amount: z.string(),
     createdAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true }),
     cashierName: z.string(),

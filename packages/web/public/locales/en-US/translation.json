@@ -56,6 +56,16 @@
     }
   },
 
+  "theme": {
+    "theme": "Theme",
+    "changeTheme": "Change Theme",
+    "themes": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System (Light/Dark)"
+    }
+  },
+
   "routes": {
     "home": "Home",
     "users": "Users",
@@ -135,13 +145,28 @@
     }
   },
 
-  "theme": {
-    "theme": "Theme",
-    "changeTheme": "Change Theme",
-    "themes": {
-      "light": "Light",
-      "dark": "Dark",
-      "system": "System (Light/Dark)"
+  "invoice": {
+    "types": {
+      "sale": "Sale Invoices",
+      "purchase": "Purchase Invoices"
+    },
+    "number": "Invoice $t(common.ui.number)",
+    "type": "Invoice Type",
+    "createdSuccessfully": "Invoice created successfully",
+    "addItemsTo": "$t(common.actions.add) items to the invoice",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "discountPercent": "Discount %",
+    "discountAmount": "Discount Amount",
+    "addRow": "$t(common.actions.add) $t(common.ui.row)"
+  },
+
+  "expense": {
+    "add": "$t(common.actions.add) Expense",
+    "addDescription": "You can add new expenses to the system. Please fill in the details below",
+    "form": {
+      "description": "$t(common.form.description)",
+      "amount": "$t(common.form.moneyAmount)"
     }
   },
 
@@ -200,22 +225,6 @@
 
   "validationErrors": {
     "too_small": "{{field}} must contain at least {{minimum}} character(s)"
-  },
-
-  "invoice": {
-    "types": {
-      "sale": "Sale Invoices",
-      "purchase": "Purchase Invoices"
-    },
-    "number": "Invoice $t(common.ui.number)",
-    "type": "Invoice Type",
-    "createdSuccessfully": "Invoice created successfully",
-    "addItemsTo": "$t(common.actions.add) items to the invoice",
-    "total": "Total",
-    "subtotal": "Subtotal",
-    "discountPercent": "Discount %",
-    "discountAmount": "Discount Amount",
-    "addRow": "$t(common.actions.add) $t(common.ui.row)"
   },
 
   "welcomeToErp": "$t(common.welcome) to erp-system",

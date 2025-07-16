@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import Decimal from "decimal.js";
 import { ShoppingCartIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
@@ -11,13 +12,14 @@ import {
   TableRow,
 } from "@/shadcn/components/ui/table";
 
+import { apiClient } from "@/api-client";
+import { EmptyTable } from "@/components/empty-table";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 import { formatDate } from "@/utils/formatDate";
 import { formatMoney } from "@/utils/formatMoney";
 
-import { apiClient } from "../../api-client";
-import { EmptyTable } from "../../components/empty-table";
+import { AddExpenseDialog } from "./-add-expense-dialog";
 
 export const Route = createFileRoute("/org/$orgSlug/expenses")({
   component: Expenses,
@@ -40,6 +42,10 @@ function Expenses() {
 
   return (
     <div className="flex flex-col gap-4 p-4">
+      <div>
+        <AddExpenseDialog />
+      </div>
+
       {expenses && expenses.length > 0 ? (
         <div className="rounded border">
           <Table>
@@ -57,7 +63,9 @@ function Expenses() {
                 <TableRow key={expense.id}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{expense.description}</TableCell>
-                  <TableCell>{formatMoney(expense.price, { signDisplay: "always" })}</TableCell>
+                  <TableCell className={"text-red-500 dark:text-red-300"}>
+                    {formatMoney(expense.amount)}
+                  </TableCell>
                   <TableCell>{expense.cashierName}</TableCell>
                   <TableCell>{formatDate(expense.createdAt)}</TableCell>
                 </TableRow>

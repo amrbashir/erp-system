@@ -1,9 +1,10 @@
-import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
+import type { JwtPayload } from "../auth/auth.dto";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
 import { PaginationDto } from "../pagination.dto";
-import { ExpenseEntity } from "./expense.dto";
+import { CreateExpenseDto, ExpenseEntity } from "./expense.dto";
 import { ExpenseService } from "./expense.service";
 
 @UseGuards(JwtAuthGuard)
@@ -13,6 +14,18 @@ import { ExpenseService } from "./expense.service";
 @Controller("/org/:orgSlug/expense")
 export class ExpenseController {
   constructor(private readonly service: ExpenseService) {}
+
+  @Post("create")
+  @ApiOkResponse({ type: ExpenseEntity })
+  async create(
+    @Param("orgSlug") orgSlug: string,
+    @Body() createExpenseDto: CreateExpenseDto,
+    @Req() req: any,
+  ): Promise<ExpenseEntity> {
+    const currentUser = req["user"] as JwtPayload;
+    const expense = await this.service.createExpense(orgSlug, createExpenseDto, currentUser.sub);
+    return new ExpenseEntity(expense);
+  }
 
   @Get("getAll")
   @ApiOkResponse({ type: [ExpenseEntity] })

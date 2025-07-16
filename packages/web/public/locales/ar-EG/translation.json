@@ -60,6 +60,16 @@
     }
   },
 
+  "theme": {
+    "theme": "المظهر",
+    "changeTheme": "تغيير المظهر",
+    "themes": {
+      "light": "فاتح",
+      "dark": "داكن",
+      "system": "نظامي (فاتح/داكن)"
+    }
+  },
+
   "routes": {
     "home": "الصفحة الرئيسية",
     "users": "المستخدمون",
@@ -135,14 +145,23 @@
     }
   },
 
-  "theme": {
-    "theme": "المظهر",
-    "changeTheme": "تغيير المظهر",
-    "themes": {
-      "light": "فاتح",
-      "dark": "داكن",
-      "system": "نظامي (فاتح/داكن)"
-    }
+  "invoice": {
+    "types": {
+      "sale": "فواتير المبيعات",
+      "purchase": "فواتير المشتريات"
+    },
+    "number": "$t(common.ui.number) الفاتورة",
+    "createdSuccessfully": "تم إنشاء الفاتورة بنجاح",
+    "addItemsTo": "أضف عناصر إلى الفاتورة",
+    "total": "الإجمالي",
+    "subtotal": "المجموع الفرعي",
+    "discountPercent": "نسبة الخصم %",
+    "discountAmount": "قيمة الخصم"
+  },
+
+  "expense": {
+    "add": "$t(common.actions.add) مصروف",
+    "addDescription": "يمكنك إضافة مصروفات جديدة إلى النظام. يرجى ملء التفاصيل أدناه"
   },
 
   "errors": {
@@ -184,20 +203,6 @@
 
   "validationErrors": {
     "too_small": "يجب أن يحتوي {{field}} على {{minimum}} حروف على الأقل"
-  },
-
-  "invoice": {
-    "types": {
-      "sale": "فواتير المبيعات",
-      "purchase": "فواتير المشتريات"
-    },
-    "number": "$t(common.ui.number) الفاتورة",
-    "createdSuccessfully": "تم إنشاء الفاتورة بنجاح",
-    "addItemsTo": "أضف عناصر إلى الفاتورة",
-    "total": "الإجمالي",
-    "subtotal": "المجموع الفرعي",
-    "discountPercent": "نسبة الخصم %",
-    "discountAmount": "قيمة الخصم"
   },
 
   "goBackHome": "العودة إلى الصفحة الرئيسية",

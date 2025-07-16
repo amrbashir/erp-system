@@ -2,7 +2,7 @@ model Expense {
   id Int @id @default(autoincrement())
 
   description String
-  price       Decimal @db.Decimal(20, 4)
+  amount      Decimal @db.Decimal(20, 4)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
