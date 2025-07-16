@@ -79,7 +79,12 @@ export function ProductSelector({
     <CommandList>
       <CommandEmpty>{t("common.ui.noMatches")}</CommandEmpty>
       {items.map((item, index) => (
-        <CommandItem key={index} value={item} onSelect={() => handleItemSelect(item)}>
+        <CommandItem
+          className="data-[selected=true]:bg-primary/50"
+          key={index}
+          value={item}
+          onSelect={() => handleItemSelect(item)}
+        >
           <CheckIcon className={selected == item ? "opacity-100" : "opacity-0"} />
           {item}
         </CommandItem>
@@ -99,7 +104,7 @@ export function ProductSelector({
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>{ProductsInput}</PopoverTrigger>
           <PopoverContent
-            className="w-(--radix-popover-trigger-width) p-2"
+            className="w-(--radix-popover-trigger-width) p-2 rounded-t-none bg-accent"
             asChild
             onOpenAutoFocus={(e) => e.preventDefault()}
           >
