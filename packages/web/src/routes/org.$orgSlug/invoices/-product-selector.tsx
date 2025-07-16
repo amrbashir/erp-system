@@ -45,12 +45,18 @@ export function ProductSelector({
     setOpen(false);
   };
 
+  const handleInputChange = (value: string) => {
+    setOpen(true); // Keep the dropdown open while typing
+    setSelected(""); // Reset selected item when typing
+    onInputValueChange?.(value);
+  };
+
   const ButtonTrigger = (
     <Button
       variant="ghost"
       role="combobox"
       aria-expanded={open}
-      className="w-full flex-1 justify-between border-none rounded-none focus-visible:z-1 relative"
+      className="w-full flex-1 justify-between border-none rounded-none focus-visible:z-2 relative"
     >
       {value || <span className="opacity-50">{t("product.select")}</span>}
       <ChevronsUpDownIcon className="opacity-50" />
@@ -60,10 +66,7 @@ export function ProductSelector({
   const ProductsInput = (
     <CommandInput
       value={value}
-      onValueChange={(v) => {
-        setOpen(true);
-        onInputValueChange?.(v);
-      }}
+      onValueChange={handleInputChange}
       placeholder={isDesktop ? undefined : t("product.search")}
       className={cn(
         isDesktop &&

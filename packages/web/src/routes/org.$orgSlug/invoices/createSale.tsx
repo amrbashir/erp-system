@@ -312,7 +312,7 @@ function InvoiceTable({
 
   return (
     <Table {...props}>
-      <TableHeader className="bg-muted sticky top-0 z-10">
+      <TableHeader className="bg-muted sticky top-0 z-1">
         <TableRow className="*:font-bold">
           <TableHead></TableHead>
           <TableHead>{t("common.ui.number")}</TableHead>

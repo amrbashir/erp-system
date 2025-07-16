@@ -2,6 +2,7 @@ import {
   CreatePurchaseInvoiceDto,
   CreatePurchaseInvoiceItemDto,
   CustomerEntity,
+  ProductEntity,
 } from "@erp-system/sdk/zod";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -46,6 +47,7 @@ import {
 import { SafeDecimal } from "@/utils/SafeDecimal";
 
 import { CustomerSelector } from "./-customer-selector";
+import { ProductSelector } from "./-product-selector";
 
 export const Route = createFileRoute("/org/$orgSlug/invoices/createPurchase")({
   component: CreatePurchaseInvoice,
@@ -56,6 +58,7 @@ export const Route = createFileRoute("/org/$orgSlug/invoices/createPurchase")({
 
 // Types
 type AnyReactFormApi = ReactFormApi<any, any, any, any, any, any, any, any, any, any>;
+type Product = z.infer<typeof ProductEntity>;
 type CreateInvoiceItem = z.infer<typeof CreatePurchaseInvoiceItemDto>;
 type Customer = z.infer<typeof CustomerEntity>;
 type Invoice = z.infer<ReturnType<(typeof CreatePurchaseInvoiceDto)["strict"]>> & {
@@ -64,12 +67,12 @@ type Invoice = z.infer<ReturnType<(typeof CreatePurchaseInvoiceDto)["strict"]>> 
 type InvoiceItem = Invoice["items"][number];
 
 const DEFAULT_INVOICE_ITEM = {
-  barcode: "",
+  barcode: undefined,
   description: "",
   quantity: 1,
   purchasePrice: "0",
-  price: "0",
   sellingPrice: "0",
+  productId: undefined,
 };
 
 // Main component
@@ -77,6 +80,13 @@ function CreatePurchaseInvoice() {
   const { slug: orgSlug } = useOrg();
   const { t } = useTranslation();
   const client = useQueryClient();
+
+  const { data: products } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () =>
+      apiClient.getThrowing("/org/{orgSlug}/product/getAll", { params: { path: { orgSlug } } }),
+    select: (res) => res.data,
+  });
 
   const { data: customers } = useQuery({
     queryKey: ["customers"],
@@ -136,6 +146,11 @@ function CreatePurchaseInvoice() {
     [validInvoiceItems],
   );
 
+  const handleResetItem = (index: number) => {
+    form.replaceFieldValue("items", index, { ...DEFAULT_INVOICE_ITEM } as any);
+    form.validate("change");
+  };
+
   const addEmptyItem = () => {
     const newItems = [...form.getFieldValue("items")];
     newItems.push({ ...DEFAULT_INVOICE_ITEM });
@@ -143,8 +158,12 @@ function CreatePurchaseInvoice() {
     form.validate("change");
   };
 
-  const handleRemoveItem = (index: number) => {
-    form.replaceFieldValue("items", index, { ...DEFAULT_INVOICE_ITEM } as any);
+  const handleAddProduct = (index: number, product: Product) => {
+    form.replaceFieldValue("items", index, {
+      ...DEFAULT_INVOICE_ITEM,
+      ...product,
+      productId: product.id,
+    });
     form.validate("change");
   };
 
@@ -153,12 +172,11 @@ function CreatePurchaseInvoice() {
     field: keyof InvoiceItem,
     value: string | number,
   ) => {
-    const newItems = [...invoiceItems];
-    newItems[index] = {
+    const newItems = [...form.getFieldValue("items")];
+    form.replaceFieldValue("items", index, {
       ...newItems[index],
       [field]: value,
-    };
-    form.setFieldValue("items", newItems);
+    });
     form.validate("change");
   };
 
@@ -200,8 +218,10 @@ function CreatePurchaseInvoice() {
       <Card className="h-full flex flex-col overflow-hidden *:flex-1 *:basis-0 p-0">
         <InvoiceTable
           items={invoiceItems}
+          products={products}
           onAddEmptyItem={addEmptyItem}
-          onRemoveItem={handleRemoveItem}
+          onAddItem={handleAddProduct}
+          onResetItem={handleResetItem}
           onUpdateItemField={handleUpdateItemField}
         />
       </Card>
@@ -270,21 +290,25 @@ function InvoiceHeader({
 // Main invoice table component
 function InvoiceTable({
   items,
+  products,
   onAddEmptyItem,
-  onRemoveItem,
+  onAddItem,
+  onResetItem,
   onUpdateItemField,
   ...props
 }: {
   items: InvoiceItem[];
+  products: Product[] | undefined;
   onAddEmptyItem: () => void;
-  onRemoveItem: (index: number) => void;
+  onAddItem: (index: number, product: Product) => void;
+  onResetItem: (index: number) => void;
   onUpdateItemField: (index: number, field: keyof InvoiceItem, value: string | number) => void;
 } & React.ComponentProps<typeof Table>) {
   const { t } = useTranslation();
 
   return (
     <Table {...props}>
-      <TableHeader className="bg-muted sticky top-0 z-10">
+      <TableHeader className="bg-muted sticky top-0 z-1">
         <TableRow className="*:font-bold">
           <TableHead></TableHead>
           <TableHead>{t("common.ui.number")}</TableHead>
@@ -304,11 +328,13 @@ function InvoiceTable({
       <TableBody>
         {items.map((item, index) => (
           <InvoiceTableRow
+            products={products}
             key={index}
             item={item}
             index={index}
             onUpdateItemField={onUpdateItemField}
-            onRemove={onRemoveItem}
+            onAdd={onAddItem}
+            onReset={onResetItem}
           />
         ))}
 
@@ -332,15 +358,19 @@ function InvoiceTable({
 
 // Invoice table row component
 function InvoiceTableRow({
+  products,
   item,
   index,
+  onAdd,
+  onReset,
   onUpdateItemField,
-  onRemove,
 }: {
+  products: Product[] | undefined;
   item: InvoiceItem;
   index: number;
+  onAdd: (index: number, product: Product) => void;
+  onReset: (index: number) => void;
   onUpdateItemField: (index: number, field: keyof InvoiceItem, value: string | number) => void;
-  onRemove: (index: number) => void;
 }) {
   const itemSubtotal = calculateItemSubtotal(item.purchasePrice, item.quantity);
   const { percentDiscount } = calculateItemDiscount(
@@ -362,24 +392,38 @@ function InvoiceTableRow({
           type="button"
           variant="ghost"
           className="w-9 rounded-none text-red-500 dark:text-red-300"
-          onClick={() => onRemove(index)}
+          onClick={() => onReset(index)}
         >
           <XIcon className="size-4" />
         </Button>
       </TableCell>
       <TableCell>{index + 1}</TableCell>
       <TableCell className="p-0">
-        <Input
-          className="rounded-none border-none bg-transparent! focus-visible:z-1 relative"
-          value={item.barcode}
-          onChange={(e) => onUpdateItemField(index, "barcode", e.target.value)}
+        <ProductSelector
+          items={products?.map((p) => p.barcode).filter((b) => b !== undefined) || []}
+          value={item.barcode ?? ""}
+          onInputValueChange={(value) => {
+            item.productId && onReset(index);
+            onUpdateItemField(index, "barcode", value);
+          }}
+          onItemSelect={(item) => {
+            const product = products?.find((i) => i.barcode === item);
+            if (product) onAdd(index, product);
+          }}
         />
       </TableCell>
       <TableCell className="p-0">
-        <Input
-          className="rounded-none border-none bg-transparent! focus-visible:z-1 relative"
+        <ProductSelector
+          items={products?.map((p) => p.description).filter((b) => b !== undefined) || []}
           value={item.description}
-          onChange={(e) => onUpdateItemField(index, "description", e.target.value)}
+          onInputValueChange={(value) => {
+            item.productId && onReset(index);
+            onUpdateItemField(index, "description", value);
+          }}
+          onItemSelect={(item) => {
+            const product = products?.find((i) => i.description === item);
+            if (product) onAdd(index, product);
+          }}
         />
       </TableCell>
       <TableCell className="p-0">
