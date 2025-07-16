@@ -37,13 +37,6 @@ describe("OrgService", async () => {
     expect(users[0].username).toBe("admin");
     expect(users[0].role).toBe(UserRole.ADMIN);
     expect(await argon2.verify(users[0].password, "12345678")).toBe(true);
-
-    const stores = await prisma.store.findMany({
-      where: { organizationId: org!.id },
-    });
-    expect(stores.length).toBe(1);
-    expect(stores[0].name).toBe("Default");
-    expect(stores[0].slug).toBe("default");
   });
 
   it("should throw BadRequestException for invalid slug", async () => {

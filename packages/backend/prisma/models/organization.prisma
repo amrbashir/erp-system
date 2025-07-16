@@ -9,7 +9,6 @@ model Organization {
   updatedAt DateTime @updatedAt
 
   users        User[]
-  stores       Store[]
   customers    Customer[]
   products     Product[]
   expenses     Expense[]

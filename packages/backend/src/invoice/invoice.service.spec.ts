@@ -41,15 +41,6 @@ describe("InvoiceService", async () => {
       },
     });
 
-    // Create test store
-    const store = await prisma.store.create({
-      data: {
-        name: "Test Store",
-        slug: "test-store",
-        organization: { connect: { id: org.id } },
-      },
-    });
-
     // Create test customer
     const customer = await prisma.customer.create({
       data: {
@@ -83,7 +74,7 @@ describe("InvoiceService", async () => {
       },
     });
 
-    return { org, user, store, customer, product1, product2, orgSlug: org.slug };
+    return { org, user, customer, product1, product2, orgSlug: org.slug };
   }
 
   describe("createSale", () => {

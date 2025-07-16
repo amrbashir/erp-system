@@ -43,7 +43,6 @@ describe("ProductService", async () => {
     expect(product.sellingPrice.toNumber()).toBe(createProductDto.sellingPrice);
     expect(product.stockQuantity).toBe(createProductDto.stockQuantity);
     expect(product.organizationId).toBe(org.id);
-    expect(product.storeId).toBeNull();
   });
 
   it("should return all products", async () => {

@@ -14,8 +14,5 @@ model Product {
   organization   Organization @relation(fields: [organizationId], references: [id])
   organizationId String
 
-  store   Store?  @relation(fields: [storeId], references: [id])
-  storeId String?
-
   @@map("products")
 }

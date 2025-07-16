@@ -30,12 +30,6 @@ export class OrgService {
               role: UserRole.ADMIN,
             },
           },
-          stores: {
-            create: {
-              name: "Default",
-              slug: "default",
-            },
-          },
         },
       });
     } catch (error: any) {
