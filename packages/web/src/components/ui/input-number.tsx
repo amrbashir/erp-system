@@ -32,7 +32,7 @@ export function InputNumber({
           type="button"
           variant={variant === "default" ? "secondary" : "ghost"}
           className={cn(
-            "focus-visible:z-1 p-2! h-4.5! rounded-none",
+            "focus-visible:z-2 p-2! h-4.5! rounded-none",
             variant === "default" && "rounded-ss",
           )}
           size="sm"
@@ -45,7 +45,7 @@ export function InputNumber({
           type="button"
           variant={variant === "default" ? "secondary" : "ghost"}
           className={cn(
-            "focus-visible:z-1 p-2! h-4.5! rounded-none",
+            "focus-visible:z-2 p-2! h-4.5! rounded-none",
             variant === "default" && "rounded-es",
           )}
           size="sm"
@@ -61,7 +61,7 @@ export function InputNumber({
         lang="en-US"
         className={cn(
           "[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
-          "focus-visible:z-1 border-none rounded-none flex-1",
+          "focus-visible:z-2 border-none rounded-none flex-1",
           variant === "default" && "rounded-es",
           variant === "ghost" && "bg-transparent! shadow-none",
           className,

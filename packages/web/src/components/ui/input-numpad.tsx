@@ -41,7 +41,7 @@ export function InputNumpad({
               tabIndex={-1}
               variant="ghost"
               className={cn(
-                "focus-visible:z-1 rounded-none",
+                "focus-visible:z-2 rounded-none",
                 variant === "default" && "bg-input dark:bg-input/30 rounded-e",
               )}
             >

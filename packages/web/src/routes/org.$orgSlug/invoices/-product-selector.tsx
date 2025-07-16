@@ -67,7 +67,7 @@ export function ProductSelector({
       placeholder={isDesktop ? undefined : t("product.search")}
       className={cn(
         isDesktop &&
-          "py-1 px-3 focus-visible:border focus-visible:border-ring! focus-visible:ring-ring/50! focus-visible:ring-[3px]! rounded-none",
+          "rounded-none h-9 p-y1 px-3 focus-visible:z-2 focus-visible:ring-ring/50 focus-visible:ring-[3px]",
       )}
     />
   );
@@ -90,7 +90,7 @@ export function ProductSelector({
         className={cn(
           "p-0 bg-transparent rounded-none overflow-visible",
           "[&>[data-slot=command-input-wrapper]]:border-none [&>[data-slot=command-input-wrapper]]:rounded-none",
-          "[&>[data-slot=command-input-wrapper]]:p-0! [&>[data-slot=command-input-wrapper]>svg]:hidden",
+          "[&>[data-slot=command-input-wrapper]]:p-0 [&>[data-slot=command-input-wrapper]>svg]:hidden",
         )}
       >
         <Popover open={open} onOpenChange={setOpen}>
