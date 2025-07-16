@@ -163,6 +163,15 @@
     "discountAmount": "قيمة الخصم"
   },
 
+  "transaction": {
+    "type": "نوع المعاملة",
+    "types": {
+      "INVOICE": "فاتورة",
+      "EXPENSE": "مصروف",
+      "BALANCE_ADDITION": "إضافة رصيد"
+    }
+  },
+
   "expense": {
     "add": "$t(common.actions.add) مصروف",
     "addDescription": "يمكنك إضافة مصروفات جديدة إلى النظام. يرجى ملء التفاصيل أدناه"

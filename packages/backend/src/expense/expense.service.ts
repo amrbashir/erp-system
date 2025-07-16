@@ -3,7 +3,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import type { PaginationDto } from "../pagination.dto";
 import type { Expense, User } from "../prisma/generated/client";
 import type { CreateExpenseDto } from "./expense.dto";
-import { Prisma } from "../prisma/generated/client";
+import { Prisma, TransactionType } from "../prisma/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
 
 export type ExpenseWithRelations = Expense & {
@@ -32,6 +32,7 @@ export class ExpenseService {
           cashier,
           transaction: {
             create: {
+              type: TransactionType.EXPENSE,
               amount: amount.negated(), // negated since it's an expense
               organization,
               cashier,

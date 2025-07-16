@@ -9,7 +9,7 @@ import * as argon2 from "argon2";
 
 import type { Organization } from "../prisma/generated/client";
 import type { CreateOrgDto } from "./org.dto";
-import { Prisma, UserRole } from "../prisma/generated/client";
+import { Prisma, TransactionType, UserRole } from "../prisma/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { AddBalanceDto } from "./org.dto";
 
@@ -63,6 +63,7 @@ export class OrgService {
           },
           transactions: {
             create: {
+              type: TransactionType.BALANCE_ADDITION,
               amount: amount,
               cashier: { connect: { id: userId } },
             },

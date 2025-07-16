@@ -165,6 +165,15 @@
     "addRow": "$t(common.actions.add) $t(common.ui.row)"
   },
 
+  "transaction": {
+    "type": "Transaction Type",
+    "types": {
+      "INVOICE": "Invoice",
+      "EXPENSE": "Expense",
+      "BALANCE_ADDITION": "Balance Addition"
+    }
+  },
+
   "expense": {
     "add": "$t(common.actions.add) Expense",
     "addDescription": "You can add new expenses to the system. Please fill in the details below",

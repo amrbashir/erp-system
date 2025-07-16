@@ -1,10 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 import type { TransactionWithRelations } from "./transaction.service";
+import { TransactionType } from "../prisma/generated/client";
 
 export class TransactionEntity {
   @ApiProperty()
   id: number;
+
+  @ApiProperty({ enum: TransactionType })
+  type: TransactionType;
 
   @ApiProperty({ format: "number" })
   amount: string;
@@ -20,6 +24,7 @@ export class TransactionEntity {
 
   constructor(transaction: TransactionWithRelations) {
     this.id = transaction.id;
+    this.type = transaction.type;
     this.amount = transaction.amount.toString();
     this.createdAt = transaction.createdAt;
     this.username = transaction.cashier.username;

@@ -1,7 +1,14 @@
+enum TransactionType {
+  INVOICE
+  EXPENSE
+  BALANCE_ADDITION
+}
+
 model Transaction {
   id Int @id @default(autoincrement())
 
-  amount Decimal @db.Decimal(20, 4)
+  type   TransactionType
+  amount Decimal         @db.Decimal(20, 4)
 
   invoice Invoice?
   expense Expense?

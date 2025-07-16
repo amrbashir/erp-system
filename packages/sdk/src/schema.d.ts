@@ -441,6 +441,8 @@ export interface components {
         };
         TransactionEntity: {
             id: number;
+            /** @enum {string} */
+            type: "INVOICE" | "EXPENSE" | "BALANCE_ADDITION";
             /** Format: number */
             amount: string;
             /** Format: date-time */

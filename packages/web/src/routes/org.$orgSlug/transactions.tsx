@@ -48,8 +48,9 @@ function Transactions() {
             <TableHeader className="bg-muted">
               <TableRow className="*:font-bold">
                 <TableHead>{t("transactionNumber")}</TableHead>
+                <TableHead>{t("transaction.type")}</TableHead>
                 <TableHead>{t("common.form.moneyAmount")}</TableHead>
-                <TableHead>{t("common.form.username")}</TableHead>
+                <TableHead>{t("cashierName")}</TableHead>
                 <TableHead>{t("customer.name")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
               </TableRow>
@@ -58,6 +59,7 @@ function Transactions() {
               {transactions.map((transaction, index) => (
                 <TableRow key={index}>
                   <TableCell>{transaction.id}</TableCell>
+                  <TableCell>{t(`transaction.types.${transaction.type}`)}</TableCell>
                   <TableCell
                     className={
                       new Decimal(transaction.amount).isNegative()

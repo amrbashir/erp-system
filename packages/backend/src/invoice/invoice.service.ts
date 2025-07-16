@@ -11,7 +11,7 @@ import type {
   InvoiceOrderByWithRelationInput,
   InvoiceWhereInput,
 } from "../prisma/generated/models";
-import { Prisma } from "../prisma/generated/client";
+import { Prisma, TransactionType } from "../prisma/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreatePurchaseInvoiceDto, CreateSaleInvoiceDto } from "./invoice.dto";
 
@@ -98,10 +98,21 @@ export class InvoiceService {
         const percentDiscount = subtotal.mul(dto.discountPercent).div(100);
         const total = subtotal.sub(percentDiscount).sub(new Prisma.Decimal(dto.discountAmount));
 
-        // Create invoice with items and a transaction
+        // Prepare transaction data
         const organization = { connect: { slug: orgSlug } };
         const cashier = { connect: { id: userId } };
         const customer = dto.customerId ? { connect: { id: dto.customerId } } : undefined;
+        const transaction = {
+          create: {
+            type: TransactionType.EXPENSE,
+            amount: total,
+            cashier,
+            customer,
+            organization,
+          },
+        };
+
+        // Create invoice
         const invoice = await prisma.invoice.create({
           data: {
             items: { create: invoiceItems },
@@ -112,14 +123,7 @@ export class InvoiceService {
             cashier,
             customer,
             organization,
-            transaction: {
-              create: {
-                amount: total,
-                cashier,
-                customer,
-                organization,
-              },
-            },
+            transaction,
           },
           include: {
             customer: true,
@@ -245,6 +249,7 @@ export class InvoiceService {
         const transaction = {
           create: {
             amount: total.negated(), // Negative amount because it's a purchase (money going out)
+            type: TransactionType.EXPENSE,
             cashier,
             customer,
             organization,

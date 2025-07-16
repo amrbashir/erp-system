@@ -96,6 +96,7 @@ export const ProductEntity = z
 export const TransactionEntity = z
   .object({
     id: z.number(),
+    type: z.enum(["INVOICE", "EXPENSE", "BALANCE_ADDITION"]),
     amount: z.string(),
     createdAt: z.string().datetime({ offset: true }),
     username: z.string(),
