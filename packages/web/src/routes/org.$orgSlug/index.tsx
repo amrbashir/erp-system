@@ -131,11 +131,14 @@ function Index() {
           <QuickActionLinkCard key={index} {...action} className="col-span-2 md:col-span-1" />
         ))}
 
-        <Separator className="col-span-2 lg:col-span-4" />
-
-        {adminQuickActions.map((action, index) => (
-          <QuickActionLinkCard key={index} {...action} className="col-span-2 md:col-span-1" />
-        ))}
+        {adminQuickActions.length > 0 && (
+          <>
+            <Separator className="col-span-2 lg:col-span-4" />
+            {adminQuickActions.map((action, index) => (
+              <QuickActionLinkCard key={index} {...action} className="col-span-2 md:col-span-1" />
+            ))}
+          </>
+        )}
       </div>
     </div>
   );
