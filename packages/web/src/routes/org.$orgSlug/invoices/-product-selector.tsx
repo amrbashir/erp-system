@@ -61,7 +61,7 @@ export function ProductSelector({
     <CommandInput
       value={value}
       onValueChange={(v) => {
-        setOpen(!!v); // keep the dropdown open if there's input
+        setOpen(true);
         onInputValueChange?.(v);
       }}
       placeholder={isDesktop ? undefined : t("product.search")}
@@ -117,6 +117,7 @@ export function ProductSelector({
         </DrawerHeader>
         <Command>
           {ProductsInput}
+          <br className="mb-2" />
           {ProductsList}
         </Command>
       </DrawerContent>
