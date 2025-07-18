@@ -48,13 +48,17 @@ describe("OrgService", async () => {
   it("should throw BadRequestException for invalid slug", async () => {
     const orgData = generateRandomOrgData();
     orgData.slug = "invalid slug"; // Invalid slug with space
-    await expect(service.create(orgData)).rejects.toThrow(BadRequestException);
+
+    const result = service.create(orgData);
+    await expect(result).rejects.toThrow(BadRequestException);
   });
 
   it("should throw ConflictException for existing organization", async () => {
     const orgData = generateRandomOrgData();
     await service.create(orgData); // create for the first time
-    await expect(service.create(orgData)).rejects.toThrow();
+
+    const result = service.create(orgData);
+    await expect(result).rejects.toThrow();
   });
 
   it("should create an organization without slug", async () => {

@@ -47,7 +47,8 @@ describe("UserService", async () => {
 
     await service.createUser(createUserDto, org.slug);
 
-    await expect(service.createUser(createUserDto, org.slug)).rejects.toThrow(ConflictException);
+    const result = service.createUser(createUserDto, org.slug);
+    await expect(result).rejects.toThrow(ConflictException);
   });
 
   it("should return users based on pagination", async () => {
@@ -136,7 +137,8 @@ describe("UserService", async () => {
     users = await service.getAllUsers(org.slug, { where: { deletedAt: null } });
     expect(users).toHaveLength(2);
 
-    await expect(service.deleteUser({ username: user2.username }, org.slug)).rejects.toThrow();
+    const deleteAdminResult = service.deleteUser({ username: user2.username }, org.slug);
+    await expect(deleteAdminResult).rejects.toThrow();
 
     await service.deleteUser({ username: user3.username }, org.slug);
     users = await service.getAllUsers(org.slug, { where: { deletedAt: null } });

@@ -137,9 +137,8 @@ describe("InvoiceService", async () => {
         discountAmount: "0",
       };
 
-      await expect(service.createSaleInvoice(orgSlug, createInvoiceDto, user.id)).rejects.toThrow(
-        BadRequestException,
-      );
+      const result = service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
+      await expect(result).rejects.toThrow(BadRequestException);
     });
 
     it("should throw BadRequestException when product has insufficient stock", async () => {
@@ -159,9 +158,8 @@ describe("InvoiceService", async () => {
         discountAmount: "0",
       };
 
-      await expect(service.createSaleInvoice(orgSlug, createInvoiceDto, user.id)).rejects.toThrow(
-        BadRequestException,
-      );
+      const result = service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
+      await expect(result).rejects.toThrow(BadRequestException);
 
       // Verify stock remains unchanged
       const updatedProduct = await prisma.product.findUnique({ where: { id: product1.id } });
@@ -186,26 +184,38 @@ describe("InvoiceService", async () => {
       };
 
       // invalid product ID
-      await expect(service.createSaleInvoice(orgSlug, createInvoiceDto, user.id)).rejects.toThrow(
-        NotFoundException,
+      const resultWithInvalidProduct = service.createSaleInvoice(
+        orgSlug,
+        createInvoiceDto,
+        user.id,
       );
+      await expect(resultWithInvalidProduct).rejects.toThrow(NotFoundException);
 
       // invalid user ID
-      await expect(
-        service.createSaleInvoice(orgSlug, createInvoiceDto, "invalid-user-id"),
-      ).rejects.toThrow(NotFoundException);
+      const resultWithInvalidUser = service.createSaleInvoice(
+        orgSlug,
+        createInvoiceDto,
+        "invalid-user-id",
+      );
+      await expect(resultWithInvalidUser).rejects.toThrow(NotFoundException);
 
       // invalid organization slug
       const invalidOrgSlug = "invalid-org-slug";
-      await expect(
-        service.createSaleInvoice(invalidOrgSlug, createInvoiceDto, user.id),
-      ).rejects.toThrow(NotFoundException);
+      const resultWithInvalidOrg = service.createSaleInvoice(
+        invalidOrgSlug,
+        createInvoiceDto,
+        user.id,
+      );
+      await expect(resultWithInvalidOrg).rejects.toThrow(NotFoundException);
 
       // invalid customer ID
       createInvoiceDto.customerId = 123123; // Non-existent customer ID
-      await expect(service.createSaleInvoice(orgSlug, createInvoiceDto, user.id)).rejects.toThrow(
-        NotFoundException,
+      const resultWithInvalidCustomer = service.createSaleInvoice(
+        orgSlug,
+        createInvoiceDto,
+        user.id,
       );
+      await expect(resultWithInvalidCustomer).rejects.toThrow(NotFoundException);
     });
 
     it("should calculate discounts correctly", async () => {
@@ -392,9 +402,8 @@ describe("InvoiceService", async () => {
         discountAmount: "0",
       };
 
-      await expect(
-        service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id),
-      ).rejects.toThrow(BadRequestException);
+      const result = service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
+      await expect(result).rejects.toThrow(BadRequestException);
     });
 
     it("should throw NotFoundException when non existent data is provided", async () => {
@@ -417,26 +426,38 @@ describe("InvoiceService", async () => {
       };
 
       // invalid product ID
-      await expect(
-        service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id),
-      ).rejects.toThrow(NotFoundException);
+      const resultWithInvalidProduct = service.createPurchaseInvoice(
+        orgSlug,
+        purchaseInvoiceDto,
+        user.id,
+      );
+      await expect(resultWithInvalidProduct).rejects.toThrow(NotFoundException);
 
       // invalid user ID
-      await expect(
-        service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, "invalid-user-id"),
-      ).rejects.toThrow(NotFoundException);
+      const resultWithInvalidUser = service.createPurchaseInvoice(
+        orgSlug,
+        purchaseInvoiceDto,
+        "invalid-user-id",
+      );
+      await expect(resultWithInvalidUser).rejects.toThrow(NotFoundException);
 
       // invalid organization slug
       const invalidOrgSlug = "invalid-org-slug";
-      await expect(
-        service.createPurchaseInvoice(invalidOrgSlug, purchaseInvoiceDto, user.id),
-      ).rejects.toThrow(NotFoundException);
+      const resultWithInvalidOrg = service.createPurchaseInvoice(
+        invalidOrgSlug,
+        purchaseInvoiceDto,
+        user.id,
+      );
+      await expect(resultWithInvalidOrg).rejects.toThrow(NotFoundException);
 
       // invalid customer ID
       purchaseInvoiceDto.customerId = 123123; // Non-existent customer ID
-      await expect(
-        service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id),
-      ).rejects.toThrow(NotFoundException);
+      const resultWithInvalidCustomer = service.createPurchaseInvoice(
+        orgSlug,
+        purchaseInvoiceDto,
+        user.id,
+      );
+      await expect(resultWithInvalidCustomer).rejects.toThrow(NotFoundException);
     });
 
     it("should calculate discounts correctly for purchase invoices", async () => {
@@ -567,8 +588,8 @@ describe("InvoiceService", async () => {
       discountPercent: 0,
       discountAmount: "0",
     };
-    await expect(
-      service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id),
-    ).rejects.toThrow(BadRequestException);
+
+    const result = service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
+    await expect(result).rejects.toThrow(BadRequestException);
   });
 });

@@ -144,9 +144,8 @@ describe("ProductService", async () => {
       barcode: "12345678",
     };
 
-    await expect(service.updateProduct(product2.id, updateProductDto, org.slug)).rejects.toThrow(
-      ConflictException,
-    );
+    const result = service.updateProduct(product2.id, updateProductDto, org.slug);
+    await expect(result).rejects.toThrow(ConflictException);
   });
 
   it("should fail to update a product when changing description to one that already exists", async () => {
@@ -180,8 +179,7 @@ describe("ProductService", async () => {
       description: "Unique Product Description",
     };
 
-    await expect(service.updateProduct(product2.id, updateProductDto, org.slug)).rejects.toThrow(
-      ConflictException,
-    );
+    const result = service.updateProduct(product2.id, updateProductDto, org.slug);
+    await expect(result).rejects.toThrow(ConflictException);
   });
 });

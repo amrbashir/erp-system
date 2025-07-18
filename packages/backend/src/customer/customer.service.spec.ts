@@ -112,8 +112,11 @@ describe("CustomerService", async () => {
 
     const nonExistentCustomerId = 9999; // Assuming this ID does not exist
 
-    await expect(
-      service.updateCustomer(nonExistentCustomerId, { name: "Non Existent" }, org.slug),
-    ).rejects.toThrow(NotFoundException);
+    const result = service.updateCustomer(
+      nonExistentCustomerId,
+      { name: "Non Existent" },
+      org.slug,
+    );
+    await expect(result).rejects.toThrow(NotFoundException);
   });
 });
