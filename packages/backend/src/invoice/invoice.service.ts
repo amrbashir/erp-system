@@ -92,6 +92,20 @@ export class InvoiceService {
         const percentDiscount = subtotal.mul(dto.discountPercent).div(100);
         const total = subtotal.sub(percentDiscount).sub(new Prisma.Decimal(dto.discountAmount));
 
+        // Handle payment amount
+        const paid = new Prisma.Decimal(dto.paid);
+
+        // Validate that paid amount is not negative and doesn't exceed total
+        if (paid.lessThan(0)) {
+          throw new BadRequestException("Paid amount cannot be negative");
+        }
+
+        if (paid.greaterThan(total)) {
+          throw new BadRequestException("Paid amount cannot exceed total invoice amount");
+        }
+
+        const remaining = total.sub(paid);
+
         // Prepare transaction data
         const organization = { connect: { slug: orgSlug } };
         const cashier = { connect: { id: userId, organization: organization.connect } };
@@ -101,7 +115,7 @@ export class InvoiceService {
         const transaction = {
           create: {
             type: TransactionType.EXPENSE,
-            amount: total,
+            amount: paid, // Use paid amount for transaction
             cashier,
             customer,
             organization,
@@ -116,6 +130,8 @@ export class InvoiceService {
             discountPercent: dto.discountPercent,
             discountAmount: new Prisma.Decimal(dto.discountAmount),
             total,
+            paid,
+            remaining,
             cashier,
             customer,
             organization,
@@ -130,7 +146,7 @@ export class InvoiceService {
 
         await prisma.organization.update({
           where: { slug: orgSlug },
-          data: { balance: { increment: total } },
+          data: { balance: { increment: paid } },
         });
 
         return invoice;
@@ -226,13 +242,27 @@ export class InvoiceService {
         const percentDiscount = subtotal.mul(dto.discountPercent).div(100);
         const total = subtotal.sub(percentDiscount).sub(new Prisma.Decimal(dto.discountAmount));
 
+        // Handle payment amount
+        const paid = new Prisma.Decimal(dto.paid);
+
+        // Validate that paid amount is not negative and doesn't exceed total
+        if (paid.lessThan(0)) {
+          throw new BadRequestException("Paid amount cannot be negative");
+        }
+
+        if (paid.greaterThan(total)) {
+          throw new BadRequestException("Paid amount cannot exceed total invoice amount");
+        }
+
+        const remaining = total.sub(paid);
+
         // Prepare transaction data
         const organization = { connect: { slug: orgSlug } };
         const cashier = { connect: { id: userId } };
         const customer = dto.customerId ? { connect: { id: dto.customerId } } : undefined;
         const transaction = {
           create: {
-            amount: total.negated(), // Negative amount because it's a purchase (money going out)
+            amount: paid.negated(), // Negative amount because it's a purchase (money going out)
             type: TransactionType.EXPENSE,
             cashier,
             customer,
@@ -249,6 +279,8 @@ export class InvoiceService {
             discountPercent: dto.discountPercent,
             discountAmount: new Prisma.Decimal(dto.discountAmount),
             total,
+            paid,
+            remaining,
             cashier,
             customer,
             organization,
@@ -264,7 +296,7 @@ export class InvoiceService {
         // Update organization balance (decrease since it's a purchase)
         await prisma.organization.update({
           where: { slug: orgSlug },
-          data: { balance: { decrement: total } },
+          data: { balance: { decrement: paid } },
         });
 
         return invoice;

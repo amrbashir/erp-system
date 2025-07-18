@@ -465,6 +465,8 @@ export interface components {
             discountPercent?: number;
             /** Format: number */
             discountAmount?: string;
+            /** Format: number */
+            paid: string;
         };
         CreatePurchaseInvoiceItemDto: {
             productId?: string;
@@ -484,6 +486,8 @@ export interface components {
             discountPercent?: number;
             /** Format: number */
             discountAmount?: string;
+            /** Format: number */
+            paid: string;
             items: components["schemas"]["CreatePurchaseInvoiceItemDto"][];
         };
         InvoiceItemEntity: {
@@ -516,6 +520,10 @@ export interface components {
             discountAmount: string;
             /** Format: number */
             total: string;
+            /** Format: number */
+            paid: string;
+            /** Format: number */
+            remaining: string;
             /** Format: date-time */
             createdAt: string;
             /** Format: date-time */

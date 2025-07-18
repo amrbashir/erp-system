@@ -120,6 +120,7 @@ export const CreateSaleInvoiceDto = z
     items: z.array(CreateSaleInvoiceItemDto),
     discountPercent: z.number().optional(),
     discountAmount: z.string().optional(),
+    paid: z.string(),
   })
   .passthrough();
 
@@ -141,6 +142,7 @@ export const CreatePurchaseInvoiceDto = z
     customerId: z.number().optional(),
     discountPercent: z.number().optional(),
     discountAmount: z.string().optional(),
+    paid: z.string(),
     items: z.array(CreatePurchaseInvoiceItemDto),
   })
   .passthrough();
@@ -168,6 +170,8 @@ export const InvoiceEntity = z
     discountPercent: z.number(),
     discountAmount: z.string(),
     total: z.string(),
+    paid: z.string(),
+    remaining: z.string(),
     createdAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true }),
     cashierName: z.string(),

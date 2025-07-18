@@ -23,7 +23,8 @@ import { useOrg } from "@/hooks/use-org";
 import { formatDate } from "@/utils/formatDate";
 import { formatMoney } from "@/utils/formatMoney";
 
-type InvoiceType = z.infer<typeof InvoiceEntity>["type"];
+type Invoice = z.infer<typeof InvoiceEntity>;
+type InvoiceType = Invoice["type"];
 
 export function InvoicesTable({ invoiceType }: { invoiceType: InvoiceType }) {
   const { t } = useTranslation();
@@ -54,6 +55,8 @@ export function InvoicesTable({ invoiceType }: { invoiceType: InvoiceType }) {
             <TableHead>{t("invoice.discountPercent")}</TableHead>
             <TableHead>{t("invoice.discountAmount")}</TableHead>
             <TableHead>{t("invoice.total")}</TableHead>
+            <TableHead>{t("invoice.paid")}</TableHead>
+            <TableHead>{t("invoice.remaining")}</TableHead>
             <TableHead className="text-end!"></TableHead>
           </TableRow>
         </TableHeader>
@@ -69,9 +72,7 @@ export function InvoicesTable({ invoiceType }: { invoiceType: InvoiceType }) {
   );
 }
 
-function InvoiceRow({
-  invoice,
-}: { invoice: z.infer<typeof InvoiceEntity>; index: number } & React.ComponentProps<"tr">) {
+function InvoiceRow({ invoice }: { invoice: Invoice; index: number } & React.ComponentProps<"tr">) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
@@ -85,6 +86,12 @@ function InvoiceRow({
         <TableCell>{formatMoney(invoice.subtotal)}</TableCell>
         <TableCell>{invoice.discountPercent}%</TableCell>
         <TableCell>{formatMoney(invoice.discountAmount)}</TableCell>
+        <TableCell className="font-bold">
+          {formatMoney(
+            invoice.type === "SALE" ? invoice.total : new Decimal(invoice.total).negated(),
+            { signDisplay: "always" },
+          )}
+        </TableCell>
         <TableCell
           className={
             invoice.type === "SALE"
@@ -92,10 +99,17 @@ function InvoiceRow({
               : "text-red-500 dark:text-red-300"
           }
         >
-          {formatMoney(
-            invoice.type === "SALE" ? invoice.total : new Decimal(invoice.total).negated(),
-            { signDisplay: "always" },
+          {formatMoney(invoice.paid)}
+        </TableCell>
+        <TableCell
+          className={cn(
+            new Decimal(invoice.remaining).greaterThan(0) &&
+              (invoice.type === "SALE"
+                ? "text-red-500 dark:text-red-300"
+                : "text-blue-500 dark:text-blue-300"),
           )}
+        >
+          {formatMoney(invoice.remaining)}
         </TableCell>
         <TableCell className="text-end!">
           <Button onClick={() => setOpen((prev) => !prev)} variant="ghost" size="sm">
@@ -104,7 +118,7 @@ function InvoiceRow({
         </TableCell>
       </TableRow>
       <TableRow className={cn("bg-muted/50", open ? "table-row" : "hidden")}>
-        <TableCell colSpan={10} className="p-0!">
+        <TableCell colSpan={11} className="p-0!">
           <Table>
             <TableHeader className="bg-muted">
               <TableRow className="*:font-bold">

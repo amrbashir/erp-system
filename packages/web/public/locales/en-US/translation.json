@@ -162,6 +162,8 @@
     "subtotal": "Subtotal",
     "discountPercent": "Discount %",
     "discountAmount": "Discount Amount",
+    "paid": "Paid",
+    "remaining": "Remaining",
     "addRow": "$t(common.actions.add) $t(common.ui.row)"
   },
 

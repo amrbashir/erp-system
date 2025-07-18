@@ -160,7 +160,9 @@
     "total": "الإجمالي",
     "subtotal": "المجموع الفرعي",
     "discountPercent": "نسبة الخصم %",
-    "discountAmount": "قيمة الخصم"
+    "discountAmount": "قيمة الخصم",
+    "paid": "المدفوع",
+    "remaining": "المتبقي"
   },
 
   "transaction": {

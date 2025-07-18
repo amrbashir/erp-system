@@ -8,6 +8,7 @@ applyTo: "**"
 - Use prettier for formatting by using `pnpm -w format`.
 - Linting is done using `pnpm -w lint`.
 - Tests are ran using `pnpm -w test`.
+- Testing a specific file can be done by cding into the package directory and running `pnpm test <file>`.
 - Sdk generation is done using `pnpm -w sdk build`.
 - Database migrations is done using `pnpm -w backend migrate:db:dev`.
 - Regenerate the Prisma client using `pnpm -w backend prisma:generate`.

@@ -69,3 +69,12 @@ export function calculateInvoiceTotal(
   const percentDiscount = calculateInvoicePercentDiscount(subtotal, discountPercent);
   return subtotalDecimal.minus(percentDiscount).minus(discountAmountDecimal);
 }
+
+export function calculateInvoiceRemaining(
+  total: number | Decimal,
+  paid: string | number,
+) {
+  const totalDecimal = total instanceof Decimal ? total : new Decimal(total);
+  const paidDecimal = new SafeDecimal(paid || 0);
+  return totalDecimal.minus(paidDecimal);
+}

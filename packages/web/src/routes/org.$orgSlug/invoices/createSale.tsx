@@ -13,7 +13,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/shadcn/components/ui/card";
+import { Card, CardContent } from "@/shadcn/components/ui/card";
 import { Separator } from "@/shadcn/components/ui/separator";
 import {
   Table,
@@ -23,6 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/shadcn/components/ui/table";
+import { cn } from "@/shadcn/lib/utils";
 
 import type { ReactFormApi } from "@tanstack/react-form";
 import type z from "zod";
@@ -37,6 +38,7 @@ import i18n from "@/i18n";
 import { formatMoney } from "@/utils/formatMoney";
 import {
   calculateInvoicePercentDiscount,
+  calculateInvoiceRemaining,
   calculateInvoiceSubtotal,
   calculateInvoiceTotal,
   calculateItemDiscount,
@@ -72,6 +74,7 @@ const DEFAULT_INVOICE_ITEM = {
   purchasePrice: "0",
   price: "0",
   sellingPrice: "0",
+  productId: "",
 };
 
 // Main component
@@ -100,10 +103,25 @@ function CreateSaleInvoice() {
       customerId: undefined,
       discountPercent: 0,
       discountAmount: "0",
+      paid: "0",
     } as Invoice,
     validators: {
+      onChange: ({ value, formApi }) => {
+        const paidField = formApi.getFieldMeta("paid");
+
+        // If the paid field is dirty, we don't want to auto-update it
+        if (paidField?.isDirty) return;
+
+        const total = calculateInvoiceTotal(
+          calculateInvoiceSubtotal(value.items, "SALE"),
+          value.discountPercent,
+          value.discountAmount,
+        );
+        formApi.setFieldValue("paid", total.toString(), { dontUpdateMeta: true });
+      },
+
       onSubmit: ({ value, formApi }) => {
-        const validItems = value.items.filter((i) => !!i.description);
+        const validItems = value.items.filter((i) => !!i.description || !!i.productId);
         if (validItems.length === 0) return "invoiceMustHaveItems";
 
         const errors = formApi.parseValuesWithSchema(CreateSaleInvoiceDto as any);
@@ -111,7 +129,7 @@ function CreateSaleInvoice() {
       },
     },
     onSubmit: async ({ value, formApi }) => {
-      const validItems = value.items.filter((i) => !!i.description);
+      const validItems = value.items.filter((i) => !!i.description || !!i.productId);
 
       const { error } = await apiClient.post("/org/{orgSlug}/invoice/createSale", {
         params: { path: { orgSlug } },
@@ -138,15 +156,19 @@ function CreateSaleInvoice() {
     },
   });
 
-  const [invoiceItems, validInvoiceItems, invoiceDiscountPercent, invoiceDiscountAmount] = useStore(
-    form.store,
-    (state) => [
-      state.values.items,
-      state.values.items.filter((i) => !!i.description && i.quantity > 0),
-      state.values.discountPercent,
-      state.values.discountAmount,
-    ],
-  );
+  const [
+    invoiceItems,
+    validInvoiceItems,
+    invoiceDiscountPercent,
+    invoiceDiscountAmount,
+    invoicePaid,
+  ] = useStore(form.store, (state) => [
+    state.values.items,
+    state.values.items.filter((i) => !!i.description && i.quantity > 0),
+    state.values.discountPercent,
+    state.values.discountAmount,
+    state.values.paid,
+  ]);
 
   // Calculate subtotal (before invoice-level discounts)
   const subtotal = useMemo(() => calculateInvoiceSubtotal(invoiceItems, "SALE"), [invoiceItems]);
@@ -238,6 +260,7 @@ function CreateSaleInvoice() {
         subtotal={subtotal}
         discountPercent={invoiceDiscountPercent}
         discountAmount={invoiceDiscountAmount}
+        paid={invoicePaid}
         onUpdateInvoiceField={handleUpdateInvoiceField}
       />
     </form>
@@ -479,21 +502,24 @@ function InvoiceFooter({
   subtotal,
   discountPercent,
   discountAmount,
+  paid,
   onUpdateInvoiceField,
 }: {
   subtotal: Decimal;
   discountPercent?: number;
   discountAmount?: string;
+  paid: string;
   onUpdateInvoiceField: (field: keyof Invoice, value: number | string) => void;
 }) {
   const { t } = useTranslation();
 
   const percentDiscount = calculateInvoicePercentDiscount(subtotal, discountPercent);
   const totalPrice = calculateInvoiceTotal(subtotal, discountPercent, discountAmount);
+  const remainingAmount = calculateInvoiceRemaining(totalPrice, paid);
 
   return (
     <Card className="md:w-fit md:ms-auto gap-2 p-2">
-      <CardContent className="grid grid-cols-[auto_1fr_auto] grid-rows-3 items-center gap-2 p-2">
+      <CardContent className="grid grid-cols-[auto_1fr_auto] items-center gap-2 p-2">
         <span className="font-semibold">{t("invoice.subtotal")}:</span>
         <span></span>
         <span className="text-end font-bold">{formatMoney(subtotal)}</span>
@@ -517,14 +543,36 @@ function InvoiceFooter({
           max={subtotal.toNumber()}
         />
         <span className="text-end">-{formatMoney(discountAmount || 0)}</span>
+
+        <Separator className="col-span-3 my-1" />
+
+        <span className="font-bold">{t("invoice.total")}:</span>
+        <span></span>
+        <span className="text-end font-bold">{formatMoney(totalPrice)}</span>
+
+        <span>{t("invoice.paid")}:</span>
+        <InputNumpad
+          className="w-20"
+          value={new SafeDecimal(paid || 0).toNumber()}
+          onChange={(e) => onUpdateInvoiceField("paid", e.target.value)}
+          min={0}
+          max={totalPrice.toNumber()}
+        />
+        <span className="text-end text-green-500 dark:text-green-300">
+          {formatMoney(paid || 0)}
+        </span>
+
+        <span>{t("invoice.remaining")}:</span>
+        <span></span>
+        <span
+          className={cn(
+            "text-end",
+            remainingAmount.greaterThan(0) && "text-red-500 dark:text-red-300",
+          )}
+        >
+          {formatMoney(remainingAmount)}
+        </span>
       </CardContent>
-
-      <Separator />
-
-      <CardFooter className="justify-between gap-2 p-2 font-bold">
-        <span>{t("invoice.total")}:</span>
-        <span className="text-green-500 dark:text-green-300">{formatMoney(totalPrice)}</span>
-      </CardFooter>
     </Card>
   );
 }

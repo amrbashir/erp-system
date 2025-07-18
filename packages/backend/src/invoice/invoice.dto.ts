@@ -72,6 +72,11 @@ export class CreateSaleInvoiceDto {
   @IsNumberString()
   @IsNotEmpty()
   discountAmount: string = "0";
+
+  @ApiProperty({ format: "number" })
+  @IsNotEmpty()
+  @IsNumberString()
+  paid: string;
 }
 
 export class CreatePurchaseInvoiceItemDto {
@@ -194,6 +199,12 @@ export class InvoiceEntity {
   @ApiProperty({ format: "number" })
   total: string;
 
+  @ApiProperty({ format: "number" })
+  paid: string;
+
+  @ApiProperty({ format: "number" })
+  remaining: string;
+
   @ApiProperty()
   createdAt: Date;
 
@@ -219,6 +230,8 @@ export class InvoiceEntity {
     this.discountPercent = invoice.discountPercent;
     this.discountAmount = invoice.discountAmount.toString();
     this.total = invoice.total.toString();
+    this.paid = invoice.paid.toString();
+    this.remaining = invoice.remaining.toString();
     this.createdAt = invoice.createdAt;
     this.updatedAt = invoice.updatedAt;
     this.cashierName = invoice.cashier.username;

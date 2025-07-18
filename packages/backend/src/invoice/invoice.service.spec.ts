@@ -101,6 +101,7 @@ describe("InvoiceService", async () => {
         ],
         discountPercent: 5,
         discountAmount: "10",
+        paid: "200",
       };
 
       const invoice = await service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
@@ -110,6 +111,10 @@ describe("InvoiceService", async () => {
       expect(invoice.items.length).toBe(2);
       expect(invoice.customer!.id).toBe(customer.id);
       expect(invoice.items[0].barcode).toBe(product1.barcode);
+      expect(invoice.subtotal.toNumber()).toBe(285); // 2 * 100 + (1 * 100 - 10% - 5 flat discount)
+      expect(invoice.total.toNumber()).toBe(260.75); // 285 - 5% - 10 (invoice discount)
+      expect(invoice.paid.toNumber()).toBe(200);
+      expect(invoice.remaining.toNumber()).toBe(60.75); // 260.75 - 200
 
       // Verify product quantities have been updated
       const updatedProduct1 = await prisma.product.findUnique({ where: { id: product1.id } });
@@ -125,7 +130,7 @@ describe("InvoiceService", async () => {
 
       expect(transaction).toBeDefined();
       // Use toStrictEqual for comparing Decimal objects
-      expect(transaction!.amount).toStrictEqual(invoice.total);
+      expect(transaction!.amount).toStrictEqual(new Prisma.Decimal(createInvoiceDto.paid));
     });
 
     it("should throw BadRequestException when creating invoice with no items", async () => {
@@ -135,6 +140,7 @@ describe("InvoiceService", async () => {
         items: [],
         discountPercent: 0,
         discountAmount: "0",
+        paid: "0",
       };
 
       const result = service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
@@ -156,6 +162,7 @@ describe("InvoiceService", async () => {
         ],
         discountPercent: 0,
         discountAmount: "0",
+        paid: "0",
       };
 
       const result = service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
@@ -181,6 +188,7 @@ describe("InvoiceService", async () => {
         ],
         discountPercent: 0,
         discountAmount: "0",
+        paid: "0",
       };
 
       // invalid product ID
@@ -240,6 +248,7 @@ describe("InvoiceService", async () => {
         ],
         discountPercent: 5,
         discountAmount: "10",
+        paid: "393.75",
       };
 
       const invoice = await service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
@@ -264,6 +273,7 @@ describe("InvoiceService", async () => {
         ],
         discountPercent: 0,
         discountAmount: "0",
+        paid: product1.sellingPrice.toString(),
       };
 
       await service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
@@ -295,6 +305,7 @@ describe("InvoiceService", async () => {
         ],
         discountPercent: 0,
         discountAmount: "0",
+        paid: product1.sellingPrice.toString(),
       };
 
       const createInvoiceDto2: CreateSaleInvoiceDto = {
@@ -309,6 +320,7 @@ describe("InvoiceService", async () => {
         ],
         discountPercent: 0,
         discountAmount: "0",
+        paid: product1.sellingPrice.mul(2).toString(),
       };
 
       await service.createSaleInvoice(orgSlug, createInvoiceDto1, user.id);
@@ -348,6 +360,7 @@ describe("InvoiceService", async () => {
         ],
         discountPercent: 2,
         discountAmount: "5",
+        paid: "500",
       };
 
       const invoice = await service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
@@ -390,7 +403,8 @@ describe("InvoiceService", async () => {
 
       expect(transaction).toBeDefined();
       // Use toStrictEqual for comparing Decimal objects with negative values
-      expect(transaction!.amount).toStrictEqual(new Prisma.Decimal(-1).mul(invoice.total)); // Amount is negative for purchases
+      const expectedAmount = new Prisma.Decimal(purchaseInvoiceDto.paid).negated();
+      expect(transaction!.amount).toStrictEqual(expectedAmount);
     });
 
     it("should throw BadRequestException when creating purchase invoice with no items", async () => {
@@ -400,6 +414,7 @@ describe("InvoiceService", async () => {
         items: [],
         discountPercent: 0,
         discountAmount: "0",
+        paid: "0",
       };
 
       const result = service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
@@ -423,6 +438,7 @@ describe("InvoiceService", async () => {
         ],
         discountPercent: 0,
         discountAmount: "0",
+        paid: "100",
       };
 
       // invalid product ID
@@ -482,6 +498,7 @@ describe("InvoiceService", async () => {
         ],
         discountPercent: 5,
         discountAmount: "5",
+        paid: "194.5",
       };
 
       const invoice = await service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
@@ -513,6 +530,7 @@ describe("InvoiceService", async () => {
         ],
         discountPercent: 0,
         discountAmount: "0",
+        paid: "100",
       };
 
       await service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
@@ -556,6 +574,7 @@ describe("InvoiceService", async () => {
       ],
       discountPercent: 0,
       discountAmount: "0",
+      paid: "100",
     };
 
     const invoice = await service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
@@ -587,6 +606,7 @@ describe("InvoiceService", async () => {
       ],
       discountPercent: 0,
       discountAmount: "0",
+      paid: "100",
     };
 
     const result = service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);

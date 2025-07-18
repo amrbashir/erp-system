@@ -9,7 +9,6 @@ import {
 
 import type { JwtPayload } from "../auth/auth.dto";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
-import { PaginationDto } from "../pagination.dto";
 import {
   CreatePurchaseInvoiceDto,
   CreateSaleInvoiceDto,
