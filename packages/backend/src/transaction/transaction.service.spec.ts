@@ -29,6 +29,7 @@ describe("TransactionService", () => {
     return prismaService.transaction.create({
       data: {
         amount,
+        type: "EXPENSE",
         cashier: { connect: { id: cashierId } },
         organization: { connect: { slug: orgSlug } },
       },

@@ -50,7 +50,7 @@ export class ProductService {
       });
     } catch (error: any) {
       if (error.code === "P2025") {
-        throw new NotFoundException("Customer with this ID does not exist in the organization");
+        throw new NotFoundException("Product with this ID does not exist in the organization");
       }
 
       throw error; // Re-throw other errors
