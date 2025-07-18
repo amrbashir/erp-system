@@ -13,8 +13,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/shadcn/components/ui/card";
-import { Input } from "@/shadcn/components/ui/input";
+import { Card, CardContent } from "@/shadcn/components/ui/card";
 import { Separator } from "@/shadcn/components/ui/separator";
 import {
   Table,
@@ -173,9 +172,7 @@ function CreatePurchaseInvoice() {
   };
 
   const addEmptyItem = () => {
-    const newItems = [...form.getFieldValue("items")];
-    newItems.push({ ...DEFAULT_INVOICE_ITEM });
-    form.setFieldValue("items", newItems);
+    form.pushFieldValue("items", { ...DEFAULT_INVOICE_ITEM });
     form.validate("change");
   };
 
@@ -350,10 +347,11 @@ function InvoiceTable({
       <TableBody>
         {items.map((item, index) => (
           <InvoiceTableRow
-            products={products}
             key={index}
             item={item}
             index={index}
+            products={products}
+            items={items}
             onUpdateItemField={onUpdateItemField}
             onAdd={onAddItem}
             onReset={onResetItem}
@@ -380,16 +378,18 @@ function InvoiceTable({
 
 // Invoice table row component
 function InvoiceTableRow({
-  products,
   item,
   index,
+  products,
+  items,
   onAdd,
   onReset,
   onUpdateItemField,
 }: {
-  products: Product[] | undefined;
   item: InvoiceItem;
   index: number;
+  products: Product[] | undefined;
+  items: InvoiceItem[];
   onAdd: (index: number, product: Product) => void;
   onReset: (index: number) => void;
   onUpdateItemField: (index: number, field: keyof InvoiceItem, value: string | number) => void;
@@ -422,7 +422,10 @@ function InvoiceTableRow({
       <TableCell>{index + 1}</TableCell>
       <TableCell className="p-0">
         <ProductSelector
-          items={products?.map((p) => p.barcode).filter((b) => b !== undefined) || []}
+          items={(products ?? [])
+            .map((p) => p.barcode)
+            .filter((b) => b !== undefined)
+            .filter((b) => items.every((i) => i.barcode !== b))}
           value={item.barcode ?? ""}
           onInputValueChange={(value) => {
             item.productId && onReset(index);
@@ -436,7 +439,9 @@ function InvoiceTableRow({
       </TableCell>
       <TableCell className="p-0">
         <ProductSelector
-          items={products?.map((p) => p.description).filter((b) => b !== undefined) || []}
+          items={(products ?? [])
+            .map((p) => p.description)
+            .filter((b) => items.every((i) => i.description !== b))}
           value={item.description}
           onInputValueChange={(value) => {
             item.productId && onReset(index);
