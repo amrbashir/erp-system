@@ -47,7 +47,7 @@ export function QuickActionLinkCard({
           >
             <Icon />
           </div>
-          <p className="text-lg">{title}</p>
+          <p className={cn(size == "sm" ? "text-base md:text-lg" : "text-lg")}>{title}</p>
         </CardContent>
       </Card>
     </Link>

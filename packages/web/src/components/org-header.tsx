@@ -1,58 +1,9 @@
-import { Link, useMatches } from "@tanstack/react-router";
-import { Fragment } from "react/jsx-runtime";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/shadcn/components/ui/breadcrumb";
 import { Separator } from "@/shadcn/components/ui/separator";
 import { SidebarTrigger } from "@/shadcn/components/ui/sidebar";
 
 import { ThemeSelector } from "@/components/theme-selector";
 
-function NavigationBreadcrumbs() {
-  const matches = useMatches();
-
-  const breadcrumbs = matches
-    .filter(({ context }) => context?.title || context?.icon)
-    .map(({ pathname, context }) => ({
-      pathname,
-      title: context.title as string | null,
-      icon: context.icon ? <context.icon className="size-4" /> : null,
-    }));
-
-  const activeCrumb = breadcrumbs[breadcrumbs.length - 1] ?? "";
-  const otherCrumbs = breadcrumbs.slice(0, -1);
-
-  // Remove the first title so it doesn't show in the breadcrumb (usually the home route)
-  if (otherCrumbs[0]) otherCrumbs[0].title = null;
-
-  return (
-    <Breadcrumb>
-      <BreadcrumbList>
-        {otherCrumbs.map(({ pathname, title, icon: RouteIcon }) => (
-          <Fragment key={pathname}>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link className="text-base font-medium flex" to={pathname}>
-                  {title ? title : RouteIcon}
-                </Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-          </Fragment>
-        ))}
-
-        <BreadcrumbItem>
-          <BreadcrumbPage className="text-base font-medium">{activeCrumb.title}</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-    </Breadcrumb>
-  );
-}
+import { NavigationBreadcrumbs } from "./nav-breadcrumbs";
 
 export function OrgHeader() {
   return (
