@@ -78,17 +78,17 @@ function CreatePurchaseInvoice() {
   const { t } = useTranslation();
   const client = useQueryClient();
 
+  const params = useMemo(() => ({ path: { orgSlug } }), [orgSlug]);
+
   const { data: products } = useQuery({
     queryKey: ["products"],
-    queryFn: async () =>
-      apiClient.getThrowing("/org/{orgSlug}/product/getAll", { params: { path: { orgSlug } } }),
+    queryFn: async () => apiClient.getThrowing("/org/{orgSlug}/product/getAll", { params }),
     select: (res) => res.data,
   });
 
   const { data: customers } = useQuery({
     queryKey: ["customers"],
-    queryFn: async () =>
-      apiClient.getThrowing("/org/{orgSlug}/customer/getAll", { params: { path: { orgSlug } } }),
+    queryFn: async () => apiClient.getThrowing("/org/{orgSlug}/customer/getAll", { params }),
     select: (res) => res.data,
   });
 
