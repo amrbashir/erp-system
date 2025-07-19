@@ -542,74 +542,74 @@ describe("InvoiceService", async () => {
 
       expect(updatedOrg!.balance).toStrictEqual(new Prisma.Decimal(-100)); // Decreased by purchase amount
     });
-  });
 
-  it("should create invoice with existing product id", async () => {
-    const { user, orgSlug } = await setupTestOrganization();
+    it("should create invoice with existing product id", async () => {
+      const { user, orgSlug } = await setupTestOrganization();
 
-    // Create a product
-    const existingProduct = await prisma.product.create({
-      data: {
-        barcode: "123456",
-        description: "Existing Product",
-        purchasePrice: new Prisma.Decimal("50"),
-        sellingPrice: new Prisma.Decimal("100"),
-        stockQuantity: 10,
-        organization: { connect: { slug: orgSlug } },
-      },
+      // Create a product
+      const existingProduct = await prisma.product.create({
+        data: {
+          barcode: "123456",
+          description: "Existing Product",
+          purchasePrice: new Prisma.Decimal("50"),
+          sellingPrice: new Prisma.Decimal("100"),
+          stockQuantity: 10,
+          organization: { connect: { slug: orgSlug } },
+        },
+      });
+
+      const purchaseInvoiceDto = {
+        items: [
+          {
+            productId: existingProduct.id, // Use existing product ID
+            description: "Balance Test Product", // should be ignored
+            barcode: "979", // should be ignored
+            purchasePrice: "100",
+            sellingPrice: "200",
+            quantity: 1,
+            discountPercent: 0,
+            discountAmount: "0",
+          },
+        ],
+        discountPercent: 0,
+        discountAmount: "0",
+        paid: "100",
+      };
+
+      const invoice = await service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
+
+      expect(invoice).toBeDefined();
+      expect(invoice.items.length).toBe(1);
+
+      expect(invoice.items[0].description).toBe(existingProduct.description); // should use existing product description
+      expect(invoice.items[0].barcode).toBe(existingProduct.barcode); // should use existing product barcode
+
+      expect(invoice.items[0].purchasePrice.toString()).toBe("100");
+      expect(invoice.items[0].sellingPrice.toString()).toBe("200");
+      expect(invoice.items[0].quantity).toBe(1);
+      expect(invoice.items[0].discountPercent).toBe(0);
+      expect(invoice.items[0].discountAmount.toString()).toBe("0");
     });
 
-    const purchaseInvoiceDto = {
-      items: [
-        {
-          productId: existingProduct.id, // Use existing product ID
-          description: "Balance Test Product", // should be ignored
-          barcode: "979", // should be ignored
-          purchasePrice: "100",
-          sellingPrice: "200",
-          quantity: 1,
-          discountPercent: 0,
-          discountAmount: "0",
-        },
-      ],
-      discountPercent: 0,
-      discountAmount: "0",
-      paid: "100",
-    };
+    it("should throw BadRequestException when creating invoice without description", async () => {
+      const { user, orgSlug } = await setupTestOrganization();
+      const purchaseInvoiceDto = {
+        items: [
+          {
+            purchasePrice: "100",
+            sellingPrice: "200",
+            quantity: 1,
+            discountPercent: 0,
+            discountAmount: "0",
+          },
+        ],
+        discountPercent: 0,
+        discountAmount: "0",
+        paid: "100",
+      };
 
-    const invoice = await service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
-
-    expect(invoice).toBeDefined();
-    expect(invoice.items.length).toBe(1);
-
-    expect(invoice.items[0].description).toBe(existingProduct.description); // should use existing product description
-    expect(invoice.items[0].barcode).toBe(existingProduct.barcode); // should use existing product barcode
-
-    expect(invoice.items[0].purchasePrice.toString()).toBe("100");
-    expect(invoice.items[0].sellingPrice.toString()).toBe("200");
-    expect(invoice.items[0].quantity).toBe(1);
-    expect(invoice.items[0].discountPercent).toBe(0);
-    expect(invoice.items[0].discountAmount.toString()).toBe("0");
-  });
-
-  it("should throw BadRequestException when creating invoice without description", async () => {
-    const { user, orgSlug } = await setupTestOrganization();
-    const purchaseInvoiceDto = {
-      items: [
-        {
-          purchasePrice: "100",
-          sellingPrice: "200",
-          quantity: 1,
-          discountPercent: 0,
-          discountAmount: "0",
-        },
-      ],
-      discountPercent: 0,
-      discountAmount: "0",
-      paid: "100",
-    };
-
-    const result = service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
-    await expect(result).rejects.toThrow(BadRequestException);
+      const result = service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
+      await expect(result).rejects.toThrow(BadRequestException);
+    });
   });
 });
