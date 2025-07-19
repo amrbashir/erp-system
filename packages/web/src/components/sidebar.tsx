@@ -1,4 +1,4 @@
-import { Link, useLocation, useRouter } from "@tanstack/react-router";
+import { Link, useMatches, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Label } from "@/shadcn/components/ui/label";
 import {
@@ -107,9 +107,8 @@ function RoutesGroup({
 }) {
   if (!group || group.routes.length === 0) return null;
 
-  const { slug: orgSlug } = useOrg();
   const { flatRoutes } = useRouter();
-  const pathname = useLocation({ select: (s) => s.pathname });
+  const matches = useMatches();
   const sidebar = useSidebar();
 
   const mapRoute = (r: Route | RouteWithSubRoutes): RouteInfo => {
@@ -117,7 +116,7 @@ function RoutesGroup({
     const route = flatRoutes.find((route) => route.to === to);
     const data = route?.options.context();
     const subroutes = typeof r === "string" ? [] : r.subRoutes.map(mapRoute);
-    const isActive = pathname === route?.fullPath.replace("$orgSlug", orgSlug);
+    const isActive = matches[matches.length - 1].routeId === route?.id;
     const hasActiveSubroute = subroutes.some((sub) => sub.isActive);
 
     return {
