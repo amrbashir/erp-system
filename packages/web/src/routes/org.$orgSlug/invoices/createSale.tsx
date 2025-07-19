@@ -152,22 +152,10 @@ function CreateSaleInvoice() {
     },
   });
 
-  const [
-    invoiceItems,
-    validInvoiceItems,
-    invoiceDiscountPercent,
-    invoiceDiscountAmount,
-    invoicePaid,
-  ] = useStore(form.store, (state) => [
+  const [invoiceItems, validInvoiceItems] = useStore(form.store, (state) => [
     state.values.items,
     state.values.items.filter((i) => !!i.description && i.quantity > 0),
-    state.values.discountPercent,
-    state.values.discountAmount,
-    state.values.paid,
   ]);
-
-  // Calculate subtotal (before invoice-level discounts)
-  const subtotal = useMemo(() => calculateInvoiceSubtotal(invoiceItems, "SALE"), [invoiceItems]);
 
   const handleResetItem = (index: number) => {
     form.replaceFieldValue("items", index, { ...DEFAULT_INVOICE_ITEM } as any);
@@ -250,14 +238,7 @@ function CreateSaleInvoice() {
 
       <form.Subscribe children={(state) => <FormErrors formState={state} />} />
 
-      <InvoiceFooter
-        invoiceType="SALE"
-        subtotal={subtotal}
-        discountPercent={invoiceDiscountPercent}
-        discountAmount={invoiceDiscountAmount}
-        paid={invoicePaid}
-        onUpdateInvoiceField={handleUpdateInvoiceField}
-      />
+      <InvoiceFooter invoiceType="SALE" form={form} />
     </form>
   );
 }

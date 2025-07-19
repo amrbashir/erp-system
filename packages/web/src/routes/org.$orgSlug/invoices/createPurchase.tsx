@@ -142,18 +142,9 @@ function CreatePurchaseInvoice() {
     },
   });
 
-  const [
-    invoiceItems,
-    validInvoiceItems,
-    invoiceDiscountPercent,
-    invoiceDiscountAmount,
-    invoicePaid,
-  ] = useStore(form.store, (state) => [
+  const [invoiceItems, validInvoiceItems] = useStore(form.store, (state) => [
     state.values.items,
     state.values.items.filter((i) => !!i.description && i.quantity > 0),
-    state.values.discountPercent,
-    state.values.discountAmount,
-    state.values.paid,
   ]);
 
   // Calculate subtotal (before invoice-level discounts)
@@ -242,14 +233,7 @@ function CreatePurchaseInvoice() {
 
       <form.Subscribe children={(state) => <FormErrors formState={state} />} />
 
-      <InvoiceFooter
-        invoiceType="PURCHASE"
-        subtotal={subtotal}
-        discountPercent={invoiceDiscountPercent}
-        discountAmount={invoiceDiscountAmount}
-        paid={invoicePaid}
-        onUpdateInvoiceField={handleUpdateInvoiceField}
-      />
+      <InvoiceFooter invoiceType="PURCHASE" form={form} />
     </form>
   );
 }

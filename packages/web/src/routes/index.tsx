@@ -321,7 +321,7 @@ function CreateNewOrganizationCard({
                   <FormFieldError field={field} />
                 </>
               )}
-            ></form.Field>
+            />
           </div>
 
           <div className="flex flex-col gap-2">
@@ -339,7 +339,7 @@ function CreateNewOrganizationCard({
                   <FormFieldError field={field} />
                 </>
               )}
-            ></form.Field>
+            />
           </div>
 
           <div className="flex flex-col gap-2">
@@ -357,7 +357,7 @@ function CreateNewOrganizationCard({
                   <FormFieldError field={field} />
                 </>
               )}
-            ></form.Field>
+            />
           </div>
 
           <div className="flex flex-col gap-2">
@@ -376,7 +376,7 @@ function CreateNewOrganizationCard({
                   <FormFieldError field={field} />
                 </>
               )}
-            ></form.Field>
+            />
           </div>
 
           <form.Subscribe children={(state) => <FormErrors formState={state} />} />
