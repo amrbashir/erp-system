@@ -110,6 +110,7 @@ function RoutesGroup({
   const { slug: orgSlug } = useOrg();
   const { flatRoutes } = useRouter();
   const pathname = useLocation({ select: (s) => s.pathname });
+  const sidebar = useSidebar();
 
   const mapRoute = (r: Route | RouteWithSubRoutes): RouteInfo => {
     const to = typeof r === "string" ? r : r.route;
@@ -147,6 +148,7 @@ function RoutesGroup({
                       hasActiveSubroute && "bg-sidebar-accent",
                     )}
                     to={url}
+                    onClick={() => sidebar.setOpenMobile(false)}
                   >
                     {RouteIcon && <RouteIcon />}
                     <span>{title}</span>
@@ -161,6 +163,7 @@ function RoutesGroup({
                           <Link
                             className="data-[active=true]:bg-primary! data-[active=true]:text-primary-foreground!"
                             to={subUrl}
+                            onClick={() => sidebar.setOpenMobile(false)}
                           >
                             <span>{subTitle}</span>
                           </Link>
