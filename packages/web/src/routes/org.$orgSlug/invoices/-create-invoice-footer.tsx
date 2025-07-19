@@ -11,6 +11,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/shadcn/components/ui/drawer";
+import { Label } from "@/shadcn/components/ui/label";
 import { Separator } from "@/shadcn/components/ui/separator";
 import { cn } from "@/shadcn/lib/utils";
 
@@ -76,57 +77,66 @@ export function InvoiceFooter<TInvoice extends Invoice>({
   const FooterCard = (
     <Card className={cn("md:w-fit md:ms-auto gap-2 p-2", isMobile && "border-none")} {...props}>
       <CardContent className="grid grid-cols-[auto_1fr_auto] items-center gap-2 p-2">
-        <span className="font-semibold">{t("common.ui.subtotal")}:</span>
+        <Label className="font-semibold">{t("common.ui.subtotal")}:</Label>
         <span></span>
         <span className="text-end font-semibold">{formatMoney(subtotal)}</span>
 
-        <span>{t("common.ui.discountPercent")}:</span>
         <form.Field
           name="discountPercent"
           children={(field) => (
-            <InputNumpad
-              className="w-20"
-              value={field.state.value as number}
-              onChange={(e) => field.handleChange(e.target.valueAsNumber as any)}
-              min={0}
-              max={100}
-            />
+            <>
+              <Label htmlFor={field.name}>{t("common.ui.discountPercent")}:</Label>
+              <InputNumpad
+                name={field.name}
+                className="w-20"
+                value={field.state.value as number}
+                onChange={(e) => field.handleChange(e.target.valueAsNumber as any)}
+                min={0}
+                max={100}
+              />
+            </>
           )}
         />
         <span className="text-end">-{formatMoney(percentDiscount)}</span>
 
-        <span>{t("common.ui.discountAmount")}:</span>
         <form.Field
           name="discountAmount"
           children={(field) => (
-            <InputNumpad
-              className="w-20"
-              value={new SafeDecimal((field.state.value as string) || 0).toNumber()}
-              onChange={(e) => field.handleChange(e.target.value as any)}
-              min={0}
-              max={subtotal.toNumber()}
-            />
+            <>
+              <Label htmlFor={field.name}>{t("common.ui.discountAmount")}:</Label>
+              <InputNumpad
+                name={field.name}
+                className="w-20"
+                value={new SafeDecimal((field.state.value as string) || 0).toNumber()}
+                onChange={(e) => field.handleChange(e.target.value as any)}
+                min={0}
+                max={subtotal.toNumber()}
+              />
+            </>
           )}
         />
         <span className="text-end">-{formatMoney(discountAmount || 0)}</span>
 
         <Separator className="col-span-3 my-1" />
 
-        <span className="font-bold">{t("common.ui.total")}:</span>
+        <Label className="font-bold">{t("common.ui.total")}:</Label>
         <span></span>
         <span className="text-end font-bold">{formatMoney(totalPrice)}</span>
 
-        <span>{t("common.ui.paid")}:</span>
         <form.Field
           name="paid"
           children={(field) => (
-            <InputNumpad
-              className="w-20"
-              value={new SafeDecimal((field.state.value as string) || 0).toNumber()}
-              onChange={(e) => field.handleChange(e.target.value as any)}
-              min={0}
-              max={totalPrice.toNumber()}
-            />
+            <>
+              <Label htmlFor={field.name}>{t("common.ui.paid")}:</Label>
+              <InputNumpad
+                name={field.name}
+                className="w-20"
+                value={new SafeDecimal((field.state.value as string) || 0).toNumber()}
+                onChange={(e) => field.handleChange(e.target.value as any)}
+                min={0}
+                max={totalPrice.toNumber()}
+              />
+            </>
           )}
         />
         <span
@@ -140,7 +150,7 @@ export function InvoiceFooter<TInvoice extends Invoice>({
           {formatMoney(paid || 0)}
         </span>
 
-        <span>{t("common.ui.remaining")}:</span>
+        <Label>{t("common.ui.remaining")}:</Label>
         <span></span>
         <span
           className={cn(
