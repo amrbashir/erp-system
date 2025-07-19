@@ -51,12 +51,12 @@ export function InvoicesTable({ invoiceType }: { invoiceType: InvoiceType }) {
             <TableHead>{t("cashierName")}</TableHead>
             <TableHead>{t("customer.name")}</TableHead>
             <TableHead>{t("common.dates.date")}</TableHead>
-            <TableHead>{t("invoice.subtotal")}</TableHead>
-            <TableHead>{t("invoice.discountPercent")}</TableHead>
-            <TableHead>{t("invoice.discountAmount")}</TableHead>
-            <TableHead>{t("invoice.total")}</TableHead>
-            <TableHead>{t("invoice.paid")}</TableHead>
-            <TableHead>{t("invoice.remaining")}</TableHead>
+            <TableHead>{t("common.ui.subtotal")}</TableHead>
+            <TableHead>{t("common.ui.discountPercent")}</TableHead>
+            <TableHead>{t("common.ui.discountAmount")}</TableHead>
+            <TableHead>{t("common.ui.total")}</TableHead>
+            <TableHead>{t("common.ui.paid")}</TableHead>
+            <TableHead>{t("common.ui.remaining")}</TableHead>
             <TableHead className="text-end!"></TableHead>
           </TableRow>
         </TableHeader>
@@ -127,10 +127,10 @@ function InvoiceRow({ invoice }: { invoice: Invoice; index: number } & React.Com
                 <TableHead className="w-full">{t("common.form.description")}</TableHead>
                 <TableHead>{t("common.form.quantity")}</TableHead>
                 <TableHead>{t("common.form.price")}</TableHead>
-                <TableHead>{t("invoice.subtotal")}</TableHead>
-                <TableHead>{t("invoice.discountPercent")}</TableHead>
-                <TableHead>{t("invoice.discountAmount")}</TableHead>
-                <TableHead className="text-end!">{t("invoice.total")}</TableHead>
+                <TableHead>{t("common.ui.subtotal")}</TableHead>
+                <TableHead>{t("common.ui.discountPercent")}</TableHead>
+                <TableHead>{t("common.ui.discountAmount")}</TableHead>
+                <TableHead className="text-end!">{t("common.ui.total")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

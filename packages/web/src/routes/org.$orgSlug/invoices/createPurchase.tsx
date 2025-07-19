@@ -7,14 +7,12 @@ import {
 import { useForm, useStore } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Decimal } from "decimal.js";
 import { Loader2Icon, PlusIcon, XIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/components/ui/button";
-import { Card, CardContent } from "@/shadcn/components/ui/card";
-import { Separator } from "@/shadcn/components/ui/separator";
+import { Card } from "@/shadcn/components/ui/card";
 import {
   Table,
   TableBody,
@@ -23,7 +21,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/shadcn/components/ui/table";
-import { cn } from "@/shadcn/lib/utils";
 
 import type { ReactFormApi } from "@tanstack/react-form";
 import type z from "zod";
@@ -37,8 +34,6 @@ import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 import { formatMoney } from "@/utils/formatMoney";
 import {
-  calculateInvoicePercentDiscount,
-  calculateInvoiceRemaining,
   calculateInvoiceSubtotal,
   calculateInvoiceTotal,
   calculateItemDiscount,
@@ -47,6 +42,7 @@ import {
 } from "@/utils/invoice-calculator";
 import { SafeDecimal } from "@/utils/SafeDecimal";
 
+import { InvoiceFooter } from "./-create-invoice-footer";
 import { CustomerSelector } from "./-customer-selector";
 import { ProductSelector } from "./-product-selector";
 
@@ -247,6 +243,7 @@ function CreatePurchaseInvoice() {
       <form.Subscribe children={(state) => <FormErrors formState={state} />} />
 
       <InvoiceFooter
+        invoiceType="PURCHASE"
         subtotal={subtotal}
         discountPercent={invoiceDiscountPercent}
         discountAmount={invoiceDiscountAmount}
@@ -336,11 +333,11 @@ function InvoiceTable({
           <TableHead className="w-40">{t("common.form.quantity")}</TableHead>
           <TableHead className="w-40">{t("common.pricing.purchase")}</TableHead>
           <TableHead className="w-40">{t("common.pricing.selling")}</TableHead>
-          <TableHead>{t("invoice.subtotal")}</TableHead>
-          <TableHead className="w-40">{t("invoice.discountPercent")}</TableHead>
+          <TableHead>{t("common.ui.subtotal")}</TableHead>
+          <TableHead className="w-40">{t("common.ui.discountPercent")}</TableHead>
           <TableHead></TableHead>
-          <TableHead className="w-40">{t("invoice.discountAmount")}</TableHead>
-          <TableHead>{t("invoice.total")}</TableHead>
+          <TableHead className="w-40">{t("common.ui.discountAmount")}</TableHead>
+          <TableHead>{t("common.ui.total")}</TableHead>
         </TableRow>
       </TableHeader>
 
@@ -504,85 +501,5 @@ function InvoiceTableRow({
       </TableCell>
       <TableCell className="font-bold">{formatMoney(itemTotal)}</TableCell>
     </TableRow>
-  );
-}
-
-// Invoice footer component with totals and discount inputs
-function InvoiceFooter({
-  subtotal,
-  discountPercent,
-  discountAmount,
-  paid,
-  onUpdateInvoiceField,
-}: {
-  subtotal: Decimal;
-  discountPercent?: number;
-  discountAmount?: string;
-  paid: string;
-  onUpdateInvoiceField: (field: keyof Invoice, value: number | string) => void;
-}) {
-  const { t } = useTranslation();
-
-  const percentDiscount = calculateInvoicePercentDiscount(subtotal, discountPercent);
-  const totalPrice = calculateInvoiceTotal(subtotal, discountPercent, discountAmount);
-  const remainingAmount = calculateInvoiceRemaining(totalPrice, paid);
-
-  return (
-    <Card className="md:w-fit md:ms-auto gap-2 p-2">
-      <CardContent className="grid grid-cols-[auto_1fr_auto] grid-rows-3 items-center gap-2 p-2">
-        <span className="font-semibold">{t("invoice.subtotal")}:</span>
-        <span></span>
-        <span className="text-end font-semibold">{formatMoney(subtotal)}</span>
-
-        <span>{t("invoice.discountPercent")}:</span>
-        <InputNumpad
-          className="w-20"
-          value={discountPercent}
-          onChange={(e) => onUpdateInvoiceField("discountPercent", e.target.valueAsNumber)}
-          min={0}
-          max={100}
-        />
-        <span className="text-end">-{formatMoney(percentDiscount)}</span>
-
-        <span>{t("invoice.discountAmount")}:</span>
-        <InputNumpad
-          className="w-20"
-          value={new SafeDecimal(discountAmount || 0).toNumber()}
-          onChange={(e) => onUpdateInvoiceField("discountAmount", e.target.value)}
-          min={0}
-          max={subtotal.toNumber()}
-        />
-        <span className="text-end">-{formatMoney(discountAmount ?? 0)}</span>
-      </CardContent>
-
-      <Separator />
-
-      <CardContent className="grid grid-cols-[auto_1fr_auto] grid-rows-3 items-center gap-2 p-2">
-        <span className="font-bold">{t("invoice.total")}:</span>
-        <span></span>
-        <span className="font-bold text-end">{formatMoney(totalPrice)}</span>
-
-        <span>{t("invoice.paid")}:</span>
-        <InputNumpad
-          className="w-20"
-          value={new SafeDecimal(paid || 0).toNumber()}
-          onChange={(e) => onUpdateInvoiceField("paid", e.target.value)}
-          min={0}
-          max={totalPrice.toNumber()}
-        />
-        <span className="text-end text-red-500 dark:text-red-300">{formatMoney(paid || 0)}</span>
-
-        <span>{t("invoice.remaining")}:</span>
-        <span></span>
-        <span
-          className={cn(
-            "text-end",
-            remainingAmount.greaterThan(0) && "text-blue-500 dark:text-blue-300",
-          )}
-        >
-          {formatMoney(remainingAmount)}
-        </span>
-      </CardContent>
-    </Card>
   );
 }
