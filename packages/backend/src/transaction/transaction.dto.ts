@@ -17,7 +17,7 @@ export class TransactionEntity {
   createdAt: Date;
 
   @ApiProperty()
-  username: string;
+  cashierUsername: string;
 
   @ApiPropertyOptional()
   customerName?: string;
@@ -27,7 +27,7 @@ export class TransactionEntity {
     this.type = transaction.type;
     this.amount = transaction.amount.toString();
     this.createdAt = transaction.createdAt;
-    this.username = transaction.cashier.username;
+    this.cashierUsername = transaction.cashier.username;
     this.customerName = transaction.customer?.name;
   }
 }

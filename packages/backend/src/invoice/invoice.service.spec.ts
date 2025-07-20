@@ -288,52 +288,7 @@ describe("InvoiceService", async () => {
       // Use toStrictEqual for comparing Decimal objects
       expect(updatedOrg!.balance).toStrictEqual(expectedBalance); // 2 invoices created, each with selling price of product1
     });
-
-    it("should get all invoices for an organization", async () => {
-      const { product1, user, orgSlug } = await setupTestOrganization();
-
-      // Create multiple invoices
-      const createInvoiceDto1: CreateSaleInvoiceDto = {
-        items: [
-          {
-            price: product1.sellingPrice.toString(),
-            productId: product1.id,
-            quantity: 1,
-            discountPercent: 0,
-            discountAmount: "0",
-          },
-        ],
-        discountPercent: 0,
-        discountAmount: "0",
-        paid: product1.sellingPrice.toString(),
-      };
-
-      const createInvoiceDto2: CreateSaleInvoiceDto = {
-        items: [
-          {
-            price: product1.sellingPrice.toString(),
-            productId: product1.id,
-            quantity: 2,
-            discountPercent: 0,
-            discountAmount: "0",
-          },
-        ],
-        discountPercent: 0,
-        discountAmount: "0",
-        paid: product1.sellingPrice.mul(2).toString(),
-      };
-
-      await service.createSaleInvoice(orgSlug, createInvoiceDto1, user.id);
-      await service.createSaleInvoice(orgSlug, createInvoiceDto2, user.id);
-
-      const invoices = await service.getAllInvoices(orgSlug);
-
-      expect(invoices.length).toBe(2);
-      expect(invoices[0].items.length).toBe(1);
-      expect(invoices[1].items.length).toBe(1);
-    });
   });
-
   describe("createPurchase", () => {
     it("should create a purchase invoice with valid data", async () => {
       const { customer, user, orgSlug } = await setupTestOrganization();
@@ -610,6 +565,90 @@ describe("InvoiceService", async () => {
 
       const result = service.createPurchaseInvoice(orgSlug, purchaseInvoiceDto, user.id);
       await expect(result).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe("getInvoices", () => {
+    it("should get all invoices for an organization", async () => {
+      const { product1, product2, user, orgSlug } = await setupTestOrganization();
+
+      // Create multiple invoices
+      const createInvoiceDto1: CreateSaleInvoiceDto = {
+        items: [
+          {
+            price: product1.sellingPrice.toString(),
+            productId: product1.id,
+            quantity: 1,
+            discountPercent: 0,
+            discountAmount: "0",
+          },
+          {
+            price: product2.sellingPrice.toString(),
+            productId: product2.id,
+            quantity: 1,
+            discountPercent: 0,
+            discountAmount: "0",
+          },
+        ],
+        discountPercent: 0,
+        discountAmount: "0",
+        paid: product1.sellingPrice.toString(),
+      };
+
+      const createInvoiceDto2: CreateSaleInvoiceDto = {
+        items: [
+          {
+            price: product1.sellingPrice.toString(),
+            productId: product1.id,
+            quantity: 2,
+            discountPercent: 0,
+            discountAmount: "0",
+          },
+        ],
+        discountPercent: 0,
+        discountAmount: "0",
+        paid: product1.sellingPrice.mul(2).toString(),
+      };
+
+      await service.createSaleInvoice(orgSlug, createInvoiceDto1, user.id);
+      await service.createSaleInvoice(orgSlug, createInvoiceDto2, user.id);
+
+      const invoices = await service.getAllInvoices(orgSlug);
+
+      expect(invoices.length).toBe(2);
+      expect(invoices[0].items.length).toBe(2);
+      expect(invoices[1].items.length).toBe(1);
+    });
+
+    it("should get all invoices by customer ID", async () => {
+      const { customer, user, orgSlug, product1 } = await setupTestOrganization();
+      const createInvoiceDto: CreateSaleInvoiceDto = {
+        customerId: customer.id,
+        items: [
+          {
+            price: "100",
+            productId: product1.id,
+            quantity: 1,
+            discountPercent: 0,
+            discountAmount: "0",
+          },
+        ],
+        discountPercent: 0,
+        discountAmount: "0",
+        paid: "100",
+      };
+
+      await service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
+      await service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
+
+      const invoices = await service.getInvoicesByCustomerId(orgSlug, customer.id, {
+        orderBy: { createdAt: "asc" },
+      });
+
+      expect(invoices).toBeDefined();
+      expect(invoices.length).toBe(2);
+      expect(invoices[0].customer!.id).toBe(customer.id);
+      expect(invoices[1].customer!.id).toBe(customer.id);
     });
   });
 });

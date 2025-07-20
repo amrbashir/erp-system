@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import Express from "express";
 
 import type { JwtPayload } from "../auth/auth.dto";
 import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
@@ -10,24 +11,12 @@ import { ExpenseService } from "./expense.service";
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 @ApiHeader({ name: "Authorization" })
-@ApiTags("expense")
-@Controller("/org/:orgSlug/expense")
+@ApiTags("expenses")
+@Controller("/orgs/:orgSlug/expenses")
 export class ExpenseController {
   constructor(private readonly service: ExpenseService) {}
 
-  @Post("create")
-  @ApiOkResponse({ type: ExpenseEntity })
-  async create(
-    @Param("orgSlug") orgSlug: string,
-    @Body() createExpenseDto: CreateExpenseDto,
-    @Req() req: any,
-  ): Promise<ExpenseEntity> {
-    const currentUser = req["user"] as JwtPayload;
-    const expense = await this.service.createExpense(orgSlug, createExpenseDto, currentUser.sub);
-    return new ExpenseEntity(expense);
-  }
-
-  @Get("getAll")
+  @Get()
   @ApiOkResponse({ type: [ExpenseEntity] })
   async getAll(
     @Param("orgSlug") orgSlug: string,
@@ -35,5 +24,17 @@ export class ExpenseController {
   ): Promise<ExpenseEntity[]> {
     const expenses = await this.service.getAllExpenses(orgSlug, paginationDto);
     return expenses.map((e) => new ExpenseEntity(e));
+  }
+
+  @Post("create")
+  @ApiOkResponse({ type: ExpenseEntity })
+  async create(
+    @Param("orgSlug") orgSlug: string,
+    @Body() createExpenseDto: CreateExpenseDto,
+    @Req() req: Express.Request,
+  ): Promise<ExpenseEntity> {
+    const currentUser = req["user"] as JwtPayload;
+    const expense = await this.service.createExpense(orgSlug, createExpenseDto, currentUser.sub);
+    return new ExpenseEntity(expense);
   }
 }

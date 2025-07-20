@@ -29,7 +29,16 @@
       "moneyAmount": "المبلغ",
       "price": "السعر",
       "role": "النوع",
-      "barcode": "الباركود"
+      "barcode": "الباركود",
+      "balance": "الرصيد",
+      "total": "الإجمالي",
+      "subtotal": "المجموع الفرعي",
+      "discountPercent": "نسبة الخصم %",
+      "discountAmount": "قيمة الخصم",
+      "paid": "المدفوع",
+      "remaining": "المتبقي",
+      "owes": "عليه",
+      "owed": "له"
     },
     "ui": {
       "loading": "جارٍ تحميل",
@@ -39,14 +48,7 @@
       "number": "رقم",
       "or": "أو",
       "row": "صف",
-      "noMatches": "لم يتم العثور على عنصر مطابق",
-      "balance": "الرصيد",
-      "total": "الإجمالي",
-      "subtotal": "المجموع الفرعي",
-      "discountPercent": "نسبة الخصم %",
-      "discountAmount": "قيمة الخصم",
-      "paid": "المدفوع",
-      "remaining": "المتبقي"
+      "noMatches": "لم يتم العثور على عنصر مطابق"
     },
     "pricing": {
       "purchase": "سعر الشراء",
@@ -91,7 +93,8 @@
       "createSale": "$t(common.actions.create) فاتورة مبيعات",
       "createPurchase": "$t(common.actions.create) فاتورة مشتريات"
     },
-    "overview": "نظرة عامة"
+    "overview": "نظرة عامة",
+    "customerDetails": "تفاصيل العميل"
   },
 
   "auth": {

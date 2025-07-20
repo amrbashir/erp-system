@@ -14,7 +14,7 @@ describe("Auth E2E", async () => {
 
   describe("Organization Creation", () => {
     it("should create an organization successfully", async () => {
-      const response = await fetch(appUrl + "/org/create", {
+      const response = await fetch(appUrl + "/orgs/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orgData),
@@ -26,7 +26,7 @@ describe("Auth E2E", async () => {
 
   describe("Login", () => {
     it("should login successfully with valid credentials", async () => {
-      const response = await fetch(appUrl + "/org/" + orgData.slug + "/auth/login", {
+      const response = await fetch(appUrl + "/orgs/" + orgData.slug + "/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -48,7 +48,7 @@ describe("Auth E2E", async () => {
     });
 
     it("should fail with invalid credentials", async () => {
-      await fetch(appUrl + "/org/" + orgData.slug + "/auth/login", {
+      await fetch(appUrl + "/orgs/" + orgData.slug + "/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -61,7 +61,7 @@ describe("Auth E2E", async () => {
 
   describe("Refresh Token", () => {
     it("should refresh access token with valid refresh token", async () => {
-      const response = await fetch(appUrl + "/org/" + orgData.slug + "/auth/refresh", {
+      const response = await fetch(appUrl + "/orgs/" + orgData.slug + "/auth/refresh", {
         headers: { Cookie: cookies.join("; ") },
       });
 
@@ -76,14 +76,14 @@ describe("Auth E2E", async () => {
 
   describe("Logout", () => {
     it("should logout successfully with valid access token", async () => {
-      const response = await fetch(appUrl + "/org/" + orgData.slug + "/auth/logout", {
+      const response = await fetch(appUrl + "/orgs/" + orgData.slug + "/auth/logout", {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       expect(response.status).toBe(200);
     });
 
     it("should fail to access logout due to missing tokens", async () => {
-      const response = await fetch(appUrl + "/org/" + orgData.slug + "/auth/logout");
+      const response = await fetch(appUrl + "/orgs/" + orgData.slug + "/auth/logout");
       expect(response.status).toBe(401);
     });
   });

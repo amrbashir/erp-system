@@ -1,6 +1,7 @@
-import { AddBalanceDto } from "@erp-system/sdk/zod";
+import { ProductEntity, UpdateProductDto } from "@erp-system/sdk/zod";
 import { useForm } from "@tanstack/react-form";
-import { Loader2Icon, PlusIcon } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { EditIcon, Loader2Icon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
@@ -26,21 +27,36 @@ import { useOrg } from "@/hooks/use-org";
 
 import { FormErrors, FormFieldError } from "../../../components/form-errors";
 
-export function AddBalanceDialog({ shortLabel = false }: { shortLabel?: boolean }) {
+type Product = z.infer<typeof ProductEntity>;
+
+export function ProductDialog({
+  action,
+  product,
+  iconOnly = false,
+}: {
+  action: "edit";
+  product: Product;
+  iconOnly?: boolean;
+}) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const { slug: orgSlug } = useOrg();
+  const client = useQueryClient();
 
   const form = useForm({
     defaultValues: {
-      amount: "0",
-    } as z.infer<ReturnType<(typeof AddBalanceDto)["strict"]>>,
+      barcode: product?.barcode || "",
+      description: product?.description || "",
+      purchasePrice: product?.purchasePrice || "0",
+      sellingPrice: product?.sellingPrice || "0",
+      stockQuantity: product?.stockQuantity || 0,
+    } as z.infer<ReturnType<(typeof UpdateProductDto)["strict"]>>,
     validators: {
-      onSubmit: AddBalanceDto,
+      onSubmit: UpdateProductDto,
     },
     onSubmit: async ({ value, formApi }) => {
-      const { error } = await apiClient.post("/org/{orgSlug}/addBalance", {
-        params: { path: { orgSlug: orgSlug } },
+      const { error } = await apiClient.post("/orgs/{orgSlug}/products/{id}/update", {
+        params: { path: { orgSlug: orgSlug, id: product.id } },
         body: value,
       });
 
@@ -49,23 +65,31 @@ export function AddBalanceDialog({ shortLabel = false }: { shortLabel?: boolean 
         return;
       }
 
+      client.invalidateQueries({ queryKey: ["products", orgSlug] });
+
       formApi.reset();
       setOpen(false);
     },
   });
 
-  const actionLabelShort = t("common.actions.add");
-  const actionLabel = shortLabel ? actionLabelShort : t("org.addBalance");
-  const actionDescription = t("org.addBalanceDescription");
+  const actionLabel = t("product.edit");
+  const actionLabelShort = t("common.actions.edit");
+  const actionDescription = t("product.editDescription");
+
+  const Trigger = iconOnly ? (
+    <Button variant="ghost" size="icon">
+      <EditIcon />
+    </Button>
+  ) : (
+    <Button>
+      <EditIcon />
+      {actionLabel}
+    </Button>
+  );
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">
-          <PlusIcon />
-          {actionLabel}
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{Trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{actionLabel}</DialogTitle>
@@ -79,8 +103,18 @@ export function AddBalanceDialog({ shortLabel = false }: { shortLabel?: boolean 
             form.handleSubmit();
           }}
         >
+          <form.Field name="barcode" children={(field) => <InputField field={field} />} />
+          <form.Field name="description" children={(field) => <InputField field={field} />} />
           <form.Field
-            name="amount"
+            name="stockQuantity"
+            children={(field) => <InputField type="number" min={0} field={field} />}
+          />
+          <form.Field
+            name="purchasePrice"
+            children={(field) => <InputField type="number" isString min={0} field={field} />}
+          />
+          <form.Field
+            name="sellingPrice"
             children={(field) => <InputField type="number" isString min={0} field={field} />}
           />
 
@@ -119,7 +153,7 @@ function InputField({
 
   return (
     <div className="flex flex-col gap-3">
-      <Label htmlFor={field.name}>{t(`expense.form.${field.name}` as any)}</Label>
+      <Label htmlFor={field.name}>{t(`product.form.${field.name}` as any)}</Label>
       {props.type === "number" ? (
         <InputNumpad
           id={field.name}

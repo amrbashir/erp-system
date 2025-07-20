@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { UserIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Button } from "@/shadcn/components/ui/button";
 import {
   Table,
   TableBody,
@@ -13,29 +14,30 @@ import {
 
 import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 import { formatDate } from "@/utils/formatDate";
 
 import { CustomerDialog } from "./-customer-dialog";
 
-export const Route = createFileRoute("/org/$orgSlug/customers")({
-  component: Customers,
+export const Route = createFileRoute("/orgs/$orgSlug/customers/")({
+  component: RouteComponent,
   context: () => ({
     title: i18n.t("routes.customers"),
     icon: UserIcon,
   }),
 });
 
-function Customers() {
+function RouteComponent() {
   const { slug: orgSlug } = useOrg();
 
   const { t } = useTranslation();
 
   const { data: customers } = useQuery({
-    queryKey: ["customers"],
+    queryKey: ["customers", orgSlug],
     queryFn: async () =>
-      apiClient.getThrowing("/org/{orgSlug}/customer/getAll", { params: { path: { orgSlug } } }),
+      apiClient.getThrowing("/orgs/{orgSlug}/customers", { params: { path: { orgSlug } } }),
     select: (res) => res.data,
   });
 
@@ -51,24 +53,27 @@ function Customers() {
             <TableHeader className="bg-muted">
               <TableRow className="*:font-bold">
                 <TableHead>{t("customer.id")}</TableHead>
-                <TableHead className="min-w-[50%]">{t("common.form.name")}</TableHead>
+                <TableHead className="w-full">{t("common.form.name")}</TableHead>
                 <TableHead>{t("common.form.address")}</TableHead>
                 <TableHead>{t("common.form.phone")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
-                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {customers.map((customer, index) => (
                 <TableRow key={index}>
                   <TableCell>{customer.id}</TableCell>
-                  <TableCell>{customer.name}</TableCell>
+                  <TableCell>
+                    <ButtonLink
+                      to="/orgs/$orgSlug/customers/$id"
+                      params={{ id: customer.id.toString(), orgSlug }}
+                    >
+                      {customer.name}
+                    </ButtonLink>
+                  </TableCell>
                   <TableCell>{customer.address}</TableCell>
                   <TableCell>{customer.phone}</TableCell>
                   <TableCell>{formatDate(customer.createdAt)}</TableCell>
-                  <TableCell>
-                    <CustomerDialog action="edit" customer={customer} iconOnly />
-                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

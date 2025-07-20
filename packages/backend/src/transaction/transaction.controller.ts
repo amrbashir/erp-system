@@ -10,18 +10,31 @@ import { TransactionService } from "./transaction.service";
 @UseGuards(JwtAuthGuard, AdminGuard)
 @ApiBearerAuth()
 @ApiHeader({ name: "Authorization" })
-@ApiTags("transaction")
-@Controller("/org/:orgSlug/transaction")
+@ApiTags("transactions")
+@Controller("/orgs/:orgSlug/transactions")
 export class TransactionController {
   constructor(private readonly service: TransactionService) {}
 
-  @Get("getAll")
+  @Get()
   @ApiOkResponse({ type: [TransactionEntity] })
   async getAll(
     @Param("orgSlug") orgSlug: string,
     @Query() pagination?: PaginationDto,
   ): Promise<TransactionEntity[]> {
     const transactions = await this.service.getAllTransactions(orgSlug, { pagination });
+    return transactions.map((transaction) => new TransactionEntity(transaction));
+  }
+
+  @Get("customer/:customerId")
+  @ApiOkResponse({ type: [TransactionEntity] })
+  async getByCustomerId(
+    @Param("orgSlug") orgSlug: string,
+    @Param("customerId") customerId: number,
+    @Query() pagination?: PaginationDto,
+  ): Promise<TransactionEntity[]> {
+    const transactions = await this.service.getTransactionsByCustomerId(orgSlug, customerId, {
+      pagination,
+    });
     return transactions.map((transaction) => new TransactionEntity(transaction));
   }
 }

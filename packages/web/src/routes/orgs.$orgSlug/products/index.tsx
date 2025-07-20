@@ -18,25 +18,23 @@ import i18n from "@/i18n";
 import { formatDate } from "@/utils/formatDate";
 import { formatMoney } from "@/utils/formatMoney";
 
-import { ProductDialog } from "./-product-dialog";
-
-export const Route = createFileRoute("/org/$orgSlug/products")({
-  component: Products,
+export const Route = createFileRoute("/orgs/$orgSlug/products/")({
+  component: RouteComponent,
   context: () => ({
     title: i18n.t("routes.products"),
     icon: PackageIcon,
   }),
 });
 
-function Products() {
+function RouteComponent() {
   const { slug: orgSlug } = useOrg();
 
   const { t } = useTranslation();
 
   const { data: products } = useQuery({
-    queryKey: ["products"],
+    queryKey: ["products", orgSlug],
     queryFn: async () =>
-      apiClient.getThrowing("/org/{orgSlug}/product/getAll", { params: { path: { orgSlug } } }),
+      apiClient.getThrowing("/orgs/{orgSlug}/products", { params: { path: { orgSlug } } }),
     select: (res) => res.data,
   });
 
@@ -50,11 +48,10 @@ function Products() {
                 <TableHead>{t("common.ui.number")}</TableHead>
                 <TableHead>{t("common.form.quantity")}</TableHead>
                 <TableHead>{t("common.form.barcode")}</TableHead>
-                <TableHead className="min-w-[50%]">{t("common.form.description")}</TableHead>
+                <TableHead className="w-full">{t("common.form.description")}</TableHead>
                 <TableHead>{t("common.pricing.purchase")}</TableHead>
                 <TableHead>{t("common.pricing.selling")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
-                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -71,9 +68,6 @@ function Products() {
                     {formatMoney(product.sellingPrice)}
                   </TableCell>
                   <TableCell>{formatDate(product.createdAt)}</TableCell>
-                  <TableCell>
-                    <ProductDialog action="edit" product={product} iconOnly />
-                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -17,24 +17,28 @@ import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 import { useAuth } from "@/providers/auth";
 
-export const Route = createFileRoute("/org/$orgSlug/")({
-  component: Index,
+export const Route = createFileRoute("/orgs/$orgSlug/")({
+  component: RouteComponent,
   context: () => ({
     title: i18n.t("routes.home"),
     icon: HomeIcon,
   }),
 });
 
-function Index() {
+function RouteComponent() {
   const { slug: orgSlug, name: orgName } = useOrg();
   const { user } = useAuth();
   const { t } = useTranslation();
+
+  // params for links
+  const params = { orgSlug };
 
   const miniQuickActions: QuickActionLinkCardProps[] = [
     {
       title: t("routes.invoice.createSale"),
       icon: FileTextIcon,
-      to: `/org/${orgSlug}/invoices/createSale`,
+      to: "/orgs/$orgSlug/invoices/createSale",
+      params,
       hoverBgColor: "hover:bg-green-50 dark:hover:bg-green-950/50",
       iconColor: "text-green-500",
       iconBgColor: "bg-green-100 dark:bg-green-950/50",
@@ -43,7 +47,8 @@ function Index() {
     {
       title: t("routes.invoice.createPurchase"),
       icon: FileTextIcon,
-      to: `/org/${orgSlug}/invoices/createPurchase`,
+      to: "/orgs/$orgSlug/invoices/createPurchase",
+      params,
       hoverBgColor: "hover:bg-rose-50 dark:hover:bg-rose-950/50",
       iconColor: "text-rose-500",
       iconBgColor: "bg-rose-100 dark:bg-rose-950/50",
@@ -55,7 +60,8 @@ function Index() {
     {
       title: t("routes.invoices"),
       icon: FileTextIcon,
-      to: `/org/${orgSlug}/invoices`,
+      to: "/orgs/$orgSlug/invoices",
+      params,
       hoverBgColor: "hover:bg-cyan-50 dark:hover:bg-cyan-950/50",
       iconColor: "text-cyan-500",
       iconBgColor: "bg-cyan-100 dark:bg-cyan-950/50",
@@ -63,7 +69,8 @@ function Index() {
     {
       title: t("routes.products"),
       icon: PackageIcon,
-      to: `/org/${orgSlug}/products`,
+      to: "/orgs/$orgSlug/products",
+      params,
       hoverBgColor: "hover:bg-blue-50 dark:hover:bg-blue-950/50",
       iconColor: "text-blue-500",
       iconBgColor: "bg-blue-100 dark:bg-blue-950/50",
@@ -71,7 +78,8 @@ function Index() {
     {
       title: t("routes.expenses"),
       icon: ShoppingCartIcon,
-      to: `/org/${orgSlug}/expenses`,
+      to: "/orgs/$orgSlug/expenses",
+      params,
       hoverBgColor: "hover:bg-orange-50 dark:hover:bg-orange-950/50",
       iconColor: "text-orange-500",
       iconBgColor: "bg-orange-100 dark:bg-orange-950/50",
@@ -79,7 +87,8 @@ function Index() {
     {
       title: t("routes.customers"),
       icon: UserIcon,
-      to: `/org/${orgSlug}/customers`,
+      to: "/orgs/$orgSlug/customers",
+      params,
       hoverBgColor: "hover:bg-indigo-50 dark:hover:bg-indigo-950/50",
       iconColor: "text-indigo-500",
       iconBgColor: "bg-indigo-100 dark:bg-indigo-950/50",
@@ -92,7 +101,8 @@ function Index() {
           {
             title: t("routes.transactions"),
             icon: BanknoteIcon,
-            to: `/org/${orgSlug}/transactions`,
+            to: "/orgs/$orgSlug/transactions",
+            params,
             hoverBgColor: "hover:bg-teal-50 dark:hover:bg-teal-950/50",
             iconColor: "text-teal-500",
             iconBgColor: "bg-teal-100 dark:bg-teal-950/50",
@@ -100,7 +110,8 @@ function Index() {
           {
             title: t("routes.users"),
             icon: UsersIcon,
-            to: `/org/${orgSlug}/users`,
+            to: "/orgs/$orgSlug/users",
+            params,
             hoverBgColor: "hover:bg-lime-50 dark:hover:bg-lime-950/50",
             iconColor: "text-lime-500",
             iconBgColor: "bg-lime-100 dark:bg-lime-950/50",

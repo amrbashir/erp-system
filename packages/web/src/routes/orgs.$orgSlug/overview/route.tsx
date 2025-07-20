@@ -18,8 +18,8 @@ import { formatMoney } from "@/utils/formatMoney";
 
 import { AddBalanceDialog } from "./-add-balance-dialog";
 
-export const Route = createFileRoute("/org/$orgSlug/overview")({
-  component: Overview,
+export const Route = createFileRoute("/orgs/$orgSlug/overview")({
+  component: RouteComponent,
   context: () => ({
     title: i18n.t("routes.overview"),
     icon: Building2Icon,
@@ -27,14 +27,14 @@ export const Route = createFileRoute("/org/$orgSlug/overview")({
   }),
 });
 
-function Overview() {
+function RouteComponent() {
   const { t } = useTranslation();
   const { slug: orgSlug } = useOrg();
 
   const { data: org } = useQuery({
-    queryKey: ["organizationOverview"],
+    queryKey: ["organizationOverview", orgSlug],
     queryFn: async () =>
-      await apiClient.getThrowing("/org/{orgSlug}", {
+      await apiClient.getThrowing("/orgs/{orgSlug}", {
         params: { path: { orgSlug } },
       }),
     select: (res) => res.data,
@@ -53,7 +53,7 @@ function Overview() {
         </Card>
         <Card>
           <CardHeader>
-            <CardDescription>{t("common.ui.balance")}</CardDescription>
+            <CardDescription>{t("common.form.balance")}</CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
               <span
                 className={

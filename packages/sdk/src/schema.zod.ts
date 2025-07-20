@@ -9,21 +9,11 @@ export const CreateOrgDto = z
   })
   .passthrough();
 
-export const AddBalanceDto = z.object({ amount: z.string() }).passthrough();
-
 export const OrganizationEntity = z
   .object({ id: z.string(), name: z.string(), slug: z.string(), balance: z.string().optional() })
   .passthrough();
 
-export const CreateUserDto = z
-  .object({
-    username: z.string().min(3),
-    password: z.string().min(8),
-    role: z.enum(["USER", "ADMIN"]).optional(),
-  })
-  .passthrough();
-
-export const DeleteUserDto = z.object({ username: z.string() }).passthrough();
+export const AddBalanceDto = z.object({ amount: z.string() }).passthrough();
 
 export const UserEntity = z
   .object({
@@ -33,6 +23,14 @@ export const UserEntity = z
     createdAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true }),
     deletedAt: z.string().datetime({ offset: true }).optional(),
+  })
+  .passthrough();
+
+export const CreateUserDto = z
+  .object({
+    username: z.string().min(3),
+    password: z.string().min(8),
+    role: z.enum(["USER", "ADMIN"]).optional(),
   })
   .passthrough();
 
@@ -49,8 +47,13 @@ export const LoginResponseDto = z
 
 export const RefreshTokenResponseDto = z.object({ accessToken: z.string() }).passthrough();
 
-export const CreateCustomerDto = z
-  .object({ name: z.string(), address: z.string().optional(), phone: z.string().optional() })
+export const CustomerDetails = z
+  .object({
+    totalPurchases: z.number(),
+    totalSales: z.number(),
+    owes: z.string(),
+    owed: z.string(),
+  })
   .passthrough();
 
 export const CustomerEntity = z
@@ -62,22 +65,16 @@ export const CustomerEntity = z
     createdAt: z.string().datetime({ offset: true }),
     updatedAt: z.string().datetime({ offset: true }),
     deletedAt: z.string().datetime({ offset: true }).optional(),
+    details: CustomerDetails.optional(),
   })
+  .passthrough();
+
+export const CreateCustomerDto = z
+  .object({ name: z.string(), address: z.string().optional(), phone: z.string().optional() })
   .passthrough();
 
 export const UpdateCustomerDto = z
   .object({ name: z.string(), address: z.string().optional(), phone: z.string().optional() })
-  .passthrough();
-
-export const UpdateProductDto = z
-  .object({
-    barcode: z.string(),
-    description: z.string(),
-    purchasePrice: z.string(),
-    sellingPrice: z.string(),
-    stockQuantity: z.number(),
-  })
-  .partial()
   .passthrough();
 
 export const ProductEntity = z
@@ -93,14 +90,59 @@ export const ProductEntity = z
   })
   .passthrough();
 
+export const UpdateProductDto = z
+  .object({
+    barcode: z.string(),
+    description: z.string(),
+    purchasePrice: z.string(),
+    sellingPrice: z.string(),
+    stockQuantity: z.number(),
+  })
+  .partial()
+  .passthrough();
+
 export const TransactionEntity = z
   .object({
     id: z.number(),
     type: z.enum(["INVOICE", "EXPENSE", "BALANCE_ADDITION"]),
     amount: z.string(),
     createdAt: z.string().datetime({ offset: true }),
-    username: z.string(),
+    cashierUsername: z.string(),
     customerName: z.string().optional(),
+  })
+  .passthrough();
+
+export const InvoiceItemEntity = z
+  .object({
+    barcode: z.string().optional(),
+    description: z.string(),
+    price: z.string(),
+    purchasePrice: z.string(),
+    sellingPrice: z.string(),
+    quantity: z.number(),
+    discountPercent: z.number(),
+    discountAmount: z.string(),
+    subtotal: z.string(),
+    total: z.string(),
+  })
+  .passthrough();
+
+export const InvoiceEntity = z
+  .object({
+    id: z.number(),
+    type: z.enum(["SALE", "PURCHASE"]),
+    subtotal: z.string(),
+    discountPercent: z.number(),
+    discountAmount: z.string(),
+    total: z.string(),
+    paid: z.string(),
+    remaining: z.string(),
+    createdAt: z.string().datetime({ offset: true }),
+    updatedAt: z.string().datetime({ offset: true }),
+    cashierName: z.string(),
+    customerName: z.string().optional(),
+    transactionId: z.number(),
+    items: z.array(InvoiceItemEntity),
   })
   .passthrough();
 
@@ -147,44 +189,6 @@ export const CreatePurchaseInvoiceDto = z
   })
   .passthrough();
 
-export const InvoiceItemEntity = z
-  .object({
-    barcode: z.string().optional(),
-    description: z.string(),
-    price: z.string(),
-    purchasePrice: z.string(),
-    sellingPrice: z.string(),
-    quantity: z.number(),
-    discountPercent: z.number(),
-    discountAmount: z.string(),
-    subtotal: z.string(),
-    total: z.string(),
-  })
-  .passthrough();
-
-export const InvoiceEntity = z
-  .object({
-    id: z.number(),
-    type: z.enum(["SALE", "PURCHASE"]),
-    subtotal: z.string(),
-    discountPercent: z.number(),
-    discountAmount: z.string(),
-    total: z.string(),
-    paid: z.string(),
-    remaining: z.string(),
-    createdAt: z.string().datetime({ offset: true }),
-    updatedAt: z.string().datetime({ offset: true }),
-    cashierName: z.string(),
-    customerName: z.string().optional(),
-    transactionId: z.number(),
-    items: z.array(InvoiceItemEntity),
-  })
-  .passthrough();
-
-export const CreateExpenseDto = z
-  .object({ description: z.string(), amount: z.string() })
-  .passthrough();
-
 export const ExpenseEntity = z
   .object({
     id: z.number(),
@@ -195,4 +199,8 @@ export const ExpenseEntity = z
     cashierName: z.string(),
     transactionId: z.number(),
   })
+  .passthrough();
+
+export const CreateExpenseDto = z
+  .object({ description: z.string(), amount: z.string() })
   .passthrough();

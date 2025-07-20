@@ -8,17 +8,17 @@ import { AppSideBar } from "@/components/sidebar";
 import i18n from "@/i18n";
 import { AppSidebarProvider } from "@/providers/sidebar";
 
-interface OrgSearch {
+interface RouteSearch {
   redirect?: string;
 }
 
-export const Route = createFileRoute("/org/$orgSlug")({
-  component: Org,
+export const Route = createFileRoute("/orgs/$orgSlug")({
+  component: RouteComponent,
   context: () => ({
     title: i18n.t("routes.home"),
     icon: HomeIcon,
   }),
-  validateSearch: ({ search }) => search as OrgSearch,
+  validateSearch: ({ search }) => search as RouteSearch,
   beforeLoad: async ({ context, location, search, params }) => {
     // redirect to home if not authenticated
     if (
@@ -39,7 +39,7 @@ export const Route = createFileRoute("/org/$orgSlug")({
   },
   loader: async ({ params }) => {
     if ("orgSlug" in params && typeof params.orgSlug === "string") {
-      const { data, response } = await apiClient.get("/org/{orgSlug}", {
+      const { data, response } = await apiClient.get("/orgs/{orgSlug}", {
         params: { path: { orgSlug: params.orgSlug } },
       });
       if (!response.ok) throw new Error(i18n.t(`errors.statusCode.${response.status}` as any));
@@ -49,7 +49,7 @@ export const Route = createFileRoute("/org/$orgSlug")({
   },
 });
 
-function Org() {
+function RouteComponent() {
   return (
     <AppSidebarProvider>
       <AppSideBar />

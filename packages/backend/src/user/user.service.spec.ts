@@ -105,6 +105,10 @@ describe("UserService", async () => {
   it("should delete a user", async () => {
     const orgData = generateRandomOrgData();
     const org = await orgService.create(orgData);
+    // Get admin user
+    const admin = await prisma.user.findFirstOrThrow({
+      where: { organizationId: org.id, username: "admin" },
+    });
 
     const user1 = await service.createUser(
       {
@@ -129,18 +133,18 @@ describe("UserService", async () => {
       org.slug,
     );
 
-    await service.deleteUser({ username: user1.username }, org.slug);
+    await service.deleteUser(user1.id, org.slug);
     let users = await service.getAllUsers(org.slug, { where: { deletedAt: null } });
     expect(users).toHaveLength(3);
 
-    await service.deleteUser({ username: orgData.username }, org.slug);
+    await service.deleteUser(admin.id, org.slug);
     users = await service.getAllUsers(org.slug, { where: { deletedAt: null } });
     expect(users).toHaveLength(2);
 
-    const deleteAdminResult = service.deleteUser({ username: user2.username }, org.slug);
+    const deleteAdminResult = service.deleteUser(user2.id, org.slug);
     await expect(deleteAdminResult).rejects.toThrow();
 
-    await service.deleteUser({ username: user3.username }, org.slug);
+    await service.deleteUser(user3.id, org.slug);
     users = await service.getAllUsers(org.slug, { where: { deletedAt: null } });
     expect(users).toHaveLength(1);
   });

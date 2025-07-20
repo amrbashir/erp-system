@@ -1,6 +1,5 @@
-import { CreateExpenseDto } from "@erp-system/sdk/zod";
+import { AddBalanceDto } from "@erp-system/sdk/zod";
 import { useForm } from "@tanstack/react-form";
-import { useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -27,22 +26,20 @@ import { useOrg } from "@/hooks/use-org";
 
 import { FormErrors, FormFieldError } from "../../../components/form-errors";
 
-export function AddExpenseDialog() {
+export function AddBalanceDialog({ shortLabel = false }: { shortLabel?: boolean }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const { slug: orgSlug } = useOrg();
-  const client = useQueryClient();
 
   const form = useForm({
     defaultValues: {
-      description: "",
       amount: "0",
-    } as z.infer<ReturnType<(typeof CreateExpenseDto)["strict"]>>,
+    } as z.infer<ReturnType<(typeof AddBalanceDto)["strict"]>>,
     validators: {
-      onSubmit: CreateExpenseDto,
+      onSubmit: AddBalanceDto,
     },
     onSubmit: async ({ value, formApi }) => {
-      const { error } = await apiClient.post("/org/{orgSlug}/expense/create", {
+      const { error } = await apiClient.post("/orgs/{orgSlug}/addBalance", {
         params: { path: { orgSlug: orgSlug } },
         body: value,
       });
@@ -52,21 +49,19 @@ export function AddExpenseDialog() {
         return;
       }
 
-      client.invalidateQueries({ queryKey: ["expenses"] });
-
       formApi.reset();
       setOpen(false);
     },
   });
 
-  const actionLabel = t("expense.add");
   const actionLabelShort = t("common.actions.add");
-  const actionDescription = t("expense.addDescription");
+  const actionLabel = shortLabel ? actionLabelShort : t("org.addBalance");
+  const actionDescription = t("org.addBalanceDescription");
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button variant="outline">
           <PlusIcon />
           {actionLabel}
         </Button>
@@ -84,7 +79,6 @@ export function AddExpenseDialog() {
             form.handleSubmit();
           }}
         >
-          <form.Field name="description" children={(field) => <InputField field={field} />} />
           <form.Field
             name="amount"
             children={(field) => <InputField type="number" isString min={0} field={field} />}

@@ -7,15 +7,15 @@ import { QuickActionLinkCard } from "@/components/quick-action-link-card";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 
-export const Route = createFileRoute("/org/$orgSlug/invoices/")({
-  component: Index,
+export const Route = createFileRoute("/orgs/$orgSlug/invoices/")({
+  component: RouteComponent,
   context: () => ({
     title: i18n.t("routes.invoices"),
     icon: FileTextIcon,
   }),
 });
 
-function Index() {
+function RouteComponent() {
   const { slug: orgSlug, name: orgName } = useOrg();
   const { t } = useTranslation();
 
@@ -23,7 +23,7 @@ function Index() {
     {
       title: t("routes.invoice.createSale"),
       icon: FileTextIcon,
-      to: `/org/${orgSlug}/invoices/createSale`,
+      to: "/orgs/$orgSlug/invoices/createSale",
       hoverBgColor: "hover:bg-green-50 dark:hover:bg-green-950/50",
       iconColor: "text-green-500",
       iconBgColor: "bg-green-100 dark:bg-green-950/50",
@@ -32,7 +32,7 @@ function Index() {
     {
       title: t("routes.invoice.createPurchase"),
       icon: FileTextIcon,
-      to: `/org/${orgSlug}/invoices/createPurchase`,
+      to: "/orgs/$orgSlug/invoices/createPurchase",
       hoverBgColor: "hover:bg-rose-50 dark:hover:bg-rose-950/50",
       iconColor: "text-rose-500",
       iconBgColor: "bg-rose-100 dark:bg-rose-950/50",
@@ -41,7 +41,7 @@ function Index() {
     {
       title: t("routes.invoice.sale"),
       icon: FileTextIcon,
-      to: `/org/${orgSlug}/invoices/sales`,
+      to: "/orgs/$orgSlug/invoices/sales",
       hoverBgColor: "hover:bg-cyan-50 dark:hover:bg-lime-950/50",
       iconColor: "text-lime-500",
       iconBgColor: "bg-lime-100 dark:bg-lime-950/50",
@@ -49,7 +49,7 @@ function Index() {
     {
       title: t("routes.invoice.purchase"),
       icon: FileTextIcon,
-      to: `/org/${orgSlug}/invoices/purchases`,
+      to: "/orgs/$orgSlug/invoices/purchases",
       hoverBgColor: "hover:bg-amber-50 dark:hover:bg-amber-950/50",
       iconColor: "text-amber-500",
       iconBgColor: "bg-amber-100 dark:bg-amber-950/50",

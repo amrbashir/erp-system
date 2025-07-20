@@ -50,27 +50,31 @@ export function AppSideBar() {
   const { user } = useAuth();
 
   const routeGroups: (RouteGroup | undefined)[] = [
-    { routes: ["/org/$orgSlug/"] },
+    { routes: ["/orgs/$orgSlug/"] },
     {
       routes: [
         {
-          route: "/org/$orgSlug/invoices/",
+          route: "/orgs/$orgSlug/invoices/",
           subRoutes: [
-            "/org/$orgSlug/invoices/createSale",
-            "/org/$orgSlug/invoices/createPurchase",
-            "/org/$orgSlug/invoices/sales",
-            "/org/$orgSlug/invoices/purchases",
+            "/orgs/$orgSlug/invoices/createSale",
+            "/orgs/$orgSlug/invoices/createPurchase",
+            "/orgs/$orgSlug/invoices/sales",
+            "/orgs/$orgSlug/invoices/purchases",
           ],
         },
-        "/org/$orgSlug/expenses",
-        "/org/$orgSlug/products",
-        "/org/$orgSlug/customers",
+        "/orgs/$orgSlug/expenses/",
+        "/orgs/$orgSlug/products/",
+        "/orgs/$orgSlug/customers/",
       ],
     },
     user?.role === "ADMIN"
       ? {
           label: t("adminSection"),
-          routes: ["/org/$orgSlug/overview", "/org/$orgSlug/transactions", "/org/$orgSlug/users"],
+          routes: [
+            "/orgs/$orgSlug/overview",
+            "/orgs/$orgSlug/transactions/",
+            "/orgs/$orgSlug/users/",
+          ],
         }
       : undefined,
   ];

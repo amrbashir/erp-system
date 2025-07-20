@@ -10,8 +10,17 @@ import {
   Res,
   UseGuards,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiCookieAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import { type Response } from "express";
+import {
+  ApiBearerAuth,
+  ApiCookieAuth,
+  ApiHeader,
+  ApiOkResponse,
+  ApiParam,
+  ApiTags,
+} from "@nestjs/swagger";
+import Express from "express";
+
+import type { Response } from "express";
 
 import type { JwtPayload } from "./auth.dto";
 import { LoginResponseDto, LoginUserDto, RefreshTokenResponseDto } from "./auth.dto";
@@ -20,7 +29,7 @@ import { JwtAuthGuard } from "./auth.strategy.jwt";
 import { JwtRefreshAuthGuard } from "./auth.strategy.jwt-refresh";
 
 @ApiTags("auth")
-@Controller("/org/:orgSlug/auth")
+@Controller("/orgs/:orgSlug/auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -47,17 +56,23 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiHeader({ name: "Authorization" })
+  // we are not accessing orgSlug in the method, but it's required for the route
+  // so we declare it here for type generation to work correctly
+  @ApiParam({ name: "orgSlug", required: true, type: String })
   @Get("logout")
-  async logout(@Req() req: any): Promise<void> {
+  async logout(@Req() req: Express.Request): Promise<void> {
     const user = req["user"] as JwtPayload;
     this.authService.logout(user.sub, user.organizationId);
   }
 
   @ApiCookieAuth()
+  // we are not accessing orgSlug in the method, but it's required for the route
+  // so we declare it here for type generation to work correctly
+  @ApiParam({ name: "orgSlug", required: true, type: String })
   @UseGuards(JwtRefreshAuthGuard)
   @ApiOkResponse({ type: RefreshTokenResponseDto })
   @Get("refresh")
-  async refresh(@Req() req: any): Promise<RefreshTokenResponseDto> {
+  async refresh(@Req() req: Express.Request): Promise<RefreshTokenResponseDto> {
     const user = req["user"] as JwtPayload;
     return await this.authService.refreshAccessToken(user.sub, user.organizationId);
   }

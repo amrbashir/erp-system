@@ -1,7 +1,7 @@
-import { ProductEntity, UpdateProductDto } from "@erp-system/sdk/zod";
+import { CreateExpenseDto } from "@erp-system/sdk/zod";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { EditIcon, Loader2Icon } from "lucide-react";
+import { Loader2Icon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
@@ -27,17 +27,7 @@ import { useOrg } from "@/hooks/use-org";
 
 import { FormErrors, FormFieldError } from "../../../components/form-errors";
 
-type Product = z.infer<typeof ProductEntity>;
-
-export function ProductDialog({
-  action,
-  product,
-  iconOnly = false,
-}: {
-  action: "edit";
-  product: Product;
-  iconOnly?: boolean;
-}) {
+export function AddExpenseDialog() {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const { slug: orgSlug } = useOrg();
@@ -45,18 +35,15 @@ export function ProductDialog({
 
   const form = useForm({
     defaultValues: {
-      barcode: product?.barcode || "",
-      description: product?.description || "",
-      purchasePrice: product?.purchasePrice || "0",
-      sellingPrice: product?.sellingPrice || "0",
-      stockQuantity: product?.stockQuantity || 0,
-    } as z.infer<ReturnType<(typeof UpdateProductDto)["strict"]>>,
+      description: "",
+      amount: "0",
+    } as z.infer<ReturnType<(typeof CreateExpenseDto)["strict"]>>,
     validators: {
-      onSubmit: UpdateProductDto,
+      onSubmit: CreateExpenseDto,
     },
     onSubmit: async ({ value, formApi }) => {
-      const { error } = await apiClient.post("/org/{orgSlug}/product/update/{id}", {
-        params: { path: { orgSlug: orgSlug, id: product.id } },
+      const { error } = await apiClient.post("/orgs/{orgSlug}/expenses/create", {
+        params: { path: { orgSlug: orgSlug } },
         body: value,
       });
 
@@ -65,31 +52,25 @@ export function ProductDialog({
         return;
       }
 
-      client.invalidateQueries({ queryKey: ["products"] });
+      client.invalidateQueries({ queryKey: ["expenses", orgSlug] });
 
       formApi.reset();
       setOpen(false);
     },
   });
 
-  const actionLabel = t("product.edit");
-  const actionLabelShort = t("common.actions.edit");
-  const actionDescription = t("product.editDescription");
-
-  const Trigger = iconOnly ? (
-    <Button variant="ghost" size="icon">
-      <EditIcon />
-    </Button>
-  ) : (
-    <Button>
-      <EditIcon />
-      {actionLabel}
-    </Button>
-  );
+  const actionLabel = t("expense.add");
+  const actionLabelShort = t("common.actions.add");
+  const actionDescription = t("expense.addDescription");
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{Trigger}</DialogTrigger>
+      <DialogTrigger asChild>
+        <Button>
+          <PlusIcon />
+          {actionLabel}
+        </Button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{actionLabel}</DialogTitle>
@@ -103,18 +84,9 @@ export function ProductDialog({
             form.handleSubmit();
           }}
         >
-          <form.Field name="barcode" children={(field) => <InputField field={field} />} />
           <form.Field name="description" children={(field) => <InputField field={field} />} />
           <form.Field
-            name="stockQuantity"
-            children={(field) => <InputField type="number" min={0} field={field} />}
-          />
-          <form.Field
-            name="purchasePrice"
-            children={(field) => <InputField type="number" isString min={0} field={field} />}
-          />
-          <form.Field
-            name="sellingPrice"
+            name="amount"
             children={(field) => <InputField type="number" isString min={0} field={field} />}
           />
 
@@ -153,7 +125,7 @@ function InputField({
 
   return (
     <div className="flex flex-col gap-3">
-      <Label htmlFor={field.name}>{t(`product.form.${field.name}` as any)}</Label>
+      <Label htmlFor={field.name}>{t(`expense.form.${field.name}` as any)}</Label>
       {props.type === "number" ? (
         <InputNumpad
           id={field.name}

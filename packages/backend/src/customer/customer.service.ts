@@ -3,7 +3,15 @@ import { ConflictException, Injectable, NotFoundException } from "@nestjs/common
 import type { PaginationDto } from "../pagination.dto";
 import type { Customer } from "../prisma/generated/client";
 import type { CreateCustomerDto, UpdateCustomerDto } from "./customer.dto";
+import { Prisma } from "../prisma/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
+
+export type CustomerWithDetails = Customer & {
+  details?: {
+    owes: Prisma.Decimal;
+    owed: Prisma.Decimal;
+  };
+};
 
 @Injectable()
 export class CustomerService {
@@ -34,6 +42,39 @@ export class CustomerService {
 
       throw error; // Re-throw other errors
     }
+  }
+
+  async findCustomerById(id: number, orgSlug: string): Promise<CustomerWithDetails | null> {
+    return await this.prisma.$transaction(async (prisma) => {
+      const customer = await prisma.customer.findUnique({
+        where: { id, organization: { slug: orgSlug } },
+      });
+
+      if (!customer) {
+        throw new NotFoundException("Customer with this ID does not exist in the organization");
+      }
+
+      const details: CustomerWithDetails["details"] = {
+        owes: new Prisma.Decimal(0),
+        owed: new Prisma.Decimal(0),
+      };
+
+      if (customer) {
+        const purchasesAgg = await prisma.invoice.groupBy({
+          where: { customerId: id, organization: { slug: orgSlug } },
+          by: ["type"],
+          _sum: { remaining: true },
+        });
+
+        const sales = purchasesAgg.find((p) => p.type === "SALE");
+        if (sales) details.owes = sales._sum.remaining ?? new Prisma.Decimal(0);
+
+        const purchases = purchasesAgg.find((p) => p.type === "PURCHASE");
+        if (purchases) details.owed = purchases._sum.remaining ?? new Prisma.Decimal(0);
+      }
+
+      return { ...customer, details };
+    });
   }
 
   async updateCustomer(

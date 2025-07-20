@@ -1,7 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
 import { Decimal } from "decimal.js";
-import { BanknoteIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   Table,
@@ -12,36 +9,20 @@ import {
   TableRow,
 } from "@/shadcn/components/ui/table";
 
-import { apiClient } from "@/api-client";
+import type { TransactionEntity } from "@erp-system/sdk/zod";
+import type z from "zod";
+
 import { EmptyTable } from "@/components/empty-table";
-import { useOrg } from "@/hooks/use-org";
-import i18n from "@/i18n";
 import { formatDate } from "@/utils/formatDate";
 import { formatMoney } from "@/utils/formatMoney";
 
-export const Route = createFileRoute("/org/$orgSlug/transactions")({
-  component: Transactions,
-  context: () => ({
-    title: i18n.t("routes.transactions"),
-    icon: BanknoteIcon,
-    roleRequirement: "ADMIN",
-  }),
-});
+type Transaction = z.infer<typeof TransactionEntity>;
 
-function Transactions() {
-  const { slug: orgSlug } = useOrg();
-
+export function TransactionsTable({ transactions }: { transactions: Transaction[] | undefined }) {
   const { t } = useTranslation();
 
-  const { data: transactions } = useQuery({
-    queryKey: ["transactions"],
-    queryFn: async () =>
-      apiClient.getThrowing("/org/{orgSlug}/transaction/getAll", { params: { path: { orgSlug } } }),
-    select: (res) => res.data,
-  });
-
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <>
       {transactions?.length && transactions.length > 0 ? (
         <div className="rounded border">
           <Table>
@@ -49,7 +30,7 @@ function Transactions() {
               <TableRow className="*:font-bold">
                 <TableHead>{t("transactionNumber")}</TableHead>
                 <TableHead>{t("transaction.type")}</TableHead>
-                <TableHead>{t("common.form.moneyAmount")}</TableHead>
+                <TableHead className="w-full">{t("common.form.moneyAmount")}</TableHead>
                 <TableHead>{t("cashierName")}</TableHead>
                 <TableHead>{t("customer.name")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
@@ -69,7 +50,7 @@ function Transactions() {
                   >
                     {formatMoney(transaction.amount, { signDisplay: "always" })}
                   </TableCell>
-                  <TableCell>{transaction.username}</TableCell>
+                  <TableCell>{transaction.cashierUsername}</TableCell>
                   <TableCell>{transaction.customerName}</TableCell>
                   <TableCell>{formatDate(transaction.createdAt)}</TableCell>
                 </TableRow>
@@ -80,6 +61,6 @@ function Transactions() {
       ) : (
         <EmptyTable />
       )}
-    </div>
+    </>
   );
 }

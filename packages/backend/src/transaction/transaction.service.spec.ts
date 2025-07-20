@@ -25,29 +25,22 @@ describe("TransactionService", () => {
 
   afterAll(dropDatabase);
 
-  function createTransaction(amount: number, orgSlug: string, cashierId: string) {
+  function createTransaction(
+    amount: number,
+    orgSlug: string,
+    cashierId: string,
+    customerId?: number,
+  ) {
     return prismaService.transaction.create({
       data: {
         amount,
-        type: "EXPENSE",
+        type: "INVOICE",
         cashier: { connect: { id: cashierId } },
         organization: { connect: { slug: orgSlug } },
+        ...(customerId && { customer: { connect: { id: customerId } } }),
       },
     });
   }
-
-  it("should create a transaction ", async () => {
-    const orgData = generateRandomOrgData();
-    const org = await orgService.create(orgData);
-    const adminUser = await userService.findByUsernameInOrg(orgData.username, org.slug);
-
-    const transaction = await createTransaction(100, org.slug, adminUser!.id);
-
-    expect(transaction).toBeDefined();
-    expect(transaction.amount.toNumber()).toBe(100);
-    expect(transaction.cashierId).toBe(adminUser!.id);
-    expect(transaction.organizationId).toBe(org.id);
-  });
 
   it("should return transactions with customer and cashier relations", async () => {
     const orgData = generateRandomOrgData();
@@ -65,5 +58,45 @@ describe("TransactionService", () => {
     expect(result[1].amount.toNumber()).toBe(-200);
     expect(result[0].cashier.id).toBe(adminUser!.id);
     expect(result[1].cashier.id).toBe(adminUser!.id);
+  });
+
+  it("should return transactions by customer ID", async () => {
+    const orgData = generateRandomOrgData();
+    const org = await orgService.create(orgData);
+    const adminUser = await userService.findByUsernameInOrg(orgData.username, org.slug);
+
+    const customer = await prismaService.customer.create({
+      data: {
+        name: "Test Customer",
+        organization: { connect: { slug: org.slug } },
+      },
+    });
+
+    await createTransaction(100, org.slug, adminUser!.id);
+    await createTransaction(-200, org.slug, adminUser!.id);
+
+    const transactions = await service.getTransactionsByCustomerId(org.slug, customer.id, {
+      orderBy: { createdAt: "asc" },
+    });
+
+    expect(transactions).toBeDefined();
+    expect(transactions.length).toBe(0); // No transactions linked to the customer yet
+
+    // Create a transaction linked to the customer
+    await createTransaction(150, org.slug, adminUser!.id, customer.id);
+    await createTransaction(-50, org.slug, adminUser!.id, customer.id);
+
+    const customerTransactions = await service.getTransactionsByCustomerId(org.slug, customer.id, {
+      orderBy: { createdAt: "asc" },
+    });
+
+    expect(customerTransactions).toBeDefined();
+    expect(customerTransactions.length).toBe(2);
+    expect(customerTransactions[0].amount.toNumber()).toBe(150);
+    expect(customerTransactions[1].amount.toNumber()).toBe(-50);
+    expect(customerTransactions[0].cashier.id).toBe(adminUser!.id);
+    expect(customerTransactions[1].cashier.id).toBe(adminUser!.id);
+    expect(customerTransactions[0].customer?.id).toBe(customer.id);
+    expect(customerTransactions[1].customer?.id).toBe(customer.id);
   });
 });

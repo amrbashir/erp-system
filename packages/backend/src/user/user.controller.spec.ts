@@ -43,12 +43,12 @@ describe("UserController", () => {
     expect(users).toBeDefined();
     expect(users).toHaveLength(2);
 
-    expect(users[0]).toHaveProperty("username", orgData.username);
+    expect(users[0]).toHaveProperty("username", createUserDto.username);
     expect(users[0]).not.toHaveProperty("password");
     expect(users[0]).not.toHaveProperty("refreshTokens");
 
-    expect(users[1]).toHaveProperty("username", createUserDto.username);
     expect(users[1]).not.toHaveProperty("password");
+    expect(users[1]).toHaveProperty("username", orgData.username);
     expect(users[1]).not.toHaveProperty("refreshTokens");
   });
 });

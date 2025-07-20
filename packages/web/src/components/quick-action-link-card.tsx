@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { Card, CardContent } from "@/shadcn/components/ui/card";
 import { cn } from "@/shadcn/lib/utils";
 
+import type { LinkComponentProps } from "@tanstack/react-router";
+
 export type QuickActionLinkCardProps = {
   title: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -9,7 +11,7 @@ export type QuickActionLinkCardProps = {
   iconColor: string;
   iconBgColor: string;
   size?: "sm" | "default";
-} & React.ComponentProps<typeof Link>;
+} & LinkComponentProps;
 
 export function QuickActionLinkCard({
   title,
@@ -18,10 +20,12 @@ export function QuickActionLinkCard({
   iconColor,
   iconBgColor,
   size = "default",
+  to,
+  params,
   ...props
 }: QuickActionLinkCardProps) {
   return (
-    <Link {...props}>
+    <Link to={to} params={params} {...props}>
       <Card
         className={cn(
           "hover:shadow-md transition-shadow cursor-pointer md:items-center justify-center",

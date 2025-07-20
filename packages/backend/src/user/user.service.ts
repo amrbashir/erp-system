@@ -12,7 +12,6 @@ import type { UserOrderByWithRelationInput, UserWhereInput } from "../prisma/gen
 import type { CreateUserDto } from "./user.dto";
 import { UserRole } from "../prisma/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
-import { DeleteUserDto } from "./user.dto";
 
 @Injectable()
 export class UserService {
@@ -46,42 +45,39 @@ export class UserService {
     }
   }
 
-  async deleteUser(deleteUserDto: DeleteUserDto, orgSlug: string): Promise<void> {
-    await this.prisma.$transaction(async (prisma) => {
-      const org = await prisma.organization.findUnique({
-        where: { slug: orgSlug },
-        include: {
-          users: {
-            where: {
-              deletedAt: null, // Ensure we only consider non-deleted users
-              role: { equals: UserRole.ADMIN },
+  async deleteUser(id: string, orgSlug: string): Promise<void> {
+    try {
+      await this.prisma.$transaction(async (prisma) => {
+        const org = await prisma.organization.findUnique({
+          where: { slug: orgSlug },
+          include: {
+            users: {
+              where: {
+                deletedAt: null, // Ensure we only consider non-deleted users
+                role: { equals: UserRole.ADMIN },
+              },
             },
           },
-        },
+        });
+
+        if (!org) throw new NotFoundException("Organization with this slug does not exist");
+
+        if (org.users.length === 1 && id === org.users[0].id) {
+          throw new ForbiddenException("Cannot delete the last admin user in the organization");
+        }
+
+        await prisma.user.update({
+          data: { deletedAt: new Date() },
+          where: { id, organizationId: org.id },
+        });
       });
-
-      if (!org) throw new NotFoundException("Organization with this slug does not exist");
-
-      if (org.users.length === 1 && deleteUserDto.username === org.users[0].username) {
-        throw new ForbiddenException("Cannot delete the last admin user in the organization");
+    } catch (error: any) {
+      if (error.code === "P2025") {
+        throw new NotFoundException("User with this ID does not exist in the organization");
       }
 
-      const user = await prisma.user.findFirst({
-        where: {
-          username: deleteUserDto.username,
-          organizationId: org.id,
-        },
-      });
-
-      if (!user) {
-        throw new NotFoundException("User with this username does not exist in the organization");
-      }
-
-      await prisma.user.update({
-        data: { deletedAt: new Date() },
-        where: { id: user.id, organizationId: org.id },
-      });
-    });
+      throw error; // Re-throw other errors
+    }
   }
 
   async findByIdinOrg(userId: string, organizationId?: string): Promise<User | null> {
@@ -123,7 +119,7 @@ export class UserService {
     orgSlug: string,
     options?: {
       pagination?: PaginationDto;
-      where?: UserWhereInput;
+      where?: Omit<UserWhereInput, "organization" | "organizationId">;
       orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[] | undefined;
     },
   ): Promise<User[]> {
@@ -135,7 +131,7 @@ export class UserService {
           ...options?.where,
           organization: { slug: orgSlug },
         },
-        orderBy: options?.orderBy,
+        orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
     } catch (error: any) {
       if (error.code === "P2025") {

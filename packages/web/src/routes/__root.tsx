@@ -21,16 +21,13 @@ interface RouterContext {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  component: Root,
+  component: RouteComponent,
   errorComponent: ErrorComponent,
   notFoundComponent: NotFound404,
   head: (c) => {
     const currentMatch = c.matches[c.matches.length - 1];
     const routeTitle = currentMatch.context.title ? currentMatch.context.title : "";
-    const paramOrgSlug = "orgSlug" in c.params && c.params.orgSlug ? c.params.orgSlug : "";
-    const searchParamsOrgSlug =
-      "orgSlug" in c.match.search && c.match.search.orgSlug ? c.match.search.orgSlug : "";
-    const orgSlug = paramOrgSlug || searchParamsOrgSlug;
+    const orgSlug = "orgSlug" in c.params && c.params.orgSlug ? c.params.orgSlug : "";
     const title = [routeTitle, orgSlug, "erp-system"].filter(Boolean).join(" | ");
 
     return {
@@ -72,7 +69,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Root() {
+function RouteComponent() {
   return (
     <Layout>
       <Outlet />

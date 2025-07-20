@@ -77,7 +77,7 @@ export function InvoiceFooter<TInvoice extends Invoice>({
   const FooterCard = (
     <Card className={cn("md:w-fit md:ms-auto gap-2 p-2", isMobile && "border-none")} {...props}>
       <CardContent className="grid grid-cols-[auto_1fr_auto] items-center gap-2 p-2">
-        <Label className="font-semibold">{t("common.ui.subtotal")}:</Label>
+        <Label className="font-semibold">{t("common.form.subtotal")}:</Label>
         <span></span>
         <span className="text-end font-semibold">{formatMoney(subtotal)}</span>
 
@@ -85,7 +85,7 @@ export function InvoiceFooter<TInvoice extends Invoice>({
           name="discountPercent"
           children={(field) => (
             <>
-              <Label htmlFor={field.name}>{t("common.ui.discountPercent")}:</Label>
+              <Label htmlFor={field.name}>{t("common.form.discountPercent")}:</Label>
               <InputNumpad
                 name={field.name}
                 className="w-20"
@@ -103,7 +103,7 @@ export function InvoiceFooter<TInvoice extends Invoice>({
           name="discountAmount"
           children={(field) => (
             <>
-              <Label htmlFor={field.name}>{t("common.ui.discountAmount")}:</Label>
+              <Label htmlFor={field.name}>{t("common.form.discountAmount")}:</Label>
               <InputNumpad
                 name={field.name}
                 className="w-20"
@@ -119,7 +119,7 @@ export function InvoiceFooter<TInvoice extends Invoice>({
 
         <Separator className="col-span-3 my-1" />
 
-        <Label className="font-bold">{t("common.ui.total")}:</Label>
+        <Label className="font-bold">{t("common.form.total")}:</Label>
         <span></span>
         <span className="text-end font-bold">{formatMoney(totalPrice)}</span>
 
@@ -127,7 +127,7 @@ export function InvoiceFooter<TInvoice extends Invoice>({
           name="paid"
           children={(field) => (
             <>
-              <Label htmlFor={field.name}>{t("common.ui.paid")}:</Label>
+              <Label htmlFor={field.name}>{t("common.form.paid")}:</Label>
               <InputNumpad
                 name={field.name}
                 className="w-20"
@@ -150,7 +150,7 @@ export function InvoiceFooter<TInvoice extends Invoice>({
           {formatMoney(paid || 0)}
         </span>
 
-        <Label>{t("common.ui.remaining")}:</Label>
+        <Label>{t("common.form.remaining")}:</Label>
         <span></span>
         <span
           className={cn(

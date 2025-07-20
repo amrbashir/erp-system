@@ -29,7 +29,16 @@
       "moneyAmount": "Amount",
       "price": "Price",
       "role": "Role",
-      "barcode": "Barcode"
+      "barcode": "Barcode",
+      "balance": "Balance",
+      "total": "Total",
+      "subtotal": "Subtotal",
+      "discountPercent": "Discount %",
+      "discountAmount": "Discount Amount",
+      "paid": "Paid",
+      "remaining": "Remaining",
+      "owes": "Owes",
+      "owed": "Owed"
     },
     "ui": {
       "loading": "Loading",
@@ -39,14 +48,7 @@
       "number": "No.",
       "or": "or",
       "row": "Row",
-      "noMatches": "No matching item found",
-      "balance": "Balance",
-      "total": "Total",
-      "subtotal": "Subtotal",
-      "discountPercent": "Discount %",
-      "discountAmount": "Discount Amount",
-      "paid": "Paid",
-      "remaining": "Remaining"
+      "noMatches": "No matching item found"
     },
     "pricing": {
       "purchase": "Purchase $t(common.form.price)",
@@ -87,7 +89,8 @@
       "createSale": "$t(common.actions.create) Sale Invoice",
       "createPurchase": "$t(common.actions.create) Purchase Invoice"
     },
-    "overview": "Overview"
+    "overview": "Overview",
+    "customerDetails": "Customer Details"
   },
 
   "auth": {

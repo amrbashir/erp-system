@@ -21,7 +21,7 @@ export class TransactionService {
     orgSlug: string,
     options?: {
       pagination?: PaginationDto;
-      where?: TransactionWhereInput;
+      where?: Omit<TransactionWhereInput, "organization" | "organizationId">;
       orderBy?:
         | TransactionOrderByWithRelationInput
         | TransactionOrderByWithRelationInput[]
@@ -49,5 +49,33 @@ export class TransactionService {
 
       throw error; // Re-throw other errors
     }
+  }
+
+  async getTransactionsByCustomerId(
+    orgSlug: string,
+    customerId: number,
+    options?: {
+      pagination?: PaginationDto;
+      where?: Omit<TransactionWhereInput, "organization" | "organizationId" | "customerId">;
+      orderBy?:
+        | TransactionOrderByWithRelationInput
+        | TransactionOrderByWithRelationInput[]
+        | undefined;
+    },
+  ): Promise<TransactionWithRelations[]> {
+    return await this.prisma.transaction.findMany({
+      where: {
+        ...options?.where,
+        customerId,
+        organization: { slug: orgSlug },
+      },
+      skip: options?.pagination?.skip,
+      take: options?.pagination?.take,
+      include: {
+        customer: true,
+        cashier: true,
+      },
+      orderBy: options?.orderBy ?? { createdAt: "desc" },
+    });
   }
 }

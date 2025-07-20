@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/org/create": {
+    "/orgs/create": {
         parameters: {
             query?: never;
             header?: never;
@@ -20,7 +20,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/org/{orgSlug}/addBalance": {
+    "/orgs/{orgSlug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["OrgController$1_getBySlug"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{orgSlug}/addBalance": {
         parameters: {
             query?: never;
             header?: never;
@@ -36,55 +52,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/org/{orgSlug}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["OrgController$1_getOrg"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/org/{orgSlug}/user/create": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["UserController$1_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/org/{orgSlug}/user/delete": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete: operations["UserController$1_delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/org/{orgSlug}/user/getAll": {
+    "/orgs/{orgSlug}/users": {
         parameters: {
             query?: never;
             header?: never;
@@ -100,7 +68,39 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/org/{orgSlug}/auth/login": {
+    "/orgs/{orgSlug}/users/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["UserController$1_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{orgSlug}/users/{id}/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["UserController$1_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{orgSlug}/auth/login": {
         parameters: {
             query?: never;
             header?: never;
@@ -116,7 +116,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/org/{orgSlug}/auth/logout": {
+    "/orgs/{orgSlug}/auth/logout": {
         parameters: {
             query?: never;
             header?: never;
@@ -132,7 +132,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/org/{orgSlug}/auth/refresh": {
+    "/orgs/{orgSlug}/auth/refresh": {
         parameters: {
             query?: never;
             header?: never;
@@ -148,39 +148,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/org/{orgSlug}/customer/create": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["CustomerController$1_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/org/{orgSlug}/customer/update/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["CustomerController$1_update"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/org/{orgSlug}/customer/getAll": {
+    "/orgs/{orgSlug}/customers": {
         parameters: {
             query?: never;
             header?: never;
@@ -196,7 +164,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/org/{orgSlug}/product/update/{id}": {
+    "/orgs/{orgSlug}/customers/create": {
         parameters: {
             query?: never;
             header?: never;
@@ -205,14 +173,46 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["ProductController$1_update"];
+        post: operations["CustomerController$1_create"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/org/{orgSlug}/product/getAll": {
+    "/orgs/{orgSlug}/customers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["CustomerController$1_getById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{orgSlug}/customers/{id}/update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CustomerController$1_update"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{orgSlug}/products": {
         parameters: {
             query?: never;
             header?: never;
@@ -228,7 +228,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/org/{orgSlug}/transaction/getAll": {
+    "/orgs/{orgSlug}/products/{id}/update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ProductController$1_update"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{orgSlug}/transactions": {
         parameters: {
             query?: never;
             header?: never;
@@ -244,39 +260,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/org/{orgSlug}/invoice/createSale": {
+    "/orgs/{orgSlug}/transactions/customer/{customerId}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        get: operations["TransactionController$1_getByCustomerId"];
         put?: never;
-        post: operations["InvoiceController$1_createSale"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/org/{orgSlug}/invoice/createPurchase": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["InvoiceController$1_createPurchase"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/org/{orgSlug}/invoice/getAll": {
+    "/orgs/{orgSlug}/invoices": {
         parameters: {
             query?: never;
             header?: never;
@@ -292,7 +292,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/org/{orgSlug}/expense/create": {
+    "/orgs/{orgSlug}/invoices/createSale": {
         parameters: {
             query?: never;
             header?: never;
@@ -301,14 +301,46 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["ExpenseController$1_create"];
+        post: operations["InvoiceController$1_createSale"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/org/{orgSlug}/expense/getAll": {
+    "/orgs/{orgSlug}/invoices/createPurchase": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["InvoiceController$1_createPurchase"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{orgSlug}/invoices/customer/{customerId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["InvoiceController$1_getByCustomerId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{orgSlug}/expenses": {
         parameters: {
             query?: never;
             header?: never;
@@ -318,6 +350,22 @@ export interface paths {
         get: operations["ExpenseController$1_getAll"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{orgSlug}/expenses/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["ExpenseController$1_create"];
         delete?: never;
         options?: never;
         head?: never;
@@ -350,23 +398,14 @@ export interface components {
             username: string;
             password: string;
         };
-        AddBalanceDto: {
-            amount: string;
-        };
         OrganizationEntity: {
             id: string;
             name: string;
             slug: string;
             balance?: string;
         };
-        CreateUserDto: {
-            username: string;
-            password: string;
-            /** @enum {string} */
-            role?: "USER" | "ADMIN";
-        };
-        DeleteUserDto: {
-            username: string;
+        AddBalanceDto: {
+            amount: string;
         };
         UserEntity: {
             id: string;
@@ -379,6 +418,12 @@ export interface components {
             updatedAt: string;
             /** Format: date-time */
             deletedAt?: string;
+        };
+        CreateUserDto: {
+            username: string;
+            password: string;
+            /** @enum {string} */
+            role?: "USER" | "ADMIN";
         };
         LoginUserDto: {
             username: string;
@@ -394,10 +439,13 @@ export interface components {
         RefreshTokenResponseDto: {
             accessToken: string;
         };
-        CreateCustomerDto: {
-            name: string;
-            address?: string;
-            phone?: string;
+        CustomerDetails: {
+            totalPurchases: number;
+            totalSales: number;
+            /** Format: number */
+            owes: string;
+            /** Format: number */
+            owed: string;
         };
         CustomerEntity: {
             id: number;
@@ -410,20 +458,17 @@ export interface components {
             updatedAt: string;
             /** Format: date-time */
             deletedAt?: string;
+            details?: components["schemas"]["CustomerDetails"];
+        };
+        CreateCustomerDto: {
+            name: string;
+            address?: string;
+            phone?: string;
         };
         UpdateCustomerDto: {
             name: string;
             address?: string;
             phone?: string;
-        };
-        UpdateProductDto: {
-            barcode?: string;
-            description?: string;
-            /** Format: number */
-            purchasePrice?: string;
-            /** Format: number */
-            sellingPrice?: string;
-            stockQuantity?: number;
         };
         ProductEntity: {
             id: string;
@@ -439,6 +484,15 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
+        UpdateProductDto: {
+            barcode?: string;
+            description?: string;
+            /** Format: number */
+            purchasePrice?: string;
+            /** Format: number */
+            sellingPrice?: string;
+            stockQuantity?: number;
+        };
         TransactionEntity: {
             id: number;
             /** @enum {string} */
@@ -447,48 +501,8 @@ export interface components {
             amount: string;
             /** Format: date-time */
             createdAt: string;
-            username: string;
+            cashierUsername: string;
             customerName?: string;
-        };
-        CreateSaleInvoiceItemDto: {
-            productId: string;
-            /** Format: number */
-            price: string;
-            quantity: number;
-            discountPercent?: number;
-            /** Format: number */
-            discountAmount?: string;
-        };
-        CreateSaleInvoiceDto: {
-            customerId?: number;
-            items: components["schemas"]["CreateSaleInvoiceItemDto"][];
-            discountPercent?: number;
-            /** Format: number */
-            discountAmount?: string;
-            /** Format: number */
-            paid: string;
-        };
-        CreatePurchaseInvoiceItemDto: {
-            productId?: string;
-            barcode?: string;
-            description?: string;
-            /** Format: number */
-            purchasePrice: string;
-            /** Format: number */
-            sellingPrice: string;
-            quantity: number;
-            discountPercent?: number;
-            /** Format: number */
-            discountAmount?: string;
-        };
-        CreatePurchaseInvoiceDto: {
-            customerId?: number;
-            discountPercent?: number;
-            /** Format: number */
-            discountAmount?: string;
-            /** Format: number */
-            paid: string;
-            items: components["schemas"]["CreatePurchaseInvoiceItemDto"][];
         };
         InvoiceItemEntity: {
             barcode?: string;
@@ -533,10 +547,45 @@ export interface components {
             transactionId: number;
             items: components["schemas"]["InvoiceItemEntity"][];
         };
-        CreateExpenseDto: {
-            description: string;
+        CreateSaleInvoiceItemDto: {
+            productId: string;
             /** Format: number */
-            amount: string;
+            price: string;
+            quantity: number;
+            discountPercent?: number;
+            /** Format: number */
+            discountAmount?: string;
+        };
+        CreateSaleInvoiceDto: {
+            customerId?: number;
+            items: components["schemas"]["CreateSaleInvoiceItemDto"][];
+            discountPercent?: number;
+            /** Format: number */
+            discountAmount?: string;
+            /** Format: number */
+            paid: string;
+        };
+        CreatePurchaseInvoiceItemDto: {
+            productId?: string;
+            barcode?: string;
+            description?: string;
+            /** Format: number */
+            purchasePrice: string;
+            /** Format: number */
+            sellingPrice: string;
+            quantity: number;
+            discountPercent?: number;
+            /** Format: number */
+            discountAmount?: string;
+        };
+        CreatePurchaseInvoiceDto: {
+            customerId?: number;
+            discountPercent?: number;
+            /** Format: number */
+            discountAmount?: string;
+            /** Format: number */
+            paid: string;
+            items: components["schemas"]["CreatePurchaseInvoiceItemDto"][];
         };
         ExpenseEntity: {
             id: number;
@@ -549,6 +598,11 @@ export interface components {
             updatedAt: string;
             cashierName: string;
             transactionId: number;
+        };
+        CreateExpenseDto: {
+            description: string;
+            /** Format: number */
+            amount: string;
         };
     };
     responses: never;
@@ -580,30 +634,7 @@ export interface operations {
             };
         };
     };
-    OrgController$1_addBalance: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                orgSlug: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AddBalanceDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    OrgController$1_getOrg: {
+    OrgController$1_getBySlug: {
         parameters: {
             query?: never;
             header?: never;
@@ -624,12 +655,10 @@ export interface operations {
             };
         };
     };
-    UserController$1_create: {
+    OrgController$1_addBalance: {
         parameters: {
             query?: never;
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
             };
@@ -637,32 +666,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateUserDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    UserController$1_delete: {
-        parameters: {
-            query?: never;
-            header?: {
-                Authorization?: string;
-            };
-            path: {
-                orgSlug: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["DeleteUserDto"];
+                "application/json": components["schemas"]["AddBalanceDto"];
             };
         };
         responses: {
@@ -700,6 +704,53 @@ export interface operations {
             };
         };
     };
+    UserController$1_create: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateUserDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UserController$1_delete: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     AuthController$1_login: {
         parameters: {
             query?: never;
@@ -731,7 +782,9 @@ export interface operations {
             header?: {
                 Authorization?: string;
             };
-            path?: never;
+            path: {
+                orgSlug: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -748,7 +801,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                orgSlug: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -759,6 +814,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RefreshTokenResponseDto"];
+                };
+            };
+        };
+    };
+    CustomerController$1_getAll: {
+        parameters: {
+            query?: {
+                skip?: number;
+                take?: number;
+            };
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerEntity"][];
                 };
             };
         };
@@ -781,6 +862,30 @@ export interface operations {
         };
         responses: {
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerEntity"];
+                };
+            };
+        };
+    };
+    CustomerController$1_getById: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -818,7 +923,7 @@ export interface operations {
             };
         };
     };
-    CustomerController$1_getAll: {
+    ProductController$1_getAll: {
         parameters: {
             query?: {
                 skip?: number;
@@ -839,7 +944,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CustomerEntity"][];
+                    "application/json": components["schemas"]["ProductEntity"][];
                 };
             };
         };
@@ -872,32 +977,6 @@ export interface operations {
             };
         };
     };
-    ProductController$1_getAll: {
-        parameters: {
-            query?: {
-                skip?: number;
-                take?: number;
-            };
-            header?: {
-                Authorization?: string;
-            };
-            path: {
-                orgSlug: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProductEntity"][];
-                };
-            };
-        };
-    };
     TransactionController$1_getAll: {
         parameters: {
             query?: {
@@ -920,6 +999,60 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TransactionEntity"][];
+                };
+            };
+        };
+    };
+    TransactionController$1_getByCustomerId: {
+        parameters: {
+            query?: {
+                skip?: number;
+                take?: number;
+            };
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+                customerId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransactionEntity"][];
+                };
+            };
+        };
+    };
+    InvoiceController$1_getAll: {
+        parameters: {
+            query?: {
+                skip?: number;
+                take?: number;
+                type?: "SALE" | "PURCHASE";
+            };
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceEntity"][];
                 };
             };
         };
@@ -974,12 +1107,35 @@ export interface operations {
             };
         };
     };
-    InvoiceController$1_getAll: {
+    InvoiceController$1_getByCustomerId: {
+        parameters: {
+            query?: never;
+            header?: {
+                Authorization?: string;
+            };
+            path: {
+                orgSlug: string;
+                customerId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceEntity"][];
+                };
+            };
+        };
+    };
+    ExpenseController$1_getAll: {
         parameters: {
             query?: {
                 skip?: number;
                 take?: number;
-                type?: "SALE" | "PURCHASE";
             };
             header?: {
                 Authorization?: string;
@@ -996,7 +1152,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["InvoiceEntity"][];
+                    "application/json": components["schemas"]["ExpenseEntity"][];
                 };
             };
         };
@@ -1024,32 +1180,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ExpenseEntity"];
-                };
-            };
-        };
-    };
-    ExpenseController$1_getAll: {
-        parameters: {
-            query?: {
-                skip?: number;
-                take?: number;
-            };
-            header?: {
-                Authorization?: string;
-            };
-            path: {
-                orgSlug: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ExpenseEntity"][];
                 };
             };
         };

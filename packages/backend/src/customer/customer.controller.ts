@@ -16,31 +16,12 @@ import { CustomerService } from "./customer.service";
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 @ApiHeader({ name: "Authorization" })
-@ApiTags("customer")
-@Controller("/org/:orgSlug/customer")
+@ApiTags("customers")
+@Controller("/orgs/:orgSlug/customers")
 export class CustomerController {
   constructor(private readonly service: CustomerService) {}
 
-  @Post("create")
-  @ApiCreatedResponse({ type: CustomerEntity })
-  create(
-    @Param("orgSlug") orgSlug: string,
-    @Body() createCustomerDto: CreateCustomerDto,
-  ): Promise<Customer> {
-    return this.service.createCustomer(createCustomerDto, orgSlug);
-  }
-
-  @Post("update/:id")
-  @ApiOkResponse({ type: CustomerEntity })
-  update(
-    @Param("orgSlug") orgSlug: string,
-    @Param("id") id: number,
-    @Body() updateCustomerDto: UpdateCustomerDto,
-  ): Promise<Customer> {
-    return this.service.updateCustomer(id, updateCustomerDto, orgSlug);
-  }
-
-  @Get("getAll")
+  @Get()
   @ApiOkResponse({ type: [CustomerEntity] })
   async getAll(
     @Param("orgSlug") orgSlug: string,
@@ -48,5 +29,34 @@ export class CustomerController {
   ): Promise<CustomerEntity[]> {
     const customers = await this.service.getAllCustomers(orgSlug, paginationDto);
     return customers.map((c) => new CustomerEntity(c));
+  }
+
+  @Post("create")
+  @ApiCreatedResponse({ type: CustomerEntity })
+  async create(
+    @Param("orgSlug") orgSlug: string,
+    @Body() createCustomerDto: CreateCustomerDto,
+  ): Promise<Customer> {
+    return this.service.createCustomer(createCustomerDto, orgSlug);
+  }
+
+  @Get(":id")
+  @ApiOkResponse({ type: CustomerEntity })
+  async getById(
+    @Param("orgSlug") orgSlug: string,
+    @Param("id") id: number,
+  ): Promise<CustomerEntity | null> {
+    const custoemr = await this.service.findCustomerById(id, orgSlug);
+    return custoemr ? new CustomerEntity(custoemr) : null;
+  }
+
+  @Post(":id/update")
+  @ApiOkResponse({ type: CustomerEntity })
+  async update(
+    @Param("orgSlug") orgSlug: string,
+    @Param("id") id: number,
+    @Body() updateCustomerDto: UpdateCustomerDto,
+  ): Promise<Customer> {
+    return this.service.updateCustomer(id, updateCustomerDto, orgSlug);
   }
 }

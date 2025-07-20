@@ -28,13 +28,6 @@ export class CreateUserDto {
   role?: UserRole;
 }
 
-export class DeleteUserDto {
-  @ApiProperty()
-  @IsAlphanumeric()
-  @IsNotEmpty()
-  username: string;
-}
-
 export class UserEntity {
   @ApiProperty()
   id: string;

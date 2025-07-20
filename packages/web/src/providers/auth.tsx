@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // login
   const loginMutation = useMutation({
     mutationFn: async (value: z.infer<typeof LoginUserDto> & { orgSlug: string }) =>
-      apiClient.post("/org/{orgSlug}/auth/login", {
+      apiClient.post("/orgs/{orgSlug}/auth/login", {
         params: { path: { orgSlug: value.orgSlug } },
         body: value,
       }),
@@ -56,8 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // logout
   const logoutMutation = useMutation({
     mutationFn: async (orgSlug: string) =>
-      await apiClient.get("/org/{orgSlug}/auth/logout", {
-        // @ts-expect-error - incorrect type generation by openapi-typescript for some reason
+      await apiClient.get("/orgs/{orgSlug}/auth/logout", {
         params: { path: { orgSlug } },
       }),
   });

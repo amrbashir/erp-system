@@ -25,18 +25,18 @@ import { apiClient } from "@/api-client";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
 import { useAuth } from "@/providers/auth";
 
-interface IndexSearch {
+interface RouteSearch {
   redirect?: string;
   loginOrgSlug?: string;
   loginUsername?: string;
 }
 
 export const Route = createFileRoute("/")({
-  component: Index,
-  validateSearch: ({ search }) => search as IndexSearch,
+  component: RouteComponent,
+  validateSearch: ({ search }) => search as RouteSearch,
 });
 
-function Index() {
+function RouteComponent() {
   const { t } = useTranslation();
   const { user, isAuthenticated } = useAuth();
 
@@ -118,7 +118,7 @@ function LoginExistingOrg({
       </CardHeader>
       <CardContent>
         <Button asChild className="w-full">
-          <Link to="/org/$orgSlug" params={{ orgSlug: user.orgSlug }}>
+          <Link to="/orgs/$orgSlug" params={{ orgSlug: user.orgSlug }}>
             {t("common.actions.go")}
           </Link>
         </Button>
@@ -154,7 +154,7 @@ function LoginForm({
 
       try {
         await login(username, password, orgSlug);
-        navigate({ to: redirect || "/org/$orgSlug", params: { orgSlug }, reloadDocument: true });
+        navigate({ to: redirect || "/orgs/$orgSlug", params: { orgSlug }, reloadDocument: true });
       } catch (error: any) {
         formApi.setErrorMap({ onSubmit: error });
       }
@@ -275,7 +275,7 @@ function CreateNewOrganizationCard({
       },
     },
     onSubmit: async ({ value, formApi }) => {
-      const { error } = await apiClient.post("/org/create", { body: value });
+      const { error } = await apiClient.post("/orgs/create", { body: value });
 
       if (error) {
         formApi.setErrorMap({ onSubmit: error });

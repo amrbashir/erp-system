@@ -1,7 +1,7 @@
-import { CreateUserDto } from "@erp-system/sdk/zod";
+import { CreateCustomerDto, CustomerEntity } from "@erp-system/sdk/zod";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader2Icon, PlusIcon } from "lucide-react";
+import { EditIcon, Loader2Icon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
@@ -17,24 +17,31 @@ import {
 } from "@/shadcn/components/ui/dialog";
 import { Input } from "@/shadcn/components/ui/input";
 import { Label } from "@/shadcn/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shadcn/components/ui/select";
-import { cn } from "@/shadcn/lib/utils";
 
 import type { AnyFieldApi } from "@tanstack/react-form";
 import type z from "zod";
 
-import type { UserRole } from "@/user";
 import { apiClient } from "@/api-client";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
 import { useOrg } from "@/hooks/use-org";
 
-export function AddUserDialog() {
+type Customer = z.infer<typeof CustomerEntity>;
+
+export function CustomerDialog({
+  action,
+  iconOnly = false,
+  shortLabel = false,
+  customer,
+  onCreated,
+  onEdited,
+}: {
+  action: "create" | "edit";
+  iconOnly?: boolean;
+  shortLabel?: boolean;
+  customer?: Customer;
+  onCreated?: (customer: Customer) => void;
+  onEdited?: () => void;
+}) {
   const { slug: orgSlug } = useOrg();
   const { t } = useTranslation();
   const client = useQueryClient();
@@ -43,18 +50,20 @@ export function AddUserDialog() {
 
   const form = useForm({
     defaultValues: {
-      username: "",
-      password: "",
-      role: "USER" as UserRole,
-    } as z.infer<ReturnType<(typeof CreateUserDto)["strict"]>>,
+      name: customer?.name,
+      address: customer?.address,
+      phone: customer?.phone,
+    } as z.infer<ReturnType<(typeof CreateCustomerDto)["strict"]>>,
     validators: {
-      onSubmit: CreateUserDto,
+      onSubmit: CreateCustomerDto,
     },
     onSubmit: async ({ value, formApi }) => {
-      const { username, password, role } = value;
-      const { error } = await apiClient.post("/org/{orgSlug}/user/create", {
-        params: { path: { orgSlug: orgSlug } },
-        body: { username, password, role },
+      const apiPath =
+        `/orgs/{orgSlug}/customers/${action === "create" ? "create" : "{id}/update"}` as const;
+
+      const { error, data } = await apiClient.post(apiPath, {
+        params: { path: { orgSlug: orgSlug, id: customer?.id } },
+        body: value,
       });
 
       if (error) {
@@ -62,10 +71,33 @@ export function AddUserDialog() {
         return;
       }
 
-      client.invalidateQueries({ queryKey: ["users"] });
+      if (action === "create" && data && onCreated) onCreated(data);
+      if (action === "edit" && data && onEdited) onEdited();
+
+      client.invalidateQueries({ queryKey: ["customers", orgSlug] });
       setOpen(false);
     },
   });
+
+  const actionLabelShort = action === "edit" ? t("common.actions.edit") : t("common.actions.add");
+  const actionLabel = shortLabel
+    ? actionLabelShort
+    : action === "create"
+      ? t("customer.add")
+      : t("customer.edit");
+  const actionDescription =
+    action === "create" ? t("customer.addDescription") : t("customer.editDescription");
+  const ActionIcon = action === "create" ? <PlusIcon /> : <EditIcon />;
+  const Trigger = iconOnly ? (
+    <Button variant="ghost" size="icon" className="p-0">
+      {ActionIcon}
+    </Button>
+  ) : (
+    <Button variant={action === "create" ? "default" : "secondary"}>
+      {ActionIcon}
+      {actionLabel}
+    </Button>
+  );
 
   return (
     <Dialog
@@ -75,17 +107,12 @@ export function AddUserDialog() {
         form.reset();
       }}
     >
-      <DialogTrigger asChild>
-        <Button>
-          <PlusIcon />
-          {t("user.add")}
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{Trigger}</DialogTrigger>
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("user.add")}</DialogTitle>
-          <DialogDescription>{t("user.addDescription")}</DialogDescription>
+          <DialogTitle>{actionLabel}</DialogTitle>
+          <DialogDescription>{actionDescription}</DialogDescription>
         </DialogHeader>
 
         <form
@@ -96,20 +123,9 @@ export function AddUserDialog() {
             form.handleSubmit();
           }}
         >
-          <div className="flex w-full items-center gap-2">
-            <form.Field
-              name="username"
-              children={(field) => <InputField className="w-full" field={field} />}
-            />
-            <form.Field
-              name="role"
-              children={(field) => (
-                <RolesSelector field={field} options={["USER", "ADMIN"] as UserRole[]} />
-              )}
-            />
-          </div>
-
-          <form.Field name="password" children={(field) => <InputField field={field} />} />
+          <form.Field name="name" children={(field) => <InputField field={field} />} />
+          <form.Field name="phone" children={(field) => <InputField field={field} />} />
+          <form.Field name="address" children={(field) => <InputField field={field} />} />
 
           <form.Subscribe children={(state) => <FormErrors formState={state} />} />
 
@@ -125,7 +141,7 @@ export function AddUserDialog() {
                   </DialogClose>
                   <Button disabled={!canSubmit}>
                     {isSubmitting && <Loader2Icon className="animate-spin" />}
-                    {t("common.actions.add")}
+                    {actionLabelShort}
                   </Button>
                 </>
               )}
@@ -137,46 +153,21 @@ export function AddUserDialog() {
   );
 }
 
-function InputField({
-  field,
-  className,
-  ...props
-}: { field: AnyFieldApi } & React.ComponentProps<"input">) {
-  const { t } = useTranslation();
-
-  return (
-    <div className={cn("flex flex-col gap-3", className)} {...props}>
-      <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
-      <Input
-        id={field.name}
-        name={field.name}
-        value={field.state.value}
-        type={field.name === "password" ? "password" : "text"}
-        onChange={(e) => field.handleChange(e.target.value)}
-      />
-      <FormFieldError field={field} />
-    </div>
-  );
-}
-
-function RolesSelector({ field, options }: { field: AnyFieldApi; options: string[] }) {
+function InputField({ field, ...props }: { field: AnyFieldApi } & React.ComponentProps<"input">) {
   const { t } = useTranslation();
 
   return (
     <div className="flex flex-col gap-3">
       <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
-      <Select onValueChange={(e) => field.handleChange(e)} defaultValue={field.state.value}>
-        <SelectTrigger>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((r) => (
-            <SelectItem key={r} value={r}>
-              {t(`user.roles.${r}` as any)}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <Input
+        id={field.name}
+        name={field.name}
+        value={field.state.value}
+        type={field.name === "phone" ? "tel" : "text"}
+        onChange={(e) => field.handleChange(e.target.value)}
+        {...props}
+      />
+      <FormFieldError field={field} />
     </div>
   );
 }

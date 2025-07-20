@@ -20,22 +20,22 @@ import { formatMoney } from "@/utils/formatMoney";
 
 import { AddExpenseDialog } from "./-add-expense-dialog";
 
-export const Route = createFileRoute("/org/$orgSlug/expenses")({
-  component: Expenses,
+export const Route = createFileRoute("/orgs/$orgSlug/expenses/")({
+  component: RouteComponent,
   context: () => ({
     title: i18n.t("routes.expenses"),
     icon: ShoppingCartIcon,
   }),
 });
 
-function Expenses() {
+function RouteComponent() {
   const { slug: orgSlug } = useOrg();
   const { t } = useTranslation();
 
   const { data: expenses } = useQuery({
-    queryKey: ["expenses"],
+    queryKey: ["expenses", orgSlug],
     queryFn: async () =>
-      apiClient.getThrowing("/org/{orgSlug}/expense/getAll", { params: { path: { orgSlug } } }),
+      apiClient.getThrowing("/orgs/{orgSlug}/expenses", { params: { path: { orgSlug } } }),
     select: (res) => res.data,
   });
 
@@ -51,7 +51,7 @@ function Expenses() {
             <TableHeader className="bg-muted">
               <TableRow className="*:font-bold">
                 <TableHead>{t("common.ui.number")}</TableHead>
-                <TableHead>{t("common.form.description")}</TableHead>
+                <TableHead className="w-full">{t("common.form.description")}</TableHead>
                 <TableHead>{t("common.form.price")}</TableHead>
                 <TableHead>{t("cashierName")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>

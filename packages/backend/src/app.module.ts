@@ -2,7 +2,7 @@ import { Module, ValidationPipe, VERSION_NEUTRAL, VersioningType } from "@nestjs
 import { HttpAdapterHost } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
-import type { INestApplication } from "@nestjs/common";
+import type { INestApplication, NestMiddleware, NestModule } from "@nestjs/common";
 
 import { AuthModule } from "./auth/auth.module";
 import { CustomerModule } from "./customer/customer.module";

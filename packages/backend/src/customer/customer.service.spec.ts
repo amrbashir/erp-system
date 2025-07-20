@@ -3,6 +3,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import type { CreateCustomerDto } from "./customer.dto";
 import { generateRandomOrgData, useRandomDatabase } from "../../e2e/utils";
+import { InvoiceService } from "../invoice/invoice.service";
 import { OrgService } from "../org/org.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { CustomerService } from "./customer.service";
@@ -11,6 +12,7 @@ describe("CustomerService", async () => {
   let service: CustomerService;
   let prisma: PrismaService;
   let orgService: OrgService;
+  let invoiceService: InvoiceService;
 
   const { createDatabase, dropDatabase } = useRandomDatabase();
 
@@ -19,6 +21,7 @@ describe("CustomerService", async () => {
     prisma = new PrismaService();
     orgService = new OrgService(prisma);
     service = new CustomerService(prisma);
+    invoiceService = new InvoiceService(prisma);
   });
 
   afterAll(dropDatabase);
@@ -118,5 +121,73 @@ describe("CustomerService", async () => {
       org.slug,
     );
     await expect(result).rejects.toThrow(NotFoundException);
+  });
+
+  it("should find a customer by ID", async () => {
+    const orgData = generateRandomOrgData();
+    const org = await orgService.create(orgData);
+
+    const createCustomerDto: CreateCustomerDto = {
+      name: "Find Customer",
+      address: "123 Find St",
+      phone: "3213213210",
+    };
+    const customer = await service.createCustomer(createCustomerDto, org.slug);
+
+    const foundCustomer = await service.findCustomerById(customer.id, org.slug);
+    expect(foundCustomer).toBeDefined();
+    expect(foundCustomer!.id).toBe(customer.id);
+    expect(foundCustomer!.name).toBe(createCustomerDto.name);
+    expect(foundCustomer!.details).toBeDefined();
+    expect(foundCustomer!.details?.totalPurchases).toBe(0);
+    expect(foundCustomer!.details?.totalSales).toBe(0);
+    expect(foundCustomer!.details?.owes?.toNumber()).toBe(0);
+    expect(foundCustomer!.details?.owed?.toNumber()).toBe(0);
+
+    // Get admin user
+    const user = await prisma.user.findFirstOrThrow({
+      where: { organizationId: org.id, username: "admin" },
+    });
+
+    const product = await prisma.product.create({
+      data: {
+        description: "Test Product",
+        sellingPrice: 100,
+        purchasePrice: 80,
+        stockQuantity: 10,
+        organization: { connect: { id: org.id } },
+      },
+    });
+
+    // create an invoice to test details
+    const invoice = await invoiceService.createSaleInvoice(
+      org.slug,
+      {
+        items: [
+          {
+            productId: product.id,
+            quantity: 1,
+            price: product.sellingPrice.toString(),
+            discountPercent: 0,
+            discountAmount: "0",
+          },
+        ],
+        discountPercent: 0,
+        discountAmount: "0",
+        paid: "10",
+        customerId: customer.id,
+      },
+      user.id,
+    );
+
+    expect(invoice).toBeDefined();
+    expect(invoice.customerId).toBe(customer.id);
+
+    const updatedCustomer = await service.findCustomerById(customer.id, org.slug);
+    expect(updatedCustomer).toBeDefined();
+    expect(updatedCustomer!.details?.totalPurchases).toBe(1);
+    expect(updatedCustomer!.details?.totalSales).toBe(0);
+    expect(updatedCustomer!.details?.owes?.toNumber()).toBe(90);
+    expect(updatedCustomer!.details?.owed?.toNumber()).toBe(0);
   });
 });

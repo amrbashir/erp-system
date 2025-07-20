@@ -314,7 +314,7 @@ export class InvoiceService {
     orgSlug: string,
     options?: {
       pagination?: PaginationDto;
-      where?: InvoiceWhereInput;
+      where?: Omit<InvoiceWhereInput, "organization" | "organizationId">;
       orderBy?: InvoiceOrderByWithRelationInput | InvoiceOrderByWithRelationInput[] | undefined;
     },
   ): Promise<InvoiceWithRelations[]> {
@@ -340,5 +340,34 @@ export class InvoiceService {
 
       throw error; // Re-throw other errors
     }
+  }
+
+  async getInvoicesByCustomerId(
+    orgSlug: string,
+    customerId: number,
+    options?: {
+      pagination?: PaginationDto;
+      where?: Omit<
+        InvoiceWhereInput,
+        "customerId" | "customer" | "organization" | "organizationId"
+      >;
+      orderBy?: InvoiceOrderByWithRelationInput | InvoiceOrderByWithRelationInput[] | undefined;
+    },
+  ): Promise<InvoiceWithRelations[]> {
+    return await this.prisma.invoice.findMany({
+      skip: options?.pagination?.skip,
+      take: options?.pagination?.take,
+      where: {
+        ...options?.where,
+        customerId,
+        organization: { slug: orgSlug },
+      },
+      orderBy: options?.orderBy ?? { createdAt: "desc" },
+      include: {
+        customer: true,
+        cashier: true,
+        items: true,
+      },
+    });
   }
 }

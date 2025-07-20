@@ -1,6 +1,6 @@
 import {
-  CreateSaleInvoiceDto,
-  CreateSaleInvoiceItemDto,
+  CreatePurchaseInvoiceDto,
+  CreatePurchaseInvoiceItemDto,
   CustomerEntity,
   ProductEntity,
 } from "@erp-system/sdk/zod";
@@ -46,35 +46,33 @@ import { InvoiceFooter } from "./-create-invoice-footer";
 import { CustomerSelector } from "./-customer-selector";
 import { ProductSelector } from "./-product-selector";
 
-export const Route = createFileRoute("/org/$orgSlug/invoices/createSale")({
-  component: CreateSaleInvoice,
+export const Route = createFileRoute("/orgs/$orgSlug/invoices/createPurchase")({
+  component: RouteComponent,
   context: () => ({
-    title: i18n.t("routes.invoice.createSale"),
+    title: i18n.t("routes.invoice.createPurchase"),
   }),
 });
 
 // Types
 type AnyReactFormApi = ReactFormApi<any, any, any, any, any, any, any, any, any, any>;
-type CreateInvoiceItem = z.infer<typeof CreateSaleInvoiceItemDto>;
 type Product = z.infer<typeof ProductEntity>;
+type CreateInvoiceItem = z.infer<typeof CreatePurchaseInvoiceItemDto>;
 type Customer = z.infer<typeof CustomerEntity>;
-type Invoice = z.infer<ReturnType<(typeof CreateSaleInvoiceDto)["strict"]>> & {
-  items?: (CreateInvoiceItem & Product)[];
+type Invoice = z.infer<ReturnType<(typeof CreatePurchaseInvoiceDto)["strict"]>> & {
+  items?: CreateInvoiceItem[];
 };
 type InvoiceItem = Invoice["items"][number];
 
 const DEFAULT_INVOICE_ITEM = {
-  barcode: "",
+  barcode: undefined,
   description: "",
   quantity: 1,
   purchasePrice: "0",
-  price: "0",
   sellingPrice: "0",
-  productId: "",
+  productId: undefined,
 };
 
-// Main component
-function CreateSaleInvoice() {
+function RouteComponent() {
   const { slug: orgSlug } = useOrg();
   const { t } = useTranslation();
   const client = useQueryClient();
@@ -82,14 +80,14 @@ function CreateSaleInvoice() {
   const params = useMemo(() => ({ path: { orgSlug } }), [orgSlug]);
 
   const { data: products } = useQuery({
-    queryKey: ["products"],
-    queryFn: async () => apiClient.getThrowing("/org/{orgSlug}/product/getAll", { params }),
+    queryKey: ["products", orgSlug],
+    queryFn: async () => apiClient.getThrowing("/orgs/{orgSlug}/products", { params }),
     select: (res) => res.data,
   });
 
   const { data: customers } = useQuery({
-    queryKey: ["customers"],
-    queryFn: async () => apiClient.getThrowing("/org/{orgSlug}/customer/getAll", { params }),
+    queryKey: ["customers", orgSlug],
+    queryFn: async () => apiClient.getThrowing("/orgs/{orgSlug}/customers", { params }),
     select: (res) => res.data,
   });
 
@@ -109,7 +107,7 @@ function CreateSaleInvoice() {
         if (paidField?.isDirty) return;
 
         const total = calculateInvoiceTotal(
-          calculateInvoiceSubtotal(value.items, "SALE"),
+          calculateInvoiceSubtotal(value.items, "PURCHASE"),
           value.discountPercent,
           value.discountAmount,
         );
@@ -117,28 +115,19 @@ function CreateSaleInvoice() {
       },
 
       onSubmit: ({ value, formApi }) => {
-        const validItems = value.items.filter((i) => !!i.description || !!i.productId);
+        const validItems = value.items.filter((i) => !!i.description);
         if (validItems.length === 0) return "invoiceMustHaveItems";
 
-        const errors = formApi.parseValuesWithSchema(CreateSaleInvoiceDto as any);
+        const errors = formApi.parseValuesWithSchema(CreatePurchaseInvoiceDto as any);
         if (errors) return errors;
       },
     },
     onSubmit: async ({ value, formApi }) => {
-      const validItems = value.items.filter((i) => !!i.description || !!i.productId);
+      const validItems = value.items.filter((i) => !!i.description);
 
-      const { error } = await apiClient.post("/org/{orgSlug}/invoice/createSale", {
+      const { error } = await apiClient.post("/orgs/{orgSlug}/invoices/createPurchase", {
         params: { path: { orgSlug } },
-        body: {
-          ...value,
-          items: validItems.map((i) => ({
-            productId: i.productId,
-            price: i.price,
-            quantity: i.quantity,
-            discountPercent: i.discountPercent,
-            discountAmount: i.discountAmount,
-          })),
-        },
+        body: { ...value, items: validItems },
       });
 
       if (error) {
@@ -147,7 +136,7 @@ function CreateSaleInvoice() {
       }
 
       toast.success(t("invoice.createdSuccessfully"));
-      client.invalidateQueries({ queryKey: ["invoices"] });
+      client.invalidateQueries({ queryKey: ["invoices", orgSlug, "PURCHASE"] });
       formApi.reset();
     },
   });
@@ -163,16 +152,15 @@ function CreateSaleInvoice() {
   };
 
   const addEmptyItem = () => {
-    form.pushFieldValue("items", { ...DEFAULT_INVOICE_ITEM } as any);
+    form.pushFieldValue("items", { ...DEFAULT_INVOICE_ITEM });
     form.validate("change");
   };
 
-  const handleAddItem = (index: number, product: Product) => {
+  const handleAddProduct = (index: number, product: Product) => {
     form.replaceFieldValue("items", index, {
       ...DEFAULT_INVOICE_ITEM,
       ...product,
       productId: product.id,
-      price: product.sellingPrice,
     });
     form.validate("change");
   };
@@ -180,18 +168,13 @@ function CreateSaleInvoice() {
   const handleUpdateItemField = (
     index: number,
     field: keyof InvoiceItem,
-    value: number | string,
+    value: string | number,
   ) => {
     const newItems = [...form.getFieldValue("items")];
     form.replaceFieldValue("items", index, {
       ...newItems[index],
       [field]: value,
     });
-    form.validate("change");
-  };
-
-  const handleUpdateInvoiceField = (field: keyof Invoice, value: any) => {
-    form.setFieldValue(field, value);
     form.validate("change");
   };
 
@@ -225,20 +208,20 @@ function CreateSaleInvoice() {
         onReset={() => form.reset()}
       />
 
-      <Card className="h-full flex flex-col overflow-hidden *:flex-1 *:basis-0 p-0">
+      <div className="h-full overflow-hidden flex flex-col *:flex-1 *:basis-0 border rounded">
         <InvoiceTable
           items={invoiceItems}
           products={products}
-          onAddItem={handleAddItem}
           onAddEmptyItem={addEmptyItem}
+          onAddItem={handleAddProduct}
           onResetItem={handleResetItem}
           onUpdateItemField={handleUpdateItemField}
         />
-      </Card>
+      </div>
 
       <form.Subscribe children={(state) => <FormErrors formState={state} />} />
 
-      <InvoiceFooter invoiceType="SALE" form={form} />
+      <InvoiceFooter invoiceType="PURCHASE" form={form} />
     </form>
   );
 }
@@ -263,6 +246,7 @@ function InvoiceHeader({
         name="customerId"
         children={(field) => <CustomerSelector customers={customers} field={field} />}
       />
+
       <div className="flex gap-2 justify-end *:flex-1 md:*:flex-none">
         <form.Subscribe
           selector={(state) => [state.canSubmit, state.isSubmitting]}
@@ -275,6 +259,7 @@ function InvoiceHeader({
                 onClick={() => onReset()}
               >
                 <Hotkey>F7</Hotkey>
+
                 {t("common.actions.delete")}
               </Button>
               <Button disabled={!canSubmit || !hasItems}>
@@ -294,36 +279,37 @@ function InvoiceHeader({
 function InvoiceTable({
   items,
   products,
-  onAddItem,
   onAddEmptyItem,
+  onAddItem,
   onResetItem,
   onUpdateItemField,
   ...props
 }: {
   items: InvoiceItem[];
   products: Product[] | undefined;
-  onAddItem: (index: number, product: Product) => void;
   onAddEmptyItem: () => void;
+  onAddItem: (index: number, product: Product) => void;
   onResetItem: (index: number) => void;
-  onUpdateItemField: (index: number, field: keyof InvoiceItem, value: number | string) => void;
+  onUpdateItemField: (index: number, field: keyof InvoiceItem, value: string | number) => void;
 } & React.ComponentProps<typeof Table>) {
   const { t } = useTranslation();
 
   return (
     <Table {...props}>
-      <TableHeader className="bg-muted sticky top-0 z-1">
+      <TableHeader className="bg-muted sticky top-0 z-10">
         <TableRow className="*:font-bold">
           <TableHead></TableHead>
           <TableHead>{t("common.ui.number")}</TableHead>
           <TableHead className="min-w-3xs">{t("common.form.barcode")}</TableHead>
           <TableHead className="min-w-3xs">{t("common.form.description")}</TableHead>
           <TableHead className="w-40">{t("common.form.quantity")}</TableHead>
-          <TableHead className="w-40">{t("common.form.price")}</TableHead>
-          <TableHead>{t("common.ui.subtotal")}</TableHead>
-          <TableHead className="w-40">{t("common.ui.discountPercent")}</TableHead>
+          <TableHead className="w-40">{t("common.pricing.purchase")}</TableHead>
+          <TableHead className="w-40">{t("common.pricing.selling")}</TableHead>
+          <TableHead>{t("common.form.subtotal")}</TableHead>
+          <TableHead className="w-40">{t("common.form.discountPercent")}</TableHead>
           <TableHead></TableHead>
-          <TableHead className="w-40">{t("common.ui.discountAmount")}</TableHead>
-          <TableHead>{t("common.ui.total")}</TableHead>
+          <TableHead className="w-40">{t("common.form.discountAmount")}</TableHead>
+          <TableHead>{t("common.form.total")}</TableHead>
         </TableRow>
       </TableHeader>
 
@@ -335,14 +321,14 @@ function InvoiceTable({
             index={index}
             products={products}
             items={items}
+            onUpdateItemField={onUpdateItemField}
             onAdd={onAddItem}
             onReset={onResetItem}
-            onUpdateItemField={onUpdateItemField}
           />
         ))}
 
         <TableRow>
-          <TableCell colSpan={11} className="p-0">
+          <TableCell colSpan={12} className="p-0">
             <Button
               type="button"
               variant="ghost"
@@ -365,33 +351,33 @@ function InvoiceTableRow({
   index,
   products,
   items,
-  onUpdateItemField,
-  onReset,
   onAdd,
+  onReset,
+  onUpdateItemField,
 }: {
   item: InvoiceItem;
   index: number;
   products: Product[] | undefined;
   items: InvoiceItem[];
-  onUpdateItemField: (index: number, field: keyof InvoiceItem, value: number | string) => void;
-  onReset: (index: number) => void;
   onAdd: (index: number, product: Product) => void;
+  onReset: (index: number) => void;
+  onUpdateItemField: (index: number, field: keyof InvoiceItem, value: string | number) => void;
 }) {
-  const itemSubtotal = calculateItemSubtotal(item.price, item.quantity);
+  const itemSubtotal = calculateItemSubtotal(item.purchasePrice, item.quantity);
   const { percentDiscount } = calculateItemDiscount(
     itemSubtotal,
     item.discountPercent,
     item.discountAmount,
   );
   const itemTotal = calculateItemTotal(
-    item.price,
+    item.purchasePrice,
     item.quantity,
     item.discountPercent,
     item.discountAmount,
   );
 
   return (
-    <TableRow className="[&>td]:border-e [&>td:last-child]:border-none">
+    <TableRow className="*:not-last:border-e">
       <TableCell className="p-0 w-0">
         <Button
           type="button"
@@ -409,9 +395,9 @@ function InvoiceTableRow({
             .map((p) => p.barcode)
             .filter((b) => b !== undefined)
             .filter((b) => items.every((i) => i.barcode !== b))}
-          value={item.barcode}
+          value={item.barcode ?? ""}
           onInputValueChange={(value) => {
-            onReset(index);
+            item.productId && onReset(index);
             onUpdateItemField(index, "barcode", value);
           }}
           onItemSelect={(item) => {
@@ -427,7 +413,7 @@ function InvoiceTableRow({
             .filter((b) => items.every((i) => i.description !== b))}
           value={item.description}
           onInputValueChange={(value) => {
-            onReset(index);
+            item.productId && onReset(index);
             onUpdateItemField(index, "description", value);
           }}
           onItemSelect={(item) => {
@@ -443,15 +429,23 @@ function InvoiceTableRow({
           value={item.quantity}
           onChange={(e) => onUpdateItemField(index, "quantity", e.target.valueAsNumber)}
           min={1}
-          max={item.stockQuantity}
         />
       </TableCell>
       <TableCell className="p-0">
         <InputNumpad
           variant="ghost"
           className="w-20"
-          value={new SafeDecimal(item.price).toNumber()}
-          onChange={(e) => onUpdateItemField(index, "price", e.target.value)}
+          value={new SafeDecimal(item.purchasePrice).toNumber()}
+          onChange={(e) => onUpdateItemField(index, "purchasePrice", e.target.value)}
+          min={0}
+        />
+      </TableCell>
+      <TableCell className="p-0">
+        <InputNumpad
+          variant="ghost"
+          className="w-20"
+          value={new SafeDecimal(item.sellingPrice).toNumber()}
+          onChange={(e) => onUpdateItemField(index, "sellingPrice", e.target.value)}
           min={0}
         />
       </TableCell>
@@ -470,6 +464,7 @@ function InvoiceTableRow({
       <TableCell className="p-0">
         <InputNumpad
           variant="ghost"
+          className="w-20"
           value={new SafeDecimal(item.discountAmount || 0).toNumber()}
           onChange={(e) => onUpdateItemField(index, "discountAmount", e.target.value)}
           min={0}

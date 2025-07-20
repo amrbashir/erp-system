@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ReceiptTextIcon } from "lucide-react";
+import { FileTextIcon } from "lucide-react";
 
 import i18n from "@/i18n";
 
-export const Route = createFileRoute("/org/$orgSlug/invoices")({
+export const Route = createFileRoute("/orgs/$orgSlug/invoices")({
   context: () => ({
     title: i18n.t("routes.invoices"),
-    icon: ReceiptTextIcon,
+    icon: FileTextIcon,
   }),
 });

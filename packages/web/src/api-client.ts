@@ -29,14 +29,9 @@ export const apiClient = createThrowingClient({
 
     // If the response is unauthorized, and requesting into specific org, try to refresh the access token
     if (result.status === StatusCode.Unauthorized && user && orgSlug) {
-      const { data, error, response } = await fallbackClient.request(
-        "get",
-        "/org/{orgSlug}/auth/refresh",
-        {
-          // @ts-expect-error - for some reason, incorrect type generation by openapi-typescript
-          params: { path: { orgSlug } },
-        },
-      );
+      const { data, error, response } = await fallbackClient.GET("/orgs/{orgSlug}/auth/refresh", {
+        params: { path: { orgSlug } },
+      });
 
       // If the refresh failed, clear the stored user and redirect to the login page
       if (response.ok === false) {
