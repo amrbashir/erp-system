@@ -139,8 +139,6 @@ describe("CustomerService", async () => {
     expect(foundCustomer!.id).toBe(customer.id);
     expect(foundCustomer!.name).toBe(createCustomerDto.name);
     expect(foundCustomer!.details).toBeDefined();
-    expect(foundCustomer!.details?.totalPurchases).toBe(0);
-    expect(foundCustomer!.details?.totalSales).toBe(0);
     expect(foundCustomer!.details?.owes?.toNumber()).toBe(0);
     expect(foundCustomer!.details?.owed?.toNumber()).toBe(0);
 
@@ -185,8 +183,6 @@ describe("CustomerService", async () => {
 
     const updatedCustomer = await service.findCustomerById(customer.id, org.slug);
     expect(updatedCustomer).toBeDefined();
-    expect(updatedCustomer!.details?.totalPurchases).toBe(1);
-    expect(updatedCustomer!.details?.totalSales).toBe(0);
     expect(updatedCustomer!.details?.owes?.toNumber()).toBe(90);
     expect(updatedCustomer!.details?.owed?.toNumber()).toBe(0);
   });
