@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "invoices" ADD COLUMN     "paid" DECIMAL(20,4) NOT NULL DEFAULT 0,
-ADD COLUMN     "remaining" DECIMAL(20,4) NOT NULL DEFAULT 0;

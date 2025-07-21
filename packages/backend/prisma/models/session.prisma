@@ -1,0 +1,6 @@
+model Session {
+  sid  String @id @unique
+  data Json
+
+  @@map("sessions")
+}

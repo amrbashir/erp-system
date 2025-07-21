@@ -37,24 +37,10 @@ export const CreateUserDto = z
 export const LoginUserDto = z.object({ username: z.string(), password: z.string() }).passthrough();
 
 export const LoginResponseDto = z
-  .object({
-    username: z.string(),
-    role: z.enum(["USER", "ADMIN"]),
-    accessToken: z.string(),
-    orgSlug: z.string(),
-  })
+  .object({ username: z.string(), role: z.enum(["USER", "ADMIN"]), orgSlug: z.string() })
   .passthrough();
 
-export const RefreshTokenResponseDto = z.object({ accessToken: z.string() }).passthrough();
-
-export const CustomerDetails = z
-  .object({
-    totalPurchases: z.number(),
-    totalSales: z.number(),
-    owes: z.string(),
-    owed: z.string(),
-  })
-  .passthrough();
+export const CustomerDetails = z.object({ owes: z.string(), owed: z.string() }).passthrough();
 
 export const CustomerEntity = z
   .object({

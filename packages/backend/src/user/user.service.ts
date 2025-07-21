@@ -80,13 +80,13 @@ export class UserService {
     }
   }
 
-  async findByIdinOrg(userId: string, organizationId?: string): Promise<User | null> {
+  async findByIdInOrg(userId: string, organizationId?: string): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: { id: userId, organizationId, deletedAt: null },
     });
   }
 
-  async findByUsernameInOrg(username: string, orgSlug?: string): Promise<User | null> {
+  async findByUsernameInOrg(username: string, orgSlug: string): Promise<User | null> {
     try {
       return await this.prisma.user.findFirst({
         where: { username, deletedAt: null, organization: { slug: orgSlug } },
@@ -94,21 +94,6 @@ export class UserService {
     } catch (error: any) {
       if (error.code === "P2025") {
         throw new NotFoundException("Organization with this slug does not exist");
-      }
-
-      throw error; // Re-throw other errors
-    }
-  }
-
-  async updateRefreshToken(userId: string, refreshToken?: string): Promise<void> {
-    try {
-      await this.prisma.user.update({
-        where: { id: userId },
-        data: { refreshToken },
-      });
-    } catch (error: any) {
-      if (error.code === "P2025") {
-        throw new NotFoundException("User with this ID does not exist");
       }
 
       throw error; // Re-throw other errors

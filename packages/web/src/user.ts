@@ -7,7 +7,6 @@ export type UserRole = z.infer<typeof UserEntity>["role"];
 
 export interface AuthUser {
   username: string;
-  accessToken: string;
   role: UserRole;
   orgSlug: string;
 }

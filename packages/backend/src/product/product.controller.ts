@@ -1,14 +1,12 @@
 import { Body, Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
-import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
+import { AuthenticatedGuard } from "../auth/auth.authenticated.guard";
 import { PaginationDto } from "../pagination.dto";
 import { ProductEntity, UpdateProductDto } from "./product.dto";
 import { ProductService } from "./product.service";
 
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
-@ApiHeader({ name: "Authorization" })
+@UseGuards(AuthenticatedGuard)
 @ApiTags("products")
 @Controller("/orgs/:orgSlug/products")
 export class ProductController {

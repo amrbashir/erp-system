@@ -7,12 +7,10 @@ import type { LogLevel } from "@nestjs/common";
 import { AppModule, generateOpenApiJson, setupApp } from "./app.module";
 
 export async function main() {
-  const logLevels: LogLevel[] = [
-    "log",
-    "error",
-    "warn",
-    ...(process.env.NODE_ENV === "development" ? (["debug", "verbose"] as const) : []),
-  ];
+  // Setup log levels based on environment
+  const isDev = process.env.NODE_ENV === "development";
+  const devLogLevels: LogLevel[] = isDev ? (["debug", "verbose"] as const) : [];
+  const logLevels: LogLevel[] = ["log", "error", "warn", ...devLogLevels];
 
   const app = await NestFactory.create(AppModule, { logger: logLevels });
   setupApp(app);

@@ -1,15 +1,13 @@
 import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
-import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
+import { AuthenticatedGuard } from "../auth/auth.authenticated.guard";
 import { PaginationDto } from "../pagination.dto";
 import { AdminGuard } from "../user/user.admin.guard";
 import { TransactionEntity } from "./transaction.dto";
 import { TransactionService } from "./transaction.service";
 
-@UseGuards(JwtAuthGuard, AdminGuard)
-@ApiBearerAuth()
-@ApiHeader({ name: "Authorization" })
+@UseGuards(AuthenticatedGuard, AdminGuard)
 @ApiTags("transactions")
 @Controller("/orgs/:orgSlug/transactions")
 export class TransactionController {

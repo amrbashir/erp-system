@@ -8,14 +8,12 @@ import {
 } from "@nestjs/swagger";
 
 import type { Customer } from "../prisma/generated/client";
-import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
+import { AuthenticatedGuard } from "../auth/auth.authenticated.guard";
 import { PaginationDto } from "../pagination.dto";
 import { CreateCustomerDto, CustomerEntity, UpdateCustomerDto } from "./customer.dto";
 import { CustomerService } from "./customer.service";
 
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
-@ApiHeader({ name: "Authorization" })
+@UseGuards(AuthenticatedGuard)
 @ApiTags("customers")
 @Controller("/orgs/:orgSlug/customers")
 export class CustomerController {

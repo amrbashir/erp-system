@@ -23,25 +23,5 @@ export class LoginResponseDto {
   role: UserRole;
 
   @ApiProperty()
-  accessToken: string;
-
-  @ApiProperty()
   orgSlug: string;
 }
-
-export class RefreshTokenResponseDto {
-  @ApiProperty()
-  accessToken: string;
-}
-
-export type JwtTokens = {
-  accessToken: string;
-  refreshToken: string;
-};
-
-export type JwtPayload = {
-  sub: string; // User ID
-  username: string;
-  organizationId: string;
-  role: UserRole;
-};

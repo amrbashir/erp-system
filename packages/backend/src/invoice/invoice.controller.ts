@@ -1,16 +1,9 @@
-import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from "@nestjs/common";
-import {
-  ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiHeader,
-  ApiOkResponse,
-  ApiTags,
-} from "@nestjs/swagger";
-import Express from "express";
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
-import type { JwtPayload } from "../auth/auth.dto";
 import type { PaginationDto } from "../pagination.dto";
-import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
+import { AuthenticatedGuard } from "../auth/auth.authenticated.guard";
+import { AuthUser } from "../auth/auth.user.decorator";
 import {
   CreatePurchaseInvoiceDto,
   CreateSaleInvoiceDto,
@@ -19,9 +12,7 @@ import {
 } from "./invoice.dto";
 import { InvoiceService } from "./invoice.service";
 
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
-@ApiHeader({ name: "Authorization" })
+@UseGuards(AuthenticatedGuard)
 @ApiTags("invoices")
 @Controller("/orgs/:orgSlug/invoices")
 export class InvoiceController {
@@ -51,10 +42,9 @@ export class InvoiceController {
   async createSale(
     @Param("orgSlug") orgSlug: string,
     @Body() createInvoiceDto: CreateSaleInvoiceDto,
-    @Req() req: Express.Request,
+    @AuthUser("id") userId: string,
   ): Promise<void> {
-    const currentUser = req["user"] as JwtPayload;
-    await this.service.createSaleInvoice(orgSlug, createInvoiceDto, currentUser.sub);
+    await this.service.createSaleInvoice(orgSlug, createInvoiceDto, userId);
   }
 
   @Post("createPurchase")
@@ -62,10 +52,9 @@ export class InvoiceController {
   async createPurchase(
     @Param("orgSlug") orgSlug: string,
     @Body() createPurchaseInvoiceDto: CreatePurchaseInvoiceDto,
-    @Req() req: Express.Request,
+    @AuthUser("id") userId: string,
   ): Promise<void> {
-    const currentUser = req["user"] as JwtPayload;
-    await this.service.createPurchaseInvoice(orgSlug, createPurchaseInvoiceDto, currentUser.sub);
+    await this.service.createPurchaseInvoice(orgSlug, createPurchaseInvoiceDto, userId);
   }
 
   @Get("customer/:customerId")

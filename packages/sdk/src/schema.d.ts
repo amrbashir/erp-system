@@ -84,7 +84,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/orgs/{orgSlug}/users/{id}/delete": {
+    "/orgs/{orgSlug}/users/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -124,22 +124,6 @@ export interface paths {
             cookie?: never;
         };
         get: operations["AuthController$1_logout"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/orgs/{orgSlug}/auth/refresh": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["AuthController$1_refresh"];
         put?: never;
         post?: never;
         delete?: never;
@@ -433,15 +417,9 @@ export interface components {
             username: string;
             /** @enum {string} */
             role: "USER" | "ADMIN";
-            accessToken: string;
             orgSlug: string;
         };
-        RefreshTokenResponseDto: {
-            accessToken: string;
-        };
         CustomerDetails: {
-            totalPurchases: number;
-            totalSales: number;
             /** Format: number */
             owes: string;
             /** Format: number */
@@ -684,9 +662,7 @@ export interface operations {
                 skip?: number;
                 take?: number;
             };
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
             };
@@ -707,9 +683,7 @@ export interface operations {
     UserController$1_create: {
         parameters: {
             query?: never;
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
             };
@@ -732,9 +706,7 @@ export interface operations {
     UserController$1_delete: {
         parameters: {
             query?: never;
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
                 id: string;
@@ -779,9 +751,7 @@ export interface operations {
     AuthController$1_logout: {
         parameters: {
             query?: never;
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
             };
@@ -797,36 +767,13 @@ export interface operations {
             };
         };
     };
-    AuthController$1_refresh: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                orgSlug: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RefreshTokenResponseDto"];
-                };
-            };
-        };
-    };
     CustomerController$1_getAll: {
         parameters: {
             query?: {
                 skip?: number;
                 take?: number;
             };
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
             };
@@ -847,9 +794,7 @@ export interface operations {
     CustomerController$1_create: {
         parameters: {
             query?: never;
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
             };
@@ -874,9 +819,7 @@ export interface operations {
     CustomerController$1_getById: {
         parameters: {
             query?: never;
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
                 id: number;
@@ -898,9 +841,7 @@ export interface operations {
     CustomerController$1_update: {
         parameters: {
             query?: never;
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
                 id: number;
@@ -929,9 +870,7 @@ export interface operations {
                 skip?: number;
                 take?: number;
             };
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
             };
@@ -952,9 +891,7 @@ export interface operations {
     ProductController$1_update: {
         parameters: {
             query?: never;
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
                 id: string;
@@ -983,9 +920,7 @@ export interface operations {
                 skip?: number;
                 take?: number;
             };
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
             };
@@ -1009,9 +944,7 @@ export interface operations {
                 skip?: number;
                 take?: number;
             };
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
                 customerId: number;
@@ -1037,9 +970,7 @@ export interface operations {
                 take?: number;
                 type?: "SALE" | "PURCHASE";
             };
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
             };
@@ -1060,9 +991,7 @@ export interface operations {
     InvoiceController$1_createSale: {
         parameters: {
             query?: never;
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
             };
@@ -1085,9 +1014,7 @@ export interface operations {
     InvoiceController$1_createPurchase: {
         parameters: {
             query?: never;
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
             };
@@ -1110,9 +1037,7 @@ export interface operations {
     InvoiceController$1_getByCustomerId: {
         parameters: {
             query?: never;
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
                 customerId: number;
@@ -1137,9 +1062,7 @@ export interface operations {
                 skip?: number;
                 take?: number;
             };
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
             };
@@ -1160,9 +1083,7 @@ export interface operations {
     ExpenseController$1_create: {
         parameters: {
             query?: never;
-            header?: {
-                Authorization?: string;
-            };
+            header?: never;
             path: {
                 orgSlug: string;
             };

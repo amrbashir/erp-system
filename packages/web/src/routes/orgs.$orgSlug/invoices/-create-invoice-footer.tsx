@@ -66,7 +66,7 @@ export function InvoiceFooter<TInvoice extends Invoice>({
   );
 
   const subtotal = useMemo(
-    () => calculateInvoiceSubtotal(validInvoiceItems, "SALE"),
+    () => calculateInvoiceSubtotal(validInvoiceItems, invoiceType),
     [validInvoiceItems],
   );
 

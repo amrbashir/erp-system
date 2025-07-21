@@ -1,4 +1,4 @@
-import { CreateOrgDto, LoginUserDto } from "@erp-system/sdk/zod";
+import { CreateOrgDto } from "@erp-system/sdk/zod";
 import { slugify } from "@erp-system/utils";
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
@@ -148,7 +148,7 @@ function LoginForm({
       orgSlug: orgSlug || "",
       username: username || "",
       password: "",
-    } as z.infer<ReturnType<(typeof LoginUserDto)["strict"]>> & { orgSlug: string },
+    },
     onSubmit: async ({ value, formApi }) => {
       const { username, password, orgSlug } = value;
 

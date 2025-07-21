@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
-import { ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
-import Express from "express";
+import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
+import { ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
-import type { JwtPayload } from "../auth/auth.dto";
-import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
+import type { User } from "../prisma/generated/client";
+import { AuthenticatedGuard } from "../auth/auth.authenticated.guard";
+import { AuthUser } from "../auth/auth.user.decorator";
 import { AdminGuard } from "../user/user.admin.guard";
 import { AddBalanceDto, CreateOrgDto, OrganizationEntity } from "./org.dto";
 import { OrgService } from "./org.service";
@@ -20,26 +20,24 @@ export class OrgController {
   }
 
   @Get(":orgSlug")
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @ApiOkResponse({ type: OrganizationEntity })
   async getBySlug(
     @Param("orgSlug") orgSlug: string,
-    @Req() req: Express.Request,
+    @AuthUser("role") role: User["role"],
   ): Promise<OrganizationEntity | null> {
-    const currentUser = req["user"] as JwtPayload;
     const org = await this.orgService.findOrgBySlug(orgSlug);
-    return org ? new OrganizationEntity(org, currentUser.role) : null;
+    return org ? new OrganizationEntity(org, role) : null;
   }
 
   @Post(":orgSlug/addBalance")
   @ApiOkResponse()
-  @UseGuards(JwtAuthGuard, AdminGuard)
+  @UseGuards(AuthenticatedGuard, AdminGuard)
   async addBalance(
     @Param("orgSlug") orgSlug: string,
     @Body() addBalanceDto: AddBalanceDto,
-    @Req() req: Express.Request,
+    @AuthUser("id") userId: string,
   ): Promise<void> {
-    const currentUser = req["user"] as JwtPayload;
-    await this.orgService.addBalance(orgSlug, addBalanceDto, currentUser.sub);
+    await this.orgService.addBalance(orgSlug, addBalanceDto, userId);
   }
 }

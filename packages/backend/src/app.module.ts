@@ -1,10 +1,13 @@
 import { Module, ValidationPipe, VERSION_NEUTRAL, VersioningType } from "@nestjs/common";
 import { HttpAdapterHost } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import session from "express-session";
+import passport from "passport";
 
-import type { INestApplication, NestMiddleware, NestModule } from "@nestjs/common";
+import type { INestApplication } from "@nestjs/common";
 
 import { AuthModule } from "./auth/auth.module";
+import { PrismaSessionStore } from "./auth/auth.session.store";
 import { CustomerModule } from "./customer/customer.module";
 import { ExpenseModule } from "./expense/expense.module";
 import { HealthModule } from "./health/health.module";
@@ -40,22 +43,46 @@ const swaggerConfig = new DocumentBuilder()
   .build();
 
 export function setupApp(app: INestApplication) {
+  // Setup session and passport
+  app.use(
+    session({
+      store: new PrismaSessionStore(app),
+      secret: process.env.SESSION_SECRET!,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        signed: true,
+        sameSite: "strict",
+        secure: process.env.NODE_ENV === "production",
+      },
+    }),
+  );
+
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // Enable versioning
   app.enableVersioning({
     type: VersioningType.HEADER,
     header: "X-Api-Version",
     defaultVersion: [VERSION_NEUTRAL, "1.0.0"],
   });
 
+  // Enable validation globally
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
+  // Setup Prisma client exception filter
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
+  // On development, setup Swagger
   if (process.env.NODE_ENV === "development") {
     const documentFactory = () => SwaggerModule.createDocument(app, swaggerConfig);
     SwaggerModule.setup("api", app, documentFactory, { customSiteTitle: "erp-system api" });
   }
 
+  // Enable shutdown hooks
   app.enableShutdownHooks();
 }
 

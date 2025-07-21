@@ -1,4 +1,3 @@
-import { LoginUserDto } from "@erp-system/sdk/zod";
 import { useMutation } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useState } from "react";
 import { z } from "zod";
@@ -33,10 +32,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // login
   const loginMutation = useMutation({
-    mutationFn: async (value: z.infer<typeof LoginUserDto> & { orgSlug: string }) =>
+    mutationFn: async (value: { username: string; password: string; orgSlug: string }) =>
       apiClient.post("/orgs/{orgSlug}/auth/login", {
         params: { path: { orgSlug: value.orgSlug } },
-        body: value,
+        body: {
+          username: value.username,
+          password: value.password,
+        },
       }),
   });
 

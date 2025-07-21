@@ -1,16 +1,14 @@
-import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import Express from "express";
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from "@nestjs/common";
+import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
-import type { JwtPayload } from "../auth/auth.dto";
-import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
+import type { User } from "../prisma/generated/client";
+import { AuthenticatedGuard } from "../auth/auth.authenticated.guard";
+import { AuthUser } from "../auth/auth.user.decorator";
 import { PaginationDto } from "../pagination.dto";
 import { CreateExpenseDto, ExpenseEntity } from "./expense.dto";
 import { ExpenseService } from "./expense.service";
 
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
-@ApiHeader({ name: "Authorization" })
+@UseGuards(AuthenticatedGuard)
 @ApiTags("expenses")
 @Controller("/orgs/:orgSlug/expenses")
 export class ExpenseController {
@@ -31,10 +29,9 @@ export class ExpenseController {
   async create(
     @Param("orgSlug") orgSlug: string,
     @Body() createExpenseDto: CreateExpenseDto,
-    @Req() req: Express.Request,
+    @AuthUser("id") userId: string,
   ): Promise<ExpenseEntity> {
-    const currentUser = req["user"] as JwtPayload;
-    const expense = await this.service.createExpense(orgSlug, createExpenseDto, currentUser.sub);
+    const expense = await this.service.createExpense(orgSlug, createExpenseDto, userId);
     return new ExpenseEntity(expense);
   }
 }

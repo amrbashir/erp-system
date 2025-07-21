@@ -10,7 +10,7 @@ describe("UserDeletion", async () => {
   beforeAll(runApp);
   afterAll(closeApp);
 
-  let accessToken: string;
+  let cookies: string[];
 
   beforeEach(async () => {
     orgData = generateRandomOrgData();
@@ -31,18 +31,15 @@ describe("UserDeletion", async () => {
       }),
     });
 
-    const data = (await response.json()) as { accessToken: string };
-    accessToken = data.accessToken;
+    expect(response.status).toBe(200);
+    cookies = response.headers.getSetCookie() || [];
   });
 
   it("should delete a user successfully", async () => {
     // Create a user to delete
     const createResponse = await fetch(appUrl + "/orgs/" + orgData.slug + "/users/create", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
+      headers: { "Content-Type": "application/json", Cookie: cookies.join("; ") },
       body: JSON.stringify({
         username: "testuser",
         password: "testpassword",
@@ -55,20 +52,14 @@ describe("UserDeletion", async () => {
     // Get the list of users
     const usersResponse = await fetch(appUrl + "/orgs/" + orgData.slug + "/users", {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
+      headers: { "Content-Type": "application/json", Cookie: cookies.join("; ") },
     });
     const users = (await usersResponse.json()) as { id: string }[];
 
     // Delete the created user
     const response = await fetch(appUrl + "/orgs/" + orgData.slug + "/users/" + users[0].id, {
       method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
+      headers: { "Content-Type": "application/json", Cookie: cookies.join("; ") },
     });
 
     expect(response.status).toBe(200);
@@ -78,10 +69,7 @@ describe("UserDeletion", async () => {
     // Create a user just so that there is more than one user in the org
     const createResponse = await fetch(appUrl + "/orgs/" + orgData.slug + "/users/create", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
+      headers: { "Content-Type": "application/json", Cookie: cookies.join("; ") },
       body: JSON.stringify({
         username: "testuser",
         password: "testpassword",
@@ -93,20 +81,14 @@ describe("UserDeletion", async () => {
     // Get the list of users
     const usersResponse = await fetch(appUrl + "/orgs/" + orgData.slug + "/users", {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
+      headers: { "Content-Type": "application/json", Cookie: cookies.join("; ") },
     });
     const users = (await usersResponse.json()) as { id: string }[];
 
     // Attempt to delete the current user
     const response = await fetch(appUrl + "/orgs/" + orgData.slug + "/users/" + users[1].id, {
       method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
+      headers: { "Content-Type": "application/json", Cookie: cookies.join("; ") },
     });
 
     expect(response.status).toBe(403);

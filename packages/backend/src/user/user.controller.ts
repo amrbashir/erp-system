@@ -7,22 +7,18 @@ import {
   Param,
   Post,
   Query,
-  Req,
   UseGuards,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiHeader, ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import Express from "express";
+import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 
-import type { JwtPayload } from "../auth/auth.dto";
-import { JwtAuthGuard } from "../auth/auth.strategy.jwt";
+import { AuthenticatedGuard } from "../auth/auth.authenticated.guard";
+import { AuthUser } from "../auth/auth.user.decorator";
 import { PaginationDto } from "../pagination.dto";
 import { AdminGuard } from "./user.admin.guard";
 import { CreateUserDto, UserEntity } from "./user.dto";
 import { UserService } from "./user.service";
 
-@UseGuards(JwtAuthGuard, AdminGuard)
-@ApiBearerAuth()
-@ApiHeader({ name: "Authorization" })
+@UseGuards(AuthenticatedGuard, AdminGuard)
 @ApiTags("users")
 @Controller("/orgs/:orgSlug/users")
 export class UserController {
@@ -47,11 +43,9 @@ export class UserController {
   async delete(
     @Param("orgSlug") orgSlug: string,
     @Param("id") id: string,
-    @Req() req: Express.Request,
+    @AuthUser("id") currentUserId: string,
   ): Promise<void> {
-    const currentUser = req["user"] as JwtPayload;
-
-    if (currentUser.sub === id) {
+    if (currentUserId === id) {
       throw new ForbiddenException("You cannot delete your own account");
     }
 

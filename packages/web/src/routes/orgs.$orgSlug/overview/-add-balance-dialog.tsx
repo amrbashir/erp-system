@@ -1,5 +1,6 @@
 import { AddBalanceDto } from "@erp-system/sdk/zod";
 import { useForm } from "@tanstack/react-form";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -30,6 +31,7 @@ export function AddBalanceDialog({ shortLabel = false }: { shortLabel?: boolean 
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const { slug: orgSlug } = useOrg();
+  const client = useQueryClient();
 
   const form = useForm({
     defaultValues: {
@@ -49,6 +51,7 @@ export function AddBalanceDialog({ shortLabel = false }: { shortLabel?: boolean 
         return;
       }
 
+      client.invalidateQueries({ queryKey: ["organizationOverview", orgSlug] });
       formApi.reset();
       setOpen(false);
     },
