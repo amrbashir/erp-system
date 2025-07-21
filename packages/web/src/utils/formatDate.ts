@@ -1,6 +1,8 @@
 import i18n from "@/i18n";
 
-export function formatDate(date: Date | string): string {
+export function formatDate(date: Date | string | null | undefined): string {
+  if (!date) return "";
+
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "2-digit",
