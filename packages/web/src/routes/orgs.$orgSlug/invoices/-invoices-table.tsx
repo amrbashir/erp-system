@@ -66,10 +66,7 @@ export function InvoicesTable({ invoices }: { invoices: Invoice[] | undefined })
               </TableCell>
               <TableCell
                 className={cn(
-                  new Decimal(invoice.remaining).greaterThan(0) &&
-                    (invoice.type === "SALE"
-                      ? "text-red-500 dark:text-red-300"
-                      : "text-blue-500 dark:text-blue-300"),
+                  new Decimal(invoice.remaining).greaterThan(0) && "text-red-500 dark:text-red-300",
                 )}
               >
                 {formatMoney(invoice.remaining)}

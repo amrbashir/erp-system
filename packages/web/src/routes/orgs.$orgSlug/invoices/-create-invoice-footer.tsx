@@ -152,15 +152,7 @@ export function InvoiceFooter<TInvoice extends Invoice>({
 
         <Label>{t("common.form.remaining")}:</Label>
         <span></span>
-        <span
-          className={cn(
-            "text-end",
-            remainingAmount.greaterThan(0) &&
-              (invoiceType === "SALE"
-                ? "text-red-500 dark:text-red-300"
-                : "text-blue-500 dark:text-blue-300"),
-          )}
-        >
+        <span className="text-end text-red-500 dark:text-red-300">
           {formatMoney(remainingAmount)}
         </span>
       </CardContent>

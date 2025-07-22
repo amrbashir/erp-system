@@ -123,9 +123,23 @@ function CustomerInfoCard({ customer }: { customer: Customer }) {
             </TableRow>
             <TableRow>
               <TableCell>{t("customer.amountReceivable")}</TableCell>
-              <TableCell>{customer.details?.amountReceivable}</TableCell>
+              <TableCell
+                className={cn(
+                  new Decimal(customer.details?.amountReceivable ?? 0).greaterThan(0) &&
+                    "text-red-500 dark:text-red-300",
+                )}
+              >
+                {customer.details?.amountReceivable}
+              </TableCell>
               <TableCell>{t("customer.amountPayable")}</TableCell>
-              <TableCell>{customer.details?.amountPayable}</TableCell>
+              <TableCell
+                className={cn(
+                  new Decimal(customer.details?.amountReceivable ?? 0).greaterThan(0) &&
+                    "text-red-500 dark:text-red-300",
+                )}
+              >
+                {customer.details?.amountPayable}
+              </TableCell>
             </TableRow>
           </TableBody>
         </Table>
