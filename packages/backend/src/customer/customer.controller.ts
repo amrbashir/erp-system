@@ -9,8 +9,15 @@ import {
 
 import type { Customer } from "../prisma/generated/client";
 import { AuthenticatedGuard } from "../auth/auth.authenticated.guard";
+import { AuthUser } from "../auth/auth.user.decorator";
 import { PaginationDto } from "../pagination.dto";
-import { CreateCustomerDto, CustomerEntity, UpdateCustomerDto } from "./customer.dto";
+import {
+  CollectMoneyDto,
+  CreateCustomerDto,
+  CustomerEntity,
+  PayMoneyDto,
+  UpdateCustomerDto,
+} from "./customer.dto";
 import { CustomerService } from "./customer.service";
 
 @UseGuards(AuthenticatedGuard)
@@ -56,5 +63,25 @@ export class CustomerController {
     @Body() updateCustomerDto: UpdateCustomerDto,
   ): Promise<Customer> {
     return this.service.updateCustomer(id, updateCustomerDto, orgSlug);
+  }
+
+  @Post(":id/collect")
+  async collect(
+    @Param("orgSlug") orgSlug: string,
+    @Param("id") id: number,
+    @Body() collectDto: CollectMoneyDto,
+    @AuthUser("id") userId: string,
+  ): Promise<void> {
+    await this.service.collectMoney(id, collectDto, orgSlug, userId);
+  }
+
+  @Post(":id/pay")
+  async pay(
+    @Param("orgSlug") orgSlug: string,
+    @Param("id") id: number,
+    @Body() payDto: PayMoneyDto,
+    @AuthUser("id") userId: string,
+  ): Promise<void> {
+    await this.service.payMoney(id, payDto, orgSlug, userId);
   }
 }

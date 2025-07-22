@@ -114,7 +114,7 @@ export class InvoiceService {
           : undefined;
         const transaction = {
           create: {
-            type: TransactionType.EXPENSE,
+            type: TransactionType.INVOICE,
             amount: paid, // Use paid amount for transaction
             cashier,
             customer,
@@ -263,7 +263,7 @@ export class InvoiceService {
         const transaction = {
           create: {
             amount: paid.negated(), // Negative amount because it's a purchase (money going out)
-            type: TransactionType.EXPENSE,
+            type: TransactionType.INVOICE,
             cashier,
             customer,
             organization,

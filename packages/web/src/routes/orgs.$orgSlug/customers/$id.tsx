@@ -10,11 +10,14 @@ import type { CustomerEntity } from "@erp-system/sdk/zod";
 import type z from "zod";
 
 import { apiClient } from "@/api-client";
+import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
+import { formatMoney } from "@/utils/formatMoney";
 
 import { InvoicesTable } from "../invoices/-invoices-table";
 import { TransactionsTable } from "../transactions/-transactions-table";
 import { CustomerDialog } from "./-customer-dialog";
+import { PayOrCollectMoneyDialog } from "./-pay-or-collect-money-dialog";
 
 type Customer = z.infer<typeof CustomerEntity>;
 
@@ -92,17 +95,27 @@ function RouteComponent() {
 function CustomerInfoCard({ customer }: { customer: Customer }) {
   const router = useRouter();
   const { t } = useTranslation();
+  const { slug: orgSlug } = useOrg();
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-2xl">{t("routes.customerDetails")}</CardTitle>
-        <CardAction>
+        <CardTitle>
+          <span className="text-base font-normal">{t("customer.name")}</span>:{" "}
+          <span className="text-3xl">{customer.name}</span>
+        </CardTitle>
+        <CardAction className="flex flex-col md:flex-row gap-2">
+          <PayOrCollectMoneyDialog action="collect" customerId={customer.id} />
+          <PayOrCollectMoneyDialog action="pay" customerId={customer.id} />
           <CustomerDialog
             action="edit"
             shortLabel
             customer={customer}
-            onEdited={() => router.invalidate()}
+            onEdited={() =>
+              router.invalidate({
+                filter: (r) => r.id === `/orgs/${orgSlug}/customers/${customer.id}`,
+              })
+            }
           />
         </CardAction>
       </CardHeader>
@@ -110,36 +123,24 @@ function CustomerInfoCard({ customer }: { customer: Customer }) {
         <Table>
           <TableBody className="border *:*:not-last:border-e *:*:odd:bg-muted *:*:even:w-[50%]">
             <TableRow>
-              <TableCell>{t("customer.name")}</TableCell>
-              <TableCell>{customer.name}</TableCell>
               <TableCell>{t("customer.id")}</TableCell>
               <TableCell>{customer.id}</TableCell>
+              <TableCell>{t("common.form.balance")}</TableCell>
+              <TableCell
+                className={cn(
+                  new Decimal(customer.details?.balance ?? 0).isNegative()
+                    ? "text-red-500 dark:text-red-300"
+                    : "text-green-500 dark:text-green-300",
+                )}
+              >
+                {formatMoney(customer.details?.balance ?? 0, { signDisplay: "exceptZero" })}
+              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>{t("common.form.address")}</TableCell>
               <TableCell>{customer.address}</TableCell>
               <TableCell>{t("common.form.phone")}</TableCell>
               <TableCell>{customer.phone}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>{t("customer.amountReceivable")}</TableCell>
-              <TableCell
-                className={cn(
-                  new Decimal(customer.details?.amountReceivable ?? 0).greaterThan(0) &&
-                    "text-red-500 dark:text-red-300",
-                )}
-              >
-                {customer.details?.amountReceivable}
-              </TableCell>
-              <TableCell>{t("customer.amountPayable")}</TableCell>
-              <TableCell
-                className={cn(
-                  new Decimal(customer.details?.amountReceivable ?? 0).greaterThan(0) &&
-                    "text-red-500 dark:text-red-300",
-                )}
-              >
-                {customer.details?.amountPayable}
-              </TableCell>
             </TableRow>
           </TableBody>
         </Table>

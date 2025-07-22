@@ -10,7 +10,9 @@
       "go": "Go",
       "search": "Search",
       "login": "Login",
-      "logout": "Logout"
+      "logout": "Logout",
+      "collect": "Collect",
+      "pay": "Pay"
     },
     "dates": {
       "date": "Date",
@@ -26,7 +28,7 @@
       "quantity": "Quantity",
       "username": "Username",
       "password": "Password",
-      "moneyAmount": "Amount",
+      "amount": "Amount",
       "price": "Price",
       "role": "Role",
       "barcode": "Barcode",
@@ -133,8 +135,10 @@
     "select": "Select a customer",
     "without": "Without a Customer",
     "id": "Customer ID",
-    "amountReceivable": "Receivable",
-    "amountPayable": "Payable"
+    "collect": "$t(common.actions.collect) Money",
+    "collectDescription": "You can collect money from the customer. Please fill in the details below",
+    "pay": "$t(common.actions.pay) Money",
+    "payDescription": "You can pay money to the customer. Please fill in the details below"
   },
 
   "product": {
@@ -177,17 +181,15 @@
     "types": {
       "INVOICE": "Invoice",
       "EXPENSE": "Expense",
-      "BALANCE_ADDITION": "Balance Addition"
+      "BALANCE_ADDITION": "Balance Addition",
+      "COLLECT_FROM_CUSTOMER": "Collect from Customer",
+      "PAY_TO_CUSTOMER": "Pay to Customer"
     }
   },
 
   "expense": {
     "add": "$t(common.actions.add) Expense",
-    "addDescription": "You can add new expenses to the system. Please fill in the details below",
-    "form": {
-      "description": "$t(common.form.description)",
-      "amount": "$t(common.form.moneyAmount)"
-    }
+    "addDescription": "You can add new expenses to the system. Please fill in the details below"
   },
 
   "errors": {

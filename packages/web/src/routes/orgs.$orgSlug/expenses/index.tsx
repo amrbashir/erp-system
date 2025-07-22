@@ -52,7 +52,7 @@ function RouteComponent() {
               <TableRow className="*:font-bold">
                 <TableHead>{t("common.ui.number")}</TableHead>
                 <TableHead className="w-full">{t("common.form.description")}</TableHead>
-                <TableHead>{t("common.form.price")}</TableHead>
+                <TableHead>{t("common.form.amount")}</TableHead>
                 <TableHead>{t("cashierName")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
               </TableRow>

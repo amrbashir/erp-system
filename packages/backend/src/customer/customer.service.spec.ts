@@ -1,7 +1,7 @@
 import { NotFoundException } from "@nestjs/common";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import type { CreateCustomerDto } from "./customer.dto";
+import type { CollectMoneyDto, CreateCustomerDto } from "./customer.dto";
 import { generateRandomOrgData, useRandomDatabase } from "../../e2e/utils";
 import { InvoiceService } from "../invoice/invoice.service";
 import { OrgService } from "../org/org.service";
@@ -139,14 +139,14 @@ describe("CustomerService", async () => {
     expect(foundCustomer!.id).toBe(customer.id);
     expect(foundCustomer!.name).toBe(createCustomerDto.name);
     expect(foundCustomer!.details).toBeDefined();
-    expect(foundCustomer!.details?.amountReceivable?.toNumber()).toBe(0);
-    expect(foundCustomer!.details?.amountPayable?.toNumber()).toBe(0);
+    expect(foundCustomer!.details?.balance?.toNumber()).toBe(0);
 
     // Get admin user
     const user = await prisma.user.findFirstOrThrow({
       where: { organizationId: org.id, username: "admin" },
     });
 
+    // create an invoice to test details
     const product = await prisma.product.create({
       data: {
         description: "Test Product",
@@ -156,8 +156,6 @@ describe("CustomerService", async () => {
         organization: { connect: { id: org.id } },
       },
     });
-
-    // create an invoice to test details
     const invoice = await invoiceService.createSaleInvoice(
       org.slug,
       {
@@ -183,7 +181,93 @@ describe("CustomerService", async () => {
 
     const updatedCustomer = await service.findCustomerById(customer.id, org.slug);
     expect(updatedCustomer).toBeDefined();
-    expect(updatedCustomer!.details?.amountReceivable?.toNumber()).toBe(90);
-    expect(updatedCustomer!.details?.amountPayable?.toNumber()).toBe(0);
+    expect(updatedCustomer!.details?.balance?.toNumber()).toBe(-90);
+  });
+
+  it("should collect/pay money from/to a customer", async () => {
+    const orgData = generateRandomOrgData();
+    const org = await orgService.create(orgData);
+
+    const createCustomerDto: CreateCustomerDto = {
+      name: "Collect Money Customer",
+      address: "123 Collect St",
+      phone: "4564564567",
+    };
+    const customer = await service.createCustomer(createCustomerDto, org.slug);
+
+    const user = await prisma.user.findFirstOrThrow({
+      where: { organizationId: org.id, username: "admin" },
+    });
+
+    // create a sale invoice so the customer owes us money
+    const product = await prisma.product.create({
+      data: {
+        description: "Test Product",
+        sellingPrice: 100,
+        purchasePrice: 80,
+        stockQuantity: 10,
+        organization: { connect: { id: org.id } },
+      },
+    });
+
+    await invoiceService.createSaleInvoice(
+      org.slug,
+      {
+        items: [
+          {
+            productId: product.id,
+            quantity: 1,
+            price: product.sellingPrice.toString(),
+            discountPercent: 0,
+            discountAmount: "0",
+          },
+        ],
+        discountPercent: 0,
+        discountAmount: "0",
+        paid: "10",
+        customerId: customer.id,
+      },
+      user.id,
+    );
+
+    const updatedCustomer = await service.findCustomerById(customer.id, org.slug);
+    expect(updatedCustomer).toBeDefined();
+    expect(updatedCustomer!.details?.balance?.toNumber()).toBe(-90);
+
+    // Collect money from customer
+    const collectDto: CollectMoneyDto = {
+      amount: "50",
+    };
+    await service.collectMoney(customer.id, collectDto, org.slug, user.id);
+
+    const afterCollectCustomer = await service.findCustomerById(customer.id, org.slug);
+    expect(afterCollectCustomer).toBeDefined();
+    expect(afterCollectCustomer!.details?.balance?.toNumber()).toBe(-40);
+
+    // create a purchase invoice so the customer is owed money
+    await invoiceService.createPurchaseInvoice(
+      org.slug,
+      {
+        items: [
+          {
+            productId: product.id,
+            quantity: 1,
+            purchasePrice: product.purchasePrice.toString(),
+            sellingPrice: product.sellingPrice.toString(),
+            discountPercent: 0,
+            discountAmount: "0",
+          },
+        ],
+        discountPercent: 0,
+        discountAmount: "0",
+        paid: "50",
+        customerId: customer.id,
+      },
+      user.id,
+    );
+
+    const afterPurchaseCustomer = await service.findCustomerById(customer.id, org.slug);
+    expect(afterPurchaseCustomer).toBeDefined();
+    expect(afterPurchaseCustomer!.details?.balance?.toNumber()).toBe(-10);
   });
 });

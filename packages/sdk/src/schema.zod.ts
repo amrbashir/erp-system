@@ -40,9 +40,7 @@ export const LoginResponseDto = z
   .object({ username: z.string(), role: z.enum(["USER", "ADMIN"]), orgSlug: z.string() })
   .passthrough();
 
-export const CustomerDetails = z
-  .object({ amountReceivable: z.string(), amountPayable: z.string() })
-  .passthrough();
+export const CustomerDetails = z.object({ balance: z.string() }).passthrough();
 
 export const CustomerEntity = z
   .object({
@@ -64,6 +62,10 @@ export const CreateCustomerDto = z
 export const UpdateCustomerDto = z
   .object({ name: z.string(), address: z.string().optional(), phone: z.string().optional() })
   .passthrough();
+
+export const CollectMoneyDto = z.object({ amount: z.string() }).passthrough();
+
+export const PayMoneyDto = z.object({ amount: z.string() }).passthrough();
 
 export const ProductEntity = z
   .object({
@@ -92,7 +94,13 @@ export const UpdateProductDto = z
 export const TransactionEntity = z
   .object({
     id: z.number(),
-    type: z.enum(["INVOICE", "EXPENSE", "BALANCE_ADDITION"]),
+    type: z.enum([
+      "INVOICE",
+      "EXPENSE",
+      "BALANCE_ADDITION",
+      "COLLECT_FROM_CUSTOMER",
+      "PAY_TO_CUSTOMER",
+    ]),
     amount: z.string(),
     createdAt: z.string().datetime({ offset: true }),
     cashierUsername: z.string(),

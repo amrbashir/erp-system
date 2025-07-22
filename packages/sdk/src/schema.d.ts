@@ -196,6 +196,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/orgs/{orgSlug}/customers/{id}/collect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CustomerController$1_collect"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/orgs/{orgSlug}/customers/{id}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["CustomerController$1_pay"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/orgs/{orgSlug}/products": {
         parameters: {
             query?: never;
@@ -421,9 +453,7 @@ export interface components {
         };
         CustomerDetails: {
             /** Format: number */
-            amountReceivable: string;
-            /** Format: number */
-            amountPayable: string;
+            balance: string;
         };
         CustomerEntity: {
             id: number;
@@ -447,6 +477,14 @@ export interface components {
             name: string;
             address?: string;
             phone?: string;
+        };
+        CollectMoneyDto: {
+            /** Format: number */
+            amount: string;
+        };
+        PayMoneyDto: {
+            /** Format: number */
+            amount: string;
         };
         ProductEntity: {
             id: string;
@@ -474,7 +512,7 @@ export interface components {
         TransactionEntity: {
             id: number;
             /** @enum {string} */
-            type: "INVOICE" | "EXPENSE" | "BALANCE_ADDITION";
+            type: "INVOICE" | "EXPENSE" | "BALANCE_ADDITION" | "COLLECT_FROM_CUSTOMER" | "PAY_TO_CUSTOMER";
             /** Format: number */
             amount: string;
             /** Format: date-time */
@@ -861,6 +899,54 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CustomerEntity"];
                 };
+            };
+        };
+    };
+    CustomerController$1_collect: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orgSlug: string;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CollectMoneyDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CustomerController$1_pay: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orgSlug: string;
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PayMoneyDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

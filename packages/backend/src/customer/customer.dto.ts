@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsNumberString, IsOptional, IsString } from "class-validator";
 
 import type { CustomerWithDetails } from "./customer.service";
 
@@ -42,14 +42,10 @@ export class UpdateCustomerDto {
 
 export class CustomerDetails {
   @ApiProperty({ format: "number" })
-  amountReceivable?: string;
-
-  @ApiProperty({ format: "number" })
-  amountPayable?: string;
+  balance?: string;
 
   constructor(details: NonNullable<CustomerWithDetails["details"]>) {
-    this.amountReceivable = details.amountReceivable.toString();
-    this.amountPayable = details.amountPayable.toString();
+    this.balance = details.balance.toString();
   }
 }
 
@@ -89,3 +85,12 @@ export class CustomerEntity {
     this.details = customer.details ? new CustomerDetails(customer.details) : undefined;
   }
 }
+
+export class CollectMoneyDto {
+  @ApiProperty({ format: "number" })
+  @IsNumberString()
+  @IsNotEmpty()
+  amount: string;
+}
+
+export class PayMoneyDto extends CollectMoneyDto {}

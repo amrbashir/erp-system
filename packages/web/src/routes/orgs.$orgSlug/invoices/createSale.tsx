@@ -328,7 +328,6 @@ function InvoiceTable({
             item={item}
             index={index}
             products={products}
-            items={items}
             onAdd={onAddItem}
             onReset={onResetItem}
             onUpdateItemField={onUpdateItemField}
@@ -358,7 +357,6 @@ function InvoiceTableRow({
   item,
   index,
   products,
-  items,
   onUpdateItemField,
   onReset,
   onAdd,
@@ -366,7 +364,6 @@ function InvoiceTableRow({
   item: InvoiceItem;
   index: number;
   products: Product[] | undefined;
-  items: InvoiceItem[];
   onUpdateItemField: (index: number, field: keyof InvoiceItem, value: number | string) => void;
   onReset: (index: number) => void;
   onAdd: (index: number, product: Product) => void;
@@ -399,10 +396,7 @@ function InvoiceTableRow({
       <TableCell>{index + 1}</TableCell>
       <TableCell className="p-0">
         <ProductSelector
-          items={(products ?? [])
-            .map((p) => p.barcode)
-            .filter((b) => b !== undefined)
-            .filter((b) => items.every((i) => i.barcode !== b))}
+          items={(products ?? []).map((p) => p.barcode).filter((b) => b !== undefined)}
           value={item.barcode}
           onInputValueChange={(value) => {
             onReset(index);
@@ -416,9 +410,7 @@ function InvoiceTableRow({
       </TableCell>
       <TableCell className="p-0">
         <ProductSelector
-          items={(products ?? [])
-            .map((p) => p.description)
-            .filter((b) => items.every((i) => i.description !== b))}
+          items={(products ?? []).map((p) => p.description)}
           value={item.description}
           onInputValueChange={(value) => {
             onReset(index);

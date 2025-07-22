@@ -79,14 +79,11 @@ export function CustomerDialog({
     },
   });
 
-  const actionLabelShort = action === "edit" ? t("common.actions.edit") : t("common.actions.add");
+  const actionLabelShort = t(`common.actions.${action}`);
   const actionLabel = shortLabel
     ? actionLabelShort
-    : action === "create"
-      ? t("customer.add")
-      : t("customer.edit");
-  const actionDescription =
-    action === "create" ? t("customer.addDescription") : t("customer.editDescription");
+    : t(`customer.${action === "create" ? "add" : "edit"}`);
+  const actionDescription = t(`customer.${action === "create" ? "add" : "edit"}Description`);
   const ActionIcon = action === "create" ? <PlusIcon /> : <EditIcon />;
   const Trigger = iconOnly ? (
     <Button variant="ghost" size="icon" className="p-0">

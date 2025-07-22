@@ -1,15 +1,19 @@
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 
 import type { PaginationDto } from "../pagination.dto";
-import type { Customer } from "../prisma/generated/client";
-import type { CreateCustomerDto, UpdateCustomerDto } from "./customer.dto";
-import { Prisma } from "../prisma/generated/client";
+import type { Customer, Transaction } from "../prisma/generated/client";
+import type {
+  CollectMoneyDto,
+  CreateCustomerDto,
+  PayMoneyDto,
+  UpdateCustomerDto,
+} from "./customer.dto";
+import { Prisma, TransactionType } from "../prisma/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
 
 export type CustomerWithDetails = Customer & {
   details?: {
-    amountReceivable: Prisma.Decimal;
-    amountPayable: Prisma.Decimal;
+    balance: Prisma.Decimal;
   };
 };
 
@@ -55,22 +59,40 @@ export class CustomerService {
       }
 
       const details: CustomerWithDetails["details"] = {
-        amountReceivable: new Prisma.Decimal(0),
-        amountPayable: new Prisma.Decimal(0),
+        balance: new Prisma.Decimal(0),
       };
 
       if (customer) {
-        const purchasesAgg = await prisma.invoice.groupBy({
-          where: { customerId: id, organization: { slug: orgSlug } },
-          by: ["type"],
+        const sales = await prisma.invoice.aggregate({
+          where: { customerId: id, organization: { slug: orgSlug }, type: "SALE" },
           _sum: { remaining: true },
         });
+        const purchases = await prisma.invoice.aggregate({
+          where: { customerId: id, organization: { slug: orgSlug }, type: "PURCHASE" },
+          _sum: { remaining: true },
+        });
+        const moneyCollected = await prisma.transaction.aggregate({
+          where: {
+            customerId: id,
+            organization: { slug: orgSlug },
+            type: TransactionType.COLLECT_FROM_CUSTOMER,
+          },
+          _sum: { amount: true },
+        });
+        const moneyPaid = await prisma.transaction.aggregate({
+          where: {
+            customerId: id,
+            organization: { slug: orgSlug },
+            type: TransactionType.PAY_TO_CUSTOMER,
+          },
+          _sum: { amount: true },
+        });
 
-        const sales = purchasesAgg.find((p) => p.type === "SALE");
-        if (sales) details.amountReceivable = sales._sum.remaining ?? new Prisma.Decimal(0);
-
-        const purchases = purchasesAgg.find((p) => p.type === "PURCHASE");
-        if (purchases) details.amountPayable = purchases._sum.remaining ?? new Prisma.Decimal(0);
+        const amountReceivable = sales._sum.remaining ?? new Prisma.Decimal(0);
+        const amountPayable = purchases._sum.remaining ?? new Prisma.Decimal(0);
+        const amountCollected = moneyCollected._sum.amount ?? new Prisma.Decimal(0);
+        const amountPaid = moneyPaid._sum.amount ?? new Prisma.Decimal(0);
+        details.balance = amountPayable.add(amountCollected).sub(amountReceivable).add(amountPaid);
       }
 
       return { ...customer, details };
@@ -111,5 +133,39 @@ export class CustomerService {
 
       throw error; // Re-throw other errors
     }
+  }
+
+  async collectMoney(
+    id: number,
+    collectDto: CollectMoneyDto,
+    orgSlug: string,
+    userId: string,
+  ): Promise<Transaction> {
+    return this.prisma.transaction.create({
+      data: {
+        type: TransactionType.COLLECT_FROM_CUSTOMER,
+        amount: collectDto.amount,
+        cashier: { connect: { id: userId } },
+        customer: { connect: { id } },
+        organization: { connect: { slug: orgSlug } },
+      },
+    });
+  }
+
+  async payMoney(
+    id: number,
+    collectDto: PayMoneyDto,
+    orgSlug: string,
+    userId: string,
+  ): Promise<Transaction> {
+    return this.prisma.transaction.create({
+      data: {
+        type: TransactionType.PAY_TO_CUSTOMER,
+        amount: new Prisma.Decimal(collectDto.amount).negated(), // Negated because we paying the customer
+        cashier: { connect: { id: userId } },
+        customer: { connect: { id } },
+        organization: { connect: { slug: orgSlug } },
+      },
+    });
   }
 }

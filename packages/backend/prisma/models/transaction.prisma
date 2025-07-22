@@ -2,6 +2,8 @@ enum TransactionType {
   INVOICE
   EXPENSE
   BALANCE_ADDITION
+  COLLECT_FROM_CUSTOMER
+  PAY_TO_CUSTOMER
 }
 
 model Transaction {
