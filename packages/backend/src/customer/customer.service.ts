@@ -8,8 +8,8 @@ import { PrismaService } from "../prisma/prisma.service";
 
 export type CustomerWithDetails = Customer & {
   details?: {
-    owes: Prisma.Decimal;
-    owed: Prisma.Decimal;
+    amountReceivable: Prisma.Decimal;
+    amountPayable: Prisma.Decimal;
   };
 };
 
@@ -55,8 +55,8 @@ export class CustomerService {
       }
 
       const details: CustomerWithDetails["details"] = {
-        owes: new Prisma.Decimal(0),
-        owed: new Prisma.Decimal(0),
+        amountReceivable: new Prisma.Decimal(0),
+        amountPayable: new Prisma.Decimal(0),
       };
 
       if (customer) {
@@ -67,10 +67,16 @@ export class CustomerService {
         });
 
         const sales = purchasesAgg.find((p) => p.type === "SALE");
-        if (sales) details.owes = sales._sum.remaining ?? new Prisma.Decimal(0);
+        if (sales) details.amountReceivable = sales._sum.remaining ?? new Prisma.Decimal(0);
 
         const purchases = purchasesAgg.find((p) => p.type === "PURCHASE");
-        if (purchases) details.owed = purchases._sum.remaining ?? new Prisma.Decimal(0);
+        if (purchases) details.amountPayable = purchases._sum.remaining ?? new Prisma.Decimal(0);
+
+        details.amountPayable = details.amountPayable.minus(details.amountReceivable);
+        if (details.amountPayable.isNegative()) details.amountPayable = new Prisma.Decimal(0);
+
+        details.amountReceivable = details.amountReceivable.minus(details.amountPayable);
+        if (details.amountReceivable.isNegative()) details.amountReceivable = new Prisma.Decimal(0);
       }
 
       return { ...customer, details };

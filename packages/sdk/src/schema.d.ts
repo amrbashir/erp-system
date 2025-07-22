@@ -421,9 +421,9 @@ export interface components {
         };
         CustomerDetails: {
             /** Format: number */
-            owes: string;
+            amountReceivable: string;
             /** Format: number */
-            owed: string;
+            amountPayable: string;
         };
         CustomerEntity: {
             id: number;

@@ -36,9 +36,7 @@
       "discountPercent": "Discount %",
       "discountAmount": "Discount Amount",
       "paid": "Paid",
-      "remaining": "Remaining",
-      "owes": "Owes",
-      "owed": "Owed"
+      "remaining": "Remaining"
     },
     "ui": {
       "loading": "Loading",
@@ -134,7 +132,9 @@
     "search": "$t(common.actions.search) customers...",
     "select": "Select a customer",
     "without": "Without a Customer",
-    "id": "Customer ID"
+    "id": "Customer ID",
+    "amountReceivable": "Receivable",
+    "amountPayable": "Payable"
   },
 
   "product": {
@@ -160,8 +160,8 @@
 
   "invoice": {
     "types": {
-      "sale": "Sale Invoices",
-      "purchase": "Purchase Invoices"
+      "SALE": "Sale",
+      "PURCHASE": "Purchase"
     },
     "number": "Invoice $t(common.ui.number)",
     "type": "Invoice Type",

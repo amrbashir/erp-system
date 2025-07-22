@@ -139,8 +139,8 @@ describe("CustomerService", async () => {
     expect(foundCustomer!.id).toBe(customer.id);
     expect(foundCustomer!.name).toBe(createCustomerDto.name);
     expect(foundCustomer!.details).toBeDefined();
-    expect(foundCustomer!.details?.owes?.toNumber()).toBe(0);
-    expect(foundCustomer!.details?.owed?.toNumber()).toBe(0);
+    expect(foundCustomer!.details?.amountReceivable?.toNumber()).toBe(0);
+    expect(foundCustomer!.details?.amountPayable?.toNumber()).toBe(0);
 
     // Get admin user
     const user = await prisma.user.findFirstOrThrow({
@@ -183,7 +183,7 @@ describe("CustomerService", async () => {
 
     const updatedCustomer = await service.findCustomerById(customer.id, org.slug);
     expect(updatedCustomer).toBeDefined();
-    expect(updatedCustomer!.details?.owes?.toNumber()).toBe(90);
-    expect(updatedCustomer!.details?.owed?.toNumber()).toBe(0);
+    expect(updatedCustomer!.details?.amountReceivable?.toNumber()).toBe(90);
+    expect(updatedCustomer!.details?.amountPayable?.toNumber()).toBe(0);
   });
 });

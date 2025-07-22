@@ -31,6 +31,7 @@ export function InvoicesTable({ invoices }: { invoices: Invoice[] | undefined })
         <TableHeader className="bg-muted">
           <TableRow className="*:font-bold">
             <TableHead>{t("invoice.number")}</TableHead>
+            <TableHead>{t("invoice.type")}</TableHead>
             <TableHead>{t("cashierName")}</TableHead>
             <TableHead>{t("customer.name")}</TableHead>
             <TableHead>{t("common.dates.date")}</TableHead>
@@ -46,17 +47,14 @@ export function InvoicesTable({ invoices }: { invoices: Invoice[] | undefined })
           {invoices.map((invoice, index) => (
             <TableRow key={index}>
               <TableCell>{invoice.id}</TableCell>
+              <TableCell>{t(`invoice.types.${invoice.type}`)}</TableCell>
               <TableCell>{invoice.cashierName}</TableCell>
               <TableCell>{invoice.customerName}</TableCell>
               <TableCell>{formatDate(invoice.createdAt)}</TableCell>
               <TableCell>{formatMoney(invoice.subtotal)}</TableCell>
               <TableCell>{invoice.discountPercent}%</TableCell>
               <TableCell>{formatMoney(invoice.discountAmount)}</TableCell>
-              <TableCell className="font-bold">
-                {formatMoney(
-                  invoice.type === "SALE" ? invoice.total : new Decimal(invoice.total).negated(),
-                )}
-              </TableCell>
+              <TableCell className="font-bold">{formatMoney(invoice.total)}</TableCell>
               <TableCell
                 className={
                   invoice.type === "SALE"
@@ -64,7 +62,7 @@ export function InvoicesTable({ invoices }: { invoices: Invoice[] | undefined })
                     : "text-red-500 dark:text-red-300"
                 }
               >
-                {formatMoney(invoice.paid, { signDisplay: "always" })}
+                {formatMoney(invoice.paid)}
               </TableCell>
               <TableCell
                 className={cn(
@@ -74,9 +72,7 @@ export function InvoicesTable({ invoices }: { invoices: Invoice[] | undefined })
                       : "text-blue-500 dark:text-blue-300"),
                 )}
               >
-                {formatMoney(invoice.remaining, {
-                  signDisplay: new Decimal(invoice.remaining).isZero() ? "auto" : "always",
-                })}
+                {formatMoney(invoice.remaining)}
               </TableCell>
             </TableRow>
           ))}

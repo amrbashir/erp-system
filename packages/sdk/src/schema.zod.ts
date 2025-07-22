@@ -40,7 +40,9 @@ export const LoginResponseDto = z
   .object({ username: z.string(), role: z.enum(["USER", "ADMIN"]), orgSlug: z.string() })
   .passthrough();
 
-export const CustomerDetails = z.object({ owes: z.string(), owed: z.string() }).passthrough();
+export const CustomerDetails = z
+  .object({ amountReceivable: z.string(), amountPayable: z.string() })
+  .passthrough();
 
 export const CustomerEntity = z
   .object({

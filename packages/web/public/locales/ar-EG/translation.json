@@ -36,9 +36,7 @@
       "discountPercent": "نسبة الخصم %",
       "discountAmount": "قيمة الخصم",
       "paid": "المدفوع",
-      "remaining": "المتبقي",
-      "owes": "عليه",
-      "owed": "له"
+      "remaining": "المتبقي"
     },
     "ui": {
       "loading": "جارٍ تحميل",
@@ -138,7 +136,9 @@
     "search": "$t(common.actions.search) العملاء...",
     "select": "اختر عميلًا",
     "without": "بدون عميل",
-    "id": "كود العميل"
+    "id": "كود العميل",
+    "amountReceivable": "عل العميل",
+    "amountPayable": "للعميل"
   },
 
   "product": {
@@ -160,10 +160,11 @@
 
   "invoice": {
     "types": {
-      "sale": "فواتير المبيعات",
-      "purchase": "فواتير المشتريات"
+      "SALE": "مبيعات",
+      "PURCHASE": "مشتريات"
     },
     "number": "$t(common.ui.number) الفاتورة",
+    "type": "نوع الفاتورة",
     "createdSuccessfully": "تم إنشاء الفاتورة بنجاح",
     "addItemsTo": "أضف عناصر إلى الفاتورة",
     "total": "اجمالى الفاتورة",

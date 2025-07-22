@@ -41,17 +41,15 @@ export class UpdateCustomerDto {
 }
 
 export class CustomerDetails {
-  /**  Amount the customer owes to the organization */
   @ApiProperty({ format: "number" })
-  owes?: string;
+  amountReceivable?: string;
 
-  /**  Amount the organization owes to the customer */
   @ApiProperty({ format: "number" })
-  owed?: string;
+  amountPayable?: string;
 
   constructor(details: NonNullable<CustomerWithDetails["details"]>) {
-    this.owes = details.owes ? details.owes.toString() : "0";
-    this.owed = details.owed ? details.owed.toString() : "0";
+    this.amountReceivable = details.amountReceivable.toString();
+    this.amountPayable = details.amountPayable.toString();
   }
 }
 
