@@ -71,12 +71,6 @@ export class CustomerService {
 
         const purchases = purchasesAgg.find((p) => p.type === "PURCHASE");
         if (purchases) details.amountPayable = purchases._sum.remaining ?? new Prisma.Decimal(0);
-
-        details.amountPayable = details.amountPayable.minus(details.amountReceivable);
-        if (details.amountPayable.isNegative()) details.amountPayable = new Prisma.Decimal(0);
-
-        details.amountReceivable = details.amountReceivable.minus(details.amountPayable);
-        if (details.amountReceivable.isNegative()) details.amountReceivable = new Prisma.Decimal(0);
       }
 
       return { ...customer, details };
