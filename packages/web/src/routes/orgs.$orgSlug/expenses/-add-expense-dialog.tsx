@@ -125,7 +125,7 @@ function InputField({
 
   return (
     <div className="flex flex-col gap-3">
-      <Label htmlFor={field.name}>{t(`expense.form.${field.name}` as any)}</Label>
+      <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
       {props.type === "number" ? (
         <InputNumpad
           id={field.name}

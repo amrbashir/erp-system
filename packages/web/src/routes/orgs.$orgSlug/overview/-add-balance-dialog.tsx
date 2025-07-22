@@ -84,7 +84,18 @@ export function AddBalanceDialog({ shortLabel = false }: { shortLabel?: boolean 
         >
           <form.Field
             name="amount"
-            children={(field) => <InputField type="number" isString min={0} field={field} />}
+            children={(field) => (
+              <div className="flex flex-col gap-3">
+                <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
+                <InputNumpad
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+                <FormFieldError field={field} />
+              </div>
+            )}
           />
 
           <form.Subscribe children={(state) => <FormErrors formState={state} />} />
@@ -110,43 +121,5 @@ export function AddBalanceDialog({ shortLabel = false }: { shortLabel?: boolean 
         </form>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function InputField({
-  field,
-  isString = false,
-  ...props
-}: { field: AnyFieldApi; isString?: boolean } & React.ComponentProps<"input">) {
-  const { t } = useTranslation();
-
-  return (
-    <div className="flex flex-col gap-3">
-      <Label htmlFor={field.name}>{t(`expense.form.${field.name}` as any)}</Label>
-      {props.type === "number" ? (
-        <InputNumpad
-          id={field.name}
-          name={field.name}
-          value={field.state.value}
-          onChange={(e) => {
-            if (isString) {
-              field.handleChange(e.target.value);
-            } else {
-              field.handleChange(e.target.valueAsNumber);
-            }
-          }}
-          {...props}
-        />
-      ) : (
-        <Input
-          id={field.name}
-          name={field.name}
-          value={field.state.value}
-          onChange={(e) => field.handleChange(e.target.value)}
-          {...props}
-        />
-      )}
-      <FormFieldError field={field} />
-    </div>
   );
 }
