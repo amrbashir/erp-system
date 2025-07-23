@@ -1,12 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import {
-  IsAlphanumeric,
-  IsAscii,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  MinLength,
-} from "class-validator";
+import { IsAlphanumeric, IsAscii, IsEnum, IsOptional, MinLength } from "class-validator";
 
 import type { User } from "../prisma/generated/client";
 import { UserRole } from "../prisma/generated/client";

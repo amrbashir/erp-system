@@ -6,8 +6,8 @@ import type { Product } from "../prisma/generated/client";
 export class UpdateProductDto {
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   barcode?: string;
 
   @ApiPropertyOptional()

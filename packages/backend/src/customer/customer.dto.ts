@@ -12,13 +12,11 @@ export class CreateCustomerDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
   address?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
   phone?: string;
 }
 
@@ -30,13 +28,11 @@ export class UpdateCustomerDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
   address?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  @IsNotEmpty()
   phone?: string;
 }
 
