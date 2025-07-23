@@ -49,6 +49,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
+
 :root {
   --radius: 0.65rem;
   --background: oklch(1 0 0);
@@ -118,6 +119,24 @@
   --sidebar-ring: oklch(0.488 0.243 264.376);
 }
 
+@layer base {
+  :root {
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+  }
+
+  .dark {
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+  }
+}
+
 :root {
   --header-height: calc(var(--spacing) * 12);
   --fullheight-minus-header: calc(100vh - var(--header-height));
@@ -156,4 +175,12 @@ html[dir="rtl"] [data-slot="sidebar-inset"] {
 }
 html[dir="rtl"] [data-slot="sidebar-menu-sub"] {
   @apply border-l-0 border-s;
+}
+html[dir="rtl"] [data-slot="toggle-group-item"]:first-child {
+}
+html[dir="rtl"] [data-slot="toggle-group-item"]:first-child {
+  @apply rounded-l-none rounded-s-md border-l-0;
+}
+html[dir="rtl"] [data-slot="toggle-group-item"]:last-child {
+  @apply rounded-r-none rounded-e-md border-r-0 border-x!;
 }

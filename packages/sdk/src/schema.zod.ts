@@ -9,8 +9,26 @@ export const CreateOrgDto = z
   })
   .passthrough();
 
+export const BalanceAtDateStisticDto = z
+  .object({ date: z.string().datetime({ offset: true }), balance: z.string() })
+  .passthrough();
+
+export const OrgStatisticsDto = z
+  .object({
+    balance: z.string(),
+    transactionCount: z.number(),
+    balanceAtDate: z.array(BalanceAtDateStisticDto),
+  })
+  .passthrough();
+
 export const OrganizationEntity = z
-  .object({ id: z.string(), name: z.string(), slug: z.string(), balance: z.string().optional() })
+  .object({
+    id: z.string(),
+    name: z.string(),
+    slug: z.string(),
+    balance: z.string().optional(),
+    statistics: OrgStatisticsDto.optional(),
+  })
   .passthrough();
 
 export const AddBalanceDto = z.object({ amount: z.string() }).passthrough();

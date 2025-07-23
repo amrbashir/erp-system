@@ -36,6 +36,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/orgs/{orgSlug}/statistics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["OrgController$1_getStatistics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/orgs/{orgSlug}/addBalance": {
         parameters: {
             query?: never;
@@ -430,11 +446,24 @@ export interface components {
             username: string;
             password: string;
         };
+        BalanceAtDateStisticDto: {
+            /** Format: date-time */
+            date: string;
+            /** Format: number */
+            balance: string;
+        };
+        OrgStatisticsDto: {
+            /** Format: number */
+            balance: string;
+            transactionCount: number;
+            balanceAtDate: components["schemas"]["BalanceAtDateStisticDto"][];
+        };
         OrganizationEntity: {
             id: string;
             name: string;
             slug: string;
             balance?: string;
+            statistics?: components["schemas"]["OrgStatisticsDto"];
         };
         AddBalanceDto: {
             amount: string;
@@ -669,6 +698,27 @@ export interface operations {
         };
     };
     OrgController$1_getBySlug: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                orgSlug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrganizationEntity"];
+                };
+            };
+        };
+    };
+    OrgController$1_getStatistics: {
         parameters: {
             query?: never;
             header?: never;

@@ -43,10 +43,6 @@ export class UpdateCustomerDto {
 export class CustomerDetails {
   @ApiProperty({ format: "number" })
   balance?: string;
-
-  constructor(details: NonNullable<CustomerWithDetails["details"]>) {
-    this.balance = details.balance.toString();
-  }
 }
 
 export class CustomerEntity {
@@ -82,7 +78,7 @@ export class CustomerEntity {
     this.createdAt = customer.createdAt;
     this.updatedAt = customer.updatedAt;
     this.deletedAt = customer.deletedAt || undefined;
-    this.details = customer.details ? new CustomerDetails(customer.details) : undefined;
+    this.details = customer.details;
   }
 }
 

@@ -70,9 +70,11 @@ function RouteComponent() {
   const [{ data: customer }, { data: invoices }, { data: transactions }] = Route.useLoaderData();
   const { t } = useTranslation();
 
+  if (!customer) return null;
+
   return (
     <div className="p-4 flex flex-col gap-4">
-      <CustomerInfoCard customer={customer as Customer} />
+      <CustomerInfoCard customer={customer} />
 
       <Tabs defaultValue="invoices" className="w-full">
         <TabsList>

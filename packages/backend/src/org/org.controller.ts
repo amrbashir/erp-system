@@ -30,6 +30,17 @@ export class OrgController {
     return org ? new OrganizationEntity(org, role) : null;
   }
 
+  @Get(":orgSlug/statistics")
+  @UseGuards(AuthenticatedGuard)
+  @ApiOkResponse({ type: OrganizationEntity })
+  async getStatistics(
+    @Param("orgSlug") orgSlug: string,
+    @AuthUser("role") role: User["role"],
+  ): Promise<OrganizationEntity | null> {
+    const org = await this.orgService.getOrgStatistics(orgSlug);
+    return new OrganizationEntity(org, role);
+  }
+
   @Post(":orgSlug/addBalance")
   @ApiOkResponse()
   @UseGuards(AuthenticatedGuard, AdminGuard)

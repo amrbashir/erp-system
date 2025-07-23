@@ -9,7 +9,7 @@ import {
   MinLength,
 } from "class-validator";
 
-import type { Organization } from "../prisma/generated/client";
+import type { OrganizationWithStatistics } from "./org.service";
 import { UserRole } from "../prisma/generated/client";
 
 export class CreateOrgDto {
@@ -35,6 +35,25 @@ export class CreateOrgDto {
   password: string;
 }
 
+export class BalanceAtDateStisticDto {
+  @ApiProperty()
+  date: Date;
+
+  @ApiProperty({ format: "number" })
+  balance: string;
+}
+
+export class OrgStatisticsDto {
+  @ApiProperty({ format: "number" })
+  balance: string;
+
+  @ApiProperty()
+  transactionCount: number;
+
+  @ApiProperty({ type: [BalanceAtDateStisticDto] })
+  balanceAtDate: BalanceAtDateStisticDto[];
+}
+
 export class OrganizationEntity {
   @ApiProperty()
   id: string;
@@ -48,11 +67,15 @@ export class OrganizationEntity {
   @ApiPropertyOptional()
   balance?: string;
 
-  constructor(org: Organization, userRole: UserRole) {
+  @ApiPropertyOptional({ type: OrgStatisticsDto })
+  statistics?: OrgStatisticsDto;
+
+  constructor(org: OrganizationWithStatistics, userRole: UserRole) {
     this.id = org.id;
     this.name = org.name;
     this.slug = org.slug;
     this.balance = userRole === UserRole.ADMIN ? org.balance?.toString() : undefined;
+    this.statistics = org.statistics;
   }
 }
 

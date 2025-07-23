@@ -5,17 +5,14 @@ import type { Customer, Transaction } from "../prisma/generated/client";
 import type {
   CollectMoneyDto,
   CreateCustomerDto,
+  CustomerDetails,
   PayMoneyDto,
   UpdateCustomerDto,
 } from "./customer.dto";
 import { Prisma, TransactionType } from "../prisma/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
 
-export type CustomerWithDetails = Customer & {
-  details?: {
-    balance: Prisma.Decimal;
-  };
-};
+export type CustomerWithDetails = Customer & { details?: CustomerDetails };
 
 @Injectable()
 export class CustomerService {
@@ -58,9 +55,7 @@ export class CustomerService {
         throw new NotFoundException("Customer with this ID does not exist in the organization");
       }
 
-      const details: CustomerWithDetails["details"] = {
-        balance: new Prisma.Decimal(0),
-      };
+      let customerBalance = new Prisma.Decimal(0);
 
       if (customer) {
         const sales = await prisma.invoice.aggregate({
@@ -92,10 +87,15 @@ export class CustomerService {
         const amountPayable = purchases._sum.remaining ?? new Prisma.Decimal(0);
         const amountCollected = moneyCollected._sum.amount ?? new Prisma.Decimal(0);
         const amountPaid = moneyPaid._sum.amount ?? new Prisma.Decimal(0);
-        details.balance = amountPayable.add(amountCollected).sub(amountReceivable).add(amountPaid);
+        customerBalance = amountPayable.add(amountCollected).sub(amountReceivable).add(amountPaid);
       }
 
-      return { ...customer, details };
+      return {
+        ...customer,
+        details: {
+          balance: customerBalance.toString(),
+        },
+      };
     });
   }
 

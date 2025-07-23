@@ -194,6 +194,14 @@
     "addDescription": "You can add new expenses to the system. Please fill in the details below"
   },
 
+  "overview": {
+    "dailyBalance": "Daily Balance",
+    "dailyBalanceDescription_few": "Daily Balances for the last {{count}} days",
+    "dailyBalanceDescription_many": "Daily Balances for the last {{count}} days",
+    "last7Days": "Last 7 Days",
+    "last30Days": "Last 30 Days"
+  },
+
   "errors": {
     "auth": {
       "incorrectCredentials": "Username or password is incorrect",
