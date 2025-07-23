@@ -1,4 +1,5 @@
 import { ProductEntity, UpdateProductDto } from "@erp-system/sdk/zod";
+import { Slot } from "@radix-ui/react-slot";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { EditIcon, Loader2Icon } from "lucide-react";
@@ -17,6 +18,7 @@ import {
 } from "@/shadcn/components/ui/dialog";
 import { Input } from "@/shadcn/components/ui/input";
 import { Label } from "@/shadcn/components/ui/label";
+import { cn } from "@/shadcn/lib/utils";
 
 import type { AnyFieldApi } from "@tanstack/react-form";
 import type z from "zod";
@@ -29,14 +31,14 @@ import { FormErrors, FormFieldError } from "../../../components/form-errors";
 
 type Product = z.infer<typeof ProductEntity>;
 
-export function ProductDialog({
-  action,
+export function EditProductDialog({
   product,
   iconOnly = false,
+  asMenuItem = false,
 }: {
-  action: "edit";
   product: Product;
   iconOnly?: boolean;
+  asMenuItem?: boolean;
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -76,13 +78,9 @@ export function ProductDialog({
   const actionLabelShort = t("common.actions.edit");
   const actionDescription = t("product.editDescription");
 
-  const Trigger = iconOnly ? (
-    <Button variant="ghost" size="icon">
-      <EditIcon />
-    </Button>
-  ) : (
-    <Button>
-      <EditIcon />
+  const Trigger = (
+    <Button variant="ghost" className={cn(asMenuItem && "w-full h-full justify-start")}>
+      {iconOnly && <EditIcon />}
       {actionLabel}
     </Button>
   );

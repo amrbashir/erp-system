@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { PackageIcon } from "lucide-react";
+import { Edit, PackageIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   Table,
@@ -12,11 +12,14 @@ import {
 } from "@/shadcn/components/ui/table";
 
 import { apiClient } from "@/api-client";
+import { ActionsDropdownMenu } from "@/components/actions-dropdown";
 import { EmptyTable } from "@/components/empty-table";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 import { formatDate } from "@/utils/formatDate";
 import { formatMoney } from "@/utils/formatMoney";
+
+import { EditProductDialog } from "./-edit-product-dialog";
 
 export const Route = createFileRoute("/orgs/$orgSlug/products/")({
   component: RouteComponent,
@@ -52,6 +55,7 @@ function RouteComponent() {
                 <TableHead>{t("common.pricing.purchase")}</TableHead>
                 <TableHead>{t("common.pricing.selling")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -68,6 +72,11 @@ function RouteComponent() {
                     {formatMoney(product.sellingPrice)}
                   </TableCell>
                   <TableCell>{formatDate(product.createdAt)}</TableCell>
+                  <TableCell>
+                    <ActionsDropdownMenu
+                      actions={[{ Component: <EditProductDialog product={product} asMenuItem /> }]}
+                    />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

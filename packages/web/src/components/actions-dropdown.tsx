@@ -18,6 +18,10 @@ import {
   DropdownMenuTrigger,
 } from "@/shadcn/components/ui/dropdown-menu";
 
+export interface ComponentAction {
+  Component: React.ReactElement;
+}
+
 export interface Action {
   label: string;
   onAction: (() => void) | (() => Promise<void>);
@@ -28,7 +32,7 @@ export interface Action {
   variant?: "default" | "destructive";
 }
 
-export function ActionsDropDown({ actions }: { actions: Action[] }) {
+export function ActionsDropdownMenu({ actions }: { actions: (Action | ComponentAction)[] }) {
   const { t } = useTranslation();
 
   const [open, setOpen] = useState(false);
@@ -42,6 +46,8 @@ export function ActionsDropDown({ actions }: { actions: Action[] }) {
   // Handle dropdown action click, either executing the action directly or opening confirmation dialog
   const handleAction = (index: number) => {
     const action = actions[index];
+    if ("Component" in action) return;
+
     if (action.confirm) {
       setOpen(true);
       setSelectedActionIndex(index);
@@ -54,6 +60,8 @@ export function ActionsDropDown({ actions }: { actions: Action[] }) {
   const handleConfirmAction = async () => {
     if (selectedActionIndex) {
       const action = actions[selectedActionIndex];
+      if ("Component" in action) return;
+
       try {
         await action.onAction();
       } finally {
@@ -71,33 +79,39 @@ export function ActionsDropDown({ actions }: { actions: Action[] }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          {actions.map((action, index) => (
-            <DropdownMenuItem
-              key={index}
-              disabled={action.disabled || action.pending}
-              variant={action.variant}
-              onClick={() => handleAction(index)}
-            >
-              {action?.pending && <Loader2Icon className="animate-spin" />}
-              {action.label}
-            </DropdownMenuItem>
-          ))}
+          {actions.map((action, index) =>
+            "Component" in action ? (
+              <DropdownMenuItem asChild>{action.Component}</DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem
+                key={index}
+                disabled={action.disabled || action.pending}
+                variant={action.variant}
+                onClick={() => handleAction(index)}
+              >
+                {action?.pending && <Loader2Icon className="animate-spin" />}
+                {action.label}
+              </DropdownMenuItem>
+            ),
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{t("common.ui.areYouSure")}</AlertDialogTitle>
-        </AlertDialogHeader>
-        <AlertDialogDescription>{selectedAction?.confirmMessage}</AlertDialogDescription>
-        <AlertDialogFooter>
-          <AlertDialogCancel>{t("common.actions.cancel")}</AlertDialogCancel>
-          <Button onClick={handleConfirmAction} disabled={selectedAction?.pending}>
-            {selectedAction?.pending && <Loader2Icon className="animate-spin" />}
-            {selectedAction?.label}
-          </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
+      {selectedAction && !("Component" in selectedAction) && (
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("common.ui.areYouSure")}</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogDescription>{selectedAction?.confirmMessage}</AlertDialogDescription>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.actions.cancel")}</AlertDialogCancel>
+            <Button onClick={handleConfirmAction} disabled={selectedAction?.pending}>
+              {selectedAction?.pending && <Loader2Icon className="animate-spin" />}
+              {selectedAction?.label}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      )}
     </AlertDialog>
   );
 }

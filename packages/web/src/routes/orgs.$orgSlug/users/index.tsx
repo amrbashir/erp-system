@@ -14,7 +14,7 @@ import {
 import { cn } from "@/shadcn/lib/utils";
 
 import { apiClient } from "@/api-client";
-import { ActionsDropDown } from "@/components/actions-dropdown";
+import { ActionsDropdownMenu } from "@/components/actions-dropdown";
 import { EmptyTable } from "@/components/empty-table";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
@@ -81,7 +81,7 @@ function RouteComponent() {
                   <TableCell>{formatDate(user.createdAt)}</TableCell>
                   <TableCell>{formatDate(user.deletedAt)}</TableCell>
                   <TableCell>
-                    <ActionsDropDown
+                    <ActionsDropdownMenu
                       actions={[
                         {
                           label: t("common.actions.delete"),
