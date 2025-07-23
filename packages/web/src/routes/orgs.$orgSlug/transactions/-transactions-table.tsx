@@ -13,6 +13,8 @@ import type { TransactionEntity } from "@erp-system/sdk/zod";
 import type z from "zod";
 
 import { EmptyTable } from "@/components/empty-table";
+import { ButtonLink } from "@/components/ui/ButtonLink";
+import { useOrg } from "@/hooks/use-org";
 import { formatDate } from "@/utils/formatDate";
 import { formatMoney } from "@/utils/formatMoney";
 
@@ -20,6 +22,7 @@ type Transaction = z.infer<typeof TransactionEntity>;
 
 export function TransactionsTable({ transactions }: { transactions: Transaction[] | undefined }) {
   const { t } = useTranslation();
+  const { slug: orgSlug } = useOrg();
 
   return (
     <>
@@ -31,6 +34,7 @@ export function TransactionsTable({ transactions }: { transactions: Transaction[
                 <TableHead>{t("transactionNumber")}</TableHead>
                 <TableHead>{t("transaction.type")}</TableHead>
                 <TableHead>{t("common.form.amount")}</TableHead>
+                <TableHead>{t("invoice.number")}</TableHead>
                 <TableHead>{t("cashierName")}</TableHead>
                 <TableHead>{t("customer.name")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
@@ -50,8 +54,31 @@ export function TransactionsTable({ transactions }: { transactions: Transaction[
                   >
                     {formatMoney(transaction.amount, { signDisplay: "always" })}
                   </TableCell>
+                  <TableCell>
+                    {transaction.invoiceId && (
+                      <ButtonLink
+                        variant="link"
+                        to="/orgs/$orgSlug/invoices/$id"
+                        params={{ id: transaction.invoiceId.toString(), orgSlug }}
+                      >
+                        {transaction.invoiceId}
+                      </ButtonLink>
+                    )}
+                  </TableCell>
                   <TableCell>{transaction.cashierUsername}</TableCell>
-                  <TableCell>{transaction.customerName}</TableCell>
+                  <TableCell>
+                    {transaction.customerId ? (
+                      <ButtonLink
+                        variant="link"
+                        to="/orgs/$orgSlug/customers/$id"
+                        params={{ id: transaction.customerId.toString(), orgSlug }}
+                      >
+                        {transaction.customerName}
+                      </ButtonLink>
+                    ) : (
+                      transaction.customerName
+                    )}
+                  </TableCell>
                   <TableCell>{formatDate(transaction.createdAt)}</TableCell>
                 </TableRow>
               ))}

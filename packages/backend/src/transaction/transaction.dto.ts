@@ -22,12 +22,20 @@ export class TransactionEntity {
   @ApiPropertyOptional()
   customerName?: string;
 
+  @ApiPropertyOptional()
+  customerId?: number;
+
+  @ApiPropertyOptional()
+  invoiceId?: number;
+
   constructor(transaction: TransactionWithRelations) {
     this.id = transaction.id;
     this.type = transaction.type;
     this.amount = transaction.amount.toString();
     this.createdAt = transaction.createdAt;
     this.cashierUsername = transaction.cashier.username;
+    this.customerId = transaction.customer?.id;
     this.customerName = transaction.customer?.name;
+    this.invoiceId = transaction.invoice?.id;
   }
 }

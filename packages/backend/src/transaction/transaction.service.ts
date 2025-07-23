@@ -9,8 +9,28 @@ import type {
 import { PrismaService } from "../prisma/prisma.service";
 
 export type TransactionWithRelations = Transaction & {
-  customer: Customer | null;
-  cashier: User;
+  cashier: { username: string };
+  customer: { name: string; id: number } | null;
+  invoice: { id: number } | null;
+};
+
+const includeTransactionRelations = {
+  cashier: {
+    select: {
+      username: true,
+    },
+  },
+  customer: {
+    select: {
+      id: true,
+      name: true,
+    },
+  },
+  invoice: {
+    select: {
+      id: true,
+    },
+  },
 };
 
 @Injectable()
@@ -36,10 +56,7 @@ export class TransactionService {
         },
         skip: options?.pagination?.skip,
         take: options?.pagination?.take,
-        include: {
-          customer: true,
-          cashier: true,
-        },
+        include: includeTransactionRelations,
         orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
     } catch (error: any) {
@@ -71,10 +88,7 @@ export class TransactionService {
       },
       skip: options?.pagination?.skip,
       take: options?.pagination?.take,
-      include: {
-        customer: true,
-        cashier: true,
-      },
+      include: includeTransactionRelations,
       orderBy: options?.orderBy ?? { createdAt: "desc" },
     });
   }

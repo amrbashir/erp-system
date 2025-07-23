@@ -535,6 +535,8 @@ export interface components {
             createdAt: string;
             cashierUsername: string;
             customerName?: string;
+            customerId?: number;
+            invoiceId?: number;
         };
         InvoiceItemEntity: {
             barcode?: string;

@@ -105,6 +105,8 @@ export const TransactionEntity = z
     createdAt: z.string().datetime({ offset: true }),
     cashierUsername: z.string(),
     customerName: z.string().optional(),
+    customerId: z.number().optional(),
+    invoiceId: z.number().optional(),
   })
   .passthrough();
 
