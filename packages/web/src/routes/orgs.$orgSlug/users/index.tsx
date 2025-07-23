@@ -65,7 +65,7 @@ function RouteComponent() {
             <TableHeader className="bg-muted">
               <TableRow className="*:font-bold">
                 <TableHead>{t("common.ui.number")}</TableHead>
-                <TableHead className="w-full">{t("common.form.username")}</TableHead>
+                <TableHead>{t("common.form.username")}</TableHead>
                 <TableHead>{t("user.role")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
                 <TableHead>{t("common.dates.deletedAt")}</TableHead>
@@ -80,7 +80,7 @@ function RouteComponent() {
                   <TableCell>{t(`user.roles.${user.role}`)}</TableCell>
                   <TableCell>{formatDate(user.createdAt)}</TableCell>
                   <TableCell>{formatDate(user.deletedAt)}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-end">
                     <ActionsDropdownMenu
                       actions={[
                         {

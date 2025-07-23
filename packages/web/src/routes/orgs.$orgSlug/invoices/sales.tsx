@@ -4,6 +4,7 @@ import { PlusIcon } from "lucide-react";
 import { Button } from "@/shadcn/components/ui/button";
 
 import { apiClient } from "@/api-client";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 
@@ -34,12 +35,10 @@ function RouteComponent() {
   return (
     <div className="p-4 flex flex-col gap-4">
       <div>
-        <Button asChild>
-          <Link to="/orgs/$orgSlug/invoices/createSale" params={{ orgSlug }}>
-            <PlusIcon />
-            {i18n.t("routes.invoice.createSale")}
-          </Link>
-        </Button>
+        <ButtonLink to="/orgs/$orgSlug/invoices/createSale" params={{ orgSlug }}>
+          <PlusIcon />
+          {i18n.t("routes.invoice.createSale")}
+        </ButtonLink>
       </div>
 
       <InvoicesTable invoices={invoices} />

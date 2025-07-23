@@ -12,7 +12,8 @@
       "login": "Login",
       "logout": "Logout",
       "collect": "Collect",
-      "pay": "Pay"
+      "pay": "Pay",
+      "view": "View"
     },
     "dates": {
       "date": "Date",
@@ -90,7 +91,8 @@
       "createPurchase": "$t(common.actions.create) Purchase Invoice"
     },
     "overview": "Overview",
-    "customerDetails": "Customer Details"
+    "customerDetails": "Customer Details",
+    "invoiceDetails": "Invoice Details"
   },
 
   "auth": {

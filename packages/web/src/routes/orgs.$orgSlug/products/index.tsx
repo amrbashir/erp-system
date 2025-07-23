@@ -51,7 +51,7 @@ function RouteComponent() {
                 <TableHead>{t("common.ui.number")}</TableHead>
                 <TableHead>{t("common.form.quantity")}</TableHead>
                 <TableHead>{t("common.form.barcode")}</TableHead>
-                <TableHead className="w-full">{t("common.form.description")}</TableHead>
+                <TableHead>{t("common.form.description")}</TableHead>
                 <TableHead>{t("common.pricing.purchase")}</TableHead>
                 <TableHead>{t("common.pricing.selling")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
@@ -72,7 +72,7 @@ function RouteComponent() {
                     {formatMoney(product.sellingPrice)}
                   </TableCell>
                   <TableCell>{formatDate(product.createdAt)}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-end">
                     <ActionsDropdownMenu
                       actions={[{ Component: <EditProductDialog product={product} asMenuItem /> }]}
                     />

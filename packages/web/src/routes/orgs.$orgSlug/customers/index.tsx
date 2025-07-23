@@ -53,27 +53,30 @@ function RouteComponent() {
             <TableHeader className="bg-muted">
               <TableRow className="*:font-bold">
                 <TableHead>{t("customer.id")}</TableHead>
-                <TableHead className="w-full">{t("common.form.name")}</TableHead>
+                <TableHead>{t("common.form.name")}</TableHead>
                 <TableHead>{t("common.form.address")}</TableHead>
                 <TableHead>{t("common.form.phone")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {customers.map((customer, index) => (
                 <TableRow key={index}>
                   <TableCell>{customer.id}</TableCell>
-                  <TableCell>
-                    <ButtonLink
-                      to="/orgs/$orgSlug/customers/$id"
-                      params={{ id: customer.id.toString(), orgSlug }}
-                    >
-                      {customer.name}
-                    </ButtonLink>
-                  </TableCell>
+                  <TableCell>{customer.name}</TableCell>
                   <TableCell>{customer.address}</TableCell>
                   <TableCell>{customer.phone}</TableCell>
                   <TableCell>{formatDate(customer.createdAt)}</TableCell>
+                  <TableCell className="text-end">
+                    <ButtonLink
+                      variant="link"
+                      to="/orgs/$orgSlug/customers/$id"
+                      params={{ id: customer.id.toString(), orgSlug }}
+                    >
+                      {t("common.actions.view")}
+                    </ButtonLink>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

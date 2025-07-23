@@ -51,8 +51,9 @@ function RouteComponent() {
             <TableHeader className="bg-muted">
               <TableRow className="*:font-bold">
                 <TableHead>{t("common.ui.number")}</TableHead>
-                <TableHead className="w-full">{t("common.form.description")}</TableHead>
+                <TableHead>{t("common.form.description")}</TableHead>
                 <TableHead>{t("common.form.amount")}</TableHead>
+                <TableHead>{t("transactionNumber")}</TableHead>
                 <TableHead>{t("cashierName")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
               </TableRow>
@@ -65,6 +66,7 @@ function RouteComponent() {
                   <TableCell className={"text-red-500 dark:text-red-300"}>
                     {formatMoney(expense.amount)}
                   </TableCell>
+                  <TableCell>{expense.transactionId}</TableCell>
                   <TableCell>{expense.cashierName}</TableCell>
                   <TableCell>{formatDate(expense.createdAt)}</TableCell>
                 </TableRow>

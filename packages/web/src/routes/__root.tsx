@@ -10,6 +10,7 @@ import type { UserEntity } from "@erp-system/sdk/zod";
 
 import type { AuthProviderState } from "@/providers/auth";
 import { Header } from "@/components/header";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import i18n from "@/i18n";
 import { ThemeProvider } from "@/providers/theme";
 
@@ -89,9 +90,7 @@ function NotFound404() {
         <p>404 - {t("notFound404")}</p>
         <br />
         <br />
-        <Button asChild>
-          <Link to="/">{t("goBackHome")}</Link>
-        </Button>
+        <ButtonLink to="/">{t("goBackHome")}</ButtonLink>
       </div>
     </main>
   );
@@ -110,9 +109,7 @@ function ErrorComponent({ error }: { error: Error }) {
           <p>{error.message}</p>
           <br />
           <br />
-          <Button asChild>
-            <Link to="/">{t("goBackHome")}</Link>
-          </Button>
+          <ButtonLink to="/">{t("goBackHome")}</ButtonLink>
         </div>
       </main>
     </Layout>

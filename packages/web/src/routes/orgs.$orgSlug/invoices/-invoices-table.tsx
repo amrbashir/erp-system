@@ -14,8 +14,8 @@ import { cn } from "@/shadcn/lib/utils";
 
 import type z from "zod";
 
-import { apiClient } from "@/api-client";
 import { EmptyTable } from "@/components/empty-table";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { useOrg } from "@/hooks/use-org";
 import { formatDate } from "@/utils/formatDate";
 import { formatMoney } from "@/utils/formatMoney";
@@ -24,6 +24,7 @@ type Invoice = z.infer<typeof InvoiceEntity>;
 
 export function InvoicesTable({ invoices }: { invoices: Invoice[] | undefined }) {
   const { t } = useTranslation();
+  const { slug: orgSlug } = useOrg();
 
   return invoices?.length && invoices.length > 0 ? (
     <div className="rounded border">
@@ -41,6 +42,7 @@ export function InvoicesTable({ invoices }: { invoices: Invoice[] | undefined })
             <TableHead>{t("common.form.total")}</TableHead>
             <TableHead>{t("common.form.paid")}</TableHead>
             <TableHead>{t("common.form.remaining")}</TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -70,6 +72,15 @@ export function InvoicesTable({ invoices }: { invoices: Invoice[] | undefined })
                 )}
               >
                 {formatMoney(invoice.remaining)}
+              </TableCell>
+              <TableCell className="text-end">
+                <ButtonLink
+                  variant="link"
+                  to="/orgs/$orgSlug/invoices/$id"
+                  params={{ id: invoice.id.toString(), orgSlug }}
+                >
+                  {t("common.actions.view")}
+                </ButtonLink>
               </TableCell>
             </TableRow>
           ))}

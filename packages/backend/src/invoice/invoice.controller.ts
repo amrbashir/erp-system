@@ -69,4 +69,14 @@ export class InvoiceController {
     });
     return invoices.map((invoice) => new InvoiceEntity(invoice));
   }
+
+  @Get(":id")
+  @ApiOkResponse({ type: InvoiceEntity })
+  async getById(
+    @Param("orgSlug") orgSlug: string,
+    @Param("id") id: number,
+  ): Promise<InvoiceEntity> {
+    const invoice = await this.service.getInvoiceById(orgSlug, id);
+    return new InvoiceEntity(invoice);
+  }
 }

@@ -23,6 +23,7 @@ import type z from "zod";
 import type { AuthUser } from "@/user";
 import { apiClient } from "@/api-client";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { useAuth } from "@/providers/auth";
 
 interface RouteSearch {
@@ -117,11 +118,9 @@ function LoginExistingOrg({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Button asChild className="w-full">
-          <Link to="/orgs/$orgSlug" params={{ orgSlug: user.orgSlug }}>
-            {t("common.actions.go")}
-          </Link>
-        </Button>
+        <ButtonLink className="w-full" to="/orgs/$orgSlug" params={{ orgSlug: user.orgSlug }}>
+          {t("common.actions.go")}
+        </ButtonLink>
 
         <Button variant="outline" className="w-full mt-4" onClick={() => logout()}>
           {t("common.actions.logout")}

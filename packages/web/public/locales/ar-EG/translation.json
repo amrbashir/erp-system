@@ -12,7 +12,8 @@
       "login": "تسجيل الدخول",
       "logout": "تسجيل الخروج",
       "collect": "تحصيل",
-      "pay": "دفع"
+      "pay": "دفع",
+      "view": "عرض"
     },
     "dates": {
       "date": "التاريخ",
@@ -94,7 +95,8 @@
       "createPurchase": "$t(common.actions.create) فاتورة مشتريات"
     },
     "overview": "نظرة عامة",
-    "customerDetails": "تفاصيل العميل"
+    "customerDetails": "تفاصيل العميل",
+    "invoiceDetails": "تفاصيل الفاتورة"
   },
 
   "auth": {

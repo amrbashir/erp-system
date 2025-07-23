@@ -370,4 +370,15 @@ export class InvoiceService {
       },
     });
   }
+
+  async getInvoiceById(orgSlug: string, id: number): Promise<InvoiceWithRelations> {
+    return this.prisma.invoice.findFirstOrThrow({
+      where: { id, organization: { slug: orgSlug } },
+      include: {
+        customer: true,
+        cashier: true,
+        items: true,
+      },
+    });
+  }
 }

@@ -30,7 +30,7 @@ export function TransactionsTable({ transactions }: { transactions: Transaction[
               <TableRow className="*:font-bold">
                 <TableHead>{t("transactionNumber")}</TableHead>
                 <TableHead>{t("transaction.type")}</TableHead>
-                <TableHead className="w-full">{t("common.form.amount")}</TableHead>
+                <TableHead>{t("common.form.amount")}</TableHead>
                 <TableHead>{t("cashierName")}</TableHead>
                 <TableHead>{t("customer.name")}</TableHead>
                 <TableHead>{t("common.dates.createdAt")}</TableHead>
