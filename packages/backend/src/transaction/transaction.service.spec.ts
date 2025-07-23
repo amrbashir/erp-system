@@ -56,8 +56,8 @@ describe("TransactionService", () => {
     expect(result.length).toBe(2);
     expect(result[0].amount.toNumber()).toBe(100);
     expect(result[1].amount.toNumber()).toBe(-200);
-    expect(result[0].cashier.id).toBe(adminUser!.id);
-    expect(result[1].cashier.id).toBe(adminUser!.id);
+    expect(result[0].cashier.username).toBe(adminUser!.username);
+    expect(result[1].cashier.username).toBe(adminUser!.username);
   });
 
   it("should return transactions by customer ID", async () => {
@@ -94,8 +94,8 @@ describe("TransactionService", () => {
     expect(customerTransactions.length).toBe(2);
     expect(customerTransactions[0].amount.toNumber()).toBe(150);
     expect(customerTransactions[1].amount.toNumber()).toBe(-50);
-    expect(customerTransactions[0].cashier.id).toBe(adminUser!.id);
-    expect(customerTransactions[1].cashier.id).toBe(adminUser!.id);
+    expect(customerTransactions[0].cashier.username).toBe(adminUser!.username);
+    expect(customerTransactions[1].cashier.username).toBe(adminUser!.username);
     expect(customerTransactions[0].customer?.id).toBe(customer.id);
     expect(customerTransactions[1].customer?.id).toBe(customer.id);
   });

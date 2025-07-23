@@ -139,7 +139,7 @@ describe("CustomerService", async () => {
     expect(foundCustomer!.id).toBe(customer.id);
     expect(foundCustomer!.name).toBe(createCustomerDto.name);
     expect(foundCustomer!.details).toBeDefined();
-    expect(foundCustomer!.details?.balance?.toNumber()).toBe(0);
+    expect(foundCustomer!.details?.balance).toBe("0");
 
     // Get admin user
     const user = await prisma.user.findFirstOrThrow({
@@ -181,7 +181,7 @@ describe("CustomerService", async () => {
 
     const updatedCustomer = await service.findCustomerById(customer.id, org.slug);
     expect(updatedCustomer).toBeDefined();
-    expect(updatedCustomer!.details?.balance?.toNumber()).toBe(-90);
+    expect(updatedCustomer!.details?.balance).toBe("-90");
   });
 
   it("should collect/pay money from/to a customer", async () => {
@@ -232,7 +232,7 @@ describe("CustomerService", async () => {
 
     const updatedCustomer = await service.findCustomerById(customer.id, org.slug);
     expect(updatedCustomer).toBeDefined();
-    expect(updatedCustomer!.details?.balance?.toNumber()).toBe(-90);
+    expect(updatedCustomer!.details?.balance).toBe("-90");
 
     // Collect money from customer
     const collectDto: CollectMoneyDto = {
@@ -242,7 +242,7 @@ describe("CustomerService", async () => {
 
     const afterCollectCustomer = await service.findCustomerById(customer.id, org.slug);
     expect(afterCollectCustomer).toBeDefined();
-    expect(afterCollectCustomer!.details?.balance?.toNumber()).toBe(-40);
+    expect(afterCollectCustomer!.details?.balance).toBe("-40");
 
     // create a purchase invoice so the customer is owed money
     await invoiceService.createPurchaseInvoice(
@@ -268,6 +268,6 @@ describe("CustomerService", async () => {
 
     const afterPurchaseCustomer = await service.findCustomerById(customer.id, org.slug);
     expect(afterPurchaseCustomer).toBeDefined();
-    expect(afterPurchaseCustomer!.details?.balance?.toNumber()).toBe(-10);
+    expect(afterPurchaseCustomer!.details?.balance).toBe("-10");
   });
 });
