@@ -118,8 +118,8 @@ export function AddUserDialog() {
                 <RolesSelector
                   name={field.name}
                   defaultValue="USER"
-                  options={["USER", "ADMIN"] as UserRole[]}
-                  onChange={(value) => field.handleChange(value as UserRole)}
+                  options={["USER", "ADMIN"]}
+                  onChange={(value) => field.handleChange(value)}
                 />
               )}
             />
@@ -175,23 +175,23 @@ function RolesSelector({
   onChange,
 }: {
   name?: string;
-  defaultValue: string;
-  options: string[];
-  onChange?: (value: string) => void;
+  defaultValue: UserRole;
+  options: UserRole[];
+  onChange?: (value: UserRole) => void;
 }) {
   const { t } = useTranslation();
 
   return (
     <div className="flex flex-col gap-3">
       <Label htmlFor={name}>{t(`common.form.${name}` as any)}</Label>
-      <Select onValueChange={(v) => onChange?.(v)} defaultValue={defaultValue}>
+      <Select onValueChange={(v) => onChange?.(v as UserRole)} defaultValue={defaultValue}>
         <SelectTrigger>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
           {options.map((r) => (
             <SelectItem key={r} value={r}>
-              {t(`user.roles.${r}` as any)}
+              {t(`user.roles.${r}`)}
             </SelectItem>
           ))}
         </SelectContent>

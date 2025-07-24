@@ -114,7 +114,7 @@ function RouteComponent() {
         const validItems = value.items.filter((i) => !!i.description);
         if (validItems.length === 0) return "invoiceMustHaveItems";
 
-        const errors = formApi.parseValuesWithSchema(CreatePurchaseInvoiceDto as any);
+        const errors = formApi.parseValuesWithSchema(CreatePurchaseInvoiceDto);
         if (errors) return errors;
       },
     },
@@ -143,7 +143,7 @@ function RouteComponent() {
   ]);
 
   const handleResetItem = (index: number) => {
-    form.replaceFieldValue("items", index, { ...DEFAULT_INVOICE_ITEM } as any);
+    form.replaceFieldValue("items", index, { ...DEFAULT_INVOICE_ITEM });
     form.validate("change");
   };
 
