@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import * as React from "react";
 
 export function useMediaQuery(query: string): boolean {
-  const [isMatch, setIsMatch] = useState(() => window.matchMedia(query).matches);
+  const [isMatch, setIsMatch] = React.useState(() => window.matchMedia(query).matches);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const mediaQueryList = window.matchMedia(query);
     const documentChangeHandler = () => setIsMatch(mediaQueryList.matches);
     mediaQueryList.addEventListener("change", documentChangeHandler);

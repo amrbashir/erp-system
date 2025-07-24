@@ -1,5 +1,5 @@
 import { CornerDownLeftIcon, DeleteIcon } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import * as React from "react";
 import { Button } from "@/shadcn/components/ui/button";
 import { cn } from "@/shadcn/lib/utils";
 
@@ -36,12 +36,12 @@ export function Numpad({
   min?: number;
   max?: number;
 } & React.ComponentProps<"div">) {
-  const [value, setValue] = useState(outerValue || "0");
-  const [valueAsNumber, setValueAsNumber] = useState(parseFloat(value.toString()));
+  const [value, setValue] = React.useState(outerValue || "0");
+  const [valueAsNumber, setValueAsNumber] = React.useState(parseFloat(value.toString()));
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleKey = useCallback(
+  const handleKey = React.useCallback(
     (key: string) => {
       const currentVal = value.toString();
       let newValue;

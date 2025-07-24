@@ -3,7 +3,7 @@ import { slugify } from "@erp-system/utils";
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Loader2Icon } from "lucide-react";
-import { useRef } from "react";
+import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/components/ui/button";
@@ -41,7 +41,7 @@ function RouteComponent() {
   const { t } = useTranslation();
   const { user, isAuthenticated } = useAuth();
 
-  const loginFormPasswordRef = useRef<HTMLInputElement>(null);
+  const loginFormPasswordRef = React.useRef<HTMLInputElement>(null);
 
   return (
     <main className="w-full px-5 py-10 md:pt-[25%]">

@@ -2,7 +2,7 @@ import { CreateCustomerDto, CustomerEntity } from "@erp-system/sdk/zod";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { EditIcon, Loader2Icon, PlusIcon } from "lucide-react";
-import { useState } from "react";
+import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
 import {
@@ -45,7 +45,7 @@ export function CustomerDialog({
   const { t } = useTranslation();
   const client = useQueryClient();
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const form = useForm({
     defaultValues: {

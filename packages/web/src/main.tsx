@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
-import { StrictMode } from "react";
-import ReactDOM from "react-dom/client";
+import * as React from "react";
+import * as ReactDOM from "react-dom/client";
 
 import { AuthProvider, useAuth } from "@/providers/auth";
 import { routeTree } from "@/routeTree.gen"; // Import the generated route tree
@@ -28,11 +28,11 @@ function App() {
 }
 
 ReactDOM.createRoot(document.body).render(
-  <StrictMode>
+  <React.StrictMode>
     <QueryClientProvider client={new QueryClient()}>
       <AuthProvider>
         <App />
       </AuthProvider>
     </QueryClientProvider>
-  </StrictMode>,
+  </React.StrictMode>,
 );

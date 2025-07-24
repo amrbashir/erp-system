@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Decimal } from "decimal.js";
 import { Building2Icon } from "lucide-react";
-import { useState } from "react";
+import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import {
@@ -103,7 +103,7 @@ function BalanceStatistics({
 }) {
   const { t, i18n } = useTranslation();
 
-  const [timeRange, setTimeRange] = useState("30d");
+  const [timeRange, setTimeRange] = React.useState("30d");
 
   return (
     <Card>

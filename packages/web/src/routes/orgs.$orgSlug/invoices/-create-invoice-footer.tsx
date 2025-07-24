@@ -1,6 +1,6 @@
 import { useStore } from "@tanstack/react-form";
 import { ChevronUpIcon } from "lucide-react";
-import { useMemo } from "react";
+import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/shadcn/components/ui/card";
 import {
@@ -65,7 +65,7 @@ export function InvoiceFooter<TInvoice extends Invoice>({
     ],
   );
 
-  const subtotal = useMemo(
+  const subtotal = React.useMemo(
     () => calculateInvoiceSubtotal(validInvoiceItems, invoiceType),
     [validInvoiceItems],
   );

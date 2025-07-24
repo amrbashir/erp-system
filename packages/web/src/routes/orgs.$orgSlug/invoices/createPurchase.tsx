@@ -8,7 +8,7 @@ import { useForm } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Loader2Icon, PlusIcon, XIcon } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/components/ui/button";
@@ -88,19 +88,19 @@ function RouteComponent() {
   });
 
   // Create lookup maps for faster product retrieval
-  const productsByBarcode = useMemo(
+  const productsByBarcode = React.useMemo(
     () => new Map(products?.map((product) => [product.barcode, product])),
     [products],
   );
-  const productsByBarcodeArray = useMemo(
+  const productsByBarcodeArray = React.useMemo(
     () => Array.from(productsByBarcode.keys()).filter((b) => b !== undefined),
     [products],
   );
-  const productsByDescription = useMemo(
+  const productsByDescription = React.useMemo(
     () => new Map(products?.map((product) => [product.description, product])),
     [products],
   );
-  const productsByDescriptionArray = useMemo(
+  const productsByDescriptionArray = React.useMemo(
     () => Array.from(productsByDescription.keys()),
     [productsByDescription],
   );
@@ -170,7 +170,7 @@ function RouteComponent() {
   });
 
   // Memoize the product selection callbacks to prevent unnecessary re-renders
-  const handleBarcodeProductSelect = useCallback(
+  const handleBarcodeProductSelect = React.useCallback(
     (barcode: string, field: any) => {
       const product = productsByBarcode.get(barcode);
       if (!product) return;
@@ -183,7 +183,7 @@ function RouteComponent() {
     [productsByBarcode],
   );
 
-  const handleDescriptionProductSelect = useCallback(
+  const handleDescriptionProductSelect = React.useCallback(
     (description: string, field: any) => {
       const product = productsByDescription.get(description);
       if (!product) return;

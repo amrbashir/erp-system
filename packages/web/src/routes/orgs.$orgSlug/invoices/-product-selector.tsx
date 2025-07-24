@@ -1,6 +1,6 @@
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-import { useState } from "react";
+import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
 import {
@@ -35,8 +35,8 @@ export function ProductSelector({
   onInputValueChange?: (value: string) => void;
 }) {
   const { t } = useTranslation();
-  const [selected, setSelected] = useState("");
-  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = React.useState("");
+  const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   const handleItemSelect = (item: string) => {

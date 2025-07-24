@@ -1,5 +1,5 @@
 import { EllipsisVerticalIcon, Loader2Icon } from "lucide-react";
-import { useMemo, useState } from "react";
+import * as React from "react";
 import { useTranslation } from "react-i18next";
 import {
   AlertDialog,
@@ -35,10 +35,10 @@ export interface Action {
 export function ActionsDropdownMenu({ actions }: { actions: (Action | ComponentAction)[] }) {
   const { t } = useTranslation();
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
 
-  const [selectedActionIndex, setSelectedActionIndex] = useState<number | null>(null);
-  const selectedAction = useMemo(
+  const [selectedActionIndex, setSelectedActionIndex] = React.useState<number | null>(null);
+  const selectedAction = React.useMemo(
     () => (selectedActionIndex !== null ? actions[selectedActionIndex] : null),
     [selectedActionIndex, actions],
   );

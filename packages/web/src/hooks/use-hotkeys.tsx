@@ -1,13 +1,11 @@
-import { useEffect } from "react";
-
-import type { DependencyList } from "react";
+import * as React from "react";
 
 export function useHotkey(
   key: string,
   handler: (event: KeyboardEvent) => void,
-  deps: DependencyList = [],
+  deps: React.DependencyList = [],
 ): void {
-  useEffect(() => {
+  React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== key) return;
       event.preventDefault();

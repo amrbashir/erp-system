@@ -1,8 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { createContext, useContext, useEffect, useState } from "react";
+import * as React from "react";
 import { z } from "zod";
-
-import type { ReactNode } from "react";
 
 import type { AuthUser } from "@/user";
 import { apiClient } from "@/api-client";
@@ -15,17 +13,17 @@ export interface AuthProviderState {
   logout: (orgSlug: string) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthProviderState | null>(null);
+const AuthContext = React.createContext<AuthProviderState | null>(null);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(getStoredUser());
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = React.useState<AuthUser | null>(getStoredUser());
   const isAuthenticated = !!user;
 
   // Handle storage changes to update the user state
   const storageChange = (e: StorageEvent) =>
     e.key === USER_KEY ? setUser(e.newValue ? getStoredUser() : null) : {};
 
-  useEffect(() => {
+  React.useEffect(() => {
     window.addEventListener("storage", storageChange);
     return () => window.removeEventListener("storage", storageChange);
   }, []);
@@ -78,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
+  const context = React.useContext(AuthContext);
   if (!context) throw new Error("useAuth must be used within an AuthProvider");
   return context;
 };

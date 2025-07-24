@@ -2,7 +2,7 @@ import { AddBalanceDto } from "@erp-system/sdk/zod";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, PlusIcon } from "lucide-react";
-import { useState } from "react";
+import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button";
 import {
@@ -27,7 +27,7 @@ import { FormErrors, FormFieldError } from "../../../components/form-errors";
 
 export function AddBalanceDialog({ shortLabel = false }: { shortLabel?: boolean }) {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
   const { slug: orgSlug } = useOrg();
   const client = useQueryClient();
 

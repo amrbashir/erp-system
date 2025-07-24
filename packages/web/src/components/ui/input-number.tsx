@@ -1,5 +1,5 @@
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import { useImperativeHandle, useRef } from "react";
+import * as React from "react";
 import { Button } from "@/shadcn/components/ui/button";
 import { Input } from "@/shadcn/components/ui/input";
 import { cn } from "@/shadcn/lib/utils";
@@ -12,8 +12,8 @@ export function InputNumber({
 }: {
   variant?: "default" | "ghost";
 } & React.ComponentProps<typeof Input>) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
 
   const stepUp = () => {
     inputRef.current?.stepUp();

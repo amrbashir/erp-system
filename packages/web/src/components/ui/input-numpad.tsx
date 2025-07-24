@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import * as React from "react";
 import { Button } from "@/shadcn/components/ui/button";
 import { Input } from "@/shadcn/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn/components/ui/popover";
@@ -18,8 +18,8 @@ export function InputNumpad({
 }: {
   variant?: "default" | "ghost";
 } & React.ComponentProps<typeof Input>) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [open, setOpen] = useState(false);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const [open, setOpen] = React.useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
