@@ -9,15 +9,11 @@ import { AuthService } from "./auth.service";
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy, "local") {
-  private readonly logger: Logger = new Logger(LocalStrategy.name);
-
   constructor(private readonly authService: AuthService) {
     super({ passReqToCallback: true });
   }
 
   async validate(req: Request, username: string, password: string): Promise<User> {
-    this.logger.verbose(`LocalStrategy: validate called with username: ${username}`);
-
     const orgSlug = req.params["orgSlug"];
     if (!orgSlug) {
       throw new BadRequestException("Organization slug is required for local authentication");

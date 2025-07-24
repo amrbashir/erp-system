@@ -19,18 +19,12 @@ export class PrismaSessionStore extends Store {
     sid: string,
     callback: (err: any, session?: session.SessionData | null) => void,
   ): Promise<void> {
-    this.logger.verbose(`Fetching session for sid: ${sid}`);
-
     const data = await this.prisma.session.findUnique({ where: { sid } });
 
     if (data && data.data) {
-      this.logger.verbose(`Session found for sid: ${sid}`);
-
       callback(null, data.data as unknown as session.SessionData);
       return;
     }
-
-    this.logger.verbose(`No session found for sid: ${sid}`);
 
     callback(null, null);
   }
@@ -40,8 +34,6 @@ export class PrismaSessionStore extends Store {
     session: session.SessionData,
     callback?: (err?: any) => void,
   ): Promise<void> {
-    this.logger.verbose(`Setting session for sid: ${sid}`);
-
     try {
       await this.prisma.session.upsert({
         where: { sid },
@@ -49,27 +41,18 @@ export class PrismaSessionStore extends Store {
         create: { sid, data: session as unknown as InputJsonValue },
       });
 
-      this.logger.verbose(`Session set for sid: ${sid}`);
-
       callback?.();
     } catch (err) {
-      this.logger.error(`Error setting session for sid: ${sid}`, err);
-
       callback?.(err);
     }
   }
 
   async destroy(sid: string, callback?: (err?: any) => void): Promise<void> {
-    this.logger.verbose(`Destroying session for sid: ${sid}`);
-
     try {
       await this.prisma.session.delete({ where: { sid } });
 
-      this.logger.verbose(`Session destroyed for sid: ${sid}`);
-
       callback?.();
     } catch (err) {
-      this.logger.warn(`Error destroying session for sid: ${sid}`, err);
       callback?.();
     }
   }
