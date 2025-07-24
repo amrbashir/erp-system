@@ -1,18 +1,12 @@
-import {
-  CreateSaleInvoiceDto,
-  CreateSaleInvoiceItemDto,
-  CustomerEntity,
-  ProductEntity,
-} from "@erp-system/sdk/zod";
-import { useForm, useStore } from "@tanstack/react-form";
+import { CreateSaleInvoiceDto, CreateSaleInvoiceItemDto, ProductEntity } from "@erp-system/sdk/zod";
+import { useForm } from "@tanstack/react-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Loader2Icon, PlusIcon, XIcon } from "lucide-react";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Button } from "@/shadcn/components/ui/button";
-import { Card } from "@/shadcn/components/ui/card";
 import {
   Table,
   TableBody,
@@ -22,14 +16,12 @@ import {
   TableRow,
 } from "@/shadcn/components/ui/table";
 
-import type { ReactFormApi } from "@tanstack/react-form";
 import type z from "zod";
 
 import { apiClient } from "@/api-client";
 import { FormErrors } from "@/components/form-errors";
+import { Hotkey } from "@/components/ui/hotkey";
 import { InputNumpad } from "@/components/ui/input-numpad";
-import { Hotkey } from "@/components/ui/kbd";
-import { useHotkeys } from "@/hooks/use-hotkeys";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 import { formatMoney } from "@/utils/formatMoney";
@@ -54,23 +46,22 @@ export const Route = createFileRoute("/orgs/$orgSlug/invoices/createSale")({
 });
 
 // Types
-type AnyReactFormApi = ReactFormApi<any, any, any, any, any, any, any, any, any, any>;
 type CreateInvoiceItem = z.infer<typeof CreateSaleInvoiceItemDto>;
 type Product = z.infer<typeof ProductEntity>;
-type Customer = z.infer<typeof CustomerEntity>;
-type Invoice = z.infer<ReturnType<(typeof CreateSaleInvoiceDto)["strict"]>> & {
-  items?: (CreateInvoiceItem & Product)[];
+type Invoice = Omit<z.infer<typeof CreateSaleInvoiceDto>, "items"> & {
+  items: (CreateInvoiceItem & Partial<Product>)[];
 };
-type InvoiceItem = Invoice["items"][number];
 
 const DEFAULT_INVOICE_ITEM = {
+  productId: "",
+  quantity: 1,
   barcode: "",
   description: "",
-  quantity: 1,
-  purchasePrice: "0",
   price: "0",
   sellingPrice: "0",
-  productId: "",
+  stockQuantity: 0,
+  discountPercent: 0,
+  discountAmount: "0",
 };
 
 function RouteComponent() {
@@ -78,7 +69,7 @@ function RouteComponent() {
   const { t } = useTranslation();
   const client = useQueryClient();
 
-  const params = useMemo(() => ({ path: { orgSlug } }), [orgSlug]);
+  const params = { path: { orgSlug } };
 
   const { data: products } = useQuery({
     queryKey: ["products", orgSlug],
@@ -91,6 +82,24 @@ function RouteComponent() {
     queryFn: async () => apiClient.getThrowing("/orgs/{orgSlug}/customers", { params }),
     select: (res) => res.data,
   });
+
+  // Create lookup maps for faster product retrieval
+  const productsByBarcode = useMemo(
+    () => new Map(products?.map((product) => [product.barcode, product])),
+    [products],
+  );
+  const productsByBarcodeArray = useMemo(
+    () => Array.from(productsByBarcode.keys()).filter((b) => b !== undefined),
+    [products],
+  );
+  const productsByDescription = useMemo(
+    () => new Map(products?.map((product) => [product.description, product])),
+    [products],
+  );
+  const productsByDescriptionArray = useMemo(
+    () => Array.from(productsByDescription.keys()),
+    [productsByDescription],
+  );
 
   const form = useForm({
     defaultValues: {
@@ -116,15 +125,15 @@ function RouteComponent() {
       },
 
       onSubmit: ({ value, formApi }) => {
-        const validItems = value.items.filter((i) => !!i.description || !!i.productId);
+        const validItems = value.items.filter((i) => !!i.productId);
         if (validItems.length === 0) return "invoiceMustHaveItems";
 
-        const errors = formApi.parseValuesWithSchema(CreateSaleInvoiceDto as any);
+        const errors = formApi.parseValuesWithSchema(CreateSaleInvoiceDto);
         if (errors) return errors;
       },
     },
     onSubmit: async ({ value, formApi }) => {
-      const validItems = value.items.filter((i) => !!i.description || !!i.productId);
+      const validItems = value.items.filter((i) => !!i.productId);
 
       const { error } = await apiClient.post("/orgs/{orgSlug}/invoices/createSale", {
         params: { path: { orgSlug } },
@@ -151,57 +160,255 @@ function RouteComponent() {
     },
   });
 
-  const [invoiceItems, validInvoiceItems] = useStore(form.store, (state) => [
-    state.values.items,
-    state.values.items.filter((i) => !!i.description && i.quantity > 0),
-  ]);
-
-  const handleResetItem = (index: number) => {
-    form.replaceFieldValue("items", index, { ...DEFAULT_INVOICE_ITEM } as any);
-    form.validate("change");
-  };
-
-  const addEmptyItem = () => {
-    form.pushFieldValue("items", { ...DEFAULT_INVOICE_ITEM } as any);
-    form.validate("change");
-  };
-
-  const handleAddItem = (index: number, product: Product) => {
-    form.replaceFieldValue("items", index, {
-      ...DEFAULT_INVOICE_ITEM,
-      ...product,
-      productId: product.id,
-      price: product.sellingPrice,
-    });
-    form.validate("change");
-  };
-
-  const handleUpdateItemField = (
-    index: number,
-    field: keyof InvoiceItem,
-    value: number | string,
-  ) => {
-    const newItems = [...form.getFieldValue("items")];
-    form.replaceFieldValue("items", index, {
-      ...newItems[index],
-      [field]: value,
-    });
-    form.validate("change");
-  };
-
-  useHotkeys(
-    {
-      F7: (event) => {
-        event.preventDefault();
-        form.reset();
-      },
-      F8: (event) => {
-        event.preventDefault();
-        form.handleSubmit();
-      },
+  // Memoize the product selection callbacks to prevent unnecessary re-renders
+  const handleBarcodeProductSelect = useCallback(
+    (barcode: string, field: any) => {
+      const product = productsByBarcode.get(barcode);
+      if (!product) return;
+      field.setValue({
+        ...DEFAULT_INVOICE_ITEM,
+        ...product,
+        productId: product.id,
+        price: product.sellingPrice,
+      });
     },
-    [form],
+    [productsByBarcode],
   );
+
+  const handleDescriptionProductSelect = useCallback(
+    (description: string, field: any) => {
+      const product = productsByDescription.get(description);
+      if (!product) return;
+      field.setValue({
+        ...DEFAULT_INVOICE_ITEM,
+        ...product,
+        productId: product.id,
+        price: product.sellingPrice,
+      });
+    },
+    [productsByDescription],
+  );
+
+  const InvoiceHeader = () => (
+    <div className="h-fit flex flex-col md:flex-row md:justify-between gap-2">
+      <form.Field
+        name="customerId"
+        children={(field) => (
+          <CustomerSelector
+            customers={customers}
+            name={field.name}
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
+          />
+        )}
+      />
+
+      <div className="flex gap-2 justify-end *:flex-1 md:*:flex-none">
+        <form.Subscribe
+          selector={(state) => [
+            state.canSubmit,
+            state.isSubmitting,
+            state.values.items.some((item) => item.productId),
+          ]}
+          children={([canSubmit, isSubmitting, hasValidItems]) => (
+            <>
+              <Button
+                type="button"
+                disabled={isSubmitting}
+                variant="secondary"
+                onClick={() => form.reset()}
+              >
+                <Hotkey hotkey="F7" onHotkey={() => form.reset()} />
+                {t("common.actions.delete")}
+              </Button>
+              <Button disabled={!canSubmit || !hasValidItems}>
+                {isSubmitting && <Loader2Icon className="animate-spin" />}
+                <Hotkey hotkey="F8" onHotkey={() => form.handleSubmit()} />
+                {t("common.actions.create")}
+              </Button>
+            </>
+          )}
+        />
+      </div>
+    </div>
+  );
+
+  const InvoiceTableHeader = () => (
+    <TableHeader className="bg-muted sticky top-0 z-10">
+      <TableRow className="*:font-bold">
+        <TableHead></TableHead>
+        <TableHead>{t("common.ui.number")}</TableHead>
+        <TableHead className="min-w-3xs">{t("common.form.barcode")}</TableHead>
+        <TableHead className="min-w-3xs">{t("common.form.description")}</TableHead>
+        <TableHead className="w-40">{t("common.form.quantity")}</TableHead>
+        <TableHead className="w-40">{t("common.form.price")}</TableHead>
+        <TableHead>{t("common.form.subtotal")}</TableHead>
+        <TableHead className="w-40">{t("common.form.discountPercent")}</TableHead>
+        <TableHead></TableHead>
+        <TableHead className="w-40">{t("common.form.discountAmount")}</TableHead>
+        <TableHead>{t("common.form.total")}</TableHead>
+      </TableRow>
+    </TableHeader>
+  );
+
+  const ResetItemButton = ({
+    className,
+    variant,
+    ...props
+  }: React.ComponentProps<typeof Button>) => (
+    <Button
+      type="button"
+      variant="ghost"
+      className="w-9 rounded-none text-red-500 dark:text-red-300"
+      {...props}
+    >
+      <XIcon className="size-4" />
+    </Button>
+  );
+
+  const InvoiceTableRow = ({ index }: { index: number }) => {
+    return (
+      <form.Field
+        name={`items[${index}]`}
+        children={(itemField) => {
+          const item = itemField.state.value;
+          const itemSubtotal = calculateItemSubtotal(item.price, item.quantity);
+          const { percentDiscount } = calculateItemDiscount(
+            itemSubtotal,
+            item.discountPercent,
+            item.discountAmount,
+          );
+          const itemTotal = calculateItemTotal(
+            item.price,
+            item.quantity,
+            item.discountPercent,
+            item.discountAmount,
+          );
+
+          return (
+            <TableRow className="*:not-last:border-e">
+              <TableCell className="p-0 w-0">
+                <ResetItemButton onClick={() => itemField.setValue({ ...DEFAULT_INVOICE_ITEM })} />
+              </TableCell>
+              <TableCell>{index + 1}</TableCell>
+              <TableCell className="p-0">
+                <form.Field
+                  name={`items[${index}].barcode`}
+                  children={(field) => (
+                    <ProductSelector
+                      items={productsByBarcodeArray}
+                      value={field.state.value}
+                      onInputValueChange={(value: string) => field.handleChange(value)}
+                      onItemSelect={(barcode) => handleBarcodeProductSelect(barcode, itemField)}
+                    />
+                  )}
+                />
+              </TableCell>
+              <TableCell className="p-0">
+                <form.Field
+                  name={`items[${index}].description`}
+                  children={(field) => (
+                    <ProductSelector
+                      items={productsByDescriptionArray}
+                      value={field.state.value}
+                      onInputValueChange={(value: string) => field.handleChange(value)}
+                      onItemSelect={(description) =>
+                        handleDescriptionProductSelect(description, itemField)
+                      }
+                    />
+                  )}
+                />
+              </TableCell>
+              <TableCell className="p-0">
+                <form.Field
+                  name={`items[${index}].quantity`}
+                  children={(field) => (
+                    <InputNumpad
+                      variant="ghost"
+                      className="w-20"
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.valueAsNumber)}
+                      min={1}
+                      max={itemField.state.value.stockQuantity}
+                    />
+                  )}
+                />
+              </TableCell>
+              <TableCell className="p-0">
+                <form.Field
+                  name={`items[${index}].price`}
+                  children={(field) => (
+                    <InputNumpad
+                      variant="ghost"
+                      className="w-20"
+                      value={new SafeDecimal(field.state.value).toNumber()}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      min={0}
+                    />
+                  )}
+                />
+              </TableCell>
+              <TableCell className="font-semibold">{formatMoney(itemSubtotal)}</TableCell>
+              <TableCell className="p-0">
+                <form.Field
+                  name={`items[${index}].discountPercent`}
+                  children={(field) => (
+                    <InputNumpad
+                      variant="ghost"
+                      className="w-20"
+                      value={field.state.value || 0}
+                      onChange={(e) => field.handleChange(e.target.valueAsNumber)}
+                      min={0}
+                      max={100}
+                    />
+                  )}
+                />
+              </TableCell>
+              <TableCell>{formatMoney(percentDiscount)}</TableCell>
+              <TableCell className="p-0">
+                <form.Field
+                  name={`items[${index}].discountAmount`}
+                  children={(field) => (
+                    <InputNumpad
+                      variant="ghost"
+                      value={new SafeDecimal(field.state.value || 0).toNumber()}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      min={0}
+                      max={itemSubtotal.minus(percentDiscount).toNumber()}
+                    />
+                  )}
+                />
+              </TableCell>
+              <TableCell className="font-bold">{formatMoney(itemTotal)}</TableCell>
+            </TableRow>
+          );
+        }}
+      />
+    );
+  };
+
+  const AddNewRowButton = ({
+    className,
+    variant,
+    ...props
+  }: React.ComponentProps<typeof Button>) => {
+    const { t } = useTranslation();
+    return (
+      <TableRow>
+        <TableCell colSpan={11} className="p-0">
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full rounded-none bg-secondary/50"
+            {...props}
+          >
+            <PlusIcon />
+            {t("invoice.addRow")}
+          </Button>
+        </TableCell>
+      </TableRow>
+    );
+  };
 
   return (
     <form
@@ -212,257 +419,33 @@ function RouteComponent() {
         form.handleSubmit();
       }}
     >
-      <InvoiceHeader
-        form={form}
-        customers={customers}
-        hasItems={validInvoiceItems.length > 0}
-        onReset={() => form.reset()}
-      />
+      <InvoiceHeader />
 
       <div className="h-full overflow-hidden flex flex-col *:flex-1 *:basis-0 border rounded">
-        <InvoiceTable
-          items={invoiceItems}
-          products={products}
-          onAddItem={handleAddItem}
-          onAddEmptyItem={addEmptyItem}
-          onResetItem={handleResetItem}
-          onUpdateItemField={handleUpdateItemField}
-        />
+        <Table>
+          <InvoiceTableHeader />
+
+          <TableBody>
+            <form.Field
+              name="items"
+              mode="array"
+              children={(field) => (
+                <>
+                  {field.state.value.map((_, index) => (
+                    <InvoiceTableRow key={index} index={index} />
+                  ))}
+
+                  <AddNewRowButton onClick={() => field.pushValue({ ...DEFAULT_INVOICE_ITEM })} />
+                </>
+              )}
+            />
+          </TableBody>
+        </Table>
       </div>
 
       <form.Subscribe children={(state) => <FormErrors formState={state} />} />
 
       <InvoiceFooter invoiceType="SALE" form={form} />
     </form>
-  );
-}
-
-// Header component with customer select and action buttons
-function InvoiceHeader({
-  form,
-  customers,
-  hasItems,
-  onReset,
-}: {
-  form: AnyReactFormApi;
-  customers: Customer[] | undefined;
-  hasItems: boolean;
-  onReset: () => void;
-}) {
-  const { t } = useTranslation();
-
-  return (
-    <div className="h-fit flex flex-col md:flex-row md:justify-between gap-2">
-      <form.Field
-        name="customerId"
-        children={(field) => <CustomerSelector customers={customers} field={field} />}
-      />
-      <div className="flex gap-2 justify-end *:flex-1 md:*:flex-none">
-        <form.Subscribe
-          selector={(state) => [state.canSubmit, state.isSubmitting]}
-          children={([canSubmit, isSubmitting]) => (
-            <>
-              <Button
-                type="button"
-                disabled={isSubmitting}
-                variant="secondary"
-                onClick={() => onReset()}
-              >
-                <Hotkey>F7</Hotkey>
-                {t("common.actions.delete")}
-              </Button>
-              <Button disabled={!canSubmit || !hasItems}>
-                {isSubmitting && <Loader2Icon className="animate-spin" />}
-                <Hotkey>F8</Hotkey>
-                {t("common.actions.create")}
-              </Button>
-            </>
-          )}
-        />
-      </div>
-    </div>
-  );
-}
-
-// Main invoice table component
-function InvoiceTable({
-  items,
-  products,
-  onAddItem,
-  onAddEmptyItem,
-  onResetItem,
-  onUpdateItemField,
-  ...props
-}: {
-  items: InvoiceItem[];
-  products: Product[] | undefined;
-  onAddItem: (index: number, product: Product) => void;
-  onAddEmptyItem: () => void;
-  onResetItem: (index: number) => void;
-  onUpdateItemField: (index: number, field: keyof InvoiceItem, value: number | string) => void;
-} & React.ComponentProps<typeof Table>) {
-  const { t } = useTranslation();
-
-  return (
-    <Table {...props}>
-      <TableHeader className="bg-muted sticky top-0 z-10">
-        <TableRow className="*:font-bold">
-          <TableHead></TableHead>
-          <TableHead>{t("common.ui.number")}</TableHead>
-          <TableHead className="min-w-3xs">{t("common.form.barcode")}</TableHead>
-          <TableHead className="min-w-3xs">{t("common.form.description")}</TableHead>
-          <TableHead className="w-40">{t("common.form.quantity")}</TableHead>
-          <TableHead className="w-40">{t("common.form.price")}</TableHead>
-          <TableHead>{t("common.form.subtotal")}</TableHead>
-          <TableHead className="w-40">{t("common.form.discountPercent")}</TableHead>
-          <TableHead></TableHead>
-          <TableHead className="w-40">{t("common.form.discountAmount")}</TableHead>
-          <TableHead>{t("common.form.total")}</TableHead>
-        </TableRow>
-      </TableHeader>
-
-      <TableBody>
-        {items.map((item, index) => (
-          <InvoiceTableRow
-            key={index}
-            item={item}
-            index={index}
-            products={products}
-            onAdd={onAddItem}
-            onReset={onResetItem}
-            onUpdateItemField={onUpdateItemField}
-          />
-        ))}
-
-        <TableRow>
-          <TableCell colSpan={11} className="p-0">
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full rounded-none bg-secondary/50"
-              onClick={() => onAddEmptyItem()}
-            >
-              <PlusIcon />
-              {t("invoice.addRow")}
-            </Button>
-          </TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
-  );
-}
-
-// Invoice table row component
-function InvoiceTableRow({
-  item,
-  index,
-  products,
-  onUpdateItemField,
-  onReset,
-  onAdd,
-}: {
-  item: InvoiceItem;
-  index: number;
-  products: Product[] | undefined;
-  onUpdateItemField: (index: number, field: keyof InvoiceItem, value: number | string) => void;
-  onReset: (index: number) => void;
-  onAdd: (index: number, product: Product) => void;
-}) {
-  const itemSubtotal = calculateItemSubtotal(item.price, item.quantity);
-  const { percentDiscount } = calculateItemDiscount(
-    itemSubtotal,
-    item.discountPercent,
-    item.discountAmount,
-  );
-  const itemTotal = calculateItemTotal(
-    item.price,
-    item.quantity,
-    item.discountPercent,
-    item.discountAmount,
-  );
-
-  return (
-    <TableRow className="*:not-last:border-e">
-      <TableCell className="p-0 w-0">
-        <Button
-          type="button"
-          variant="ghost"
-          className="w-9 rounded-none text-red-500 dark:text-red-300"
-          onClick={() => onReset(index)}
-        >
-          <XIcon className="size-4" />
-        </Button>
-      </TableCell>
-      <TableCell>{index + 1}</TableCell>
-      <TableCell className="p-0">
-        <ProductSelector
-          items={(products ?? []).map((p) => p.barcode).filter((b) => b !== undefined)}
-          value={item.barcode}
-          onInputValueChange={(value) => {
-            onReset(index);
-            onUpdateItemField(index, "barcode", value);
-          }}
-          onItemSelect={(item) => {
-            const product = products?.find((i) => i.barcode === item);
-            if (product) onAdd(index, product);
-          }}
-        />
-      </TableCell>
-      <TableCell className="p-0">
-        <ProductSelector
-          items={(products ?? []).map((p) => p.description)}
-          value={item.description}
-          onInputValueChange={(value) => {
-            onReset(index);
-            onUpdateItemField(index, "description", value);
-          }}
-          onItemSelect={(item) => {
-            const product = products?.find((i) => i.description === item);
-            if (product) onAdd(index, product);
-          }}
-        />
-      </TableCell>
-      <TableCell className="p-0">
-        <InputNumpad
-          variant="ghost"
-          className="w-20"
-          value={item.quantity}
-          onChange={(e) => onUpdateItemField(index, "quantity", e.target.valueAsNumber)}
-          min={1}
-          max={item.stockQuantity}
-        />
-      </TableCell>
-      <TableCell className="p-0">
-        <InputNumpad
-          variant="ghost"
-          className="w-20"
-          value={new SafeDecimal(item.price).toNumber()}
-          onChange={(e) => onUpdateItemField(index, "price", e.target.value)}
-          min={0}
-        />
-      </TableCell>
-      <TableCell className="font-semibold">{formatMoney(itemSubtotal)}</TableCell>
-      <TableCell className="p-0">
-        <InputNumpad
-          variant="ghost"
-          className="w-20"
-          value={item.discountPercent || 0}
-          onChange={(e) => onUpdateItemField(index, "discountPercent", e.target.valueAsNumber)}
-          min={0}
-          max={100}
-        />
-      </TableCell>
-      <TableCell>{formatMoney(percentDiscount)}</TableCell>
-      <TableCell className="p-0">
-        <InputNumpad
-          variant="ghost"
-          value={new SafeDecimal(item.discountAmount || 0).toNumber()}
-          onChange={(e) => onUpdateItemField(index, "discountAmount", e.target.value)}
-          min={0}
-          max={itemSubtotal.toNumber()}
-        />
-      </TableCell>
-      <TableCell className="font-bold">{formatMoney(itemTotal)}</TableCell>
-    </TableRow>
   );
 }
