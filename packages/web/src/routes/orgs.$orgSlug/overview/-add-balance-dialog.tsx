@@ -15,10 +15,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/shadcn/components/ui/dialog";
-import { Input } from "@/shadcn/components/ui/input";
 import { Label } from "@/shadcn/components/ui/label";
 
-import type { AnyFieldApi } from "@tanstack/react-form";
 import type z from "zod";
 
 import { apiClient } from "@/api-client";
@@ -36,7 +34,7 @@ export function AddBalanceDialog({ shortLabel = false }: { shortLabel?: boolean 
   const form = useForm({
     defaultValues: {
       amount: "0",
-    } as z.infer<ReturnType<(typeof AddBalanceDto)["strict"]>>,
+    } as z.infer<typeof AddBalanceDto>,
     validators: {
       onSubmit: AddBalanceDto,
     },

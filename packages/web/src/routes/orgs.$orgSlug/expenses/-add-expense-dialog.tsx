@@ -18,7 +18,6 @@ import {
 import { Input } from "@/shadcn/components/ui/input";
 import { Label } from "@/shadcn/components/ui/label";
 
-import type { AnyFieldApi } from "@tanstack/react-form";
 import type z from "zod";
 
 import { apiClient } from "@/api-client";
@@ -37,7 +36,7 @@ export function AddExpenseDialog() {
     defaultValues: {
       description: "",
       amount: "0",
-    } as z.infer<ReturnType<(typeof CreateExpenseDto)["strict"]>>,
+    } as z.infer<typeof CreateExpenseDto>,
     validators: {
       onSubmit: CreateExpenseDto,
     },
@@ -84,10 +83,36 @@ export function AddExpenseDialog() {
             form.handleSubmit();
           }}
         >
-          <form.Field name="description" children={(field) => <InputField field={field} />} />
+          <form.Field
+            name="description"
+            children={(field) => (
+              <div className="flex flex-col gap-3">
+                <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
+
+                <Input
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+                <FormFieldError field={field} />
+              </div>
+            )}
+          />
           <form.Field
             name="amount"
-            children={(field) => <InputField type="number" isString min={0} field={field} />}
+            children={(field) => (
+              <div className="flex flex-col gap-3">
+                <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
+                <InputNumpad
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+                <FormFieldError field={field} />
+              </div>
+            )}
           />
 
           <form.Subscribe children={(state) => <FormErrors formState={state} />} />
@@ -113,43 +138,5 @@ export function AddExpenseDialog() {
         </form>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function InputField({
-  field,
-  isString = false,
-  ...props
-}: { field: AnyFieldApi; isString?: boolean } & React.ComponentProps<"input">) {
-  const { t } = useTranslation();
-
-  return (
-    <div className="flex flex-col gap-3">
-      <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
-      {props.type === "number" ? (
-        <InputNumpad
-          id={field.name}
-          name={field.name}
-          value={field.state.value}
-          onChange={(e) => {
-            if (isString) {
-              field.handleChange(e.target.value);
-            } else {
-              field.handleChange(e.target.valueAsNumber);
-            }
-          }}
-          {...props}
-        />
-      ) : (
-        <Input
-          id={field.name}
-          name={field.name}
-          value={field.state.value}
-          onChange={(e) => field.handleChange(e.target.value)}
-          {...props}
-        />
-      )}
-      <FormFieldError field={field} />
-    </div>
   );
 }

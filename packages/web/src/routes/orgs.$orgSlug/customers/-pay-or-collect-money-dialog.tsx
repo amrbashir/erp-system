@@ -44,7 +44,7 @@ export function PayOrCollectMoneyDialog({
   const form = useForm({
     defaultValues: {
       amount: "0",
-    } as z.infer<ReturnType<(typeof ActionDto)["strict"]>>,
+    } as z.infer<typeof ActionDto>,
     validators: {
       onSubmit: ActionDto,
     },

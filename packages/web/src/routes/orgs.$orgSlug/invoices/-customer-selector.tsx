@@ -15,7 +15,6 @@ import { Label } from "@/shadcn/components/ui/label";
 import { PopoverContent, PopoverTrigger } from "@/shadcn/components/ui/popover";
 
 import type { CustomerEntity } from "@erp-system/sdk/zod";
-import type { AnyFieldApi } from "@tanstack/react-form";
 import type z from "zod";
 
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -27,10 +26,14 @@ type Customer = z.infer<typeof CustomerEntity>;
 // Customer selection dropdown component
 export function CustomerSelector({
   customers = [],
-  field,
+  name,
+  value,
+  onChange,
 }: {
   customers: Customer[] | undefined;
-  field: AnyFieldApi;
+  name?: string;
+  value?: number;
+  onChange?: (value: number | undefined) => void;
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -38,22 +41,18 @@ export function CustomerSelector({
   const [customerSearch, setCustomerSearch] = useState("");
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  const handleCustomerCreated = useCallback(
-    (customer: Customer) => {
-      field.handleChange(customer.id);
-      setSelectedCustomer(customer.name);
-      setOpen(false);
-    },
-    [field],
-  );
+  const handleCustomerCreated = (customer: Customer) => {
+    setSelectedCustomer(customer.name);
+    onChange?.(customer.id);
+    setOpen(false);
+  };
 
-  const handleCustomerSelect = useCallback(
-    (customer: Customer | undefined) => {
-      field.handleChange(customer?.id);
-      setOpen(false);
-    },
-    [field],
-  );
+  const handleCustomerSelect = (customer: Customer | undefined) => {
+    onChange?.(customer?.id);
+    setOpen(false);
+  };
+
+  const selectedCustomerName = customers?.find((c) => c.id === value)?.name;
 
   const ButtonTrigger = (
     <Button
@@ -62,11 +61,7 @@ export function CustomerSelector({
       aria-expanded={open}
       className="w-full md:w-sm flex-1 justify-between"
     >
-      {field.state.value ? (
-        customers?.find((c) => c.id === field.state.value)?.name
-      ) : (
-        <span className="opacity-50">{t("customer.without")}</span>
-      )}
+      {value ? selectedCustomerName : <span className="opacity-50">{t("customer.without")}</span>}
       <ChevronsUpDownIcon className="opacity-50" />
     </Button>
   );
@@ -93,7 +88,7 @@ export function CustomerSelector({
       <CommandList>
         <CommandEmpty>{t("common.ui.noMatches")}</CommandEmpty>
         <CommandItem onSelect={() => handleCustomerSelect(undefined)}>
-          <CheckIcon className={field.state.value === undefined ? "opacity-100" : "opacity-0"} />
+          <CheckIcon className={value === undefined ? "opacity-100" : "opacity-0"} />
           {t("customer.without")}
         </CommandItem>
         {customers.map((customer) => (
@@ -102,9 +97,7 @@ export function CustomerSelector({
             value={customer.name}
             onSelect={() => handleCustomerSelect(customer)}
           >
-            <CheckIcon
-              className={field.state.value === customer.id ? "opacity-100" : "opacity-0"}
-            />
+            <CheckIcon className={value === customer.id ? "opacity-100" : "opacity-0"} />
             {customer.name}
           </CommandItem>
         ))}
@@ -115,7 +108,7 @@ export function CustomerSelector({
   if (isDesktop) {
     return (
       <div className="flex gap-2">
-        <Label htmlFor={field.name}>{t("customer.name")}</Label>
+        <Label htmlFor={name}>{t("customer.name")}</Label>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>{ButtonTrigger}</PopoverTrigger>
           <PopoverContent asChild>{CustomersCommandList}</PopoverContent>

@@ -18,7 +18,6 @@ import {
 import { Input } from "@/shadcn/components/ui/input";
 import { Label } from "@/shadcn/components/ui/label";
 
-import type { AnyFieldApi } from "@tanstack/react-form";
 import type z from "zod";
 
 import { apiClient } from "@/api-client";
@@ -53,7 +52,7 @@ export function CustomerDialog({
       name: customer?.name,
       address: customer?.address,
       phone: customer?.phone,
-    } as z.infer<ReturnType<(typeof CreateCustomerDto)["strict"]>>,
+    } as z.infer<typeof CreateCustomerDto>,
     validators: {
       onSubmit: CreateCustomerDto,
     },
@@ -120,9 +119,52 @@ export function CustomerDialog({
             form.handleSubmit();
           }}
         >
-          <form.Field name="name" children={(field) => <InputField field={field} />} />
-          <form.Field name="phone" children={(field) => <InputField field={field} />} />
-          <form.Field name="address" children={(field) => <InputField field={field} />} />
+          <form.Field
+            name="name"
+            children={(field) => (
+              <div className="flex flex-col gap-3">
+                <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
+                <Input
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+                <FormFieldError field={field} />
+              </div>
+            )}
+          />
+          <form.Field
+            name="phone"
+            children={(field) => (
+              <div className="flex flex-col gap-3">
+                <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
+                <Input
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  type="tel"
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+                <FormFieldError field={field} />
+              </div>
+            )}
+          />
+          <form.Field
+            name="address"
+            children={(field) => (
+              <div className="flex flex-col gap-3">
+                <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
+                <Input
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+                <FormFieldError field={field} />
+              </div>
+            )}
+          />
 
           <form.Subscribe children={(state) => <FormErrors formState={state} />} />
 
@@ -147,24 +189,5 @@ export function CustomerDialog({
         </form>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function InputField({ field, ...props }: { field: AnyFieldApi } & React.ComponentProps<"input">) {
-  const { t } = useTranslation();
-
-  return (
-    <div className="flex flex-col gap-3">
-      <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
-      <Input
-        id={field.name}
-        name={field.name}
-        value={field.state.value}
-        type={field.name === "phone" ? "tel" : "text"}
-        onChange={(e) => field.handleChange(e.target.value)}
-        {...props}
-      />
-      <FormFieldError field={field} />
-    </div>
   );
 }

@@ -27,9 +27,8 @@ import type z from "zod";
 
 import { apiClient } from "@/api-client";
 import { FormErrors } from "@/components/form-errors";
+import { Hotkey } from "@/components/ui/hotkey";
 import { InputNumpad } from "@/components/ui/input-numpad";
-import { Hotkey } from "@/components/ui/kbd";
-import { useHotkeys } from "@/hooks/use-hotkeys";
 import { useOrg } from "@/hooks/use-org";
 import i18n from "@/i18n";
 import { formatMoney } from "@/utils/formatMoney";
@@ -56,11 +55,8 @@ export const Route = createFileRoute("/orgs/$orgSlug/invoices/createPurchase")({
 // Types
 type AnyReactFormApi = ReactFormApi<any, any, any, any, any, any, any, any, any, any>;
 type Product = z.infer<typeof ProductEntity>;
-type CreateInvoiceItem = z.infer<typeof CreatePurchaseInvoiceItemDto>;
 type Customer = z.infer<typeof CustomerEntity>;
-type Invoice = z.infer<ReturnType<(typeof CreatePurchaseInvoiceDto)["strict"]>> & {
-  items?: CreateInvoiceItem[];
-};
+type Invoice = z.infer<typeof CreatePurchaseInvoiceDto>;
 type InvoiceItem = Invoice["items"][number];
 
 const DEFAULT_INVOICE_ITEM = {
@@ -178,19 +174,57 @@ function RouteComponent() {
     form.validate("change");
   };
 
-  useHotkeys(
-    {
-      F7: (event) => {
-        event.preventDefault();
-        form.reset();
-      },
-      F8: (event) => {
-        event.preventDefault();
-        form.handleSubmit();
-      },
-    },
-    [form],
-  );
+  function InvoiceHeader({
+    customers,
+    hasItems,
+    onReset,
+  }: {
+    customers: Customer[] | undefined;
+    hasItems: boolean;
+    onReset: () => void;
+  }) {
+    const { t } = useTranslation();
+
+    return (
+      <div className="h-fit flex flex-col md:flex-row md:justify-between gap-2">
+        <form.Field
+          name="customerId"
+          children={(field) => (
+            <CustomerSelector
+              customers={customers}
+              name={field.name}
+              value={field.state.value}
+              onChange={(value) => field.handleChange(value)}
+            />
+          )}
+        />
+
+        <div className="flex gap-2 justify-end *:flex-1 md:*:flex-none">
+          <form.Subscribe
+            selector={(state) => [state.canSubmit, state.isSubmitting]}
+            children={([canSubmit, isSubmitting]) => (
+              <>
+                <Button
+                  type="button"
+                  disabled={isSubmitting}
+                  variant="secondary"
+                  onClick={() => onReset()}
+                >
+                  <Hotkey hotkey="F7" onHotkey={() => form.reset()} />
+                  {t("common.actions.delete")}
+                </Button>
+                <Button disabled={!canSubmit || !hasItems}>
+                  {isSubmitting && <Loader2Icon className="animate-spin" />}
+                  <Hotkey hotkey="F8" onHotkey={() => form.handleSubmit()} />
+                  {t("common.actions.create")}
+                </Button>
+              </>
+            )}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form
@@ -202,7 +236,6 @@ function RouteComponent() {
       }}
     >
       <InvoiceHeader
-        form={form}
         customers={customers}
         hasItems={validInvoiceItems.length > 0}
         onReset={() => form.reset()}
@@ -223,55 +256,6 @@ function RouteComponent() {
 
       <InvoiceFooter invoiceType="PURCHASE" form={form} />
     </form>
-  );
-}
-
-// Header component with customer select and action buttons
-function InvoiceHeader({
-  form,
-  customers,
-  hasItems,
-  onReset,
-}: {
-  form: AnyReactFormApi;
-  customers: Customer[] | undefined;
-  hasItems: boolean;
-  onReset: () => void;
-}) {
-  const { t } = useTranslation();
-
-  return (
-    <div className="h-fit flex flex-col md:flex-row md:justify-between gap-2">
-      <form.Field
-        name="customerId"
-        children={(field) => <CustomerSelector customers={customers} field={field} />}
-      />
-
-      <div className="flex gap-2 justify-end *:flex-1 md:*:flex-none">
-        <form.Subscribe
-          selector={(state) => [state.canSubmit, state.isSubmitting]}
-          children={([canSubmit, isSubmitting]) => (
-            <>
-              <Button
-                type="button"
-                disabled={isSubmitting}
-                variant="secondary"
-                onClick={() => onReset()}
-              >
-                <Hotkey>F7</Hotkey>
-
-                {t("common.actions.delete")}
-              </Button>
-              <Button disabled={!canSubmit || !hasItems}>
-                {isSubmitting && <Loader2Icon className="animate-spin" />}
-                <Hotkey>F8</Hotkey>
-                {t("common.actions.create")}
-              </Button>
-            </>
-          )}
-        />
-      </div>
-    </div>
   );
 }
 

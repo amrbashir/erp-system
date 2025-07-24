@@ -3,7 +3,7 @@ import { useRouterState } from "@tanstack/react-router";
 import type { OrganizationEntity } from "@erp-system/sdk/zod";
 import type z from "zod";
 
-type Organization = z.infer<ReturnType<(typeof OrganizationEntity)["strict"]>>;
+type Organization = z.infer<typeof OrganizationEntity>;
 
 export function useOrg<TStrict extends boolean = true>(options?: {
   strict?: TStrict;

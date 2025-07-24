@@ -24,9 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shadcn/components/ui/select";
-import { cn } from "@/shadcn/lib/utils";
 
-import type { AnyFieldApi } from "@tanstack/react-form";
 import type z from "zod";
 
 import type { UserRole } from "@/user";
@@ -48,7 +46,7 @@ export function AddUserDialog() {
       username: "",
       password: "",
       role: "USER" as UserRole,
-    } as z.infer<ReturnType<(typeof CreateUserDto)["strict"]>>,
+    } as z.infer<typeof CreateUserDto>,
     validators: {
       onSubmit: CreateUserDto,
     },
@@ -101,17 +99,48 @@ export function AddUserDialog() {
           <div className="flex w-full items-center gap-2">
             <form.Field
               name="username"
-              children={(field) => <InputField className="w-full" field={field} />}
+              children={(field) => (
+                <div className="w-full flex flex-col gap-3">
+                  <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                  <FormFieldError field={field} />
+                </div>
+              )}
             />
             <form.Field
               name="role"
               children={(field) => (
-                <RolesSelector field={field} options={["USER", "ADMIN"] as UserRole[]} />
+                <RolesSelector
+                  name={field.name}
+                  defaultValue="USER"
+                  options={["USER", "ADMIN"] as UserRole[]}
+                  onChange={(value) => field.handleChange(value as UserRole)}
+                />
               )}
             />
           </div>
 
-          <form.Field name="password" children={(field) => <InputField field={field} />} />
+          <form.Field
+            name="password"
+            children={(field) => (
+              <div className="flex flex-col gap-3">
+                <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
+                <Input
+                  id={field.name}
+                  name={field.name}
+                  value={field.state.value}
+                  type="password"
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+                <FormFieldError field={field} />
+              </div>
+            )}
+          />
 
           <form.Subscribe children={(state) => <FormErrors formState={state} />} />
 
@@ -139,35 +168,23 @@ export function AddUserDialog() {
   );
 }
 
-function InputField({
-  field,
-  className,
-  ...props
-}: { field: AnyFieldApi } & React.ComponentProps<"input">) {
-  const { t } = useTranslation();
-
-  return (
-    <div className={cn("flex flex-col gap-3", className)} {...props}>
-      <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
-      <Input
-        id={field.name}
-        name={field.name}
-        value={field.state.value}
-        type={field.name === "password" ? "password" : "text"}
-        onChange={(e) => field.handleChange(e.target.value)}
-      />
-      <FormFieldError field={field} />
-    </div>
-  );
-}
-
-function RolesSelector({ field, options }: { field: AnyFieldApi; options: string[] }) {
+function RolesSelector({
+  name,
+  defaultValue,
+  options,
+  onChange,
+}: {
+  name?: string;
+  defaultValue: string;
+  options: string[];
+  onChange?: (value: string) => void;
+}) {
   const { t } = useTranslation();
 
   return (
     <div className="flex flex-col gap-3">
-      <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
-      <Select onValueChange={(e) => field.handleChange(e)} defaultValue={field.state.value}>
+      <Label htmlFor={name}>{t(`common.form.${name}` as any)}</Label>
+      <Select onValueChange={(v) => onChange?.(v)} defaultValue={defaultValue}>
         <SelectTrigger>
           <SelectValue />
         </SelectTrigger>

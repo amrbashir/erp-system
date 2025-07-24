@@ -263,7 +263,7 @@ function CreateNewOrganizationCard({
       slug: "",
       username: "",
       password: "",
-    } as z.infer<ReturnType<(typeof CreateOrgDto)["strict"]>>,
+    } as z.infer<typeof CreateOrgDto>,
     validators: {
       onSubmit: CreateOrgDto,
       onChange: ({ value, formApi }) => {
