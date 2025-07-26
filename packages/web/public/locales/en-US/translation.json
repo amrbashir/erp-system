@@ -47,6 +47,7 @@
       "oops": "Oops!",
       "areYouSure": "Are you sure?",
       "number": "No.",
+      "count": "Count",
       "or": "or",
       "row": "Row",
       "noMatches": "No matching item found"
@@ -266,5 +267,6 @@
   "notFound404": "Sorry, the page you are looking for does not exist",
   "transactionNumber": "Transaction $t(common.ui.number)",
   "cashierName": "Cashier $t(common.form.name)",
-  "adminSection": "Admin Section"
+  "adminSection": "Admin Section",
+  "transactionCount": "Transactions $t(common.ui.count)"
 }

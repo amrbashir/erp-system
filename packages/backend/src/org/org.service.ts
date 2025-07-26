@@ -100,6 +100,8 @@ export class OrgService {
       throw new NotFoundException("Organization with this slug does not exist");
     }
 
+    const transactionCount = org.transactions.length;
+
     // Get today's date and set to the beginning of the day
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -135,7 +137,7 @@ export class OrgService {
 
     const statistics = {
       balance: currentBalance.toString(),
-      transactionCount: org.transactions.length,
+      transactionCount,
       balanceAtDate: balanceAtDate
         .entries()
         .map(([date, balance]) => ({

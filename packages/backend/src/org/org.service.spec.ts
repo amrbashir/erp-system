@@ -4,7 +4,7 @@ import argon2 from "argon2";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { generateRandomOrgData, useRandomDatabase } from "../../e2e/utils";
-import { UserRole } from "../prisma/generated/client";
+import { Prisma, UserRole } from "../prisma/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { TransactionService } from "../transaction/transaction.service";
 import { UserService } from "../user/user.service";
@@ -128,5 +128,56 @@ describe("OrgService", async () => {
     expect(transactions[1].amount.toNumber()).toBe(10);
     expect(transactions[0].cashierId).toBe(adminUser!.id);
     expect(transactions[1].cashierId).toBe(adminUser!.id);
+  });
+
+  it("should return correct statistics for an organization", async () => {
+    const orgData = generateRandomOrgData();
+    const org = await service.create(orgData);
+    const adminUser = await userService.findByUsernameInOrg("admin", org.slug);
+
+    function createTransaction(amount: string, createdAt: Date) {
+      return prisma.$transaction(async (prisma) => {
+        await prisma.transaction.create({
+          data: {
+            type: "INVOICE",
+            amount: new Prisma.Decimal(amount),
+            cashierId: adminUser!.id,
+            organizationId: org.id,
+            createdAt,
+          },
+        });
+
+        await prisma.organization.update({
+          where: { slug: org.slug },
+          data: { balance: { increment: new Prisma.Decimal(amount) } },
+        });
+      });
+    }
+
+    // create 30 transactions in the last month, 2 each day
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    for (let i = 0; i < 30; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      await createTransaction("10", date);
+      await createTransaction("20", date);
+    }
+
+    const { statistics } = await service.getOrgStatistics(orgData.slug);
+
+    const _30daysEarlier = new Date(today);
+    _30daysEarlier.setDate(today.getDate() - 29);
+    _30daysEarlier.setHours(0, 0, 0, 0);
+
+    expect(statistics).toBeDefined();
+    expect(statistics?.transactionCount).toBe(60);
+    expect(statistics?.balance).toBe("900");
+    expect(statistics?.balanceAtDate.length).toBe(30);
+    expect(statistics?.balanceAtDate[0].date).toEqual(_30daysEarlier);
+    expect(statistics?.balanceAtDate[0].balance).toBe("30");
+    expect(statistics?.balanceAtDate[14].balance).toBe("450");
+    expect(statistics?.balanceAtDate[29].date).toEqual(new Date(today));
+    expect(statistics?.balanceAtDate[29].balance).toBe("900");
   });
 });

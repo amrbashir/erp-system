@@ -25,7 +25,6 @@ export const OrganizationEntityWithStatistics = z.object({
   name: z.string(),
   slug: z.string(),
   statistics: OrgStatisticsDto,
-  balance: z.string(),
 });
 
 export const AddBalanceDto = z.object({ amount: z.string() });

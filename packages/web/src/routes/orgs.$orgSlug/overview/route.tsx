@@ -69,12 +69,12 @@ function RouteComponent() {
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
               <span
                 className={
-                  new Decimal(org.balance || 0).isNegative()
+                  new Decimal(org.statistics.balance || 0).isNegative()
                     ? "text-red-500 dark:text-red-300"
                     : "text-green-500 dark:text-green-300"
                 }
               >
-                {formatMoney(org.balance || 0)}
+                {formatMoney(org.statistics.balance || 0)}
               </span>
             </CardTitle>
             <CardAction>
@@ -84,7 +84,10 @@ function RouteComponent() {
         </Card>
       </div>
 
-      <BalanceStatistics balanceAtDate={org.statistics?.balanceAtDate!} />
+      <BalanceStatistics
+        transactionCount={org.statistics.transactionCount}
+        balanceAtDate={org.statistics.balanceAtDate}
+      />
     </div>
   );
 }
@@ -97,32 +100,24 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 function BalanceStatistics({
+  transactionCount,
   balanceAtDate,
 }: {
+  transactionCount: number;
   balanceAtDate: z.infer<typeof BalanceAtDateStisticDto>[];
 }) {
   const { t, i18n } = useTranslation();
-
-  const [timeRange, setTimeRange] = React.useState("30d");
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>{t("overview.dailyBalance")}</CardTitle>
-        <CardDescription>
-          {t("overview.dailyBalanceDescription", { count: timeRange === "30d" ? 30 : 7 })}
+        <CardDescription className="flex flex-col gap-2">
+          <span>{t("overview.dailyBalanceDescription", { count: 30 })}</span>
+          <span>
+            {t("transactionCount")}: {transactionCount}
+          </span>
         </CardDescription>
-        <CardAction>
-          <ToggleGroup
-            type="single"
-            variant="outline"
-            value={timeRange}
-            onValueChange={setTimeRange}
-          >
-            <ToggleGroupItem value="30d">{t("overview.last30Days")}</ToggleGroupItem>
-            <ToggleGroupItem value="7d">{t("overview.last7Days")}</ToggleGroupItem>
-          </ToggleGroup>
-        </CardAction>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">

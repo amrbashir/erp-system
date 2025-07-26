@@ -468,7 +468,6 @@ export interface components {
             name: string;
             slug: string;
             statistics: components["schemas"]["OrgStatisticsDto"];
-            balance: string;
         };
         AddBalanceDto: {
             amount: string;

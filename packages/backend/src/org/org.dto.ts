@@ -52,6 +52,12 @@ export class OrgStatisticsDto {
 
   @ApiProperty({ type: [BalanceAtDateStisticDto] })
   balanceAtDate: BalanceAtDateStisticDto[];
+
+  constructor(org: OrganizationWithStatistics) {
+    this.balance = org.statistics?.balance || "0";
+    this.transactionCount = org.statistics?.transactionCount || 0;
+    this.balanceAtDate = org.statistics?.balanceAtDate || [];
+  }
 }
 
 export class OrganizationEntity {
@@ -75,13 +81,9 @@ export class OrganizationEntityWithStatistics extends OrganizationEntity {
   @ApiProperty({ type: OrgStatisticsDto })
   statistics?: OrgStatisticsDto;
 
-  @ApiProperty()
-  balance: string;
-
   constructor(org: OrganizationWithStatistics, userRole: UserRole) {
     super(org, userRole);
-    this.statistics = org.statistics;
-    this.balance = org.balance ? org.balance.toString() : "0";
+    this.statistics = org.statistics ? new OrgStatisticsDto(org) : undefined;
   }
 }
 

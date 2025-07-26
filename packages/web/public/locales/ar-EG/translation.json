@@ -47,6 +47,7 @@
       "oops": "عذرًا!",
       "areYouSure": "هل أنت متأكد؟",
       "number": "رقم",
+      "count": "عدد",
       "or": "أو",
       "row": "صف",
       "noMatches": "لم يتم العثور على عنصر مطابق"
@@ -246,5 +247,6 @@
   "notFound404": "عذراً ، الصفحة التي تبحث عنها غير موجودة",
   "cashierName": "اسم المحاسب",
   "adminSection": "قسم الإدارة",
-  "transactionNumber": "$t(common.ui.number) المعاملة"
+  "transactionNumber": "$t(common.ui.number) المعاملة",
+  "transactionCount": "$t(common.ui.count) المعاملات"
 }
