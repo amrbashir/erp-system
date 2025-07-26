@@ -15,7 +15,7 @@ interface RouteSearch {
 
 export const Route = createFileRoute("/orgs/$orgSlug")({
   component: RouteComponent,
-  notFoundComponent: NotFound404,
+  notFoundComponent: () => <NotFound404 to="/orgs/$orgSlug" />,
   context: () => ({
     title: i18n.t("routes.home"),
     icon: HomeIcon,

@@ -1,8 +1,10 @@
 import { useTranslation } from "react-i18next";
 
-import { ButtonLink } from "./ui/ButtonLink";
+import type { LinkComponentProps } from "@tanstack/react-router";
 
-export function NotFound404() {
+import { ButtonLink } from "@/components/ui/ButtonLink";
+
+export function NotFound404({ to }: LinkComponentProps) {
   const { t } = useTranslation();
 
   return (
@@ -14,7 +16,7 @@ export function NotFound404() {
         <p>404 - {t("notFound404")}</p>
         <br />
         <br />
-        <ButtonLink to="/">{t("goBackHome")}</ButtonLink>
+        <ButtonLink to={to ?? "/"}>{t("goBackHome")}</ButtonLink>
       </div>
     </main>
   );
