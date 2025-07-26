@@ -23,7 +23,7 @@ import type z from "zod";
 import { apiClient } from "@/api-client";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
 import { InputNumpad } from "@/components/ui/input-numpad";
-import { useOrg } from "@/hooks/use-org";
+import { useAuthUser } from "@/hooks/use-auth-user";
 
 export function PayOrCollectMoneyDialog({
   action,
@@ -32,7 +32,7 @@ export function PayOrCollectMoneyDialog({
   customerId: number;
   action: "collect" | "pay";
 }) {
-  const { slug: orgSlug } = useOrg();
+  const { orgSlug } = useAuthUser();
   const { t } = useTranslation();
   const client = useQueryClient();
   const router = useRouter();

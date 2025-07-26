@@ -446,6 +446,11 @@ export interface components {
             username: string;
             password: string;
         };
+        OrganizationEntity: {
+            id: string;
+            name: string;
+            slug: string;
+        };
         BalanceAtDateStisticDto: {
             /** Format: date-time */
             date: string;
@@ -458,12 +463,12 @@ export interface components {
             transactionCount: number;
             balanceAtDate: components["schemas"]["BalanceAtDateStisticDto"][];
         };
-        OrganizationEntity: {
+        OrganizationEntityWithStatistics: {
             id: string;
             name: string;
             slug: string;
-            balance?: string;
-            statistics?: components["schemas"]["OrgStatisticsDto"];
+            statistics: components["schemas"]["OrgStatisticsDto"];
+            balance: string;
         };
         AddBalanceDto: {
             amount: string;
@@ -494,6 +499,7 @@ export interface components {
             username: string;
             /** @enum {string} */
             role: "USER" | "ADMIN";
+            orgName: string;
             orgSlug: string;
         };
         CustomerDetails: {
@@ -734,7 +740,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["OrganizationEntity"];
+                    "application/json": components["schemas"]["OrganizationEntityWithStatistics"];
                 };
             };
         };

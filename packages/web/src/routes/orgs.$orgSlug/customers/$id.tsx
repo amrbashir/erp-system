@@ -10,7 +10,7 @@ import type { CustomerEntity } from "@erp-system/sdk/zod";
 import type z from "zod";
 
 import { apiClient } from "@/api-client";
-import { useOrg } from "@/hooks/use-org";
+import { useAuthUser } from "@/hooks/use-auth-user";
 import i18n from "@/i18n";
 import { formatMoney } from "@/utils/formatMoney";
 
@@ -97,7 +97,7 @@ function RouteComponent() {
 function CustomerInfoCard({ customer }: { customer: Customer }) {
   const router = useRouter();
   const { t } = useTranslation();
-  const { slug: orgSlug } = useOrg();
+  const { orgSlug } = useAuthUser();
 
   return (
     <Card>

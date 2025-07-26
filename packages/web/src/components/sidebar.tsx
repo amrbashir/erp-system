@@ -19,8 +19,7 @@ import { cn } from "@/shadcn/lib/utils";
 
 import type { FileRoutesById } from "@/routeTree.gen";
 import { SidebarUserMenu } from "@/components/sidebar-user-menu";
-import { useOrg } from "@/hooks/use-org";
-import { useAuth } from "@/providers/auth";
+import { useAuthUser } from "@/hooks/use-auth-user";
 
 type Route = keyof FileRoutesById;
 
@@ -46,8 +45,7 @@ interface RouteInfo {
 export function AppSideBar() {
   const { t, i18n } = useTranslation();
   const { open } = useSidebar();
-  const { name: orgName } = useOrg();
-  const { user } = useAuth();
+  const user = useAuthUser();
 
   const routeGroups: (RouteGroup | undefined)[] = [
     { routes: ["/orgs/$orgSlug/"] },
@@ -67,7 +65,7 @@ export function AppSideBar() {
         "/orgs/$orgSlug/customers/",
       ],
     },
-    user?.role === "ADMIN"
+    user.role === "ADMIN"
       ? {
           label: t("adminSection"),
           routes: [
@@ -84,9 +82,11 @@ export function AppSideBar() {
       <SidebarHeader>
         <Label className="my-2">
           <img src="/favicon.svg" className="size-8"></img>
-          <span className="md:hidden text-lg font-semibold">{orgName}</span>
+          <span className="md:hidden text-lg font-semibold">{user.orgName}</span>
           {/* TODO: fix this text jumping */}
-          {open && <span className="hidden md:inline-block text-lg font-semibold">{orgName}</span>}
+          {open && (
+            <span className="hidden md:inline-block text-lg font-semibold">{user.orgName}</span>
+          )}
         </Label>
       </SidebarHeader>
 

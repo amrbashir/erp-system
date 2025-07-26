@@ -5,7 +5,7 @@ import { Button } from "@/shadcn/components/ui/button";
 
 import { apiClient } from "@/api-client";
 import { ButtonLink } from "@/components/ui/ButtonLink";
-import { useOrg } from "@/hooks/use-org";
+import { useAuthUser } from "@/hooks/use-auth-user";
 import i18n from "@/i18n";
 
 import { InvoicesTable } from "./-invoices-table";
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/orgs/$orgSlug/invoices/sales")({
 });
 
 function RouteComponent() {
-  const { slug: orgSlug } = useOrg();
+  const { orgSlug } = useAuthUser();
 
   const { data: invoices } = useQuery({
     queryKey: ["invoices", orgSlug, "SALE"],

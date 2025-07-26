@@ -13,7 +13,7 @@ import { Separator } from "@/shadcn/components/ui/separator";
 
 import type { QuickActionLinkCardProps } from "@/components/quick-action-link-card";
 import { QuickActionLinkCard } from "@/components/quick-action-link-card";
-import { useOrg } from "@/hooks/use-org";
+import { useAuthUser } from "@/hooks/use-auth-user";
 import i18n from "@/i18n";
 import { useAuth } from "@/providers/auth";
 
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/orgs/$orgSlug/")({
 });
 
 function RouteComponent() {
-  const { slug: orgSlug, name: orgName } = useOrg();
+  const { orgSlug, orgName } = useAuthUser();
   const { user } = useAuth();
   const { t } = useTranslation();
 

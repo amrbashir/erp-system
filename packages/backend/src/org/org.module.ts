@@ -8,5 +8,6 @@ import { OrgService } from "./org.service";
   imports: [UserModule],
   controllers: [OrgController],
   providers: [OrgService],
+  exports: [OrgService],
 })
 export class OrgModule {}

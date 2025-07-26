@@ -3,6 +3,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Request,
@@ -11,14 +12,16 @@ import {
 import { ApiBody, ApiOkResponse, ApiParam, ApiTags } from "@nestjs/swagger";
 
 import type { User } from "../prisma/generated/client";
+import { OrgService } from "../org/org.service";
 import { LoginResponseDto, LoginUserDto } from "./auth.dto";
 import { LocalAuthGuard } from "./auth.local.guard";
-import { AuthService } from "./auth.service";
 import { AuthUser } from "./auth.user.decorator";
 
 @ApiTags("auth")
 @Controller("/orgs/:orgSlug/auth")
 export class AuthController {
+  constructor(private readonly orgService: OrgService) {}
+
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: LoginUserDto })
@@ -28,10 +31,14 @@ export class AuthController {
     @Param("orgSlug") orgSlug: string,
     @AuthUser() user: User,
   ): Promise<LoginResponseDto> {
+    const org = await this.orgService.findOrgBySlug(orgSlug);
+    if (!org) throw new NotFoundException("Organization not found");
+
     return {
       username: user.username,
       role: user.role,
       orgSlug,
+      orgName: org.name,
     };
   }
 

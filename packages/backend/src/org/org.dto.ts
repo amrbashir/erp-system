@@ -64,18 +64,24 @@ export class OrganizationEntity {
   @ApiProperty()
   slug: string;
 
-  @ApiPropertyOptional()
-  balance?: string;
-
-  @ApiPropertyOptional({ type: OrgStatisticsDto })
-  statistics?: OrgStatisticsDto;
-
   constructor(org: OrganizationWithStatistics, userRole: UserRole) {
     this.id = org.id;
     this.name = org.name;
     this.slug = org.slug;
-    this.balance = userRole === UserRole.ADMIN ? org.balance?.toString() : undefined;
+  }
+}
+
+export class OrganizationEntityWithStatistics extends OrganizationEntity {
+  @ApiProperty({ type: OrgStatisticsDto })
+  statistics?: OrgStatisticsDto;
+
+  @ApiProperty()
+  balance: string;
+
+  constructor(org: OrganizationWithStatistics, userRole: UserRole) {
+    super(org, userRole);
     this.statistics = org.statistics;
+    this.balance = org.balance ? org.balance.toString() : "0";
   }
 }
 

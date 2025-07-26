@@ -5,7 +5,12 @@ import type { User } from "../prisma/generated/client";
 import { AuthenticatedGuard } from "../auth/auth.authenticated.guard";
 import { AuthUser } from "../auth/auth.user.decorator";
 import { AdminGuard } from "../user/user.admin.guard";
-import { AddBalanceDto, CreateOrgDto, OrganizationEntity } from "./org.dto";
+import {
+  AddBalanceDto,
+  CreateOrgDto,
+  OrganizationEntity,
+  OrganizationEntityWithStatistics,
+} from "./org.dto";
 import { OrgService } from "./org.service";
 
 @ApiTags("orgs")
@@ -32,13 +37,13 @@ export class OrgController {
 
   @Get(":orgSlug/statistics")
   @UseGuards(AuthenticatedGuard)
-  @ApiOkResponse({ type: OrganizationEntity })
+  @ApiOkResponse({ type: OrganizationEntityWithStatistics })
   async getStatistics(
     @Param("orgSlug") orgSlug: string,
     @AuthUser("role") role: User["role"],
-  ): Promise<OrganizationEntity | null> {
+  ): Promise<OrganizationEntityWithStatistics | null> {
     const org = await this.orgService.getOrgStatistics(orgSlug);
-    return new OrganizationEntity(org, role);
+    return new OrganizationEntityWithStatistics(org, role);
   }
 
   @Post(":orgSlug/addBalance")

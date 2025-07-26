@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import type { QuickActionLinkCardProps } from "@/components/quick-action-link-card";
 import { QuickActionLinkCard } from "@/components/quick-action-link-card";
-import { useOrg } from "@/hooks/use-org";
+import { useAuthUser } from "@/hooks/use-auth-user";
 import i18n from "@/i18n";
 
 export const Route = createFileRoute("/orgs/$orgSlug/invoices/")({
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/orgs/$orgSlug/invoices/")({
 });
 
 function RouteComponent() {
-  const { slug: orgSlug, name: orgName } = useOrg();
+  const { orgName } = useAuthUser();
   const { t } = useTranslation();
 
   const quickActions: QuickActionLinkCardProps[] = [

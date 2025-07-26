@@ -1,3 +1,4 @@
+import { useMatches } from "@tanstack/react-router";
 import { Button } from "@/shadcn/components/ui/button";
 import { Separator } from "@/shadcn/components/ui/separator";
 
@@ -5,11 +6,14 @@ import { AmrBashirIcon } from "@/components/icons/AmrBashir";
 import { GithubIcon } from "@/components/icons/GitHub";
 import { LanguageSelector } from "@/components/language-selector";
 import { ThemeSelector } from "@/components/theme-selector";
-import { useOrg } from "@/hooks/use-org";
 
 export function Header() {
-  const maybeOrg = useOrg({ strict: false });
-  if (maybeOrg) return null;
+  const matches = useMatches();
+
+  // Don't render the header if we are in an organization route
+  // as it has its own header.
+  const inOrgRoute = matches.some((match) => match.routeId === "/orgs/$orgSlug");
+  if (inOrgRoute) return null;
 
   return (
     <header className="sticky top-0 z-49 w-screen h-(--header-height) p-4 flex items-center gap-2 backdrop-blur-sm bg-background/80 border-b border-border">

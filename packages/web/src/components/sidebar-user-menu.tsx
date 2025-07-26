@@ -19,14 +19,14 @@ import {
 
 import { LanguageSelector } from "@/components/language-selector";
 import { ThemeSelector } from "@/components/theme-selector";
-import { useOrg } from "@/hooks/use-org";
+import { useAuthUser } from "@/hooks/use-auth-user";
 import { useAuth } from "@/providers/auth";
 
 export function SidebarUserMenu() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { slug: orgSlug } = useOrg();
+  const { orgSlug } = useAuthUser();
 
   const { isMobile } = useSidebar();
 

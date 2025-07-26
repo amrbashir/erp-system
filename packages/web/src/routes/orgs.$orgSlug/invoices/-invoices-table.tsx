@@ -16,7 +16,7 @@ import type z from "zod";
 
 import { EmptyTable } from "@/components/empty-table";
 import { ButtonLink } from "@/components/ui/ButtonLink";
-import { useOrg } from "@/hooks/use-org";
+import { useAuthUser } from "@/hooks/use-auth-user";
 import { formatDate } from "@/utils/formatDate";
 import { formatMoney } from "@/utils/formatMoney";
 
@@ -24,7 +24,7 @@ type Invoice = z.infer<typeof InvoiceEntity>;
 
 export function InvoicesTable({ invoices }: { invoices: Invoice[] | undefined }) {
   const { t } = useTranslation();
-  const { slug: orgSlug } = useOrg();
+  const { orgSlug } = useAuthUser();
 
   return invoices?.length && invoices.length > 0 ? (
     <div className="rounded border">

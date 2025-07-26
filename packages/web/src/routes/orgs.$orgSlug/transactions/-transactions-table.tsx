@@ -14,7 +14,7 @@ import type z from "zod";
 
 import { EmptyTable } from "@/components/empty-table";
 import { ButtonLink } from "@/components/ui/ButtonLink";
-import { useOrg } from "@/hooks/use-org";
+import { useAuthUser } from "@/hooks/use-auth-user";
 import { formatDate } from "@/utils/formatDate";
 import { formatMoney } from "@/utils/formatMoney";
 
@@ -22,7 +22,7 @@ type Transaction = z.infer<typeof TransactionEntity>;
 
 export function TransactionsTable({ transactions }: { transactions: Transaction[] | undefined }) {
   const { t } = useTranslation();
-  const { slug: orgSlug } = useOrg();
+  const { orgSlug } = useAuthUser();
 
   return (
     <>

@@ -16,7 +16,7 @@ import { cn } from "@/shadcn/lib/utils";
 import { apiClient } from "@/api-client";
 import { ActionsDropdownMenu } from "@/components/actions-dropdown";
 import { EmptyTable } from "@/components/empty-table";
-import { useOrg } from "@/hooks/use-org";
+import { useAuthUser } from "@/hooks/use-auth-user";
 import i18n from "@/i18n";
 import { useAuth } from "@/providers/auth";
 import { formatDate } from "@/utils/formatDate";
@@ -29,7 +29,7 @@ export const Route = createFileRoute("/orgs/$orgSlug/users/")({
 });
 
 function RouteComponent() {
-  const { slug: orgSlug } = useOrg();
+  const { orgSlug } = useAuthUser();
   const { t } = useTranslation();
   const { user } = useAuth();
 

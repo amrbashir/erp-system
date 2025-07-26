@@ -24,7 +24,7 @@ import type z from "zod";
 
 import { apiClient } from "@/api-client";
 import { InputNumpad } from "@/components/ui/input-numpad";
-import { useOrg } from "@/hooks/use-org";
+import { useAuthUser } from "@/hooks/use-auth-user";
 
 import { FormErrors, FormFieldError } from "../../../components/form-errors";
 
@@ -41,7 +41,7 @@ export function EditProductDialog({
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const { slug: orgSlug } = useOrg();
+  const { orgSlug } = useAuthUser();
   const client = useQueryClient();
 
   const form = useForm({

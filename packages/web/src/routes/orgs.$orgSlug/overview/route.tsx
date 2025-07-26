@@ -21,7 +21,7 @@ import type z from "zod";
 
 import type { ChartConfig } from "@/shadcn/components/ui/chart";
 import { apiClient } from "@/api-client";
-import { useOrg } from "@/hooks/use-org";
+import { useAuthUser } from "@/hooks/use-auth-user";
 import i18n from "@/i18n";
 import { formatMoney } from "@/utils/formatMoney";
 
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/orgs/$orgSlug/overview")({
 
 function RouteComponent() {
   const { t } = useTranslation();
-  const { slug: orgSlug } = useOrg();
+  const { orgSlug } = useAuthUser();
 
   const { data: org } = useQuery({
     queryKey: ["organizationOverview", orgSlug],

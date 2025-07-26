@@ -22,7 +22,7 @@ import { apiClient } from "@/api-client";
 import { FormErrors } from "@/components/form-errors";
 import { Hotkey } from "@/components/ui/hotkey";
 import { InputNumpad } from "@/components/ui/input-numpad";
-import { useOrg } from "@/hooks/use-org";
+import { useAuthUser } from "@/hooks/use-auth-user";
 import i18n from "@/i18n";
 import { formatMoney } from "@/utils/formatMoney";
 import {
@@ -65,7 +65,7 @@ const DEFAULT_INVOICE_ITEM = {
 };
 
 function RouteComponent() {
-  const { slug: orgSlug } = useOrg();
+  const { orgSlug } = useAuthUser();
   const { t } = useTranslation();
   const client = useQueryClient();
 

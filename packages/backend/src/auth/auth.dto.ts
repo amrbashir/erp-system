@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsAlphanumeric, IsAscii, IsNotEmpty } from "class-validator";
 
 import { UserRole } from "../prisma/generated/client";
@@ -21,6 +21,9 @@ export class LoginResponseDto {
 
   @ApiProperty({ enum: UserRole })
   role: UserRole;
+
+  @ApiProperty()
+  orgName: string;
 
   @ApiProperty()
   orgSlug: string;

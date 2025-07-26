@@ -3,6 +3,7 @@ import { HomeIcon } from "lucide-react";
 import { SidebarInset } from "@/shadcn/components/ui/sidebar";
 
 import { apiClient } from "@/api-client";
+import { NotFound404 } from "@/components/404";
 import { OrgHeader } from "@/components/org-header";
 import { AppSideBar } from "@/components/sidebar";
 import i18n from "@/i18n";
@@ -14,6 +15,7 @@ interface RouteSearch {
 
 export const Route = createFileRoute("/orgs/$orgSlug")({
   component: RouteComponent,
+  notFoundComponent: NotFound404,
   context: () => ({
     title: i18n.t("routes.home"),
     icon: HomeIcon,

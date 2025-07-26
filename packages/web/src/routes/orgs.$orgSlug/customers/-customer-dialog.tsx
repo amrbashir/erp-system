@@ -22,7 +22,7 @@ import type z from "zod";
 
 import { apiClient } from "@/api-client";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
-import { useOrg } from "@/hooks/use-org";
+import { useAuthUser } from "@/hooks/use-auth-user";
 
 type Customer = z.infer<typeof CustomerEntity>;
 
@@ -41,7 +41,7 @@ export function CustomerDialog({
   onCreated?: (customer: Customer) => void;
   onEdited?: () => void;
 }) {
-  const { slug: orgSlug } = useOrg();
+  const { orgSlug } = useAuthUser();
   const { t } = useTranslation();
   const client = useQueryClient();
 

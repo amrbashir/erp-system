@@ -30,11 +30,11 @@ import type z from "zod";
 import type { UserRole } from "@/user";
 import { apiClient } from "@/api-client";
 import { FormErrors, FormFieldError } from "@/components/form-errors";
-import { useOrg } from "@/hooks/use-org";
+import { useAuthUser } from "@/hooks/use-auth-user";
 import { useAuth } from "@/providers/auth";
 
 export function AddUserDialog() {
-  const { slug: orgSlug } = useOrg();
+  const { orgSlug } = useAuthUser();
   const { t } = useTranslation();
   const client = useQueryClient();
   const { user } = useAuth();

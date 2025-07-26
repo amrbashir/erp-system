@@ -7,6 +7,8 @@ export const CreateOrgDto = z.object({
   password: z.string().min(8),
 });
 
+export const OrganizationEntity = z.object({ id: z.string(), name: z.string(), slug: z.string() });
+
 export const BalanceAtDateStisticDto = z.object({
   date: z.string().datetime({ offset: true }),
   balance: z.string(),
@@ -18,12 +20,12 @@ export const OrgStatisticsDto = z.object({
   balanceAtDate: z.array(BalanceAtDateStisticDto),
 });
 
-export const OrganizationEntity = z.object({
+export const OrganizationEntityWithStatistics = z.object({
   id: z.string(),
   name: z.string(),
   slug: z.string(),
-  balance: z.string().optional(),
-  statistics: OrgStatisticsDto.optional(),
+  statistics: OrgStatisticsDto,
+  balance: z.string(),
 });
 
 export const AddBalanceDto = z.object({ amount: z.string() });
@@ -48,6 +50,7 @@ export const LoginUserDto = z.object({ username: z.string(), password: z.string(
 export const LoginResponseDto = z.object({
   username: z.string(),
   role: z.enum(["USER", "ADMIN"]),
+  orgName: z.string(),
   orgSlug: z.string(),
 });
 

@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { BanknoteIcon } from "lucide-react";
 
 import { apiClient } from "@/api-client";
-import { useOrg } from "@/hooks/use-org";
+import { useAuthUser } from "@/hooks/use-auth-user";
 import i18n from "@/i18n";
 
 import { TransactionsTable } from "./-transactions-table";
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/orgs/$orgSlug/transactions/")({
 });
 
 function RouteComponent() {
-  const { slug: orgSlug } = useOrg();
+  const { orgSlug } = useAuthUser();
 
   const { data: transactions } = useQuery({
     queryKey: ["transactions", orgSlug],

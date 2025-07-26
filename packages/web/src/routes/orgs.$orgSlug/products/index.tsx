@@ -14,7 +14,7 @@ import {
 import { apiClient } from "@/api-client";
 import { ActionsDropdownMenu } from "@/components/actions-dropdown";
 import { EmptyTable } from "@/components/empty-table";
-import { useOrg } from "@/hooks/use-org";
+import { useAuthUser } from "@/hooks/use-auth-user";
 import i18n from "@/i18n";
 import { formatDate } from "@/utils/formatDate";
 import { formatMoney } from "@/utils/formatMoney";
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/orgs/$orgSlug/products/")({
 });
 
 function RouteComponent() {
-  const { slug: orgSlug } = useOrg();
+  const { orgSlug } = useAuthUser();
 
   const { t } = useTranslation();
 
