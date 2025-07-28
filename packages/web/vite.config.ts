@@ -6,52 +6,48 @@ import react from "@vitejs/plugin-react-oxc";
 import { defineConfig, loadEnv } from "vite";
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
+export default defineConfig({
+  plugins: [
+    tanstackRouter({
+      target: "react",
+      autoCodeSplitting: true,
+    }),
+    react(),
+    tailwindcss(),
+  ],
 
-  return {
-    plugins: [
-      tanstackRouter({
-        target: "react",
-        autoCodeSplitting: true,
-      }),
-      react(),
-      tailwindcss(),
-    ],
-
-    build: {
-      target: "esnext",
-      rollupOptions: {
-        output: {
-          manualChunks,
-        },
+  build: {
+    target: "esnext",
+    rollupOptions: {
+      output: {
+        manualChunks,
       },
     },
+  },
 
-    resolve: {
-      alias: {
-        "@": path.resolve(__dirname, "./src"),
-      },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+
+  clearScreen: false, // don't clear the console
+  server: {
+    port: 1420,
+    strictPort: true,
+
+    watch: {
+      usePolling: !!process.env.DOCKER,
     },
 
-    clearScreen: false, // don't clear the console
-    server: {
-      port: Number(env.VITE_DEV_PORT),
-      strictPort: true,
-
-      watch: {
-        usePolling: !!process.env.DOCKER,
-      },
-
-      proxy: {
-        "/api": {
-          target: `${env.BACKEND_HOST || "http://localhost"}:${env.NESTJS_SERVER_PORT}`,
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ""),
-        },
+    proxy: {
+      "/api": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
-  };
+  },
 });
 
 function manualChunks(id: string) {

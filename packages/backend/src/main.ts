@@ -15,8 +15,7 @@ export async function main() {
   const app = await NestFactory.create(AppModule, { logger: logLevels });
   setupApp(app);
 
-  const port = process.env.NESTJS_SERVER_PORT ?? 3000;
-  await app.listen(port);
+  await app.listen(3000);
 
   console.log(`Server running on: ${await app.getUrl()}`);
 }
