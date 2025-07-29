@@ -6,6 +6,7 @@ import passport from "passport";
 
 import type { INestApplication } from "@nestjs/common";
 
+import { AppController } from "./app.controller";
 import { AuthModule } from "./auth/auth.module";
 import { PrismaSessionStore } from "./auth/auth.session.store";
 import { CustomerModule } from "./customer/customer.module";
@@ -32,6 +33,7 @@ import { UserModule } from "./user/user.module";
     ExpenseModule,
     HealthModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
 
