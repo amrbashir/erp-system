@@ -346,7 +346,7 @@ function CreateNewOrganizationCard({
               name="username"
               children={(field) => (
                 <>
-                  <Label htmlFor={field.name}>{t("org.password")}</Label>
+                  <Label htmlFor={field.name}>{t("org.username")}</Label>
                   <Input
                     id={field.name}
                     name={field.name}
