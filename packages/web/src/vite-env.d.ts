@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+/// <reference types="@cloudflare/workers-types/latest" />
 
 import "i18next";
 

@@ -69,6 +69,13 @@ export function setupApp(app: INestApplication) {
     defaultVersion: [VERSION_NEUTRAL, "1.0.0"],
   });
 
+  app.enableCors({
+    origin: process.env.CORS_ALLOW_ORIGIN,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Api-Version"],
+  });
+
   // Enable validation globally
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
