@@ -168,7 +168,7 @@ export function InvoiceFooter<TInvoice extends Invoice & { items: InvoiceItem[] 
       <DrawerContent className="bg-popover">
         <DrawerHeader>
           <DrawerTitle>{t("invoice.total")}</DrawerTitle>
-          <DrawerDescription>{t("invoice.totalDescription")}</DrawerDescription>
+          <DrawerDescription className="hidden">{t("invoice.total")}</DrawerDescription>
         </DrawerHeader>
 
         {FooterCard}

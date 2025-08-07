@@ -149,12 +149,13 @@
     "addDescription": "You can add new products to the system. Please fill in the details below",
     "edit": "$t(common.actions.edit) Product",
     "editDescription": "You can edit the product's details. Please fill in the details",
-    "search": "$t(common.actions.search) products...",
     "stock": "Stock",
     "remaining": "Remaining",
     "insufficientStock": "Insufficient stock for the product",
+    "search": "$t(common.actions.search) products...",
+    "searchOrEnter": "Search for a product or enter a new one...",
     "select": "Select a product",
-    "selectDescription": "Select a product from the list",
+    "selectOrEnter": "Select a product or enter a new one",
     "form": {
       "barcode": "$t(common.form.barcode)",
       "description": "$t(common.form.description)",
@@ -175,8 +176,7 @@
     "createdSuccessfully": "Invoice created successfully",
     "addItemsTo": "$t(common.actions.add) items to the invoice",
     "addRow": "$t(common.actions.add) $t(common.ui.row)",
-    "total": "اجمالى الفاتورة",
-    "totalDescription": "يمكنك رؤية اجمالى الفاتورة هنا وتعديل الخصم والمبلغ المدفوع"
+    "total": "Invoice Total"
   },
 
   "transaction": {

@@ -24,12 +24,14 @@ import { cn } from "@/shadcn/lib/utils.ts";
 
 export function ProductSelector({
   items,
-  onItemSelect,
   value,
+  action = "select",
+  onItemSelect,
   onInputValueChange,
 }: {
   items: string[];
   value?: string;
+  action?: "select" | "enterOrSelect";
   onItemSelect: (item: string) => void;
   onInputValueChange?: (value: string) => void;
 }) {
@@ -66,7 +68,13 @@ export function ProductSelector({
     <CommandInput
       value={value}
       onValueChange={handleInputChange}
-      placeholder={isMobile ? t("product.search") : undefined}
+      placeholder={
+        isMobile
+          ? action === "enterOrSelect"
+            ? t("product.searchOrEnter")
+            : t("product.search")
+          : undefined
+      }
       className={cn(
         !isMobile &&
           "rounded-none h-9 p-y1 px-3 focus-visible:z-2 focus-visible:ring-ring/50 focus-visible:ring-[3px]",
@@ -92,13 +100,15 @@ export function ProductSelector({
   );
 
   if (isMobile) {
+    const actionLabel =
+      action === "enterOrSelect" ? t("product.selectOrEnter") : t("product.select");
     return (
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>{ButtonTrigger}</DrawerTrigger>
         <DrawerContent className="bg-popover p-2">
           <DrawerHeader>
-            <DrawerTitle>{t("product.select")}</DrawerTitle>
-            <DrawerDescription>{t("product.selectDescription")}</DrawerDescription>
+            <DrawerTitle>{actionLabel}</DrawerTitle>
+            <DrawerDescription className="hidden">{actionLabel}</DrawerDescription>
           </DrawerHeader>
           <Command>
             {ProductsInput}

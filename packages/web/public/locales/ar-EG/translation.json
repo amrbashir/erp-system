@@ -154,12 +154,13 @@
     "edit": "$t(common.actions.edit) منتج",
     "editDescription": "يمكنك تعديل تفاصيل المنتج. يرجى ملء التفاصيل أدناه",
     "name": "$t(common.form.name) المنتج",
-    "search": "$t(common.actions.search) المنتجات...",
     "stock": "المخزون",
     "remaining": "المتبقي",
     "insufficientStock": "لا يوجد مخزون كافٍ للمنتج",
+    "search": "$t(common.actions.search) المنتجات...",
+    "searchOrEnter": "ابحث عن منتج أو أدخل منتج جديد...",
     "select": "اختر منتجًا",
-    "selectDescription": "اختر منتجًا من القائمة",
+    "selectOrEnter": "اختر منتجًا أو أدخل منتج جديد",
     "form": {
       "stockQuantity": "كمية المخزون"
     }
@@ -174,8 +175,7 @@
     "type": "نوع الفاتورة",
     "createdSuccessfully": "تم إنشاء الفاتورة بنجاح",
     "addItemsTo": "أضف عناصر إلى الفاتورة",
-    "total": "اجمالى الفاتورة",
-    "totalDescription": "يمكنك رؤية اجمالى الفاتورة هنا وتعديل الخصم والمبلغ المدفوع"
+    "total": "اجمالى الفاتورة"
   },
 
   "transaction": {

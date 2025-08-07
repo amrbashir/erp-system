@@ -258,6 +258,7 @@ function RouteComponent() {
                   name={`items[${index}].barcode`}
                   children={(field) => (
                     <ProductSelector
+                      action="enterOrSelect"
                       items={productsByBarcodeArray}
                       value={field.state.value}
                       onInputValueChange={(value: string) => field.handleChange(value)}
@@ -271,6 +272,7 @@ function RouteComponent() {
                   name={`items[${index}].description`}
                   children={(field) => (
                     <ProductSelector
+                      action="enterOrSelect"
                       items={productsByDescriptionArray}
                       value={field.state.value}
                       onInputValueChange={(value: string) => field.handleChange(value)}
