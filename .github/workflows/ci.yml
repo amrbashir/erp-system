@@ -35,4 +35,4 @@ jobs:
         with:
           deno-version: latest
       - run: deno task --filter server prisma:generate
-      - run: deno test
+      - run: deno test -A
