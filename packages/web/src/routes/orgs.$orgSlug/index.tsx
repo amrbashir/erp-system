@@ -132,11 +132,8 @@ function RouteComponent() {
 
       <div className="w-full md:w-auto grid grid-cols-2 lg:grid-cols-4 gap-4">
         {miniQuickActions.map((action, index) => (
-          <QuickActionLinkCard key={index} {...action} className="col-span-1" />
+          <QuickActionLinkCard key={index} {...action} className="col-span-2" />
         ))}
-
-        <div className="hidden lg:block lg:col-span-1" />
-        <div className="hidden lg:block lg:col-span-1" />
 
         {quickActions.map((action, index) => (
           <QuickActionLinkCard key={index} {...action} className="col-span-2 md:col-span-1" />

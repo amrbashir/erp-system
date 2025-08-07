@@ -72,7 +72,9 @@ function RouteComponent() {
           <QuickActionLinkCard
             key={index}
             {...action}
-            className={action.size === "sm" ? "col-span-1" : "col-span-2 md:col-span-1"}
+            className={
+              action.size === "sm" ? "col-span-2 md:col-span-1" : "col-span-2 md:col-span-1"
+            }
           />
         ))}
       </div>

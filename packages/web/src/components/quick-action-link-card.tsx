@@ -35,10 +35,8 @@ export function QuickActionLinkCard({
       >
         <CardContent
           className={cn(
-            "flex gap-4 items-center",
-            size === "sm"
-              ? "flex-row p-0 justify-center"
-              : "flex-row md:flex-col md:justify-center",
+            "flex gap-4 items-center md:justify-center",
+            size === "sm" ? "flex-row p-0" : "flex-row md:flex-col",
           )}
         >
           <div
