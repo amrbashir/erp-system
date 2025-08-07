@@ -34,7 +34,7 @@ export default {
 
     // If the requested file is not found, serve index.html for SPA routing
     if (response.status === 404) {
-      return await serveFile(req, "./dist/index.html");
+      return await serveFile(req, import.meta.dirname + "/../web/dist/index.html");
     }
 
     return response;
