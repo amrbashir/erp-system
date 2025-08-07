@@ -3,7 +3,8 @@
   "exports": "./src/index.tsx",
 
   "tasks": {
-    "dev": "vite --open"
+    "dev": "vite --open",
+    "build": "vite build"
   },
 
   "compilerOptions": {

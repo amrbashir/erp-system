@@ -24,6 +24,7 @@
 
     // dependencies
     "@prisma/client": "npm:@prisma/client@6.13.0",
+    "@std/http": "jsr:@std/http@^1.0.20",
     "argon2": "npm:argon2@^0.43.1",
     "cookie": "npm:cookie@^1.0.2",
 
