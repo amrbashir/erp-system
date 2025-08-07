@@ -3,7 +3,7 @@
 
   "tasks": {
     "dev": "deno task --filter server dev & deno task --filter web dev",
-    "build": "deno task --filter server prisma:generate && deno task --filter web build",
+    "build": "deno task -r build",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
