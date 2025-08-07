@@ -3,7 +3,7 @@
 
   "tasks": {
     "dev": "deno task --filter server dev & deno task --filter web dev",
-    "build": "deno task -r build",
+    "build": "deno task --filter server build && deno task --filter web build",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
