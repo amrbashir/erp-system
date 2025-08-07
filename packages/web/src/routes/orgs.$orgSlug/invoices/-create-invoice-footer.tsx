@@ -56,19 +56,16 @@ export function InvoiceFooter<TInvoice extends Invoice & { items: InvoiceItem[] 
   const { t } = useTranslation();
   const isMobile = useIsMobile();
 
-  const [validInvoiceItems, discountPercent, discountAmount, paid] = useStore(
-    form.store,
-    (state) => [
-      state.values.items.filter((i) => !!i.description && i.quantity > 0),
-      state.values.discountPercent,
-      state.values.discountAmount,
-      state.values.paid,
-    ],
-  );
+  const [invoiceItems, discountPercent, discountAmount, paid] = useStore(form.store, (state) => [
+    state.values.items,
+    state.values.discountPercent,
+    state.values.discountAmount,
+    state.values.paid,
+  ]);
 
   const subtotal = React.useMemo(
-    () => calculateInvoiceSubtotal(validInvoiceItems, invoiceType),
-    [validInvoiceItems],
+    () => calculateInvoiceSubtotal(invoiceItems, invoiceType),
+    [invoiceItems],
   );
 
   const percentDiscount = calculateInvoicePercentDiscount(subtotal, discountPercent);

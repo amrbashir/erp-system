@@ -114,8 +114,7 @@ function RouteComponent() {
       onSubmit: CreatePurchaseInvoiceDto,
     },
     onSubmit: async ({ value, formApi }) => {
-      const validItems = value.items.filter((i) => !!i.productId || !!i.barcode || !!i.description);
-      await createPurchaseInvoice({ ...value, orgSlug, items: validItems });
+      await createPurchaseInvoice({ ...value, orgSlug });
 
       if (createPurchaseInvoiceIsError) {
         formApi.setErrorMap({ onSubmit: createPurchaseInvoiceError as any });
@@ -171,11 +170,8 @@ function RouteComponent() {
 
       <div className="flex gap-2 justify-end *:flex-1 md:*:flex-none">
         <form.Subscribe
-          selector={(state) => [
-            state.isSubmitting,
-            state.values.items.some((i) => i.productId || i.barcode || i.description),
-          ]}
-          children={([isSubmitting, hasValidItems]) => (
+          selector={(state) => state.isSubmitting}
+          children={(isSubmitting) => (
             <>
               <Button
                 type="button"
@@ -186,7 +182,7 @@ function RouteComponent() {
                 <Hotkey hotkey="F7" onHotkey={() => form.reset()} />
                 {t("common.actions.delete")}
               </Button>
-              <Button disabled={isSubmitting || !hasValidItems}>
+              <Button disabled={isSubmitting}>
                 {isSubmitting && <Loader2Icon className="animate-spin" />}
                 <Hotkey hotkey="F8" onHotkey={() => form.handleSubmit()} />
                 {t("common.actions.create")}
