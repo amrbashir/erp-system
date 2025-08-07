@@ -2,6 +2,7 @@
   "workspace": ["packages/*"],
 
   "tasks": {
+    "build": "deno task --filter server prisma:generate && deno task --filter web build",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
