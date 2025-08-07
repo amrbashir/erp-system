@@ -36,5 +36,6 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: latest
+      - run: docker compose up -d
       - run: deno task --filter server prisma:generate
       - run: deno test -A
