@@ -19,3 +19,6 @@ jobs:
           deno-version: latest
       - run: deno task --filter server prisma:generate
       - run: deno run -A ./packages/server/scripts/cleanup-db.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NO_DELETE_ORGS: ${{ secrets.NO_DELETE_ORGS }}
