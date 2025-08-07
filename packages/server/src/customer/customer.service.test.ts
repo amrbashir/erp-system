@@ -1,4 +1,3 @@
-import { generateRandomOrgData, useRandomDatabase } from "@erp-system/utils/test.ts";
 import { expect } from "@std/expect";
 import { afterAll, beforeAll, describe, it } from "@std/testing/bdd";
 
@@ -7,6 +6,7 @@ import { OrgService } from "@/org/org.service.ts";
 import { PrismaClient } from "@/prisma-client.ts";
 
 import type { CreateCustomerDto } from "./customer.dto.ts";
+import { generateRandomOrgData, useRandomDatabase } from "../../../utils/src/testing.ts";
 import { CustomerService } from "./customer.service.ts";
 
 describe("CustomerService", () => {
@@ -140,7 +140,7 @@ describe("CustomerService", () => {
     expect(foundCustomer!.id).toBe(customer.id);
     expect(foundCustomer!.name).toBe(createCustomerDto.name);
     expect(foundCustomer!.details).toBeDefined();
-    expect(foundCustomer!.details?.balance).toBe("0");
+    expect(foundCustomer!.details?.balance.toNumber()).toBe(0);
 
     // Get admin user
     const user = await prisma.user.findFirstOrThrow({
@@ -182,7 +182,7 @@ describe("CustomerService", () => {
 
     const updatedCustomer = await customerService.findById(customer.id, org.slug);
     expect(updatedCustomer).toBeDefined();
-    expect(updatedCustomer!.details?.balance).toBe("-90");
+    expect(updatedCustomer!.details?.balance.toNumber()).toBe(-90);
   });
 
   it("should collect/pay money from/to a customer", async () => {
@@ -233,14 +233,14 @@ describe("CustomerService", () => {
 
     const updatedCustomer = await customerService.findById(customer.id, org.slug);
     expect(updatedCustomer).toBeDefined();
-    expect(updatedCustomer!.details?.balance).toBe("-90");
+    expect(updatedCustomer!.details?.balance.toNumber()).toBe(-90);
 
     // Collect money from customer
     await customerService.collectMoney(customer.id, "50", org.slug, user.id);
 
     const afterCollectCustomer = await customerService.findById(customer.id, org.slug);
     expect(afterCollectCustomer).toBeDefined();
-    expect(afterCollectCustomer!.details?.balance).toBe("-40");
+    expect(afterCollectCustomer!.details?.balance.toNumber()).toBe(-40);
 
     // create a purchase invoice so the customer is owed money
     await invoiceService.createPurchaseInvoice(
@@ -266,13 +266,13 @@ describe("CustomerService", () => {
 
     const afterPurchaseCustomer = await customerService.findById(customer.id, org.slug);
     expect(afterPurchaseCustomer).toBeDefined();
-    expect(afterPurchaseCustomer!.details?.balance).toBe("-10");
+    expect(afterPurchaseCustomer!.details?.balance.toNumber()).toBe(-10);
 
     // Pay money to customer
     await customerService.payMoney(customer.id, "10", org.slug, user.id);
 
     const afterPayCustomer = await customerService.findById(customer.id, org.slug);
     expect(afterPayCustomer).toBeDefined();
-    expect(afterPayCustomer!.details?.balance).toBe("0");
+    expect(afterPayCustomer!.details?.balance.toNumber()).toBe(0);
   });
 });

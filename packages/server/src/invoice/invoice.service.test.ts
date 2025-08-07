@@ -1,4 +1,3 @@
-import { generateRandomOrgData, useRandomDatabase } from "@erp-system/utils/test.ts";
 import { expect } from "@std/expect";
 import { afterAll, beforeAll, describe, it } from "@std/testing/bdd";
 import { Decimal } from "decimal.js";
@@ -6,6 +5,7 @@ import { Decimal } from "decimal.js";
 import { PrismaClient } from "@/prisma-client.ts";
 
 import type { CreatePurchaseInvoiceDto, CreateSaleInvoiceDto } from "./invoice.dto.ts";
+import { generateRandomOrgData, useRandomDatabase } from "../../../utils/src/testing.ts";
 import { InvoiceService } from "./invoice.service.ts";
 
 describe("InvoiceService", () => {
@@ -130,8 +130,7 @@ describe("InvoiceService", () => {
       });
 
       expect(transaction).toBeDefined();
-      // Use toStrictEqual for comparing Decimal objects
-      expect(transaction!.amount).toStrictEqual(new Decimal(createInvoiceDto.paid));
+      expect(transaction!.amount.toNumber()).toEqual(new Decimal(createInvoiceDto.paid).toNumber());
     });
 
     it("should throw BadRequestException when creating invoice with no items", async () => {
@@ -286,8 +285,7 @@ describe("InvoiceService", () => {
 
       // Convert to number for comparison since sellingPrice is a Decimal
       const expectedBalance = new Decimal(product1.sellingPrice).mul(2);
-      // Use toStrictEqual for comparing Decimal objects
-      expect(updatedOrg!.balance).toStrictEqual(expectedBalance); // 2 invoices created, each with selling price of product1
+      expect(updatedOrg!.balance.toNumber()).toBe(expectedBalance.toNumber()); // 2 invoices created, each with selling price of product1
     });
   });
   describe("createPurchase", () => {
@@ -358,9 +356,8 @@ describe("InvoiceService", () => {
       });
 
       expect(transaction).toBeDefined();
-      // Use toStrictEqual for comparing Decimal objects with negative values
       const expectedAmount = new Decimal(purchaseInvoiceDto.paid).negated();
-      expect(transaction!.amount).toStrictEqual(expectedAmount);
+      expect(transaction!.amount.toNumber()).toBe(expectedAmount.toNumber());
     });
 
     it("should throw BadRequestException when creating purchase invoice with no items", async () => {
@@ -471,7 +468,7 @@ describe("InvoiceService", () => {
       const initialOrg = await prisma.organization.findUnique({
         where: { slug: orgSlug },
       });
-      expect(initialOrg!.balance).toStrictEqual(new Decimal(0));
+      expect(initialOrg!.balance.toNumber()).toBe(0);
 
       const purchaseInvoiceDto = {
         items: [
@@ -496,7 +493,7 @@ describe("InvoiceService", () => {
         where: { slug: orgSlug },
       });
 
-      expect(updatedOrg!.balance).toStrictEqual(new Decimal(-100)); // Decreased by purchase amount
+      expect(updatedOrg!.balance.toNumber()).toBe(-100); // Decreased by purchase amount
     });
 
     it("should create invoice with existing product id", async () => {
@@ -614,7 +611,7 @@ describe("InvoiceService", () => {
       await service.createSaleInvoice(orgSlug, createInvoiceDto1, user.id);
       await service.createSaleInvoice(orgSlug, createInvoiceDto2, user.id);
 
-      const invoices = await service.getAllInvoices(orgSlug);
+      const invoices = await service.getAllInvoices(orgSlug, { orderBy: { createdAt: "asc" } });
 
       expect(invoices.length).toBe(2);
       expect(invoices[0].items.length).toBe(2);

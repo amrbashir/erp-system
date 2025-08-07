@@ -92,7 +92,7 @@ export class CustomerService {
         const amountPayable = purchases._sum.remaining ?? new Decimal(0);
         const amountCollected = moneyCollected._sum.amount ?? new Decimal(0);
         const amountPaid = moneyPaid._sum.amount ?? new Decimal(0);
-        customerBalance = amountPayable.add(amountCollected).sub(amountReceivable).add(amountPaid);
+        customerBalance = amountPayable.add(amountCollected).sub(amountReceivable).sub(amountPaid);
       }
 
       return {

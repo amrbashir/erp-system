@@ -1,5 +1,4 @@
 import { slugify } from "@erp-system/utils/slug.ts";
-import { generateRandomOrgData, useRandomDatabase } from "@erp-system/utils/test.ts";
 import { expect } from "@std/expect";
 import { afterAll, beforeAll, describe, it } from "@std/testing/bdd";
 import * as argon2 from "argon2";
@@ -10,6 +9,7 @@ import { UserRole } from "@/prisma.ts";
 import { TransactionService } from "@/transaction/transaction.service.ts";
 import { UserService } from "@/user/user.service.ts";
 
+import { generateRandomOrgData, useRandomDatabase } from "../../../utils/src/testing.ts";
 import { OrgService } from "./org.service.ts";
 
 describe("OrgService", () => {
@@ -174,12 +174,12 @@ describe("OrgService", () => {
 
     expect(statistics).toBeDefined();
     expect(statistics?.transactionCount).toBe(60);
-    expect(statistics?.balance).toBe("900");
+    expect(statistics?.balance.toNumber()).toBe(900);
     expect(statistics?.balanceAtDate.length).toBe(30);
     expect(statistics?.balanceAtDate[0].date).toEqual(_30daysEarlier);
-    expect(statistics?.balanceAtDate[0].balance).toBe("30");
-    expect(statistics?.balanceAtDate[14].balance).toBe("450");
+    expect(statistics?.balanceAtDate[0].balance.toNumber()).toBe(30);
+    expect(statistics?.balanceAtDate[14].balance.toNumber()).toBe(450);
     expect(statistics?.balanceAtDate[29].date).toEqual(new Date(today));
-    expect(statistics?.balanceAtDate[29].balance).toBe("900");
+    expect(statistics?.balanceAtDate[29].balance.toNumber()).toBe(900);
   });
 });

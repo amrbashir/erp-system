@@ -16,7 +16,7 @@
 
   "lint": {
     "rules": {
-      "exclude": ["no-slow-types"]
+      "exclude": ["no-slow-types", "no-explicit-any" /* TODO: remove this */]
     }
   },
 

@@ -335,8 +335,8 @@ export class InvoiceService {
             .sub(new Decimal(item.discountAmount));
 
           invoiceItems.push({
-            barcode: item.barcode ?? product.barcode,
-            description: item.description ?? product.description,
+            barcode: product.barcode,
+            description: product.description,
             purchasePrice,
             sellingPrice,
             quantity: item.quantity,
