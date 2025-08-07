@@ -3,7 +3,7 @@ name: "cleanup-db-cron"
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *' # Runs daily at midnight UTC
+    - cron: "0 0 * * *" # Runs daily at midnight UTC
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -17,4 +17,4 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: latest
-      - run: deno run -A ./server/scripts/cleanup-db.ts
+      - run: deno run -A ./packages/server/scripts/cleanup-db.ts
