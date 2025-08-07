@@ -34,4 +34,5 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: latest
+      - run: deno task --filter server prisma:generate
       - run: deno test
