@@ -1,5 +1,5 @@
 import { expect } from "@std/expect";
-import { afterAll, beforeAll, it } from "@std/testing/bdd";
+import { afterAll, beforeAll, describe, it } from "@std/testing/bdd";
 
 import { PrismaClient } from "@/prisma-client.ts";
 
@@ -128,22 +128,23 @@ async function populateOrg(slug: string) {
     invoice,
   };
 }
+describe("cleanupDatabase", () => {
+  it("cleans up the database", async () => {
+    await populateOrg("test-org-1");
+    await populateOrg("test-org-2");
+    await populateOrg("test-org-3");
 
-it("cleans up the database", async () => {
-  await populateOrg("test-org-1");
-  await populateOrg("test-org-2");
-  await populateOrg("test-org-3");
+    Deno.env.set("NO_DELETE_ORGS", "test-org-1,test-org-3");
 
-  Deno.env.set("NO_DELETE_ORGS", "test-org-1,test-org-3");
+    await cleanupDatabase();
 
-  await cleanupDatabase();
+    const org1 = await prisma.organization.findUnique({ where: { slug: "test-org-1" } });
+    expect(org1).toBeDefined();
 
-  const org1 = await prisma.organization.findUnique({ where: { slug: "test-org-1" } });
-  expect(org1).toBeDefined();
+    const org2 = await prisma.organization.findUnique({ where: { slug: "test-org-2" } });
+    expect(org2).toBeNull();
 
-  const org2 = await prisma.organization.findUnique({ where: { slug: "test-org-2" } });
-  expect(org2).toBeNull();
-
-  const org3 = await prisma.organization.findUnique({ where: { slug: "test-org-3" } });
-  expect(org3).toBeDefined();
+    const org3 = await prisma.organization.findUnique({ where: { slug: "test-org-3" } });
+    expect(org3).toBeDefined();
+  });
 });
