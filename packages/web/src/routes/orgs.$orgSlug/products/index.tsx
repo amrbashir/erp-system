@@ -19,6 +19,7 @@ import { trpc } from "@/trpc.ts";
 import { formatDate } from "@/utils/formatDate.ts";
 import { formatMoney } from "@/utils/formatMoney.ts";
 
+import { ButtonLink } from "../../../components/ui/ButtonLink.tsx";
 import { EditProductDialog } from "./-edit-product-dialog.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/products/")({
@@ -38,6 +39,12 @@ function RouteComponent() {
 
   return (
     <div className="flex flex-col gap-4 p-4">
+      <div>
+        <ButtonLink to="/orgs/$orgSlug/invoices/createPurchase" params={{ orgSlug }}>
+          {i18n.t("routes.invoice.createPurchase")}
+        </ButtonLink>
+      </div>
+
       {products?.length && products.length > 0 ? (
         <div className="rounded border">
           <Table>
