@@ -8,6 +8,10 @@ import "@erp-system/utils/super-json-ext.ts";
 import { createContext } from "./trpc/index.ts";
 import { appRouter } from "./trpc/router.ts";
 
+Deno.cron("Delete non-persistent organizations", { hour: { every: 1 } }, () => {
+  console.log("This Delete non-persistent organizations");
+});
+
 export default {
   async fetch(req) {
     const { pathname } = new URL(req.url);
