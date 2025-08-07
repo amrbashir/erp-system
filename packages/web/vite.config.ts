@@ -1,21 +1,21 @@
-import path from "node:path";
-
-import { cloudflare } from "@cloudflare/vite-plugin";
+import deno from "@deno/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
-import react from "@vitejs/plugin-react-oxc";
+import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    cloudflare(),
     tanstackRouter({
       target: "react",
       autoCodeSplitting: true,
+      addExtensions: true,
+      routeTreeFileHeader: ["// deno-lint-ignore-file no-explicit-any"],
     }),
     react(),
     tailwindcss(),
+    deno(),
   ],
 
   build: {
@@ -29,14 +29,20 @@ export default defineConfig({
 
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": "./src",
     },
   },
 
-  clearScreen: false, // don't clear the console
   server: {
     port: 1420,
     strictPort: true,
+    proxy: {
+      "/api": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""), // remove /api prefix
+      },
+    },
   },
 });
 

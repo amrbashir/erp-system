@@ -1,27 +1,23 @@
 import { Popover } from "@radix-ui/react-popover";
-import { CheckIcon, ChevronsUpDownIcon, PlusIcon } from "lucide-react";
+import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/shadcn/components/ui/button";
+import { Button } from "@/shadcn/components/ui/button.tsx";
 import {
   Command,
   CommandEmpty,
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/shadcn/components/ui/command";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/shadcn/components/ui/drawer";
-import { Label } from "@/shadcn/components/ui/label";
-import { PopoverContent, PopoverTrigger } from "@/shadcn/components/ui/popover";
+} from "@/shadcn/components/ui/command.tsx";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/shadcn/components/ui/drawer.tsx";
+import { Label } from "@/shadcn/components/ui/label.tsx";
+import { PopoverContent, PopoverTrigger } from "@/shadcn/components/ui/popover.tsx";
+import { useIsMobile } from "@/shadcn/hooks/use-mobile.ts";
 
-import type { CustomerEntity } from "@erp-system/sdk/zod";
-import type z from "zod";
+import type { Customer } from "@erp-system/server/prisma";
 
-import { useMediaQuery } from "@/hooks/use-media-query";
-
-import { CustomerDialog } from "../customers/-customer-dialog";
-
-type Customer = z.infer<typeof CustomerEntity>;
+import { CustomerDialog } from "@/routes/orgs.$orgSlug/customers/-customer-dialog.tsx";
 
 // Customer selection dropdown component
 export function CustomerSelector({
@@ -39,7 +35,7 @@ export function CustomerSelector({
   const [open, setOpen] = React.useState(false);
   const [selectedCustomer, setSelectedCustomer] = React.useState<string | undefined>(undefined);
   const [customerSearch, setCustomerSearch] = React.useState("");
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isMobile = useIsMobile();
 
   const handleCustomerCreated = (customer: Customer) => {
     setSelectedCustomer(customer.name);
@@ -105,22 +101,22 @@ export function CustomerSelector({
     </Command>
   );
 
-  if (isDesktop) {
+  if (isMobile) {
     return (
-      <div className="flex gap-2">
-        <Label htmlFor={name}>{t("customer.name")}</Label>
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>{ButtonTrigger}</PopoverTrigger>
-          <PopoverContent asChild>{CustomersCommandList}</PopoverContent>
-        </Popover>
-      </div>
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerTrigger asChild>{ButtonTrigger}</DrawerTrigger>
+        <DrawerContent className="bg-popover p-2">{CustomersCommandList}</DrawerContent>
+      </Drawer>
     );
   }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>{ButtonTrigger}</DrawerTrigger>
-      <DrawerContent className="bg-popover p-2">{CustomersCommandList}</DrawerContent>
-    </Drawer>
+    <div className="flex gap-2">
+      <Label htmlFor={name}>{t("customer.name")}</Label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>{ButtonTrigger}</PopoverTrigger>
+        <PopoverContent asChild>{CustomersCommandList}</PopoverContent>
+      </Popover>
+    </div>
   );
 }

@@ -5,6 +5,15 @@
   "printWidth": 100,
   "useTabs": false,
 
+  "overrides": [
+    {
+      "files": ["*.jsonc"],
+      "options": {
+        "trailingComma": "none"
+      }
+    }
+  ],
+
   "plugins": ["@ianvs/prettier-plugin-sort-imports"],
 
   "importOrder": [

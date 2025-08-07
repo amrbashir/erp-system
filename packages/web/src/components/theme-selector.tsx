@@ -1,13 +1,12 @@
+import { THEME_VARIANTS, useTheme } from "@/providers/theme.tsx";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/shadcn/components/ui/button";
+import { Button } from "@/shadcn/components/ui/button.tsx";
 import {
   DropdownMenuCheckboxItem,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@/shadcn/components/ui/dropdown-menu";
-
-import { THEME_VARIANTS, useTheme } from "@/providers/theme";
+} from "@/shadcn/components/ui/dropdown-menu.tsx";
 
 export function ThemeSelector({
   asSubmenu = false,

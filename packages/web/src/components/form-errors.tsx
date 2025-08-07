@@ -1,5 +1,7 @@
-import { type AnyFieldApi, type AnyFormState } from "@tanstack/react-form";
 import { useTranslation } from "react-i18next";
+
+import type { AnyFieldApi, AnyFormState } from "@tanstack/react-form";
+import type { ParseKeys } from "i18next";
 
 /**
  * FormFieldError component to display field-specific errors.
@@ -20,7 +22,7 @@ export function FormFieldError({
   const error = field.state.meta.errorMap[errorKind];
   if (!error) return null;
 
-  return <ErrorElement error={error} fieldName={t(field.name as any)} />;
+  return <ErrorElement error={error} fieldName={t(field.name as ParseKeys)} />;
 }
 
 /**
@@ -54,26 +56,28 @@ export function FormErrors({
  *
  * If the error is an array, it maps through each error and displays them.
  */
-function ErrorElement({ error, fieldName }: { error: any; fieldName?: string }) {
+function ErrorElement({ error, fieldName }: { error: unknown; fieldName?: string }) {
   if (!error) return null;
 
   const { t } = useTranslation();
 
   const errors = Array.isArray(error) ? error : [error];
 
-  const getError = (error: any): string | string[] => {
+  const getError = (error: unknown): string | null | (string | null)[] => {
+    if (error === null || error === undefined) return null;
+
     return typeof error === "string"
-      ? t(`errors.${error}`, { field: fieldName } as any)
-      : typeof error === "object" && error.code
-        ? t(`validationErrors.${error.code}`, { field: fieldName, ...error })
-        : typeof error === "object" && error.message
+      ? t(`errors.${error}` as ParseKeys, { field: fieldName })
+      : typeof error === "object" && "code" in error && error.code
+        ? t(`validationErrors.${error.code}` as ParseKeys, { field: fieldName, ...error })
+        : typeof error === "object" && "message" in error && error.message
           ? Array.isArray(error.message)
-            ? error.message.map(getError)
+            ? error.message.map(getError).flat()
             : getError(error.message)
-          : getError(error.message);
+          : getError(error);
   };
 
-  const messages = errors.map(getError).flat();
+  const messages = errors.map(getError).flat().filter(Boolean);
 
   return messages.map((msg, index) => (
     <p key={index} className="text-destructive text-sm">

@@ -1,0 +1,27 @@
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id String @id @default(uuid())
+
+  username String
+  password String
+
+  role UserRole @default(USER)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  invoices     Invoice[]
+  expenses     Expense[]
+  transactions Transaction[]
+  Session      Session[]
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+
+  @@map("users")
+}

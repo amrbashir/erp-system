@@ -5,6 +5,8 @@ import HttpBackend from "i18next-http-backend";
 import LocalStorageBackend from "i18next-localstorage-backend";
 import { initReactI18next } from "react-i18next";
 
+import type { Module } from "i18next";
+
 const isDevelopment = import.meta.env.MODE === "development";
 
 const httpBackendOptions = {
@@ -20,7 +22,7 @@ const backendOptions = isDevelopment
   : [localStorageBackendOptions, httpBackendOptions];
 
 await i18n
-  .use(ChainedBackend)
+  .use(ChainedBackend as unknown as Module) // ChainedBackend implements Module but probably version mismatch
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({

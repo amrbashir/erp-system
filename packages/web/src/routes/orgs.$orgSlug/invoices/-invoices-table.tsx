@@ -1,6 +1,3 @@
-import { InvoiceEntity } from "@erp-system/sdk/zod";
-import { useQuery } from "@tanstack/react-query";
-import { Decimal } from "decimal.js";
 import { useTranslation } from "react-i18next";
 import {
   Table,
@@ -9,20 +6,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shadcn/components/ui/table";
-import { cn } from "@/shadcn/lib/utils";
+} from "@/shadcn/components/ui/table.tsx";
+import { cn } from "@/shadcn/lib/utils.ts";
 
-import type z from "zod";
+import type { InvoiceWithRelations } from "@erp-system/server/dto";
 
-import { EmptyTable } from "@/components/empty-table";
-import { ButtonLink } from "@/components/ui/ButtonLink";
-import { useAuthUser } from "@/hooks/use-auth-user";
-import { formatDate } from "@/utils/formatDate";
-import { formatMoney } from "@/utils/formatMoney";
+import { EmptyTable } from "@/components/empty-table.tsx";
+import { ButtonLink } from "@/components/ui/ButtonLink.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import { formatDate } from "@/utils/formatDate.ts";
+import { formatMoney } from "@/utils/formatMoney.ts";
 
-type Invoice = z.infer<typeof InvoiceEntity>;
-
-export function InvoicesTable({ invoices }: { invoices: Invoice[] | undefined }) {
+export function InvoicesTable({ invoices }: { invoices: InvoiceWithRelations[] | undefined }) {
   const { t } = useTranslation();
   const { orgSlug } = useAuthUser();
 
@@ -50,8 +45,8 @@ export function InvoicesTable({ invoices }: { invoices: Invoice[] | undefined })
             <TableRow key={index}>
               <TableCell>{invoice.id}</TableCell>
               <TableCell>{t(`invoice.types.${invoice.type}`)}</TableCell>
-              <TableCell>{invoice.cashierName}</TableCell>
-              <TableCell>{invoice.customerName}</TableCell>
+              <TableCell>{invoice.cashier.username}</TableCell>
+              <TableCell>{invoice.customer?.name}</TableCell>
               <TableCell>{formatDate(invoice.createdAt)}</TableCell>
               <TableCell>{formatMoney(invoice.subtotal)}</TableCell>
               <TableCell>{invoice.discountPercent}%</TableCell>
@@ -67,9 +62,7 @@ export function InvoicesTable({ invoices }: { invoices: Invoice[] | undefined })
                 {formatMoney(invoice.paid)}
               </TableCell>
               <TableCell
-                className={cn(
-                  new Decimal(invoice.remaining).greaterThan(0) && "text-red-500 dark:text-red-300",
-                )}
+                className={cn(invoice.remaining.greaterThan(0) && "text-red-500 dark:text-red-300")}
               >
                 {formatMoney(invoice.remaining)}
               </TableCell>

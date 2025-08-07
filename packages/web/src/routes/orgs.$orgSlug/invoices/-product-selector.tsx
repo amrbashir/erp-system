@@ -2,14 +2,14 @@ import { PopoverTrigger } from "@radix-ui/react-popover";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/shadcn/components/ui/button";
+import { Button } from "@/shadcn/components/ui/button.tsx";
 import {
   Command,
   CommandEmpty,
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/shadcn/components/ui/command";
+} from "@/shadcn/components/ui/command.tsx";
 import {
   Drawer,
   DrawerContent,
@@ -17,11 +17,10 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/shadcn/components/ui/drawer";
-import { Popover, PopoverContent } from "@/shadcn/components/ui/popover";
-import { cn } from "@/shadcn/lib/utils";
-
-import { useMediaQuery } from "@/hooks/use-media-query";
+} from "@/shadcn/components/ui/drawer.tsx";
+import { Popover, PopoverContent } from "@/shadcn/components/ui/popover.tsx";
+import { useIsMobile } from "@/shadcn/hooks/use-mobile.ts";
+import { cn } from "@/shadcn/lib/utils.ts";
 
 export function ProductSelector({
   items,
@@ -37,7 +36,7 @@ export function ProductSelector({
   const { t } = useTranslation();
   const [selected, setSelected] = React.useState("");
   const [open, setOpen] = React.useState(false);
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isMobile = useIsMobile();
 
   const handleItemSelect = (item: string) => {
     setSelected(item);
@@ -67,9 +66,9 @@ export function ProductSelector({
     <CommandInput
       value={value}
       onValueChange={handleInputChange}
-      placeholder={isDesktop ? undefined : t("product.search")}
+      placeholder={isMobile ? t("product.search") : undefined}
       className={cn(
-        isDesktop &&
+        !isMobile &&
           "rounded-none h-9 p-y1 px-3 focus-visible:z-2 focus-visible:ring-ring/50 focus-visible:ring-[3px]",
       )}
     />
@@ -92,43 +91,42 @@ export function ProductSelector({
     </CommandList>
   );
 
-  if (isDesktop) {
+  if (isMobile) {
     return (
-      <Command
-        className={cn(
-          "p-0 bg-transparent rounded-none overflow-visible",
-          "[&>[data-slot=command-input-wrapper]]:border-none [&>[data-slot=command-input-wrapper]]:rounded-none",
-          "[&>[data-slot=command-input-wrapper]]:p-0 [&>[data-slot=command-input-wrapper]>svg]:hidden",
-        )}
-      >
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>{ProductsInput}</PopoverTrigger>
-          <PopoverContent
-            className="w-(--radix-popover-trigger-width) p-2 rounded-t-none bg-accent"
-            asChild
-            onOpenAutoFocus={(e) => e.preventDefault()}
-          >
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerTrigger asChild>{ButtonTrigger}</DrawerTrigger>
+        <DrawerContent className="bg-popover p-2">
+          <DrawerHeader>
+            <DrawerTitle>{t("product.select")}</DrawerTitle>
+            <DrawerDescription>{t("product.selectDescription")}</DrawerDescription>
+          </DrawerHeader>
+          <Command>
+            {ProductsInput}
+            <br className="mb-2" />
             {ProductsList}
-          </PopoverContent>
-        </Popover>
-      </Command>
+          </Command>
+        </DrawerContent>
+      </Drawer>
     );
   }
-
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>{ButtonTrigger}</DrawerTrigger>
-      <DrawerContent className="bg-popover p-2">
-        <DrawerHeader>
-          <DrawerTitle>{t("product.select")}</DrawerTitle>
-          <DrawerDescription>{t("product.selectDescription")}</DrawerDescription>
-        </DrawerHeader>
-        <Command>
-          {ProductsInput}
-          <br className="mb-2" />
+    <Command
+      className={cn(
+        "p-0 bg-transparent rounded-none overflow-visible",
+        "[&>[data-slot=command-input-wrapper]]:border-none [&>[data-slot=command-input-wrapper]]:rounded-none",
+        "[&>[data-slot=command-input-wrapper]]:p-0 [&>[data-slot=command-input-wrapper]>svg]:hidden",
+      )}
+    >
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>{ProductsInput}</PopoverTrigger>
+        <PopoverContent
+          className="w-(--radix-popover-trigger-width) p-2 rounded-t-none bg-accent"
+          asChild
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
           {ProductsList}
-        </Command>
-      </DrawerContent>
-    </Drawer>
+        </PopoverContent>
+      </Popover>
+    </Command>
   );
 }

@@ -1,30 +1,27 @@
-import { DirectionProvider } from "@radix-ui/react-direction";
-import { createRootRouteWithContext, HeadContent, Link, Outlet } from "@tanstack/react-router";
-import * as React from "react";
+import { createRootRouteWithContext, HeadContent, Outlet } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { z } from "zod";
-import { Toaster } from "@/shadcn/components/ui/sonner";
+import { Toaster } from "@/shadcn/components/ui/sonner.tsx";
 
-import type { UserEntity } from "@erp-system/sdk/zod";
+import type { UserRole } from "@erp-system/server/prisma";
+import type * as React from "react";
 
-import type { AuthProviderState } from "@/providers/auth";
-import { NotFound404 } from "@/components/404";
-import { Header } from "@/components/header";
-import { ButtonLink } from "@/components/ui/ButtonLink";
-import i18n from "@/i18n";
-import { ThemeProvider } from "@/providers/theme";
+import type { AuthProviderState } from "@/providers/auth.tsx";
+import { NotFound404 } from "@/components/404.tsx";
+import { Header } from "@/components/header.tsx";
+import { ButtonLink } from "@/components/ui/ButtonLink.tsx";
+import i18n from "@/i18n.ts";
 
 interface RouterContext {
   auth: AuthProviderState;
   title: string;
   icon?: React.ComponentType;
-  roleRequirement?: z.infer<typeof UserEntity>["role"];
+  roleRequirement?: UserRole;
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RouteComponent,
   errorComponent: ErrorComponent,
-  notFoundComponent: NotFound404,
+  notFoundComponent: () => <NotFound404 />,
   head: (c) => {
     const currentMatch = c.matches[c.matches.length - 1];
     const routeTitle = currentMatch.context.title ? currentMatch.context.title : "";
@@ -49,32 +46,14 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   },
 });
 
-function Layout({ children }: { children: React.ReactNode }) {
-  const { i18n } = useTranslation("translation");
-  React.useEffect(() => {
-    document.documentElement.lang = i18n.language;
-    document.documentElement.dir = i18n.dir();
-  }, [i18n.language]);
-
-  return (
-    <DirectionProvider dir={i18n.dir()}>
-      <ThemeProvider>
-        <HeadContent />
-        <Header />
-
-        {children}
-
-        <Toaster position={i18n.dir() === "rtl" ? "bottom-left" : "bottom-right"} />
-      </ThemeProvider>
-    </DirectionProvider>
-  );
-}
-
 function RouteComponent() {
   return (
-    <Layout>
+    <>
+      <HeadContent />
+      <Header />
       <Outlet />
-    </Layout>
+      <Toaster position={i18n.dir() === "rtl" ? "bottom-left" : "bottom-right"} />
+    </>
   );
 }
 
@@ -82,18 +61,16 @@ function ErrorComponent({ error }: { error: Error }) {
   const { t } = useTranslation();
 
   return (
-    <Layout>
-      <main className="h-(--fullheight-minus-header) w-full flex flex-col items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-9xl!">{t("common.ui.oops")}</h1>
-          <br />
-          <br />
-          <p>{error.message}</p>
-          <br />
-          <br />
-          <ButtonLink to="/">{t("goBackHome")}</ButtonLink>
-        </div>
-      </main>
-    </Layout>
+    <main className="h-(--fullheight-minus-header) w-full flex flex-col items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-9xl!">{t("common.ui.oops")}</h1>
+        <br />
+        <br />
+        <p>{error.message}</p>
+        <br />
+        <br />
+        <ButtonLink to="/">{t("goBackHome")}</ButtonLink>
+      </div>
+    </main>
   );
 }

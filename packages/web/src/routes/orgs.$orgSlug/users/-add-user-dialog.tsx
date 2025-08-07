@@ -1,10 +1,13 @@
-import { CreateUserDto } from "@erp-system/sdk/zod";
+import { FormErrors, FormFieldError } from "@/components/form-errors.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import { trpc } from "@/trpc.ts";
+import { CreateUserDto } from "@erp-system/server/dto";
 import { useForm } from "@tanstack/react-form";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/shadcn/components/ui/button";
+import { Button } from "@/shadcn/components/ui/button.tsx";
 import {
   Dialog,
   DialogClose,
@@ -14,32 +17,32 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/shadcn/components/ui/dialog";
-import { Input } from "@/shadcn/components/ui/input";
-import { Label } from "@/shadcn/components/ui/label";
+} from "@/shadcn/components/ui/dialog.tsx";
+import { Input } from "@/shadcn/components/ui/input.tsx";
+import { Label } from "@/shadcn/components/ui/label.tsx";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/shadcn/components/ui/select";
+} from "@/shadcn/components/ui/select.tsx";
 
+import type { UserRole } from "@erp-system/server/prisma";
 import type z from "zod";
-
-import type { UserRole } from "@/user";
-import { apiClient } from "@/api-client";
-import { FormErrors, FormFieldError } from "@/components/form-errors";
-import { useAuthUser } from "@/hooks/use-auth-user";
-import { useAuth } from "@/providers/auth";
 
 export function AddUserDialog() {
   const { orgSlug } = useAuthUser();
   const { t } = useTranslation();
   const client = useQueryClient();
-  const { user } = useAuth();
 
   const [open, setOpen] = useState(false);
+
+  const {
+    mutateAsync: createUser,
+    isError: createUserIsError,
+    error: createUserError,
+  } = useMutation(trpc.orgs.users.create.mutationOptions());
 
   const form = useForm({
     defaultValues: {
@@ -51,18 +54,14 @@ export function AddUserDialog() {
       onSubmit: CreateUserDto,
     },
     onSubmit: async ({ value, formApi }) => {
-      const { username, password, role } = value;
-      const { error } = await apiClient.post("/orgs/{orgSlug}/users/create", {
-        params: { path: { orgSlug: orgSlug } },
-        body: { username, password, role },
-      });
+      await createUser({ ...value, orgSlug });
 
-      if (error) {
-        formApi.setErrorMap({ onSubmit: error });
+      if (createUserIsError) {
+        formApi.setErrorMap({ onSubmit: createUserError as any });
         return;
       }
 
-      client.invalidateQueries({ queryKey: ["users", orgSlug, user?.role] });
+      client.invalidateQueries({ queryKey: trpc.orgs.users.getAll.queryKey() });
       setOpen(false);
     },
   });
@@ -101,7 +100,7 @@ export function AddUserDialog() {
               name="username"
               children={(field) => (
                 <div className="w-full flex flex-col gap-3">
-                  <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
+                  <Label htmlFor={field.name}>{t(`common.form.${field.name}`)}</Label>
                   <Input
                     id={field.name}
                     name={field.name}
@@ -116,7 +115,6 @@ export function AddUserDialog() {
               name="role"
               children={(field) => (
                 <RolesSelector
-                  name={field.name}
                   defaultValue="USER"
                   options={["USER", "ADMIN"]}
                   onChange={(value) => field.handleChange(value)}
@@ -129,7 +127,7 @@ export function AddUserDialog() {
             name="password"
             children={(field) => (
               <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
+                <Label htmlFor={field.name}>{t(`common.form.${field.name}`)}</Label>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -169,12 +167,10 @@ export function AddUserDialog() {
 }
 
 function RolesSelector({
-  name,
   defaultValue,
   options,
   onChange,
 }: {
-  name?: string;
   defaultValue: UserRole;
   options: UserRole[];
   onChange?: (value: UserRole) => void;
@@ -183,7 +179,7 @@ function RolesSelector({
 
   return (
     <div className="flex flex-col gap-3">
-      <Label htmlFor={name}>{t(`common.form.${name}` as any)}</Label>
+      <Label htmlFor="role">{t("common.form.role")}</Label>
       <Select onValueChange={(v) => onChange?.(v as UserRole)} defaultValue={defaultValue}>
         <SelectTrigger>
           <SelectValue />

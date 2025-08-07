@@ -1,0 +1,33 @@
+{
+  "name": "@erp-system/server",
+  "exports": {
+    "./trpc/router": "./src/trpc/router.ts",
+    "./prisma": "./src/prisma.ts",
+    "./dto": "./src/dto.ts"
+  },
+
+  "tasks": {
+    "dev": "deno serve --watch --allow-env --allow-sys --allow-read --allow-net --allow-ffi --env-file=.env.development ./src/main.ts",
+    "prisma:dev": "export $(cat .env.development | xargs) && prisma",
+    "prisma:generate": "deno task prisma:dev generate",
+    "prisma:studio": "deno task prisma:dev studio",
+    "prisma:migrate:dev": "deno task prisma:dev migrate dev"
+  },
+
+  "lint": {
+    "exclude": ["prisma/generated/"]
+  },
+
+  "imports": {
+    // aliases
+    "@/": "./src/",
+
+    // dependencies
+    "@prisma/client": "npm:@prisma/client@6.13.0",
+    "argon2": "npm:argon2@^0.43.1",
+    "cookie": "npm:cookie@^1.0.2",
+
+    // dev-dependencies
+    "prisma": "npm:prisma@6.13.0"
+  }
+}

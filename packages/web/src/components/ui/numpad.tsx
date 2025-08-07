@@ -1,7 +1,7 @@
 import { CornerDownLeftIcon, DeleteIcon } from "lucide-react";
 import * as React from "react";
-import { Button } from "@/shadcn/components/ui/button";
-import { cn } from "@/shadcn/lib/utils";
+import { Button } from "@/shadcn/components/ui/button.tsx";
+import { cn } from "@/shadcn/lib/utils.ts";
 
 // prettier-ignore
 const KEYS = [

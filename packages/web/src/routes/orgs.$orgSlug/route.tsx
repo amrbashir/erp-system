@@ -1,13 +1,12 @@
+import { NotFound404 } from "@/components/404.tsx";
+import { OrgHeader } from "@/components/org-header.tsx";
+import { AppSideBar } from "@/components/sidebar.tsx";
+import i18n from "@/i18n.ts";
+import { AppSidebarProvider } from "@/providers/sidebar.tsx";
+import { trpcClient } from "@/trpc.ts";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { HomeIcon } from "lucide-react";
-import { SidebarInset } from "@/shadcn/components/ui/sidebar";
-
-import { apiClient } from "@/api-client";
-import { NotFound404 } from "@/components/404";
-import { OrgHeader } from "@/components/org-header";
-import { AppSideBar } from "@/components/sidebar";
-import i18n from "@/i18n";
-import { AppSidebarProvider } from "@/providers/sidebar";
+import { SidebarInset } from "@/shadcn/components/ui/sidebar.tsx";
 
 interface RouteSearch {
   redirect?: string;
@@ -21,7 +20,7 @@ export const Route = createFileRoute("/orgs/$orgSlug")({
     icon: HomeIcon,
   }),
   validateSearch: ({ search }) => search as RouteSearch,
-  beforeLoad: async ({ context, location, search, params }) => {
+  beforeLoad: ({ context, location, search, params }) => {
     // redirect to home if not authenticated
     if (
       !context.auth.isAuthenticated &&
@@ -41,12 +40,8 @@ export const Route = createFileRoute("/orgs/$orgSlug")({
   },
   loader: async ({ params }) => {
     if ("orgSlug" in params && typeof params.orgSlug === "string") {
-      const { data, response } = await apiClient.get("/orgs/{orgSlug}", {
-        params: { path: { orgSlug: params.orgSlug } },
-      });
-      if (!response.ok) throw new Error(i18n.t(`errors.statusCode.${response.status}` as any));
-      if (!data) throw new Error(i18n.t("errors.organizationNotFound"));
-      return data;
+      const exists = await trpcClient.orgs.exists.query({ orgSlug: params.orgSlug });
+      if (!exists) throw new Error(i18n.t("errors.organizationNotFound"));
     }
   },
 });

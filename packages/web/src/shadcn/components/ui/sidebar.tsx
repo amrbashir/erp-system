@@ -2,25 +2,25 @@ import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 import { PanelLeftIcon } from "lucide-react";
 import * as React from "react";
-import { Button } from "@/shadcn/components/ui/button";
-import { Input } from "@/shadcn/components/ui/input";
-import { Separator } from "@/shadcn/components/ui/separator";
+import { Button } from "@/shadcn/components/ui/button.tsx";
+import { Input } from "@/shadcn/components/ui/input.tsx";
+import { Separator } from "@/shadcn/components/ui/separator.tsx";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@/shadcn/components/ui/sheet";
-import { Skeleton } from "@/shadcn/components/ui/skeleton";
+} from "@/shadcn/components/ui/sheet.tsx";
+import { Skeleton } from "@/shadcn/components/ui/skeleton.tsx";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/shadcn/components/ui/tooltip";
-import { useIsMobile } from "@/shadcn/hooks/use-mobile";
-import { cn } from "@/shadcn/lib/utils";
+} from "@/shadcn/components/ui/tooltip.tsx";
+import { useIsMobile } from "@/shadcn/hooks/use-mobile.ts";
+import { cn } from "@/shadcn/lib/utils.ts";
 
 import type { VariantProps } from "class-variance-authority";
 

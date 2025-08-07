@@ -1,7 +1,6 @@
+import i18n from "@/i18n.ts";
 import { createFileRoute } from "@tanstack/react-router";
 import { FileTextIcon } from "lucide-react";
-
-import i18n from "@/i18n";
 
 export const Route = createFileRoute("/orgs/$orgSlug/invoices")({
   context: () => ({

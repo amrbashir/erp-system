@@ -1,4 +1,0 @@
-packages:
-  - packages/*
-overrides:
-  vite: npm:rolldown-vite@latest

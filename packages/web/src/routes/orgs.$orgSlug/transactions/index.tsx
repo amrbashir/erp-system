@@ -1,12 +1,11 @@
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import i18n from "@/i18n.ts";
+import { trpc } from "@/trpc.ts";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { BanknoteIcon } from "lucide-react";
 
-import { apiClient } from "@/api-client";
-import { useAuthUser } from "@/hooks/use-auth-user";
-import i18n from "@/i18n";
-
-import { TransactionsTable } from "./-transactions-table";
+import { TransactionsTable } from "./-transactions-table.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/transactions/")({
   component: RouteComponent,
@@ -20,12 +19,7 @@ export const Route = createFileRoute("/orgs/$orgSlug/transactions/")({
 function RouteComponent() {
   const { orgSlug } = useAuthUser();
 
-  const { data: transactions } = useQuery({
-    queryKey: ["transactions", orgSlug],
-    queryFn: async () =>
-      apiClient.getThrowing("/orgs/{orgSlug}/transactions", { params: { path: { orgSlug } } }),
-    select: (res) => res.data,
-  });
+  const { data: transactions } = useQuery(trpc.orgs.transactions.getAll.queryOptions({ orgSlug }));
 
   return (
     <div className="gap-4 p-4">

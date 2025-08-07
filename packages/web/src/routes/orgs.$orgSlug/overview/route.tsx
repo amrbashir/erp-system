@@ -1,9 +1,6 @@
-import { BalanceAtDateStisticDto } from "@erp-system/sdk/zod";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Decimal } from "decimal.js";
 import { Building2Icon } from "lucide-react";
-import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import {
@@ -13,19 +10,22 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/shadcn/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/shadcn/components/ui/chart";
-import { ToggleGroup, ToggleGroupItem } from "@/shadcn/components/ui/toggle-group";
+} from "@/shadcn/components/ui/card.tsx";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/shadcn/components/ui/chart.tsx";
 
-import type z from "zod";
+import type { Decimal } from "decimal.js";
 
-import type { ChartConfig } from "@/shadcn/components/ui/chart";
-import { apiClient } from "@/api-client";
-import { useAuthUser } from "@/hooks/use-auth-user";
-import i18n from "@/i18n";
-import { formatMoney } from "@/utils/formatMoney";
+import type { ChartConfig } from "@/shadcn/components/ui/chart.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import i18n from "@/i18n.ts";
+import { trpc } from "@/trpc.ts";
+import { formatMoney } from "@/utils/formatMoney.ts";
 
-import { AddBalanceDialog } from "./-add-balance-dialog";
+import { AddBalanceDialog } from "./-add-balance-dialog.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/overview")({
   component: RouteComponent,
@@ -40,16 +40,9 @@ function RouteComponent() {
   const { t } = useTranslation();
   const { orgSlug } = useAuthUser();
 
-  const { data: org } = useQuery({
-    queryKey: ["organizationOverview", orgSlug],
-    queryFn: async () =>
-      await apiClient.getThrowing("/orgs/{orgSlug}/statistics", {
-        params: { path: { orgSlug } },
-      }),
-    select: (res) => res.data,
-  });
+  const { data: statistics } = useQuery(trpc.orgs.getStatistics.queryOptions({ orgSlug }));
 
-  if (!org) return null;
+  if (!statistics) return null;
 
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -58,7 +51,7 @@ function RouteComponent() {
           <CardHeader>
             <CardDescription>{t("org.name")}</CardDescription>
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              {org?.name}
+              {statistics.name}
             </CardTitle>
           </CardHeader>
         </Card>
@@ -69,12 +62,12 @@ function RouteComponent() {
             <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
               <span
                 className={
-                  new Decimal(org.statistics.balance || 0).isNegative()
+                  statistics.balance.isNegative()
                     ? "text-red-500 dark:text-red-300"
                     : "text-green-500 dark:text-green-300"
                 }
               >
-                {formatMoney(org.statistics.balance || 0)}
+                {formatMoney(statistics.balance || 0)}
               </span>
             </CardTitle>
             <CardAction>
@@ -85,8 +78,8 @@ function RouteComponent() {
       </div>
 
       <BalanceStatistics
-        transactionCount={org.statistics.transactionCount}
-        balanceAtDate={org.statistics.balanceAtDate}
+        transactionCount={statistics.transactionCount}
+        balanceAtDate={statistics.balanceAtDate}
       />
     </div>
   );
@@ -104,7 +97,7 @@ function BalanceStatistics({
   balanceAtDate,
 }: {
   transactionCount: number;
-  balanceAtDate: z.infer<typeof BalanceAtDateStisticDto>[];
+  balanceAtDate: { date: Date; balance: Decimal }[];
 }) {
   const { t, i18n } = useTranslation();
 

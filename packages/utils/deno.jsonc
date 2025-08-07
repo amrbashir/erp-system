@@ -1,0 +1,8 @@
+{
+  "name": "@erp-system/utils",
+  "exports": {
+    "./slug.ts": "./src/slug.ts",
+    "./test.ts": "./src/test.ts",
+    "./super-json-ext.ts": "./src/super-json-ext.ts"
+  }
+}

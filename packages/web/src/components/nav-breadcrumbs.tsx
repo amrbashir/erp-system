@@ -7,13 +7,12 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/shadcn/components/ui/breadcrumb";
-
-import { useMediaQuery } from "@/hooks/use-media-query";
+} from "@/shadcn/components/ui/breadcrumb.tsx";
+import { useIsMobile } from "@/shadcn/hooks/use-mobile.ts";
 
 export function NavigationBreadcrumbs() {
   const matches = useMatches();
-  const isMobile = useMediaQuery("(max-width: 640px)");
+  const isMobile = useIsMobile();
 
   const breadcrumbs = matches
     .filter(({ context }) => context?.title)

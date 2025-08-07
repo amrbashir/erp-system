@@ -1,6 +1,8 @@
+import { Sa } from "@/components/flags/sa.tsx";
+import { Uk } from "@/components/flags/uk.tsx";
 import { useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/shadcn/components/ui/button";
+import { Button } from "@/shadcn/components/ui/button.tsx";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -9,10 +11,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/shadcn/components/ui/dropdown-menu";
-
-import { Sa } from "@/components/flags/sa";
-import { Uk } from "@/components/flags/uk";
+} from "@/shadcn/components/ui/dropdown-menu.tsx";
 
 const LANGUAGE_FLAGS = {
   "en-US": Uk,
@@ -45,12 +44,10 @@ export function LanguageSelector({ asSubmenu = false }: { asSubmenu?: boolean })
           t("language.language")
         ) : (
           <Button title={t("language.changeLanguage")} variant="outline">
-            <>
-              <ActiveIcon />
-              <span className="hidden md:inline">
-                {t(`language.languages.${i18n.language as LanguageFlagKey}`)}
-              </span>
-            </>
+            <ActiveIcon />
+            <span className="hidden md:inline">
+              {t(`language.languages.${i18n.language as LanguageFlagKey}`)}
+            </span>
           </Button>
         )}
       </MenuTrigger>

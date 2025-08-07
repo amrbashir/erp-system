@@ -1,11 +1,11 @@
+import { QuickActionLinkCard } from "@/components/quick-action-link-card.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import i18n from "@/i18n.ts";
 import { createFileRoute } from "@tanstack/react-router";
 import { FileTextIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import type { QuickActionLinkCardProps } from "@/components/quick-action-link-card";
-import { QuickActionLinkCard } from "@/components/quick-action-link-card";
-import { useAuthUser } from "@/hooks/use-auth-user";
-import i18n from "@/i18n";
+import type { QuickActionLinkCardProps } from "@/components/quick-action-link-card.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/invoices/")({
   component: RouteComponent,

@@ -1,15 +1,15 @@
 import { Decimal } from "decimal.js";
 
-import { SafeDecimal } from "./SafeDecimal";
+import { SafeDecimal } from "./SafeDecimal.ts";
 
-export function calculateItemSubtotal(price: string | number, quantity: number) {
+export function calculateItemSubtotal(price: string | number | Decimal, quantity: number) {
   return new SafeDecimal(price).mul(quantity);
 }
 
 export function calculateItemDiscount(
   subtotal: number | Decimal,
   discountPercent?: number,
-  discountAmount?: string | number,
+  discountAmount?: string | number | Decimal,
 ) {
   const subtotalDecimal = subtotal instanceof Decimal ? subtotal : new SafeDecimal(subtotal);
   const percentDiscount = subtotalDecimal.mul((discountPercent || 0) / 100);
@@ -20,10 +20,10 @@ export function calculateItemDiscount(
 }
 
 export function calculateItemTotal(
-  price: string | number,
+  price: string | number | Decimal,
   quantity: number,
   discountPercent?: number,
-  discountAmount?: string | number,
+  discountAmount?: string | number | Decimal,
 ) {
   const subtotal = calculateItemSubtotal(price, quantity);
   const { totalDiscount } = calculateItemDiscount(subtotal, discountPercent, discountAmount);
@@ -32,11 +32,11 @@ export function calculateItemTotal(
 
 export function calculateInvoiceSubtotal(
   items: Array<{
-    price?: string | number;
-    purchasePrice?: string | number;
+    price?: string | number | Decimal;
+    purchasePrice?: string | number | Decimal;
     quantity: number;
     discountPercent?: number;
-    discountAmount?: string | number;
+    discountAmount?: string | number | Decimal;
   }>,
   invoiceType: "SALE" | "PURCHASE",
 ) {
@@ -62,7 +62,7 @@ export function calculateInvoicePercentDiscount(
 export function calculateInvoiceTotal(
   subtotal: number | Decimal,
   discountPercent?: number,
-  discountAmount?: string | number,
+  discountAmount?: string | number | Decimal,
 ) {
   const discountAmountDecimal = new SafeDecimal(discountAmount || 0);
   const subtotalDecimal = subtotal instanceof Decimal ? subtotal : new Decimal(subtotal);
@@ -70,7 +70,10 @@ export function calculateInvoiceTotal(
   return subtotalDecimal.minus(percentDiscount).minus(discountAmountDecimal);
 }
 
-export function calculateInvoiceRemaining(total: number | Decimal, paid: string | number) {
+export function calculateInvoiceRemaining(
+  total: number | Decimal,
+  paid: string | number | Decimal,
+) {
   const totalDecimal = total instanceof Decimal ? total : new Decimal(total);
   const paidDecimal = new SafeDecimal(paid || 0);
   return totalDecimal.minus(paidDecimal);

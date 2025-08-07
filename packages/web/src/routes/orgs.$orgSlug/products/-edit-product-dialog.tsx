@@ -1,11 +1,10 @@
-import { ProductEntity, UpdateProductDto } from "@erp-system/sdk/zod";
-import { Slot } from "@radix-ui/react-slot";
+import { UpdateProductDto } from "@erp-system/server/dto";
 import { useForm } from "@tanstack/react-form";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { EditIcon, Loader2Icon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/shadcn/components/ui/button";
+import { Button } from "@/shadcn/components/ui/button.tsx";
 import {
   Dialog,
   DialogClose,
@@ -15,20 +14,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/shadcn/components/ui/dialog";
-import { Input } from "@/shadcn/components/ui/input";
-import { Label } from "@/shadcn/components/ui/label";
-import { cn } from "@/shadcn/lib/utils";
+} from "@/shadcn/components/ui/dialog.tsx";
+import { Input } from "@/shadcn/components/ui/input.tsx";
+import { Label } from "@/shadcn/components/ui/label.tsx";
+import { cn } from "@/shadcn/lib/utils.ts";
 
+import type { Product } from "@erp-system/server/prisma";
 import type z from "zod";
 
-import { apiClient } from "@/api-client";
-import { InputNumpad } from "@/components/ui/input-numpad";
-import { useAuthUser } from "@/hooks/use-auth-user";
-
-import { FormErrors, FormFieldError } from "../../../components/form-errors";
-
-type Product = z.infer<typeof ProductEntity>;
+import { FormErrors, FormFieldError } from "@/components/form-errors.tsx";
+import { InputNumpad } from "@/components/ui/input-numpad.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import { trpc } from "@/trpc.ts";
 
 export function EditProductDialog({
   product,
@@ -44,29 +41,32 @@ export function EditProductDialog({
   const { orgSlug } = useAuthUser();
   const client = useQueryClient();
 
+  const {
+    mutateAsync: updateProduct,
+    isError: updateProductIsError,
+    error: updateProductError,
+  } = useMutation(trpc.orgs.products.update.mutationOptions());
+
   const form = useForm({
     defaultValues: {
-      barcode: product?.barcode || "",
-      description: product?.description || "",
-      purchasePrice: product?.purchasePrice || "0",
-      sellingPrice: product?.sellingPrice || "0",
-      stockQuantity: product?.stockQuantity || 0,
+      barcode: product.barcode,
+      description: product.description,
+      purchasePrice: product.purchasePrice.toString(),
+      sellingPrice: product.sellingPrice.toString(),
+      stockQuantity: product.stockQuantity,
     } as z.infer<typeof UpdateProductDto>,
     validators: {
       onSubmit: UpdateProductDto,
     },
     onSubmit: async ({ value, formApi }) => {
-      const { error } = await apiClient.post("/orgs/{orgSlug}/products/{id}/update", {
-        params: { path: { orgSlug: orgSlug, id: product.id } },
-        body: value,
-      });
+      await updateProduct({ ...value, orgSlug, productId: product.id });
 
-      if (error) {
-        formApi.setErrorMap({ onSubmit: error });
+      if (updateProductIsError) {
+        formApi.setErrorMap({ onSubmit: updateProductError as any });
         return;
       }
 
-      client.invalidateQueries({ queryKey: ["products", orgSlug] });
+      client.invalidateQueries({ queryKey: trpc.orgs.products.getAll.queryKey() });
 
       formApi.reset();
       setOpen(false);
@@ -104,7 +104,7 @@ export function EditProductDialog({
             name="barcode"
             children={(field) => (
               <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`product.form.${field.name}` as any)}</Label>
+                <Label htmlFor={field.name}>{t(`product.form.${field.name}`)}</Label>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -119,7 +119,7 @@ export function EditProductDialog({
             name="description"
             children={(field) => (
               <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`product.form.${field.name}` as any)}</Label>
+                <Label htmlFor={field.name}>{t(`product.form.${field.name}`)}</Label>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -134,7 +134,7 @@ export function EditProductDialog({
             name="stockQuantity"
             children={(field) => (
               <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`product.form.${field.name}` as any)}</Label>
+                <Label htmlFor={field.name}>{t(`product.form.${field.name}`)}</Label>
                 <InputNumpad
                   id={field.name}
                   name={field.name}
@@ -150,7 +150,7 @@ export function EditProductDialog({
             name="purchasePrice"
             children={(field) => (
               <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`product.form.${field.name}` as any)}</Label>
+                <Label htmlFor={field.name}>{t(`product.form.${field.name}`)}</Label>
                 <InputNumpad
                   id={field.name}
                   name={field.name}
@@ -166,7 +166,7 @@ export function EditProductDialog({
             name="sellingPrice"
             children={(field) => (
               <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`product.form.${field.name}` as any)}</Label>
+                <Label htmlFor={field.name}>{t(`product.form.${field.name}`)}</Label>
                 <InputNumpad
                   id={field.name}
                   name={field.name}

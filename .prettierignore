@@ -1,16 +1,10 @@
 pnpm-lock.yaml
 
 node_modules
-target
 dist
 
-packages/backend/src/prisma/generated
-
-packages/desktop/gen
-
-packages/sdk/src/schema.d.ts
-packages/sdk/src/schema.zod.ts
-packages/sdk/openapi-zod.hbs
+packages/server/prisma/generated
 
 packages/web/src/routeTree.gen.ts
+packages/web/.vite
 

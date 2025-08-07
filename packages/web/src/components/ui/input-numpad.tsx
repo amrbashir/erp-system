@@ -1,13 +1,13 @@
 import * as React from "react";
-import { Button } from "@/shadcn/components/ui/button";
-import { Input } from "@/shadcn/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn/components/ui/popover";
-import { cn } from "@/shadcn/lib/utils";
+import { Button } from "@/shadcn/components/ui/button.tsx";
+import { Popover, PopoverContent, PopoverTrigger } from "@/shadcn/components/ui/popover.tsx";
+import { useIsMobile } from "@/shadcn/hooks/use-mobile.ts";
+import { cn } from "@/shadcn/lib/utils.ts";
 
-import { PhNumpadIcon } from "@/components/icons/PhNumpad";
-import { InputNumber } from "@/components/ui/input-number";
-import { Numpad } from "@/components/ui/numpad";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import type { Input } from "@/shadcn/components/ui/input.tsx";
+import { PhNumpadIcon } from "@/components/icons/PhNumpad.tsx";
+import { InputNumber } from "@/components/ui/input-number.tsx";
+import { Numpad } from "@/components/ui/numpad.tsx";
 
 export function InputNumpad({
   variant = "default",
@@ -20,7 +20,7 @@ export function InputNumpad({
 } & React.ComponentProps<typeof Input>) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMobile = useIsMobile();
 
   return (
     <div className={cn("flex items-center", variant === "default" && "border rounded")}>
@@ -33,7 +33,7 @@ export function InputNumpad({
         {...props}
       />
 
-      {!isMobile ? (
+      {isMobile && (
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -53,15 +53,13 @@ export function InputNumpad({
               className="bg-card"
               value={value}
               onSubmit={(values) => {
-                onChange?.({ target: values } as any);
+                onChange?.({ target: values } as React.ChangeEvent<HTMLInputElement>);
                 inputRef.current?.dispatchEvent(new Event("input", { bubbles: true }));
                 setOpen(false);
               }}
             />
           </PopoverContent>
         </Popover>
-      ) : (
-        <></>
       )}
     </div>
   );

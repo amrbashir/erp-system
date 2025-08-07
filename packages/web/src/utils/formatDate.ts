@@ -1,4 +1,4 @@
-import i18n from "@/i18n";
+import i18n from "@/i18n.ts";
 
 export function formatDate(date: Date | string | null | undefined): string {
   if (!date) return "";

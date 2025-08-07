@@ -9,14 +9,14 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/shadcn/components/ui/alert-dialog";
-import { Button } from "@/shadcn/components/ui/button";
+} from "@/shadcn/components/ui/alert-dialog.tsx";
+import { Button } from "@/shadcn/components/ui/button.tsx";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/shadcn/components/ui/dropdown-menu";
+} from "@/shadcn/components/ui/dropdown-menu.tsx";
 
 export interface ComponentAction {
   Component: React.ReactElement;

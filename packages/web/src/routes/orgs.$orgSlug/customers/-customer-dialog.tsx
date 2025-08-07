@@ -1,10 +1,10 @@
-import { CreateCustomerDto, CustomerEntity } from "@erp-system/sdk/zod";
+import { CreateCustomerDto, UpdateCustomerDto } from "@erp-system/server/dto";
 import { useForm } from "@tanstack/react-form";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { EditIcon, Loader2Icon, PlusIcon } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/shadcn/components/ui/button";
+import { Button } from "@/shadcn/components/ui/button.tsx";
 import {
   Dialog,
   DialogClose,
@@ -14,29 +14,28 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/shadcn/components/ui/dialog";
-import { Input } from "@/shadcn/components/ui/input";
-import { Label } from "@/shadcn/components/ui/label";
+} from "@/shadcn/components/ui/dialog.tsx";
+import { Input } from "@/shadcn/components/ui/input.tsx";
+import { Label } from "@/shadcn/components/ui/label.tsx";
 
+import type { Customer } from "@erp-system/server/prisma";
 import type z from "zod";
 
-import { apiClient } from "@/api-client";
-import { FormErrors, FormFieldError } from "@/components/form-errors";
-import { useAuthUser } from "@/hooks/use-auth-user";
-
-type Customer = z.infer<typeof CustomerEntity>;
+import { FormErrors, FormFieldError } from "@/components/form-errors.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import { trpc } from "@/trpc.ts";
 
 export function CustomerDialog({
   action,
-  iconOnly = false,
   shortLabel = false,
+  iconOnly = false,
   customer,
   onCreated,
   onEdited,
 }: {
   action: "create" | "edit";
-  iconOnly?: boolean;
   shortLabel?: boolean;
+  iconOnly?: boolean;
   customer?: Customer;
   onCreated?: (customer: Customer) => void;
   onEdited?: () => void;
@@ -47,33 +46,49 @@ export function CustomerDialog({
 
   const [open, setOpen] = React.useState(false);
 
+  const {
+    mutateAsync: createCustomerHandler,
+    isError: createCustomerIsError,
+    error: createCustomerError,
+  } = useMutation(trpc.orgs.customers.create.mutationOptions());
+
+  const {
+    mutateAsync: updateCustomerHandler,
+    isError: updateCustomerIsError,
+    error: updateCustomerError,
+  } = useMutation(trpc.orgs.customers.update.mutationOptions());
+
+  const ActionDto = action === "create" ? CreateCustomerDto : UpdateCustomerDto;
+
   const form = useForm({
     defaultValues: {
       name: customer?.name,
       address: customer?.address,
       phone: customer?.phone,
-    } as z.infer<typeof CreateCustomerDto>,
+    } as z.infer<typeof ActionDto>,
     validators: {
-      onSubmit: CreateCustomerDto,
+      onSubmit: ActionDto,
     },
     onSubmit: async ({ value, formApi }) => {
-      const apiPath =
-        `/orgs/{orgSlug}/customers/${action === "create" ? "create" : "{id}/update"}` as const;
+      const actionIsError = action === "create" ? createCustomerIsError : updateCustomerIsError;
+      const actionError = action === "create" ? createCustomerError : updateCustomerError;
 
-      const { error, data } = await apiClient.post(apiPath, {
-        params: { path: { orgSlug: orgSlug, id: customer?.id } },
-        body: value,
-      });
+      const data =
+        action === "create"
+          ? await createCustomerHandler({ ...value, name: value.name!, orgSlug })
+          : await updateCustomerHandler({ ...value, orgSlug, customerId: customer!.id });
 
-      if (error) {
-        formApi.setErrorMap({ onSubmit: error });
+      if (actionIsError) {
+        formApi.setErrorMap({ onSubmit: actionError as any });
         return;
       }
 
-      if (action === "create" && data && onCreated) onCreated(data);
+      if (action === "create" && data && onCreated) {
+        onCreated(data);
+      }
       if (action === "edit" && data && onEdited) onEdited();
 
-      client.invalidateQueries({ queryKey: ["customers", orgSlug] });
+      client.invalidateQueries({ queryKey: trpc.orgs.customers.getAll.queryKey() });
       setOpen(false);
     },
   });
@@ -83,7 +98,9 @@ export function CustomerDialog({
     ? actionLabelShort
     : t(`customer.${action === "create" ? "add" : "edit"}`);
   const actionDescription = t(`customer.${action === "create" ? "add" : "edit"}Description`);
+
   const ActionIcon = action === "create" ? <PlusIcon /> : <EditIcon />;
+
   const Trigger = iconOnly ? (
     <Button variant="ghost" size="icon" className="p-0">
       {ActionIcon}
@@ -123,7 +140,7 @@ export function CustomerDialog({
             name="name"
             children={(field) => (
               <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
+                <Label htmlFor={field.name}>{t(`common.form.${field.name}`)}</Label>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -138,7 +155,7 @@ export function CustomerDialog({
             name="phone"
             children={(field) => (
               <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
+                <Label htmlFor={field.name}>{t(`common.form.${field.name}`)}</Label>
                 <Input
                   id={field.name}
                   name={field.name}
@@ -154,7 +171,7 @@ export function CustomerDialog({
             name="address"
             children={(field) => (
               <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
+                <Label htmlFor={field.name}>{t(`common.form.${field.name}`)}</Label>
                 <Input
                   id={field.name}
                   name={field.name}

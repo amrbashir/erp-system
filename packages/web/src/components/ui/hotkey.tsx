@@ -1,4 +1,4 @@
-import { useHotkey } from "@/hooks/use-hotkeys";
+import { useHotkey } from "@/hooks/use-hotkeys.ts";
 
 export function Hotkey({
   hotkey,

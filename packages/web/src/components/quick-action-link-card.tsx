@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Card, CardContent } from "@/shadcn/components/ui/card";
-import { cn } from "@/shadcn/lib/utils";
+import { Card, CardContent } from "@/shadcn/components/ui/card.tsx";
+import { cn } from "@/shadcn/lib/utils.ts";
 
 import type { LinkComponentProps } from "@tanstack/react-router";
 

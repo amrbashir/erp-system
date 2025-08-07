@@ -2,7 +2,7 @@ import { useStore } from "@tanstack/react-form";
 import { ChevronUpIcon } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import { Card, CardContent } from "@/shadcn/components/ui/card";
+import { Card, CardContent } from "@/shadcn/components/ui/card.tsx";
 import {
   Drawer,
   DrawerContent,
@@ -10,50 +10,51 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/shadcn/components/ui/drawer";
-import { Label } from "@/shadcn/components/ui/label";
-import { Separator } from "@/shadcn/components/ui/separator";
-import { cn } from "@/shadcn/lib/utils";
+} from "@/shadcn/components/ui/drawer.tsx";
+import { Label } from "@/shadcn/components/ui/label.tsx";
+import { Separator } from "@/shadcn/components/ui/separator.tsx";
+import { useIsMobile } from "@/shadcn/hooks/use-mobile.ts";
+import { cn } from "@/shadcn/lib/utils.ts";
 
-import type { InvoiceEntity } from "@erp-system/sdk/zod";
+import type { InvoiceType } from "@erp-system/server/prisma";
 import type { ReactFormExtendedApi } from "@tanstack/react-form";
-import type z from "zod";
 
-import { InputNumpad } from "@/components/ui/input-numpad";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { formatMoney } from "@/utils/formatMoney";
+import { InputNumpad } from "@/components/ui/input-numpad.tsx";
+import { formatMoney } from "@/utils/formatMoney.ts";
 import {
   calculateInvoicePercentDiscount,
   calculateInvoiceRemaining,
   calculateInvoiceSubtotal,
   calculateInvoiceTotal,
-} from "@/utils/invoice-calculator";
-import { SafeDecimal } from "@/utils/SafeDecimal";
-
-type InvoiceType = z.infer<typeof InvoiceEntity>["type"];
+} from "@/utils/invoice-calculator.ts";
+import { SafeDecimal } from "@/utils/SafeDecimal.ts";
 
 type InvoiceItem = {
-  description?: string | undefined;
+  barcode?: string;
+  description?: string;
   quantity: number;
+  price?: string;
+  purchasePrice?: string;
 };
 
 type Invoice = {
   items: InvoiceItem[];
-  discountPercent?: number | undefined;
+  discountPercent?: number;
   discountAmount?: string;
   paid: string;
 };
 
-export function InvoiceFooter<TInvoice extends Invoice>({
+export function InvoiceFooter<TInvoice extends Invoice & { items: InvoiceItem[] }>({
   invoiceType,
   form,
   ...props
 }: {
   invoiceType: InvoiceType;
-  form: ReactFormExtendedApi<TInvoice, any, any, any, any, any, any, any, any, any>;
+  // deno-lint-ignore no-explicit-any
+  form: ReactFormExtendedApi<TInvoice, any, any, any, any, any, any, any, any, any, any, any>;
 } & React.ComponentProps<typeof Card>) {
   const { t } = useTranslation();
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMobile = useIsMobile();
 
   const [validInvoiceItems, discountPercent, discountAmount, paid] = useStore(
     form.store,

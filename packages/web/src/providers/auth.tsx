@@ -1,75 +1,76 @@
 import { useMutation } from "@tanstack/react-query";
+import { Loader2Icon } from "lucide-react";
 import * as React from "react";
-import { z } from "zod";
 
-import type { AuthUser } from "@/user";
-import { apiClient } from "@/api-client";
-import { getStoredUser, setStoredUser, USER_KEY } from "@/user";
+import type { LoginResponse } from "@erp-system/server/dto";
+import type { AppRouter } from "@erp-system/server/trpc/router";
+import type { TRPCClientErrorLike } from "@trpc/client";
+
+import { trpc, trpcClient } from "@/trpc.ts";
+
+export type AuthUser = LoginResponse;
 
 export interface AuthProviderState {
   user: AuthUser | null;
   isAuthenticated: boolean;
   login: (username: string, password: string, orgSlug: string) => Promise<void>;
-  logout: (orgSlug: string) => Promise<void>;
+  loginError: TRPCClientErrorLike<AppRouter> | undefined;
+  loginIsError: boolean;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = React.createContext<AuthProviderState | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = React.useState<AuthUser | null>(getStoredUser());
-  const isAuthenticated = !!user;
+  const [user, setUser] = React.useState<AuthUser | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
 
-  // Handle storage changes to update the user state
-  const storageChange = (e: StorageEvent) =>
-    e.key === USER_KEY ? setUser(e.newValue ? getStoredUser() : null) : {};
-
+  // Fetch the current user on mount
   React.useEffect(() => {
-    window.addEventListener("storage", storageChange);
-    return () => window.removeEventListener("storage", storageChange);
+    trpcClient.orgs.auth.me
+      .query()
+      .then((user) => {
+        setUser(user);
+        setIsAuthenticated(true);
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
   // login
-  const loginMutation = useMutation({
-    mutationFn: async (value: { username: string; password: string; orgSlug: string }) =>
-      apiClient.post("/orgs/{orgSlug}/auth/login", {
-        params: { path: { orgSlug: value.orgSlug } },
-        body: {
-          username: value.username,
-          password: value.password,
-        },
-      }),
-  });
-
+  const loginMutation = useMutation(trpc.orgs.auth.login.mutationOptions());
   const login = async (username: string, password: string, orgSlug: string) => {
-    const { data: user, error } = await loginMutation.mutateAsync({
-      username,
-      password,
-      orgSlug,
-    });
-
-    if (error) throw error;
-
-    setStoredUser(user);
+    await loginMutation.mutateAsync({ username, password, orgSlug });
     setUser(user);
   };
 
   // logout
-  const logoutMutation = useMutation({
-    mutationFn: async (orgSlug: string) =>
-      await apiClient.get("/orgs/{orgSlug}/auth/logout", {
-        params: { path: { orgSlug } },
-      }),
-  });
-
-  const logout = async (orgSlug: string) => {
-    await logoutMutation.mutateAsync(orgSlug);
-
-    setStoredUser(null);
+  const logoutMutation = useMutation(trpc.orgs.auth.logout.mutationOptions());
+  const logout = async () => {
     setUser(null);
+    setIsAuthenticated(false);
+    await logoutMutation.mutateAsync();
   };
 
+  if (isLoading) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <Loader2Icon className="animate-spin" />
+      </div>
+    );
+  }
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        user: user,
+        login,
+        loginError: loginMutation.error as TRPCClientErrorLike<AppRouter>,
+        loginIsError: loginMutation.isError,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

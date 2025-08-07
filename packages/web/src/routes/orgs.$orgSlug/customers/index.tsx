@@ -1,8 +1,13 @@
+import { EmptyTable } from "@/components/empty-table.tsx";
+import { ButtonLink } from "@/components/ui/ButtonLink.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import i18n from "@/i18n.ts";
+import { trpc } from "@/trpc.ts";
+import { formatDate } from "@/utils/formatDate.ts";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { UserIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/shadcn/components/ui/button";
 import {
   Table,
   TableBody,
@@ -10,16 +15,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shadcn/components/ui/table";
+} from "@/shadcn/components/ui/table.tsx";
 
-import { apiClient } from "@/api-client";
-import { EmptyTable } from "@/components/empty-table";
-import { ButtonLink } from "@/components/ui/ButtonLink";
-import { useAuthUser } from "@/hooks/use-auth-user";
-import i18n from "@/i18n";
-import { formatDate } from "@/utils/formatDate";
-
-import { CustomerDialog } from "./-customer-dialog";
+import { CustomerDialog } from "./-customer-dialog.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/customers/")({
   component: RouteComponent,
@@ -34,12 +32,7 @@ function RouteComponent() {
 
   const { t } = useTranslation();
 
-  const { data: customers } = useQuery({
-    queryKey: ["customers", orgSlug],
-    queryFn: async () =>
-      apiClient.getThrowing("/orgs/{orgSlug}/customers", { params: { path: { orgSlug } } }),
-    select: (res) => res.data,
-  });
+  const { data: customers } = useQuery(trpc.orgs.customers.getAll.queryOptions({ orgSlug }));
 
   return (
     <div className="flex flex-col gap-4 p-4">

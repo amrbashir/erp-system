@@ -1,12 +1,14 @@
 import { createLink, Link } from "@tanstack/react-router";
 import React from "react";
-import { Button } from "@/shadcn/components/ui/button";
-import { cn } from "@/shadcn/lib/utils";
+import { Button } from "@/shadcn/components/ui/button.tsx";
+import { cn } from "@/shadcn/lib/utils.ts";
 
-import type { LinkComponent } from "@tanstack/react-router";
+import type { LinkComponent, LinkComponentProps } from "@tanstack/react-router";
 
-export type BasicLinkProps = React.AnchorHTMLAttributes<HTMLAnchorElement> &
-  React.ComponentProps<typeof Button>;
+interface BasicLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+  to?: LinkComponentProps<"a">["to"];
+  variant?: React.ComponentProps<typeof Button>["variant"];
+}
 
 const ButtonLinkComponent = React.forwardRef<HTMLAnchorElement, BasicLinkProps>((props, ref) => {
   return (
@@ -15,7 +17,7 @@ const ButtonLinkComponent = React.forwardRef<HTMLAnchorElement, BasicLinkProps>(
       variant={props.variant}
       className={cn(props.variant === "link" && "p-0 size-fit")}
     >
-      <Link ref={ref} {...props} />
+      <Link to={props.to} ref={ref} {...props} />
     </Button>
   );
 });
@@ -23,5 +25,5 @@ const ButtonLinkComponent = React.forwardRef<HTMLAnchorElement, BasicLinkProps>(
 const CreatedButtonLinkComponent = createLink(ButtonLinkComponent);
 
 export const ButtonLink: LinkComponent<typeof ButtonLinkComponent> = (props) => {
-  return <CreatedButtonLinkComponent preload={"intent"} {...props} />;
+  return <CreatedButtonLinkComponent preload="intent" {...props} />;
 };

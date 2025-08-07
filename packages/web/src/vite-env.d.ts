@@ -1,10 +1,11 @@
 /// <reference types="vite/client" />
-/// <reference types="@cloudflare/workers-types/latest" />
 
 import "i18next";
 
-import arTranslation from "../public/locales/ar-Eg/translation.json";
-import enTranslation from "../public/locales/en-US/translation.json";
+// deno-lint-ignore verbatim-module-syntax
+import arTranslation from "../public/locales/ar-Eg/translation.json" with { type: "json" };
+// deno-lint-ignore verbatim-module-syntax
+import enTranslation from "../public/locales/en-US/translation.json" with { type: "json" };
 
 declare module "i18next" {
   interface CustomTypeOptions {

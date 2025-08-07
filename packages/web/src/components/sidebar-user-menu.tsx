@@ -1,7 +1,11 @@
+import { LanguageSelector } from "@/components/language-selector.tsx";
+import { ThemeSelector } from "@/components/theme-selector.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import { useAuth } from "@/providers/auth.tsx";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { EllipsisVerticalIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Avatar, AvatarFallback } from "@/shadcn/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/shadcn/components/ui/avatar.tsx";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,18 +13,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/shadcn/components/ui/dropdown-menu";
+} from "@/shadcn/components/ui/dropdown-menu.tsx";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/shadcn/components/ui/sidebar";
-
-import { LanguageSelector } from "@/components/language-selector";
-import { ThemeSelector } from "@/components/theme-selector";
-import { useAuthUser } from "@/hooks/use-auth-user";
-import { useAuth } from "@/providers/auth";
+} from "@/shadcn/components/ui/sidebar.tsx";
 
 export function SidebarUserMenu() {
   const { t } = useTranslation();
@@ -33,7 +32,7 @@ export function SidebarUserMenu() {
   const { user, logout: authLogout } = useAuth();
 
   async function logout() {
-    authLogout(orgSlug);
+    await authLogout();
     navigate({
       to: "/",
       search: {
@@ -85,8 +84,8 @@ export function SidebarUserMenu() {
 
             <DropdownMenuSeparator />
 
-            <LanguageSelector asSubmenu={true} />
-            <ThemeSelector asSubmenu={true} />
+            <LanguageSelector asSubmenu />
+            <ThemeSelector asSubmenu />
 
             <DropdownMenuSeparator />
 

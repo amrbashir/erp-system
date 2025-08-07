@@ -1,10 +1,14 @@
-import { CreateExpenseDto } from "@erp-system/sdk/zod";
+import { FormErrors, FormFieldError } from "@/components/form-errors.tsx";
+import { InputNumpad } from "@/components/ui/input-numpad.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import { trpc } from "@/trpc.ts";
+import { CreateExpenseDto } from "@erp-system/server/dto";
 import { useForm } from "@tanstack/react-form";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/shadcn/components/ui/button";
+import { Button } from "@/shadcn/components/ui/button.tsx";
 import {
   Dialog,
   DialogClose,
@@ -14,23 +18,23 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/shadcn/components/ui/dialog";
-import { Input } from "@/shadcn/components/ui/input";
-import { Label } from "@/shadcn/components/ui/label";
+} from "@/shadcn/components/ui/dialog.tsx";
+import { Input } from "@/shadcn/components/ui/input.tsx";
+import { Label } from "@/shadcn/components/ui/label.tsx";
 
 import type z from "zod";
-
-import { apiClient } from "@/api-client";
-import { InputNumpad } from "@/components/ui/input-numpad";
-import { useAuthUser } from "@/hooks/use-auth-user";
-
-import { FormErrors, FormFieldError } from "../../../components/form-errors";
 
 export function AddExpenseDialog() {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const { orgSlug } = useAuthUser();
   const client = useQueryClient();
+
+  const {
+    mutateAsync: createExpense,
+    isError: createExpenseIsError,
+    error: createExpenseError,
+  } = useMutation(trpc.orgs.expenses.create.mutationOptions());
 
   const form = useForm({
     defaultValues: {
@@ -41,17 +45,14 @@ export function AddExpenseDialog() {
       onSubmit: CreateExpenseDto,
     },
     onSubmit: async ({ value, formApi }) => {
-      const { error } = await apiClient.post("/orgs/{orgSlug}/expenses/create", {
-        params: { path: { orgSlug: orgSlug } },
-        body: value,
-      });
+      await createExpense({ ...value, orgSlug });
 
-      if (error) {
-        formApi.setErrorMap({ onSubmit: error });
+      if (createExpenseIsError) {
+        formApi.setErrorMap({ onSubmit: createExpenseError as any });
         return;
       }
 
-      client.invalidateQueries({ queryKey: ["expenses", orgSlug] });
+      client.invalidateQueries({ queryKey: trpc.orgs.expenses.getAll.queryKey() });
 
       formApi.reset();
       setOpen(false);
@@ -87,7 +88,7 @@ export function AddExpenseDialog() {
             name="description"
             children={(field) => (
               <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
+                <Label htmlFor={field.name}>{t(`common.form.${field.name}`)}</Label>
 
                 <Input
                   id={field.name}
@@ -103,7 +104,7 @@ export function AddExpenseDialog() {
             name="amount"
             children={(field) => (
               <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
+                <Label htmlFor={field.name}>{t(`common.form.${field.name}`)}</Label>
                 <InputNumpad
                   id={field.name}
                   name={field.name}

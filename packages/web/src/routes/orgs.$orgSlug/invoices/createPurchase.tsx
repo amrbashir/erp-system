@@ -1,17 +1,12 @@
-import {
-  CreatePurchaseInvoiceDto,
-  CreatePurchaseInvoiceItemDto,
-  CustomerEntity,
-  ProductEntity,
-} from "@erp-system/sdk/zod";
+import { CreatePurchaseInvoiceDto } from "@erp-system/server/dto";
 import { useForm } from "@tanstack/react-form";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Loader2Icon, PlusIcon, XIcon } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Button } from "@/shadcn/components/ui/button";
+import { Button } from "@/shadcn/components/ui/button.tsx";
 import {
   Table,
   TableBody,
@@ -19,29 +14,29 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shadcn/components/ui/table";
+} from "@/shadcn/components/ui/table.tsx";
 
 import type z from "zod";
 
-import { apiClient } from "@/api-client";
-import { FormErrors } from "@/components/form-errors";
-import { Hotkey } from "@/components/ui/hotkey";
-import { InputNumpad } from "@/components/ui/input-numpad";
-import { useAuthUser } from "@/hooks/use-auth-user";
-import i18n from "@/i18n";
-import { formatMoney } from "@/utils/formatMoney";
+import { FormErrors } from "@/components/form-errors.tsx";
+import { Hotkey } from "@/components/ui/hotkey.tsx";
+import { InputNumpad } from "@/components/ui/input-numpad.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import i18n from "@/i18n.ts";
+import { trpc } from "@/trpc.ts";
+import { formatMoney } from "@/utils/formatMoney.ts";
 import {
   calculateInvoiceSubtotal,
   calculateInvoiceTotal,
   calculateItemDiscount,
   calculateItemSubtotal,
   calculateItemTotal,
-} from "@/utils/invoice-calculator";
-import { SafeDecimal } from "@/utils/SafeDecimal";
+} from "@/utils/invoice-calculator.ts";
+import { SafeDecimal } from "@/utils/SafeDecimal.ts";
 
-import { InvoiceFooter } from "./-create-invoice-footer";
-import { CustomerSelector } from "./-customer-selector";
-import { ProductSelector } from "./-product-selector";
+import { InvoiceFooter } from "./-create-invoice-footer.tsx";
+import { CustomerSelector } from "./-customer-selector.tsx";
+import { ProductSelector } from "./-product-selector.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/invoices/createPurchase")({
   component: RouteComponent,
@@ -49,13 +44,6 @@ export const Route = createFileRoute("/orgs/$orgSlug/invoices/createPurchase")({
     title: i18n.t("routes.invoice.createPurchase"),
   }),
 });
-
-// Types
-type Product = z.infer<typeof ProductEntity>;
-type CreateInvoiceItem = z.infer<typeof CreatePurchaseInvoiceItemDto>;
-type Invoice = Omit<z.infer<typeof CreatePurchaseInvoiceDto>, "items"> & {
-  items: (CreateInvoiceItem & Partial<Product>)[];
-};
 
 const DEFAULT_INVOICE_ITEM = {
   productId: undefined,
@@ -73,19 +61,8 @@ function RouteComponent() {
   const { t } = useTranslation();
   const client = useQueryClient();
 
-  const params = { path: { orgSlug } };
-
-  const { data: products } = useQuery({
-    queryKey: ["products", orgSlug],
-    queryFn: async () => apiClient.getThrowing("/orgs/{orgSlug}/products", { params }),
-    select: (res) => res.data,
-  });
-
-  const { data: customers } = useQuery({
-    queryKey: ["customers", orgSlug],
-    queryFn: async () => apiClient.getThrowing("/orgs/{orgSlug}/customers", { params }),
-    select: (res) => res.data,
-  });
+  const { data: products } = useQuery(trpc.orgs.products.getAll.queryOptions({ orgSlug }));
+  const { data: customers } = useQuery(trpc.orgs.customers.getAll.queryOptions({ orgSlug }));
 
   // Create lookup maps for faster product retrieval
   const productsByBarcode = React.useMemo(
@@ -93,7 +70,7 @@ function RouteComponent() {
     [products],
   );
   const productsByBarcodeArray = React.useMemo(
-    () => Array.from(productsByBarcode.keys()).filter((b) => b !== undefined),
+    () => Array.from(productsByBarcode.keys()).filter((b) => b !== undefined && b !== null),
     [products],
   );
   const productsByDescription = React.useMemo(
@@ -105,6 +82,12 @@ function RouteComponent() {
     [productsByDescription],
   );
 
+  const {
+    mutateAsync: createPurchaseInvoice,
+    isError: createPurchaseInvoiceIsError,
+    error: createPurchaseInvoiceError,
+  } = useMutation(trpc.orgs.invoices.createPurchase.mutationOptions());
+
   const form = useForm({
     defaultValues: {
       items: Array.from({ length: 30 }, () => ({ ...DEFAULT_INVOICE_ITEM })),
@@ -112,7 +95,7 @@ function RouteComponent() {
       discountPercent: 0,
       discountAmount: "0",
       paid: "0",
-    } as Invoice,
+    } as z.input<typeof CreatePurchaseInvoiceDto>,
     validators: {
       onChange: ({ value, formApi }) => {
         const paidField = formApi.getFieldMeta("paid");
@@ -128,38 +111,14 @@ function RouteComponent() {
         formApi.setFieldValue("paid", total.toString(), { dontUpdateMeta: true });
       },
 
-      onSubmit: ({ value, formApi }) => {
-        const validItems = value.items.filter(
-          (i) => !!i.productId || !!i.barcode || !!i.description,
-        );
-        if (validItems.length === 0) return "invoiceMustHaveItems";
-
-        const errors = formApi.parseValuesWithSchema(CreatePurchaseInvoiceDto);
-        if (errors) return errors;
-      },
+      onSubmit: CreatePurchaseInvoiceDto,
     },
     onSubmit: async ({ value, formApi }) => {
       const validItems = value.items.filter((i) => !!i.productId || !!i.barcode || !!i.description);
+      await createPurchaseInvoice({ ...value, orgSlug, items: validItems });
 
-      const { error } = await apiClient.post("/orgs/{orgSlug}/invoices/createPurchase", {
-        params: { path: { orgSlug } },
-        body: {
-          ...value,
-          items: validItems.map((i) => ({
-            productId: i.productId,
-            barcode: i.barcode,
-            description: i.description,
-            purchasePrice: i.purchasePrice,
-            sellingPrice: i.sellingPrice,
-            quantity: i.quantity,
-            discountPercent: i.discountPercent,
-            discountAmount: i.discountAmount,
-          })),
-        },
-      });
-
-      if (error) {
-        formApi.setErrorMap({ onSubmit: error });
+      if (createPurchaseInvoiceIsError) {
+        formApi.setErrorMap({ onSubmit: createPurchaseInvoiceError as any });
         return;
       }
 
@@ -259,11 +218,7 @@ function RouteComponent() {
     </TableHeader>
   );
 
-  const ResetItemButton = ({
-    className,
-    variant,
-    ...props
-  }: React.ComponentProps<typeof Button>) => (
+  const ResetItemButton = (props: React.ComponentProps<typeof Button>) => (
     <Button
       type="button"
       variant="ghost"
@@ -408,11 +363,7 @@ function RouteComponent() {
     );
   };
 
-  const AddNewRowButton = ({
-    className,
-    variant,
-    ...props
-  }: React.ComponentProps<typeof Button>) => {
+  const AddNewRowButton = (props: React.ComponentProps<typeof Button>) => {
     const { t } = useTranslation();
     return (
       <TableRow>

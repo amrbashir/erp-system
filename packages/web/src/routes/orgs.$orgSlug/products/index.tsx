@@ -1,6 +1,13 @@
+import { ActionsDropdownMenu } from "@/components/actions-dropdown.tsx";
+import { EmptyTable } from "@/components/empty-table.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import i18n from "@/i18n.ts";
+import { trpc } from "@/trpc.ts";
+import { formatDate } from "@/utils/formatDate.ts";
+import { formatMoney } from "@/utils/formatMoney.ts";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Edit, PackageIcon } from "lucide-react";
+import { PackageIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   Table,
@@ -9,17 +16,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shadcn/components/ui/table";
+} from "@/shadcn/components/ui/table.tsx";
 
-import { apiClient } from "@/api-client";
-import { ActionsDropdownMenu } from "@/components/actions-dropdown";
-import { EmptyTable } from "@/components/empty-table";
-import { useAuthUser } from "@/hooks/use-auth-user";
-import i18n from "@/i18n";
-import { formatDate } from "@/utils/formatDate";
-import { formatMoney } from "@/utils/formatMoney";
-
-import { EditProductDialog } from "./-edit-product-dialog";
+import { EditProductDialog } from "./-edit-product-dialog.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/products/")({
   component: RouteComponent,
@@ -34,12 +33,7 @@ function RouteComponent() {
 
   const { t } = useTranslation();
 
-  const { data: products } = useQuery({
-    queryKey: ["products", orgSlug],
-    queryFn: async () =>
-      apiClient.getThrowing("/orgs/{orgSlug}/products", { params: { path: { orgSlug } } }),
-    select: (res) => res.data,
-  });
+  const { data: products } = useQuery(trpc.orgs.products.getAll.queryOptions({ orgSlug }));
 
   return (
     <div className="flex flex-col gap-4 p-4">

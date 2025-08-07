@@ -6,6 +6,7 @@ import { Decimal } from "decimal.js";
  * If an invalid value is provided, it defaults to 0.
  */
 export class SafeDecimal extends Decimal {
+  // deno-lint-ignore constructor-super
   constructor(value: Decimal.Value) {
     try {
       super(value);

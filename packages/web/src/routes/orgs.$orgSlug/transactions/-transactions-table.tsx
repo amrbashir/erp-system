@@ -1,4 +1,3 @@
-import { Decimal } from "decimal.js";
 import { useTranslation } from "react-i18next";
 import {
   Table,
@@ -7,20 +6,21 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shadcn/components/ui/table";
+} from "@/shadcn/components/ui/table.tsx";
 
-import type { TransactionEntity } from "@erp-system/sdk/zod";
-import type z from "zod";
+import type { TransactionWithRelations } from "@erp-system/server/dto";
 
-import { EmptyTable } from "@/components/empty-table";
-import { ButtonLink } from "@/components/ui/ButtonLink";
-import { useAuthUser } from "@/hooks/use-auth-user";
-import { formatDate } from "@/utils/formatDate";
-import { formatMoney } from "@/utils/formatMoney";
+import { EmptyTable } from "@/components/empty-table.tsx";
+import { ButtonLink } from "@/components/ui/ButtonLink.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import { formatDate } from "@/utils/formatDate.ts";
+import { formatMoney } from "@/utils/formatMoney.ts";
 
-type Transaction = z.infer<typeof TransactionEntity>;
-
-export function TransactionsTable({ transactions }: { transactions: Transaction[] | undefined }) {
+export function TransactionsTable({
+  transactions,
+}: {
+  transactions: TransactionWithRelations[] | undefined;
+}) {
   const { t } = useTranslation();
   const { orgSlug } = useAuthUser();
 
@@ -47,7 +47,7 @@ export function TransactionsTable({ transactions }: { transactions: Transaction[
                   <TableCell>{t(`transaction.types.${transaction.type}`)}</TableCell>
                   <TableCell
                     className={
-                      new Decimal(transaction.amount).isNegative()
+                      transaction.amount.isNegative()
                         ? "text-red-500 dark:text-red-300"
                         : "text-green-500 dark:text-green-300"
                     }
@@ -55,28 +55,28 @@ export function TransactionsTable({ transactions }: { transactions: Transaction[
                     {formatMoney(transaction.amount, { signDisplay: "always" })}
                   </TableCell>
                   <TableCell>
-                    {transaction.invoiceId && (
+                    {transaction.invoice?.id && (
                       <ButtonLink
                         variant="link"
                         to="/orgs/$orgSlug/invoices/$id"
-                        params={{ id: transaction.invoiceId.toString(), orgSlug }}
+                        params={{ id: transaction.invoice.id.toString(), orgSlug }}
                       >
-                        {transaction.invoiceId}
+                        {transaction.invoice.id}
                       </ButtonLink>
                     )}
                   </TableCell>
-                  <TableCell>{transaction.cashierUsername}</TableCell>
+                  <TableCell>{transaction.cashier.username}</TableCell>
                   <TableCell>
-                    {transaction.customerId ? (
+                    {transaction.customer?.id ? (
                       <ButtonLink
                         variant="link"
                         to="/orgs/$orgSlug/customers/$id"
-                        params={{ id: transaction.customerId.toString(), orgSlug }}
+                        params={{ id: transaction.customer.id.toString(), orgSlug }}
                       >
-                        {transaction.customerName}
+                        {transaction.customer?.name}
                       </ButtonLink>
                     ) : (
-                      transaction.customerName
+                      transaction.customer?.name
                     )}
                   </TableCell>
                   <TableCell>{formatDate(transaction.createdAt)}</TableCell>

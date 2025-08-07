@@ -1,4 +1,4 @@
-import { SidebarProvider } from "@/shadcn/components/ui/sidebar";
+import { SidebarProvider } from "@/shadcn/components/ui/sidebar.tsx";
 
 export function AppSidebarProvider({ children }: { children: React.ReactNode }) {
   const cookies = document.cookie.split("; ");

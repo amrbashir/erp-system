@@ -1,11 +1,15 @@
-import { CollectMoneyDto, PayMoneyDto } from "@erp-system/sdk/zod";
+import { FormErrors, FormFieldError } from "@/components/form-errors.tsx";
+import { InputNumpad } from "@/components/ui/input-numpad.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import { trpc } from "@/trpc.ts";
+import { MoneyTransactionDto } from "@erp-system/server/dto";
 import { useForm } from "@tanstack/react-form";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { Loader2Icon, MinusIcon, PlusIcon } from "lucide-react";
-import { act, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/shadcn/components/ui/button";
+import { Button } from "@/shadcn/components/ui/button.tsx";
 import {
   Dialog,
   DialogClose,
@@ -15,15 +19,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/shadcn/components/ui/dialog";
-import { Label } from "@/shadcn/components/ui/label";
+} from "@/shadcn/components/ui/dialog.tsx";
+import { Label } from "@/shadcn/components/ui/label.tsx";
 
 import type z from "zod";
-
-import { apiClient } from "@/api-client";
-import { FormErrors, FormFieldError } from "@/components/form-errors";
-import { InputNumpad } from "@/components/ui/input-numpad";
-import { useAuthUser } from "@/hooks/use-auth-user";
 
 export function PayOrCollectMoneyDialog({
   action,
@@ -39,30 +38,28 @@ export function PayOrCollectMoneyDialog({
 
   const [open, setOpen] = useState(false);
 
-  const ActionDto = action === "collect" ? CollectMoneyDto : PayMoneyDto;
+  const {
+    mutateAsync: payOrCollectMoney,
+    isError: payOrCollectMoneyIsError,
+    error: payOrCollectMoneyError,
+  } = useMutation(trpc.orgs.customers[`${action}Money`].mutationOptions());
 
   const form = useForm({
     defaultValues: {
       amount: "0",
-    } as z.infer<typeof ActionDto>,
+    } as z.infer<typeof MoneyTransactionDto>,
     validators: {
-      onSubmit: ActionDto,
+      onSubmit: MoneyTransactionDto,
     },
     onSubmit: async ({ value, formApi }) => {
-      const apiPath =
-        `/orgs/{orgSlug}/customers/{id}/${action === "collect" ? "collect" : "pay"}` as const;
+      await payOrCollectMoney({ ...value, orgSlug, customerId });
 
-      const { error } = await apiClient.post(apiPath, {
-        params: { path: { orgSlug: orgSlug, id: customerId } },
-        body: value,
-      });
-
-      if (error) {
-        formApi.setErrorMap({ onSubmit: error });
+      if (payOrCollectMoneyIsError) {
+        formApi.setErrorMap({ onSubmit: payOrCollectMoneyError as any });
         return;
       }
 
-      client.invalidateQueries({ queryKey: ["customers", orgSlug] });
+      client.invalidateQueries({ queryKey: trpc.orgs.customers.getAll.queryKey() });
       router.invalidate({ filter: (r) => r.id === `/orgs/${orgSlug}/customers/${customerId}` });
       setOpen(false);
     },
@@ -104,7 +101,7 @@ export function PayOrCollectMoneyDialog({
             name="amount"
             children={(field) => (
               <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`common.form.${field.name}` as any)}</Label>
+                <Label htmlFor={field.name}>{t(`common.form.${field.name}`)}</Label>
                 <InputNumpad
                   id={field.name}
                   name={field.name}

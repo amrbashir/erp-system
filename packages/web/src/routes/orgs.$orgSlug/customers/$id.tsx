@@ -1,37 +1,34 @@
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import i18n from "@/i18n.ts";
+import { InvoicesTable } from "@/routes/orgs.$orgSlug/invoices/-invoices-table.tsx";
+import { TransactionsTable } from "@/routes/orgs.$orgSlug/transactions/-transactions-table.tsx";
+import { trpcClient } from "@/trpc.ts";
+import { formatMoney } from "@/utils/formatMoney.ts";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { Decimal } from "decimal.js";
 import { useTranslation } from "react-i18next";
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/shadcn/components/ui/card";
-import { Table, TableBody, TableCell, TableRow } from "@/shadcn/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn/components/ui/tabs";
-import { cn } from "@/shadcn/lib/utils";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/shadcn/components/ui/card.tsx";
+import { Table, TableBody, TableCell, TableRow } from "@/shadcn/components/ui/table.tsx";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn/components/ui/tabs.tsx";
+import { cn } from "@/shadcn/lib/utils.ts";
 
-import type { CustomerEntity } from "@erp-system/sdk/zod";
-import type z from "zod";
+import type { CustomerWithDetails } from "@erp-system/server/dto";
 
-import { apiClient } from "@/api-client";
-import { useAuthUser } from "@/hooks/use-auth-user";
-import i18n from "@/i18n";
-import { formatMoney } from "@/utils/formatMoney";
+import { CustomerDialog } from "./-customer-dialog.tsx";
+import { PayOrCollectMoneyDialog } from "./-pay-or-collect-money-dialog.tsx";
 
-import { InvoicesTable } from "../invoices/-invoices-table";
-import { TransactionsTable } from "../transactions/-transactions-table";
-import { CustomerDialog } from "./-customer-dialog";
-import { PayOrCollectMoneyDialog } from "./-pay-or-collect-money-dialog";
-
-type Customer = z.infer<typeof CustomerEntity>;
-
-async function fetchCustomerDetails(params: { id: number; orgSlug: string }) {
+function fetchCustomerDetails(params: { id: number; orgSlug: string }) {
   const paramsCustoemrId = { customerId: params.id, orgSlug: params.orgSlug };
 
   return Promise.all([
-    apiClient.getThrowing("/orgs/{orgSlug}/customers/{id}", { params: { path: params } }),
-    apiClient.getThrowing("/orgs/{orgSlug}/invoices/customer/{customerId}", {
-      params: { path: paramsCustoemrId },
-    }),
-    apiClient.getThrowing("/orgs/{orgSlug}/transactions/customer/{customerId}", {
-      params: { path: paramsCustoemrId },
-    }),
+    trpcClient.orgs.customers.getById.query(paramsCustoemrId),
+    trpcClient.orgs.invoices.getByCustomerId.query(paramsCustoemrId),
+    trpcClient.orgs.transactions.getByCustomerId.query(paramsCustoemrId),
   ]);
 }
 
@@ -44,8 +41,8 @@ export const Route = createFileRoute("/orgs/$orgSlug/customers/$id")({
     const details = await fetchCustomerDetails({ id: +params.id, orgSlug: params.orgSlug });
 
     // Set the page title based on the customer's name if available
-    if (details[0].data?.name) {
-      const customerName = details[0].data.name;
+    if (details[0]?.name) {
+      const customerName = details[0].name;
       context.title = customerName;
 
       route.update({
@@ -67,8 +64,9 @@ export const Route = createFileRoute("/orgs/$orgSlug/customers/$id")({
 });
 
 function RouteComponent() {
-  const [{ data: customer }, { data: invoices }, { data: transactions }] = Route.useLoaderData();
   const { t } = useTranslation();
+
+  const [customer, invoices, transactions] = Route.useLoaderData();
 
   if (!customer) return null;
 
@@ -94,7 +92,7 @@ function RouteComponent() {
   );
 }
 
-function CustomerInfoCard({ customer }: { customer: Customer }) {
+function CustomerInfoCard({ customer }: { customer: CustomerWithDetails }) {
   const router = useRouter();
   const { t } = useTranslation();
   const { orgSlug } = useAuthUser();
@@ -130,7 +128,7 @@ function CustomerInfoCard({ customer }: { customer: Customer }) {
               <TableCell>{t("common.form.balance")}</TableCell>
               <TableCell
                 className={cn(
-                  new Decimal(customer.details?.balance ?? 0).isNegative()
+                  customer.details?.balance.isNegative()
                     ? "text-red-500 dark:text-red-300"
                     : "text-green-500 dark:text-green-300",
                 )}

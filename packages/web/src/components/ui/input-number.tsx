@@ -1,8 +1,8 @@
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import * as React from "react";
-import { Button } from "@/shadcn/components/ui/button";
-import { Input } from "@/shadcn/components/ui/input";
-import { cn } from "@/shadcn/lib/utils";
+import { Button } from "@/shadcn/components/ui/button.tsx";
+import { Input } from "@/shadcn/components/ui/input.tsx";
+import { cn } from "@/shadcn/lib/utils.ts";
 
 export function InputNumber({
   variant = "default",

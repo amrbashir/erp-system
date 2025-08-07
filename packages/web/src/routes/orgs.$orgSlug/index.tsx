@@ -1,4 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { QuickActionLinkCard } from "@/components/quick-action-link-card.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import i18n from "@/i18n.ts";
+import { useAuth } from "@/providers/auth.tsx";
+import { createFileRoute } from "@tanstack/react-router";
 import {
   BanknoteIcon,
   FileTextIcon,
@@ -9,13 +13,9 @@ import {
   UsersIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Separator } from "@/shadcn/components/ui/separator";
+import { Separator } from "@/shadcn/components/ui/separator.tsx";
 
-import type { QuickActionLinkCardProps } from "@/components/quick-action-link-card";
-import { QuickActionLinkCard } from "@/components/quick-action-link-card";
-import { useAuthUser } from "@/hooks/use-auth-user";
-import i18n from "@/i18n";
-import { useAuth } from "@/providers/auth";
+import type { QuickActionLinkCardProps } from "@/components/quick-action-link-card.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/")({
   component: RouteComponent,

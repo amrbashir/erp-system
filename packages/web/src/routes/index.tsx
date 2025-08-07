@@ -1,30 +1,30 @@
-import { CreateOrgDto } from "@erp-system/sdk/zod";
-import { slugify } from "@erp-system/utils";
+import { FormErrors, FormFieldError } from "@/components/form-errors.tsx";
+import { ButtonLink } from "@/components/ui/ButtonLink.tsx";
+import { useAuth } from "@/providers/auth.tsx";
+import { trpc } from "@/trpc.ts";
+import { CreateOrgDto } from "@erp-system/server/dto";
+import { slugify } from "@erp-system/utils/slug.ts";
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Loader2Icon } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Button } from "@/shadcn/components/ui/button";
+import { Button } from "@/shadcn/components/ui/button.tsx";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/shadcn/components/ui/card";
-import { Input } from "@/shadcn/components/ui/input";
-import { Label } from "@/shadcn/components/ui/label";
-import { Separator } from "@/shadcn/components/ui/separator";
+} from "@/shadcn/components/ui/card.tsx";
+import { Input } from "@/shadcn/components/ui/input.tsx";
+import { Label } from "@/shadcn/components/ui/label.tsx";
+import { Separator } from "@/shadcn/components/ui/separator.tsx";
 
+import type { AuthUser } from "@/providers/auth.tsx";
 import type z from "zod";
-
-import type { AuthUser } from "@/user";
-import { apiClient } from "@/api-client";
-import { FormErrors, FormFieldError } from "@/components/form-errors";
-import { ButtonLink } from "@/components/ui/ButtonLink";
-import { useAuth } from "@/providers/auth";
 
 interface RouteSearch {
   redirect?: string;
@@ -100,7 +100,7 @@ function LoginExistingOrg({
   const { logout: authLogout } = useAuth();
 
   const logout = () => {
-    authLogout(user.orgSlug);
+    authLogout();
     navigate({
       to: "/",
       search: { loginOrgSlug: user.orgSlug, loginUsername: user.username },
@@ -138,7 +138,7 @@ function LoginForm({
 }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { login } = useAuth();
+  const { login, loginIsError, loginError } = useAuth();
 
   const { loginOrgSlug: orgSlug, loginUsername: username, redirect } = Route.useSearch();
 
@@ -150,13 +150,14 @@ function LoginForm({
     },
     onSubmit: async ({ value, formApi }) => {
       const { username, password, orgSlug } = value;
+      await login(username, password, orgSlug);
 
-      try {
-        await login(username, password, orgSlug);
-        navigate({ to: redirect || "/orgs/$orgSlug", params: { orgSlug }, reloadDocument: true });
-      } catch (error: any) {
-        formApi.setErrorMap({ onSubmit: error });
+      if (loginIsError) {
+        formApi.setErrorMap({ onSubmit: loginError as any });
+        return;
       }
+
+      navigate({ to: redirect || "/orgs/$orgSlug", params: { orgSlug }, reloadDocument: true });
     },
   });
 
@@ -257,6 +258,12 @@ function CreateNewOrganizationCard({
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  const {
+    mutateAsync: createOrg,
+    isError: createOrgIsError,
+    error: createOrgError,
+  } = useMutation(trpc.orgs.create.mutationOptions());
+
   const form = useForm({
     defaultValues: {
       name: "",
@@ -274,10 +281,10 @@ function CreateNewOrganizationCard({
       },
     },
     onSubmit: async ({ value, formApi }) => {
-      const { error } = await apiClient.post("/orgs/create", { body: value });
+      await createOrg(value);
 
-      if (error) {
-        formApi.setErrorMap({ onSubmit: error });
+      if (createOrgIsError) {
+        formApi.setErrorMap({ onSubmit: createOrgError as any });
         return;
       }
 

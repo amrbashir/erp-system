@@ -6,31 +6,43 @@ Building an ERP system for a local store in public.
 
 ### Prerequisites:
 
-1. Node.js
-2. Docker
+1. [Deno](https://deno.land/manual/getting_started/installation)
+2. [Docker](https://docs.docker.com/get-docker/)
 
 ### Setup:
 
-3. Install dependencies: `pnpm install`
-4. Start the database: `docker compose up -d`
-5. Run migrations: `pnpm -w backend migrate:db:dev`
-6. Build utilities: `pnpm -w build:utils`
+3. Install Deps `deno install`
+4. Generate prisma client `deno task prisma:generate`
+5. Start the database: `docker compose up -d`
+6. Run migrations: `deno task prisma:migrate:dev`
 
 ## Running the Application
 
-1. Start the backend: `pnpm -w backend dev`
-2. Start the web application: `pnpm -w web dev`
+```sh
+deno task -r dev
+```
 
 ### Running Tests
 
-1. Run tests: `pnpm -w test`
-2. Run linting: `pnpm -w lint`
+1. Run tests: `deno test`
+2. Run linting: `deno lint`
 
 ## Architecture
 
-The erp-system is structured into multiple packages:
+The ERP system follows a modern, monorepo-based architecture with clear separation of concerns:
 
-- **`packages/backend`**: A RESTful API using Node.js, Nest.js, PostgresSQL (through Prisma) and deployed on AWS ECS Fargate, check out the [deployment guide](packages/backend/deployment/README.md) for more details.
-- **`packages/web`**: A web application built using Vite, React, shadcn/ui, Tailwind CSS, Tanstack Router, Tanstack Query and Tanstack Form
-- **`packages/sdk`**: A typed and fetch-based client to communicate with the backend, generated from the openapi spec provided by NestJS swagger integration.
-- **`packages/utils`**: A common set of utilities between the backend and frontend.
+### [Backend](./packages/server/)
+
+- **Framework**: tRPC for type-safe API development.
+- **Database**: PostgreSQL with Prisma ORM for type-safe database access.
+- **Authentication**: Session-based authentication.
+
+### [Frontend](./packages/web)
+
+- **Framework**: React with Vite for fast development and building.
+- **Routing**: TanStack Router for type-safe routing.
+- **State Management**: TanStack Query with tRPC for end-to-end type-safe API communication.
+- **UI Components**: Shadcn/ui and Tailwind CSS.
+- **Internationalization**: i18next for multi-language support (English and Arabic).
+
+Both the backend and frontend are deployed on Deno Deploy.

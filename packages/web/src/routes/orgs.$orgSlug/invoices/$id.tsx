@@ -1,8 +1,10 @@
-import { InvoiceEntity } from "@erp-system/sdk/zod";
+import i18n from "@/i18n.ts";
+import { trpcClient } from "@/trpc.ts";
+import { formatDate } from "@/utils/formatDate.ts";
+import { formatMoney } from "@/utils/formatMoney.ts";
 import { createFileRoute } from "@tanstack/react-router";
-import { Decimal } from "decimal.js";
 import { useTranslation } from "react-i18next";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/components/ui/card.tsx";
 import {
   Table,
   TableBody,
@@ -10,17 +12,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shadcn/components/ui/table";
-import { cn } from "@/shadcn/lib/utils";
-
-import type z from "zod";
-
-import { apiClient } from "@/api-client";
-import i18n from "@/i18n";
-import { formatDate } from "@/utils/formatDate";
-import { formatMoney } from "@/utils/formatMoney";
-
-type Invoice = z.infer<typeof InvoiceEntity>;
+} from "@/shadcn/components/ui/table.tsx";
+import { cn } from "@/shadcn/lib/utils.ts";
 
 export const Route = createFileRoute("/orgs/$orgSlug/invoices/$id")({
   component: RouteComponent,
@@ -28,13 +21,11 @@ export const Route = createFileRoute("/orgs/$orgSlug/invoices/$id")({
     title: i18n.t("routes.invoiceDetails") + " #" + params.id,
   }),
   loader: ({ params }) =>
-    apiClient.getThrowing("/orgs/{orgSlug}/invoices/{id}", {
-      params: { path: { orgSlug: params.orgSlug, id: +params.id } },
-    }),
+    trpcClient.orgs.invoices.getById.query({ orgSlug: params.orgSlug, id: +params.id }),
 });
 
 function RouteComponent() {
-  const { data: invoice } = Route.useLoaderData();
+  const invoice = Route.useLoaderData();
   const { t } = useTranslation();
 
   if (!invoice) return null;
@@ -58,9 +49,9 @@ function RouteComponent() {
               </TableRow>
               <TableRow>
                 <TableCell>{t("cashierName")}</TableCell>
-                <TableCell colSpan={3}>{invoice.cashierName}</TableCell>
+                <TableCell colSpan={3}>{invoice.cashier.username}</TableCell>
                 <TableCell>{t("customer.name")}</TableCell>
-                <TableCell colSpan={3}>{invoice.customerName}</TableCell>
+                <TableCell colSpan={3}>{invoice.customer?.name}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>{t("common.dates.createdAt")}</TableCell>
@@ -81,7 +72,7 @@ function RouteComponent() {
                 <TableCell
                   colSpan={3}
                   className={cn(
-                    new Decimal(invoice.paid).greaterThan(0) &&
+                    invoice.paid.greaterThan(0) &&
                       (invoice.type === "SALE"
                         ? "text-green-500 dark:text-green-300"
                         : "text-red-500 dark:text-red-300"),
@@ -93,7 +84,7 @@ function RouteComponent() {
                 <TableCell
                   colSpan={3}
                   className={cn(
-                    new Decimal(invoice.remaining).greaterThan(0) &&
+                    invoice.remaining.greaterThan(0) &&
                       (invoice.type === "SALE"
                         ? "text-red-500 dark:text-red-300"
                         : "text-blue-500 dark:text-blue-300"),

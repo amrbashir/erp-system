@@ -1,6 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { expect } from "@std/expect";
+import { describe, it } from "@std/testing/bdd";
 
-import { isValidSlug, slugify } from "./slug";
+import { isValidSlug, slugify } from "../src/slug.ts";
 
 describe("slugify", () => {
   it("converts string to lowercase", () => {

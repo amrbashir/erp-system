@@ -1,14 +1,12 @@
+import { ButtonLink } from "@/components/ui/ButtonLink.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import i18n from "@/i18n.ts";
+import { trpc } from "@/trpc.ts";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { PlusIcon } from "lucide-react";
-import { Button } from "@/shadcn/components/ui/button";
 
-import { apiClient } from "@/api-client";
-import { ButtonLink } from "@/components/ui/ButtonLink";
-import { useAuthUser } from "@/hooks/use-auth-user";
-import i18n from "@/i18n";
-
-import { InvoicesTable } from "./-invoices-table";
+import { InvoicesTable } from "./-invoices-table.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/invoices/purchases")({
   component: RouteComponent,
@@ -20,17 +18,9 @@ export const Route = createFileRoute("/orgs/$orgSlug/invoices/purchases")({
 function RouteComponent() {
   const { orgSlug } = useAuthUser();
 
-  const { data: invoices } = useQuery({
-    queryKey: ["invoices", orgSlug, "PURCHASE"],
-    queryFn: async () =>
-      apiClient.getThrowing("/orgs/{orgSlug}/invoices", {
-        params: {
-          path: { orgSlug },
-          query: { type: "PURCHASE" },
-        },
-      }),
-    select: (res) => res.data,
-  });
+  const { data: invoices } = useQuery(
+    trpc.orgs.invoices.getAll.queryOptions({ orgSlug, type: "PURCHASE" }),
+  );
 
   return (
     <div className="p-4 flex flex-col gap-4">

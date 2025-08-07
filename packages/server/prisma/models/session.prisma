@@ -1,0 +1,8 @@
+model Session {
+  sid       String   @id @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@map("sessions")
+}

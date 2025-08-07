@@ -1,3 +1,9 @@
+import { EmptyTable } from "@/components/empty-table.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import i18n from "@/i18n.ts";
+import { trpc } from "@/trpc.ts";
+import { formatDate } from "@/utils/formatDate.ts";
+import { formatMoney } from "@/utils/formatMoney.ts";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { ShoppingCartIcon } from "lucide-react";
@@ -9,16 +15,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shadcn/components/ui/table";
+} from "@/shadcn/components/ui/table.tsx";
 
-import { apiClient } from "@/api-client";
-import { EmptyTable } from "@/components/empty-table";
-import { useAuthUser } from "@/hooks/use-auth-user";
-import i18n from "@/i18n";
-import { formatDate } from "@/utils/formatDate";
-import { formatMoney } from "@/utils/formatMoney";
-
-import { AddExpenseDialog } from "./-add-expense-dialog";
+import { AddExpenseDialog } from "./-add-expense-dialog.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/expenses/")({
   component: RouteComponent,
@@ -32,12 +31,7 @@ function RouteComponent() {
   const { orgSlug } = useAuthUser();
   const { t } = useTranslation();
 
-  const { data: expenses } = useQuery({
-    queryKey: ["expenses", orgSlug],
-    queryFn: async () =>
-      apiClient.getThrowing("/orgs/{orgSlug}/expenses", { params: { path: { orgSlug } } }),
-    select: (res) => res.data,
-  });
+  const { data: expenses } = useQuery(trpc.orgs.expenses.getAll.queryOptions({ orgSlug }));
 
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -63,11 +57,11 @@ function RouteComponent() {
                 <TableRow key={expense.id}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{expense.description}</TableCell>
-                  <TableCell className={"text-red-500 dark:text-red-300"}>
+                  <TableCell className="text-red-500 dark:text-red-300">
                     {formatMoney(expense.amount)}
                   </TableCell>
                   <TableCell>{expense.transactionId}</TableCell>
-                  <TableCell>{expense.cashierName}</TableCell>
+                  <TableCell>{expense.cashier.username}</TableCell>
                   <TableCell>{formatDate(expense.createdAt)}</TableCell>
                 </TableRow>
               ))}

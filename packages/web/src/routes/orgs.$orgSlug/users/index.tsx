@@ -10,18 +10,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/shadcn/components/ui/table";
-import { cn } from "@/shadcn/lib/utils";
+} from "@/shadcn/components/ui/table.tsx";
+import { cn } from "@/shadcn/lib/utils.ts";
 
-import { apiClient } from "@/api-client";
-import { ActionsDropdownMenu } from "@/components/actions-dropdown";
-import { EmptyTable } from "@/components/empty-table";
-import { useAuthUser } from "@/hooks/use-auth-user";
-import i18n from "@/i18n";
-import { useAuth } from "@/providers/auth";
-import { formatDate } from "@/utils/formatDate";
+import type { ParseKeys } from "i18next";
 
-import { AddUserDialog } from "./-add-user-dialog";
+import { ActionsDropdownMenu } from "@/components/actions-dropdown.tsx";
+import { EmptyTable } from "@/components/empty-table.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import i18n from "@/i18n.ts";
+import { trpc } from "@/trpc.ts";
+import { formatDate } from "@/utils/formatDate.ts";
+
+import { AddUserDialog } from "./-add-user-dialog.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/users/")({
   component: RouteComponent,
@@ -31,27 +32,21 @@ export const Route = createFileRoute("/orgs/$orgSlug/users/")({
 function RouteComponent() {
   const { orgSlug } = useAuthUser();
   const { t } = useTranslation();
-  const { user } = useAuth();
 
-  const { data: users, refetch: refetchUsers } = useQuery({
-    queryKey: ["users", orgSlug, user?.role],
-    queryFn: async () =>
-      apiClient.getThrowing("/orgs/{orgSlug}/users", { params: { path: { orgSlug } } }),
-    select: (res) => res.data,
-  });
+  const { data: users, refetch: refetchUsers } = useQuery(
+    trpc.orgs.users.getAll.queryOptions({ orgSlug }),
+  );
 
   const {
     isPending: isUserDeletePending,
-    variables: deleteId,
+    variables: deleteVars,
     mutateAsync: deleteUser,
-  } = useMutation({
-    mutationFn: async (id: string) =>
-      await apiClient.deleteThrowing("/orgs/{orgSlug}/users/{id}", {
-        params: { path: { orgSlug, id } },
-      }),
-    onSuccess: () => refetchUsers(),
-    onError: (error) => toast.error(t(`errors.${error.message}` as any)),
-  });
+  } = useMutation(
+    trpc.orgs.users.delete.mutationOptions({
+      onSuccess: () => refetchUsers(),
+      onError: (error) => toast.error(t(`errors.${error.message}` as ParseKeys)),
+    }),
+  );
 
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -85,8 +80,8 @@ function RouteComponent() {
                       actions={[
                         {
                           label: t("common.actions.delete"),
-                          onAction: () => deleteUser(user.id),
-                          pending: deleteId === user.id && isUserDeletePending,
+                          onAction: () => deleteUser({ orgSlug, userId: user.id }),
+                          pending: deleteVars?.userId === user.id && isUserDeletePending,
                           disabled: !!user.deletedAt,
                           confirm: true,
                           confirmMessage: t("user.deleteDescription", { username: user.username }),
