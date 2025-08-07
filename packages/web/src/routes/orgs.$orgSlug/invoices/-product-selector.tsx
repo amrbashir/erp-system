@@ -52,6 +52,8 @@ export function ProductSelector({
     onInputValueChange?.(value);
   };
 
+  const actionLabel = action === "enterOrSelect" ? t("product.selectOrEnter") : t("product.select");
+
   const ButtonTrigger = (
     <Button
       variant="ghost"
@@ -59,7 +61,7 @@ export function ProductSelector({
       aria-expanded={open}
       className="w-full flex-1 justify-between border-none rounded-none focus-visible:z-2 relative"
     >
-      {value || <span className="opacity-50">{t("product.select")}</span>}
+      {value || <span className="opacity-50">{actionLabel}</span>}
       <ChevronsUpDownIcon className="opacity-50" />
     </Button>
   );
@@ -100,8 +102,6 @@ export function ProductSelector({
   );
 
   if (isMobile) {
-    const actionLabel =
-      action === "enterOrSelect" ? t("product.selectOrEnter") : t("product.select");
     return (
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>{ButtonTrigger}</DrawerTrigger>
