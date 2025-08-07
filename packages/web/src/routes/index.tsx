@@ -188,9 +188,9 @@ function LoginForm({
           <form.Subscribe children={(state) => <FormErrors formState={state} />} />
 
           <form.Subscribe
-            selector={(state) => [state.canSubmit, state.isSubmitting]}
-            children={([canSubmit, isSubmitting]) => (
-              <Button className="w-full" disabled={!canSubmit}>
+            selector={(state) => state.isSubmitting}
+            children={(isSubmitting) => (
+              <Button className="w-full" disabled={isSubmitting}>
                 {isSubmitting && <Loader2Icon className="animate-spin" />}
                 {t("common.actions.login")}
               </Button>
@@ -341,9 +341,9 @@ function CreateNewOrganizationCard({
           <form.Subscribe children={(state) => <FormErrors formState={state} />} />
 
           <form.Subscribe
-            selector={(state) => [state.canSubmit, state.isSubmitting]}
-            children={([canSubmit, isSubmitting]) => (
-              <Button className="w-full" disabled={!canSubmit}>
+            selector={(state) => state.isSubmitting}
+            children={(isSubmitting) => (
+              <Button className="w-full" disabled={isSubmitting}>
                 {isSubmitting && <Loader2Icon className="animate-spin" />}
                 {t("common.actions.create")}
               </Button>

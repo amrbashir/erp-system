@@ -145,15 +145,15 @@ export function AddUserDialog() {
 
           <DialogFooter>
             <form.Subscribe
-              selector={(state) => [state.canSubmit, state.isSubmitting]}
-              children={([canSubmit, isSubmitting]) => (
+              selector={(state) => state.isSubmitting}
+              children={(isSubmitting) => (
                 <>
                   <DialogClose asChild>
                     <Button disabled={isSubmitting} variant="outline">
                       {t("common.actions.cancel")}
                     </Button>
                   </DialogClose>
-                  <Button disabled={!canSubmit}>
+                  <Button disabled={isSubmitting}>
                     {isSubmitting && <Loader2Icon className="animate-spin" />}
                     {t("common.actions.add")}
                   </Button>

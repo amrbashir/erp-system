@@ -180,11 +180,10 @@ function RouteComponent() {
       <div className="flex gap-2 justify-end *:flex-1 md:*:flex-none">
         <form.Subscribe
           selector={(state) => [
-            state.canSubmit,
             state.isSubmitting,
             state.values.items.some((item) => item.productId),
           ]}
-          children={([canSubmit, isSubmitting, hasValidItems]) => (
+          children={([isSubmitting, hasValidItems]) => (
             <>
               <Button
                 type="button"
@@ -195,7 +194,7 @@ function RouteComponent() {
                 <Hotkey hotkey="F7" onHotkey={() => form.reset()} />
                 {t("common.actions.delete")}
               </Button>
-              <Button disabled={!canSubmit || !hasValidItems}>
+              <Button disabled={isSubmitting || !hasValidItems}>
                 {isSubmitting && <Loader2Icon className="animate-spin" />}
                 <Hotkey hotkey="F8" onHotkey={() => form.handleSubmit()} />
                 {t("common.actions.create")}
