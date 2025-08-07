@@ -196,8 +196,7 @@
 
   "overview": {
     "dailyBalance": "الرصيد اليومي",
-    "dailyBalanceDescription_few": "الرصيد اليومي لآخر {{count}} أيام",
-    "dailyBalanceDescription_many": "الرصيد اليومي لآخر {{count}} يومًا",
+    "dailyBalanceDescription": "الرصيد اليومي لآخر {{count}} يومًا",
     "last7Days": "آخر 7 أيام",
     "last30Days": "آخر 30 يومًا"
   },
