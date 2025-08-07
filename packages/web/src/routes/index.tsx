@@ -21,9 +21,7 @@ import { Separator } from "@/shadcn/components/ui/separator.tsx";
 
 import type z from "zod";
 
-import type { AuthUser } from "@/providers/auth.tsx";
 import { FormErrors, FormFieldError } from "@/components/form-errors.tsx";
-import { ButtonLink } from "@/components/ui/ButtonLink.tsx";
 import { useAuth } from "@/providers/auth.tsx";
 import { trpc } from "@/trpc.ts";
 
@@ -40,7 +38,6 @@ export const Route = createFileRoute("/")({
 
 function RouteComponent() {
   const { t } = useTranslation();
-  const { user, isAuthenticated } = useAuth();
 
   const loginFormPasswordRef = React.useRef<HTMLInputElement>(null);
 
@@ -49,18 +46,12 @@ function RouteComponent() {
       <div className="md:w-fit mx-auto flex flex-col items-center gap-10 *:w-full *:md:w-auto">
         <div className="flex flex-col md:flex-row items-center gap-10 md:gap-20">
           <Welcome />
-
           <Separator className="md:hidden" />
           <Separator orientation="vertical" className="hidden md:block md:h-75!" />
-
-          {isAuthenticated && user ? (
-            <LoginExistingOrg user={user} className="w-full md:w-auto md:min-w-sm *:md:min-w-sm" />
-          ) : (
-            <LoginForm
-              loginFormPasswordRef={loginFormPasswordRef}
-              className="w-full md:w-auto md:min-w-sm *:md:min-w-sm"
-            />
-          )}
+          <LoginForm
+            loginFormPasswordRef={loginFormPasswordRef}
+            className="w-full md:w-auto md:min-w-sm *:md:min-w-sm"
+          />
         </div>
 
         <div className="md:self-end md:min-w-sm flex items-center">
@@ -89,45 +80,6 @@ function Welcome(props: React.ComponentProps<"div">) {
         {t("welcomeToErpDescription")}
       </p>
     </div>
-  );
-}
-
-function LoginExistingOrg({
-  user,
-  ...props
-}: React.ComponentProps<typeof Card> & { user: AuthUser }) {
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-  const { logout: authLogout } = useAuth();
-
-  const logout = () => {
-    authLogout();
-    navigate({
-      to: "/",
-      search: { loginOrgSlug: user.orgSlug, loginUsername: user.username },
-    });
-  };
-
-  return (
-    <Card {...props}>
-      <CardHeader className="flex flex-col items-center gap-10">
-        <CardTitle>{t("org.goToYours")}</CardTitle>
-        <CardDescription>
-          {t("org.goToYoursDescription2", {
-            orgSlug: user.orgSlug ?? t("org.yours"),
-          })}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ButtonLink className="w-full" to="/orgs/$orgSlug" params={{ orgSlug: user.orgSlug }}>
-          {t("common.actions.go")}
-        </ButtonLink>
-
-        <Button variant="outline" className="w-full mt-4" onClick={() => logout()}>
-          {t("common.actions.logout")}
-        </Button>
-      </CardContent>
-    </Card>
   );
 }
 

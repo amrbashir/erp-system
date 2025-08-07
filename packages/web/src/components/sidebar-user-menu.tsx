@@ -30,10 +30,10 @@ export function SidebarUserMenu() {
 
   const { isMobile } = useSidebar();
 
-  const { user, logout: authLogout } = useAuth();
+  const { user, logout } = useAuth();
 
-  async function logout() {
-    await authLogout();
+  async function logoutAndNavigateToHome() {
+    await logout();
     navigate({
       to: "/",
       search: {
@@ -90,7 +90,7 @@ export function SidebarUserMenu() {
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem onClick={() => logout()}>
+            <DropdownMenuItem onClick={() => logoutAndNavigateToHome()}>
               {t("common.actions.logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>

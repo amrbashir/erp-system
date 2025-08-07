@@ -10,14 +10,25 @@ import { trpc, trpcClient } from "@/trpc.ts";
 
 export type AuthUser = LoginResponse;
 
-export interface AuthProviderState {
-  user: AuthUser | null;
-  isAuthenticated: boolean;
+export interface AuthProviderStateAuthed {
+  user: AuthUser;
+  isAuthenticated: true;
+}
+
+export interface AuthProviderStateUnauthed {
+  user: null;
+  isAuthenticated: false;
+}
+
+export interface AuthProviderStateBase {
   login: (username: string, password: string, orgSlug: string) => Promise<void>;
   loginError: TRPCClientErrorLike<AppRouter> | undefined;
   loginIsError: boolean;
   logout: () => Promise<void>;
 }
+
+export type AuthProviderState = AuthProviderStateBase &
+  (AuthProviderStateAuthed | AuthProviderStateUnauthed);
 
 const AuthContext = React.createContext<AuthProviderState | null>(null);
 
@@ -40,8 +51,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // login
   const loginMutation = useMutation(trpc.orgs.auth.login.mutationOptions());
   const login = async (username: string, password: string, orgSlug: string) => {
-    await loginMutation.mutateAsync({ username, password, orgSlug });
-    setUser(user);
+    const userData = await loginMutation.mutateAsync({ username, password, orgSlug });
+    setUser(userData);
+    setIsAuthenticated(true);
   };
 
   // logout
@@ -62,14 +74,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{
-        isAuthenticated,
-        user: user,
-        login,
-        loginError: loginMutation.error as TRPCClientErrorLike<AppRouter>,
-        loginIsError: loginMutation.isError,
-        logout,
-      }}
+      value={
+        {
+          isAuthenticated,
+          user,
+          login,
+          loginError: loginMutation.error as TRPCClientErrorLike<AppRouter>,
+          loginIsError: loginMutation.isError,
+          logout,
+        } as AuthProviderState
+      }
     >
       {children}
     </AuthContext.Provider>

@@ -1,4 +1,4 @@
-import { createRootRouteWithContext, HeadContent, Outlet } from "@tanstack/react-router";
+import { createRootRouteWithContext, HeadContent, Outlet, redirect } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Toaster } from "@/shadcn/components/ui/sonner.tsx";
 
@@ -42,6 +42,11 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
     if (roleRequirement && auth.user?.role !== roleRequirement) {
       throw new Error(i18n.t("errors.notAuthorized"));
+    }
+
+    // Redirect to org if authenticated and on root route
+    if (auth.isAuthenticated && currentMatch.routeId === "/") {
+      throw redirect({ to: "/orgs/$orgSlug", params: { orgSlug: auth.user.orgSlug } });
     }
   },
 });
