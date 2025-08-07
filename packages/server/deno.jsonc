@@ -7,9 +7,9 @@
   },
 
   "tasks": {
-    "build": "prisma generate && DATABASE_URL=\"postgresql://$PGUSER:$PGPASSWORD@$PGHOST:$PGPORT/$PGDATABASE?sslmode=$PGSSLMODE\" prisma db push",
-    "dev": "export $(cat .env.development | xargs) && DATABASE_URL=\"postgresql://$PGUSER:$PGPASSWORD@$PGHOST:$PGPORT/$PGDATABASE?sslmode=$PGSSLMODE\" deno serve --watch --allow-env --allow-sys --allow-read --allow-net --allow-ffi --env-file=.env.development ./src/main.ts",
-    "prisma:dev": "export $(cat .env.development | xargs) && DATABASE_URL=\"postgresql://$PGUSER:$PGPASSWORD@$PGHOST:$PGPORT/$PGDATABASE?sslmode=$PGSSLMODE\" prisma",
+    "build": "prisma generate && prisma db push",
+    "dev": "deno serve --watch --allow-env --allow-sys --allow-read --allow-net --allow-ffi --env-file=.env.development ./src/main.ts",
+    "prisma:dev": "export $(cat .env.development | xargs) && prisma",
     "prisma:generate": "deno task prisma:dev generate",
     "prisma:studio": "deno task prisma:dev studio",
     "prisma:migrate:dev": "deno task prisma:dev migrate dev"
