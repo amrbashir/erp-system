@@ -10,6 +10,22 @@ import { appRouter } from "./trpc/router.ts";
 
 export default {
   async fetch(req) {
+    const { pathname } = new URL(req.url);
+
+    // Handle API requests
+    if (pathname.startsWith("/api")) {
+      if (pathname.startsWith("/api/health")) {
+        return handleHealthCheck();
+      }
+
+      return await fetchRequestHandler({
+        endpoint: "/api/trpc",
+        req,
+        router: appRouter,
+        createContext,
+      });
+    }
+
     // Serve static files from the ../web/dist directory
     const response = await serveDir(req, { fsRoot: "../web/dist" });
 
@@ -18,17 +34,6 @@ export default {
       return await serveFile(req, "./dist/index.html");
     }
 
-    const { pathname } = new URL(req.url);
-
-    if (pathname.startsWith("/api/health")) {
-      return handleHealthCheck();
-    }
-
-    return await fetchRequestHandler({
-      endpoint: "/api/trpc",
-      req,
-      router: appRouter,
-      createContext,
-    });
+    return response;
   },
 } satisfies Deno.ServeDefaultExport;
