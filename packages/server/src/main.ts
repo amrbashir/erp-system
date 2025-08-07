@@ -27,7 +27,10 @@ export default {
     }
 
     // Serve static files from the ../web/dist directory
-    const response = await serveDir(req, { fsRoot: "../web/dist" });
+    const response = await serveDir(req, {
+      fsRoot: import.meta.dirname + "/../web/dist",
+      urlRoot: "",
+    });
 
     // If the requested file is not found, serve index.html for SPA routing
     if (response.status === 404) {
