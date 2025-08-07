@@ -1,6 +1,7 @@
-import i18n from "@/i18n.ts";
 import { createFileRoute } from "@tanstack/react-router";
 import { UsersIcon } from "lucide-react";
+
+import i18n from "@/i18n.ts";
 
 export const Route = createFileRoute("/orgs/$orgSlug/users")({
   context: () => ({

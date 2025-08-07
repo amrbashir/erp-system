@@ -1,7 +1,3 @@
-import { QuickActionLinkCard } from "@/components/quick-action-link-card.tsx";
-import { useAuthUser } from "@/hooks/use-auth-user.ts";
-import i18n from "@/i18n.ts";
-import { useAuth } from "@/providers/auth.tsx";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   BanknoteIcon,
@@ -16,6 +12,10 @@ import { useTranslation } from "react-i18next";
 import { Separator } from "@/shadcn/components/ui/separator.tsx";
 
 import type { QuickActionLinkCardProps } from "@/components/quick-action-link-card.tsx";
+import { QuickActionLinkCard } from "@/components/quick-action-link-card.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import i18n from "@/i18n.ts";
+import { useAuth } from "@/providers/auth.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/")({
   component: RouteComponent,

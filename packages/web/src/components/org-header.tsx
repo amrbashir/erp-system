@@ -1,7 +1,8 @@
-import { NavigationBreadcrumbs } from "@/components/nav-breadcrumbs.tsx";
-import { ThemeSelector } from "@/components/theme-selector.tsx";
 import { Separator } from "@/shadcn/components/ui/separator.tsx";
 import { SidebarTrigger } from "@/shadcn/components/ui/sidebar.tsx";
+
+import { NavigationBreadcrumbs } from "@/components/nav-breadcrumbs.tsx";
+import { ThemeSelector } from "@/components/theme-selector.tsx";
 
 export function OrgHeader() {
   return (

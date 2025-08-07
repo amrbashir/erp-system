@@ -1,7 +1,8 @@
+import { TRPCError } from "@trpc/server";
+
 import { authenticatedProcedure } from "@/auth/authenticated.procedure.ts";
 import { orgProcedure } from "@/org/org.procedure.ts";
 import { UserRole } from "@/prisma.ts";
-import { TRPCError } from "@trpc/server";
 
 export const adminProcedure = authenticatedProcedure.use(({ ctx, next }) => {
   if (ctx.user.role !== UserRole.ADMIN) {

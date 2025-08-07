@@ -1,6 +1,7 @@
+import { TRPCError } from "@trpc/server";
+
 import { orgProcedure } from "@/org/org.procedure.ts";
 import { router } from "@/trpc/index.ts";
-import { TRPCError } from "@trpc/server";
 
 import type { LoginResponse } from "./auth.dto.ts";
 import { LoginUserDto } from "./auth.dto.ts";

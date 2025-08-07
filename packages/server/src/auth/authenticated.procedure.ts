@@ -1,6 +1,7 @@
-import { publicProcedure } from "@/trpc/index.ts";
 import { TRPCError } from "@trpc/server";
 import { parse as parseCookie } from "cookie";
+
+import { publicProcedure } from "@/trpc/index.ts";
 
 export const authenticatedProcedure = publicProcedure.use(async ({ ctx, next }) => {
   const cookies = parseCookie(ctx.req.headers.get("Cookie") || "");

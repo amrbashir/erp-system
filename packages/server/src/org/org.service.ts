@@ -1,4 +1,3 @@
-import { TransactionType, UserRole } from "@/prisma.ts";
 import { isValidSlug, slugify } from "@erp-system/utils/slug.ts";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { TRPCError } from "@trpc/server";
@@ -7,6 +6,7 @@ import { Decimal } from "decimal.js";
 
 import type { PrismaClient } from "@/prisma-client.ts";
 import type { Organization } from "@/prisma.ts";
+import { TransactionType, UserRole } from "@/prisma.ts";
 
 import type { AddBalanceDto, CreateOrgDto } from "./org.dto.ts";
 

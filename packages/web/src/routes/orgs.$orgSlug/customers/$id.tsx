@@ -1,9 +1,3 @@
-import { useAuthUser } from "@/hooks/use-auth-user.ts";
-import i18n from "@/i18n.ts";
-import { InvoicesTable } from "@/routes/orgs.$orgSlug/invoices/-invoices-table.tsx";
-import { TransactionsTable } from "@/routes/orgs.$orgSlug/transactions/-transactions-table.tsx";
-import { trpcClient } from "@/trpc.ts";
-import { formatMoney } from "@/utils/formatMoney.ts";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import {
@@ -18,6 +12,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn/components/ui
 import { cn } from "@/shadcn/lib/utils.ts";
 
 import type { CustomerWithDetails } from "@erp-system/server/dto";
+
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import i18n from "@/i18n.ts";
+import { InvoicesTable } from "@/routes/orgs.$orgSlug/invoices/-invoices-table.tsx";
+import { TransactionsTable } from "@/routes/orgs.$orgSlug/transactions/-transactions-table.tsx";
+import { trpcClient } from "@/trpc.ts";
+import { formatMoney } from "@/utils/formatMoney.ts";
 
 import { CustomerDialog } from "./-customer-dialog.tsx";
 import { PayOrCollectMoneyDialog } from "./-pay-or-collect-money-dialog.tsx";

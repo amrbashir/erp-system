@@ -1,6 +1,7 @@
-import { DarkLightIcon } from "@/components/icons/DarkLightIcon.tsx";
 import { MoonIcon, SunIcon } from "lucide-react";
 import * as React from "react";
+
+import { DarkLightIcon } from "@/components/icons/DarkLightIcon.tsx";
 
 export const THEME_VARIANTS = [
   { theme: "system", icon: DarkLightIcon },

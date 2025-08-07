@@ -1,5 +1,3 @@
-import { SidebarUserMenu } from "@/components/sidebar-user-menu.tsx";
-import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import { Link, useMatches, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Label } from "@/shadcn/components/ui/label.tsx";
@@ -20,6 +18,8 @@ import {
 import { cn } from "@/shadcn/lib/utils.ts";
 
 import type { FileRoutesById } from "@/routeTree.gen.ts";
+import { SidebarUserMenu } from "@/components/sidebar-user-menu.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
 
 type Route = keyof FileRoutesById;
 

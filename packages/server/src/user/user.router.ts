@@ -1,7 +1,8 @@
-import { PaginationDto } from "@/pagination.dto.ts";
-import { router } from "@/trpc/index.ts";
 import { TRPCError } from "@trpc/server";
 import z from "zod";
+
+import { PaginationDto } from "@/pagination.dto.ts";
+import { router } from "@/trpc/index.ts";
 
 import { admingOrgProcedure } from "./admin.procedure.ts";
 import { CreateUserDto, DeleteUserDto } from "./user.dto.ts";

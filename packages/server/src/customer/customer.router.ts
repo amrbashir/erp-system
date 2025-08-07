@@ -1,7 +1,8 @@
+import z from "zod";
+
 import { authenticatedOrgProcedure } from "@/org/org.procedure.ts";
 import { PaginationDto } from "@/pagination.dto.ts";
 import { router } from "@/trpc/index.ts";
-import z from "zod";
 
 import {
   CreateCustomerDto,

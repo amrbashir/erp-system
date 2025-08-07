@@ -1,4 +1,3 @@
-import { TransactionType } from "@/prisma.ts";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { TRPCError } from "@trpc/server";
 import { Decimal } from "decimal.js";
@@ -6,6 +5,7 @@ import { Decimal } from "decimal.js";
 import type { PaginationDto } from "@/pagination.dto.ts";
 import type { PrismaClient } from "@/prisma-client.ts";
 import type { Expense, User } from "@/prisma.ts";
+import { TransactionType } from "@/prisma.ts";
 
 import type { CreateExpenseDto } from "./expense.dto.ts";
 

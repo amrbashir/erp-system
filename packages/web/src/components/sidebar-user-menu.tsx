@@ -1,7 +1,3 @@
-import { LanguageSelector } from "@/components/language-selector.tsx";
-import { ThemeSelector } from "@/components/theme-selector.tsx";
-import { useAuthUser } from "@/hooks/use-auth-user.ts";
-import { useAuth } from "@/providers/auth.tsx";
 import { useLocation, useNavigate } from "@tanstack/react-router";
 import { EllipsisVerticalIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -20,6 +16,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/shadcn/components/ui/sidebar.tsx";
+
+import { LanguageSelector } from "@/components/language-selector.tsx";
+import { ThemeSelector } from "@/components/theme-selector.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import { useAuth } from "@/providers/auth.tsx";
 
 export function SidebarUserMenu() {
   const { t } = useTranslation();

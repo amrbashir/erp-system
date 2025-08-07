@@ -1,7 +1,3 @@
-import { FormErrors, FormFieldError } from "@/components/form-errors.tsx";
-import { ButtonLink } from "@/components/ui/ButtonLink.tsx";
-import { useAuth } from "@/providers/auth.tsx";
-import { trpc } from "@/trpc.ts";
 import { CreateOrgDto } from "@erp-system/server/dto";
 import { slugify } from "@erp-system/utils/slug.ts";
 import { useForm } from "@tanstack/react-form";
@@ -23,8 +19,13 @@ import { Input } from "@/shadcn/components/ui/input.tsx";
 import { Label } from "@/shadcn/components/ui/label.tsx";
 import { Separator } from "@/shadcn/components/ui/separator.tsx";
 
-import type { AuthUser } from "@/providers/auth.tsx";
 import type z from "zod";
+
+import type { AuthUser } from "@/providers/auth.tsx";
+import { FormErrors, FormFieldError } from "@/components/form-errors.tsx";
+import { ButtonLink } from "@/components/ui/ButtonLink.tsx";
+import { useAuth } from "@/providers/auth.tsx";
+import { trpc } from "@/trpc.ts";
 
 interface RouteSearch {
   redirect?: string;

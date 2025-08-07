@@ -1,7 +1,8 @@
-import { ButtonLink } from "@/components/ui/ButtonLink.tsx";
 import { useTranslation } from "react-i18next";
 
 import type { LinkComponentProps } from "@tanstack/react-router";
+
+import { ButtonLink } from "@/components/ui/ButtonLink.tsx";
 
 export function NotFound404({ to }: LinkComponentProps<"a">) {
   const { t } = useTranslation();

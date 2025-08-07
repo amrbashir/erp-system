@@ -1,12 +1,13 @@
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { HomeIcon } from "lucide-react";
+import { SidebarInset } from "@/shadcn/components/ui/sidebar.tsx";
+
 import { NotFound404 } from "@/components/404.tsx";
 import { OrgHeader } from "@/components/org-header.tsx";
 import { AppSideBar } from "@/components/sidebar.tsx";
 import i18n from "@/i18n.ts";
 import { AppSidebarProvider } from "@/providers/sidebar.tsx";
 import { trpcClient } from "@/trpc.ts";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { HomeIcon } from "lucide-react";
-import { SidebarInset } from "@/shadcn/components/ui/sidebar.tsx";
 
 interface RouteSearch {
   redirect?: string;

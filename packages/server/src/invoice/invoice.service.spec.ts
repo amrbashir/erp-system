@@ -1,8 +1,9 @@
-import { PrismaClient } from "@/prisma-client.ts";
 import { generateRandomOrgData, useRandomDatabase } from "@erp-system/utils/test.ts";
 import { expect } from "@std/expect";
 import { afterAll, beforeAll, describe, it } from "@std/testing/bdd";
 import { Decimal } from "decimal.js";
+
+import { PrismaClient } from "@/prisma-client.ts";
 
 import type { CreatePurchaseInvoiceDto, CreateSaleInvoiceDto } from "./invoice.dto.ts";
 import { InvoiceService } from "./invoice.service.ts";

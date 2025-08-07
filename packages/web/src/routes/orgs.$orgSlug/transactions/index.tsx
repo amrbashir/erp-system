@@ -1,9 +1,10 @@
-import { useAuthUser } from "@/hooks/use-auth-user.ts";
-import i18n from "@/i18n.ts";
-import { trpc } from "@/trpc.ts";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { BanknoteIcon } from "lucide-react";
+
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import i18n from "@/i18n.ts";
+import { trpc } from "@/trpc.ts";
 
 import { TransactionsTable } from "./-transactions-table.tsx";
 

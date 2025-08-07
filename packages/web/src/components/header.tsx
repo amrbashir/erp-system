@@ -1,10 +1,11 @@
+import { useMatches } from "@tanstack/react-router";
+import { Button } from "@/shadcn/components/ui/button.tsx";
+import { Separator } from "@/shadcn/components/ui/separator.tsx";
+
 import { AmrBashirIcon } from "@/components/icons/AmrBashir.tsx";
 import { GithubIcon } from "@/components/icons/GitHub.tsx";
 import { LanguageSelector } from "@/components/language-selector.tsx";
 import { ThemeSelector } from "@/components/theme-selector.tsx";
-import { useMatches } from "@tanstack/react-router";
-import { Button } from "@/shadcn/components/ui/button.tsx";
-import { Separator } from "@/shadcn/components/ui/separator.tsx";
 
 export function Header() {
   const matches = useMatches();

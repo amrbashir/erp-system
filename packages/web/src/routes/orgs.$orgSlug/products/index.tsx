@@ -1,10 +1,3 @@
-import { ActionsDropdownMenu } from "@/components/actions-dropdown.tsx";
-import { EmptyTable } from "@/components/empty-table.tsx";
-import { useAuthUser } from "@/hooks/use-auth-user.ts";
-import i18n from "@/i18n.ts";
-import { trpc } from "@/trpc.ts";
-import { formatDate } from "@/utils/formatDate.ts";
-import { formatMoney } from "@/utils/formatMoney.ts";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { PackageIcon } from "lucide-react";
@@ -17,6 +10,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/shadcn/components/ui/table.tsx";
+
+import { ActionsDropdownMenu } from "@/components/actions-dropdown.tsx";
+import { EmptyTable } from "@/components/empty-table.tsx";
+import { useAuthUser } from "@/hooks/use-auth-user.ts";
+import i18n from "@/i18n.ts";
+import { trpc } from "@/trpc.ts";
+import { formatDate } from "@/utils/formatDate.ts";
+import { formatMoney } from "@/utils/formatMoney.ts";
 
 import { EditProductDialog } from "./-edit-product-dialog.tsx";
 

@@ -1,5 +1,3 @@
-import { Sa } from "@/components/flags/sa.tsx";
-import { Uk } from "@/components/flags/uk.tsx";
 import { useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button.tsx";
@@ -12,6 +10,9 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/shadcn/components/ui/dropdown-menu.tsx";
+
+import { Sa } from "@/components/flags/sa.tsx";
+import { Uk } from "@/components/flags/uk.tsx";
 
 const LANGUAGE_FLAGS = {
   "en-US": Uk,

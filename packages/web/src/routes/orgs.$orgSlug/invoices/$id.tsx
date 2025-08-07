@@ -1,7 +1,3 @@
-import i18n from "@/i18n.ts";
-import { trpcClient } from "@/trpc.ts";
-import { formatDate } from "@/utils/formatDate.ts";
-import { formatMoney } from "@/utils/formatMoney.ts";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/components/ui/card.tsx";
@@ -14,6 +10,11 @@ import {
   TableRow,
 } from "@/shadcn/components/ui/table.tsx";
 import { cn } from "@/shadcn/lib/utils.ts";
+
+import i18n from "@/i18n.ts";
+import { trpcClient } from "@/trpc.ts";
+import { formatDate } from "@/utils/formatDate.ts";
+import { formatMoney } from "@/utils/formatMoney.ts";
 
 export const Route = createFileRoute("/orgs/$orgSlug/invoices/$id")({
   component: RouteComponent,

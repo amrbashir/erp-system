@@ -1,4 +1,3 @@
-import { UserRole } from "@/prisma.ts";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { TRPCError } from "@trpc/server";
 import * as argon2 from "argon2";
@@ -6,6 +5,7 @@ import * as argon2 from "argon2";
 import type { PaginationDto } from "@/pagination.dto.ts";
 import type { PrismaClient } from "@/prisma-client.ts";
 import type { User, UserOrderByWithRelationInput, UserWhereInput } from "@/prisma.ts";
+import { UserRole } from "@/prisma.ts";
 
 import type { CreateUserDto } from "./user.dto.ts";
 
