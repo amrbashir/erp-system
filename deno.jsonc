@@ -24,13 +24,13 @@
     // dependencies
     "decimal.js": "npm:decimal.js@^10.6.0",
     "superjson": "npm:superjson@^2.2.2",
-    "zod": "npm:zod@^4.0.15",
+    "zod": "npm:zod@^4.0.16",
     "@trpc/server": "npm:@trpc/server@^11.4.3",
     "@trpc/client": "npm:@trpc/client@11.4.4",
     "@trpc/tanstack-react-query": "npm:@trpc/tanstack-react-query@11.4.4",
 
     // dev-dependencies
-    "@ianvs/prettier-plugin-sort-imports": "npm:@ianvs/prettier-plugin-sort-imports@^4.5.1",
+    "@ianvs/prettier-plugin-sort-imports": "npm:@ianvs/prettier-plugin-sort-imports@^4.6.1",
     "@std/expect": "jsr:@std/expect@^1.0.16",
     "@std/testing": "jsr:@std/testing@^1.0.15",
     "prettier": "npm:prettier@^3.6.2"
