@@ -49,7 +49,7 @@ export default defineConfig({
 function manualChunks(id: string) {
   // Split shadcn components into a separate chunk
   if (id.includes("shadcn/components/ui")) {
-    return "vendor/shadcn-" + id.toString().split("shadcn/components/ui")[1].split("/")[1];
+    return "vendor/shadcn";
   }
 
   // Split i18next into a separate chunk
@@ -69,7 +69,7 @@ function manualChunks(id: string) {
 
   // Split @radix-ui into a separate chunk
   if (id.includes("@radix-ui")) {
-    return "vendor/radix-" + id.toString().split("@radix-ui/")[1].split("/")[0];
+    return "vendor/radix-ui";
   }
 
   // Split react-router into a separate chunk
