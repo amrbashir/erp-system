@@ -1,0 +1,14 @@
+{
+  "name": "erp-system",
+  "private": true,
+  "scripts": {
+    "dev": "deno task --filter server dev & deno task --filter web dev",
+    "build": "deno task --filter server build && deno task --filter web build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.6.1",
+    "prettier": "^3.6.2"
+  }
+}

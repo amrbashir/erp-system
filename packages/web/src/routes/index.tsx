@@ -1,5 +1,5 @@
 import { CreateOrgDto } from "@erp-system/server/dto";
-import { slugify } from "@erp-system/utils/slug.ts";
+import { slugify } from "@erp-system/utils/slug";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";

@@ -1,0 +1,27 @@
+{
+  "name": "@erp-system/server",
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "build": "prisma generate && prisma db push",
+    "dev": "deno serve --watch --allow-env --allow-sys --allow-read --allow-net --allow-ffi --env-file=.env.development ./src/main.ts",
+    "prisma:dev": "export $(cat .env.development | xargs) && prisma",
+    "prisma:generate": "deno task prisma:dev generate",
+    "prisma:studio": "deno task prisma:dev studio",
+    "prisma:migrate:dev": "deno task prisma:dev migrate dev"
+  },
+  "dependencies": {
+    "@erp-system/utils": "workspace:*",
+    "@prisma/client": "^6.13.0",
+    "argon2": "^0.43.1",
+    "cookie": "^1.0.2",
+    "decimal.js": "^10.6.0",
+    "superjson": "^2.2.2",
+    "zod": "^4.0.16",
+    "@trpc/server": "^11.4.3"
+  },
+  "devDependencies": {
+    "prisma": "^6.13.0"
+  }
+}

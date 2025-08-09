@@ -1,0 +1,11 @@
+{
+  "name": "@erp-system/utils",
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "decimal.js": "^10.6.0",
+    "superjson": "^2.2.2",
+    "zod": "^4.0.16"
+  }
+}

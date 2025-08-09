@@ -1,4 +1,4 @@
-import { slugify } from "@erp-system/utils/slug.ts";
+import { slugify } from "@erp-system/utils/slug";
 import { expect } from "@std/expect";
 import { afterAll, beforeAll, describe, it } from "@std/testing/bdd";
 import * as argon2 from "argon2";

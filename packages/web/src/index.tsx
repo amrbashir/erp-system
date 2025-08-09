@@ -10,7 +10,7 @@ import { ThemeProvider } from "@/providers/theme.tsx";
 import { routeTree } from "@/routeTree.gen.ts"; // Import the generated route tree
 import { queryClient } from "@/trpc.ts";
 
-import "@erp-system/utils/super-json-ext.ts";
+import "@erp-system/utils/super-json-ext";
 import "./i18n.ts";
 import "./index.css";
 

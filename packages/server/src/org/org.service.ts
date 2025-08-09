@@ -1,4 +1,4 @@
-import { isValidSlug, slugify } from "@erp-system/utils/slug.ts";
+import { isValidSlug, slugify } from "@erp-system/utils/slug";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { TRPCError } from "@trpc/server";
 import * as argon2 from "argon2";

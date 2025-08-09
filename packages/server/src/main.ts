@@ -3,7 +3,7 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 import { handleHealthCheck } from "./health/index.ts";
 
-import "@erp-system/utils/super-json-ext.ts";
+import "@erp-system/utils/super-json-ext";
 
 import { createContext } from "./trpc/index.ts";
 import { appRouter } from "./trpc/router.ts";
