@@ -12,11 +12,11 @@ Building an ERP system for a local store in public.
 ### Setup:
 
 3. Install Deps `deno install`
-4. Start the database: `docker compose up -d`
+4. Start docker compose: `docker compose up -d`
 5. Generate prisma client `deno task -r prisma:generate`
-6. Run migrations: `deno task -r prisma:migrate:dev`
+6. Run database migrations: `deno task -r prisma:migrate:dev`
 
-## Running the Application
+### Running the Application
 
 ```sh
 deno task dev
@@ -26,6 +26,10 @@ deno task dev
 
 1. Run tests: `deno test`
 2. Run linting: `deno lint`
+
+### Tracing
+
+Open the Grafana Dashboard on https://localhost:3000, to view the traces.
 
 ## Architecture
 
@@ -46,3 +50,8 @@ The ERP system follows a modern, monorepo-based architecture with clear separati
 - **Internationalization**: i18next for multi-language support (English and Arabic).
 
 Both the backend and frontend are deployed on [Deno Deploy](https://deno.com/deploy).
+
+
+## LICENSE
+
+[MIT](./LICENSE) License
