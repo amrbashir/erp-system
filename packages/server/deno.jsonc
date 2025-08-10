@@ -7,8 +7,7 @@
     // aliases
     "@/": "./src/",
 
-    "@std/http": "jsr:@std/http@^1.0.20",
-    "@std/expect": "jsr:@std/expect@^1.0.16",
-    "@std/testing": "jsr:@std/testing@^1.0.15"
+    // dependencies
+    "@std/http": "jsr:@std/http@^1.0.20"
   }
 }

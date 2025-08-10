@@ -1,8 +1,6 @@
 {
   "workspace": ["packages/*"],
 
-  "nodeModulesDir": "auto",
-
   "compilerOptions": {
     "strict": true
   },
@@ -11,5 +9,11 @@
     "rules": {
       "exclude": ["no-slow-types", "no-explicit-any" /* TODO: remove this */]
     }
+  },
+
+  "imports": {
+    // dev-dependencies
+    "@std/expect": "jsr:@std/expect@^1.0.16",
+    "@std/testing": "jsr:@std/testing@^1.0.15"
   }
 }

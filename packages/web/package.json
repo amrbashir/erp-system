@@ -5,8 +5,8 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@erp-system/utils": "workspace:*",
-    "@erp-system/server": "workspace:*",
+    "@erp-system/utils": "file:../utils",
+    "@erp-system/server": "file:../server",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-dialog": "^1.1.14",
@@ -29,7 +29,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
-    "decimal.js": "^10.6.0",
     "i18next": "^25.3.2",
     "i18next-browser-languagedetector": "^8.2.0",
     "i18next-chained-backend": "^4.6.2",
@@ -46,13 +45,10 @@
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.11",
     "vaul": "^1.1.2",
-    "superjson": "^2.2.2",
-    "zod": "^4.0.16",
     "@trpc/client": "^11.4.4",
     "@trpc/tanstack-react-query": "^11.4.4"
   },
   "devDependencies": {
-    "@deno/vite-plugin": "^1.0.5",
     "@tanstack/router-plugin": "^1.130.17",
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",
