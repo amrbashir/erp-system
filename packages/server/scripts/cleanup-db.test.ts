@@ -7,10 +7,14 @@ import { cleanupDatabase } from "./cleanup-db.ts";
 
 const { createDatabase, dropDatabase } = useRandomDatabase();
 
-beforeAll(createDatabase);
-afterAll(dropDatabase);
+let prisma: PrismaClient;
 
-const prisma = new PrismaClient();
+beforeAll(() => {
+  createDatabase();
+  prisma = new PrismaClient();
+});
+
+afterAll(dropDatabase);
 
 async function populateOrg(slug: string) {
   // create an organization
@@ -127,6 +131,7 @@ async function populateOrg(slug: string) {
     invoice,
   };
 }
+
 describe("cleanupDatabase", () => {
   it("cleans up the database", async () => {
     await populateOrg("test-org-1");
