@@ -9,8 +9,8 @@ const { createDatabase, dropDatabase } = useRandomDatabase();
 
 let prisma: PrismaClient;
 
-beforeAll(() => {
-  createDatabase();
+beforeAll(async () => {
+  await createDatabase();
   prisma = new PrismaClient();
 });
 
