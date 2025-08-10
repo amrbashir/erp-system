@@ -1,4 +1,4 @@
-import { CreateUserDto } from "@erp-system/server/dto";
+import { CreateUserDto } from "@erp-system/server/user/user.dto.ts";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, PlusIcon } from "lucide-react";
@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from "@/shadcn/components/ui/select.tsx";
 
-import type { UserRole } from "@erp-system/server/prisma";
+import type { UserRole } from "@erp-system/server/prisma/index.ts";
 import type z from "zod";
 
 import { FormErrors, FormFieldError } from "@/components/form-errors.tsx";

@@ -2,9 +2,9 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { TRPCError } from "@trpc/server";
 
 import type { PaginationDto } from "@/pagination.dto.ts";
-import type { PrismaClient } from "@/prisma-client.ts";
-import type { Product } from "@/prisma.ts";
 
+import type { PrismaClient } from "../prisma/client.ts";
+import type { Product } from "../prisma/index.ts";
 import type { UpdateProductDto } from "./product.dto.ts";
 
 export class ProductService {
@@ -59,7 +59,7 @@ export class ProductService {
           },
         });
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -79,7 +79,7 @@ export class ProductService {
         take: paginationDto?.take,
         orderBy: { createdAt: "desc" },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",

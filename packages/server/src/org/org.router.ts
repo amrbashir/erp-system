@@ -4,9 +4,10 @@ import { expenseRouter } from "@/expense/expense.router.ts";
 import { invoiceRouter } from "@/invoice/invoice.router.ts";
 import { productRouter } from "@/product/product.router.ts";
 import { transactionRouter } from "@/transaction/transaction.router.ts";
-import { publicProcedure, router } from "@/trpc/index.ts";
+import { router } from "@/trpc/index.ts";
 import { userRouter } from "@/user/user.router.ts";
 
+import { otelProcedure } from "../otel/trpc-procedure.ts";
 import { AddBalanceDto, CreateOrgDto } from "./org.dto.ts";
 import { authenticatedOrgProcedure, orgProcedure } from "./org.procedure.ts";
 
@@ -19,7 +20,7 @@ export const orgRouter = router({
   transactions: transactionRouter,
   invoices: invoiceRouter,
 
-  create: publicProcedure
+  create: otelProcedure
     .input(CreateOrgDto)
     .mutation(({ ctx, input }) => ctx.orgService.create(input)),
 

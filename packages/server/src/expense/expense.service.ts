@@ -3,11 +3,11 @@ import { TRPCError } from "@trpc/server";
 import { Decimal } from "decimal.js";
 
 import type { PaginationDto } from "@/pagination.dto.ts";
-import type { PrismaClient } from "@/prisma-client.ts";
-import type { Expense, User } from "@/prisma.ts";
-import { TransactionType } from "@/prisma.ts";
 
+import type { PrismaClient } from "../prisma/client.ts";
+import type { Expense, User } from "../prisma/index.ts";
 import type { CreateExpenseDto } from "./expense.dto.ts";
+import { TransactionType } from "../prisma/index.ts";
 
 export type ExpenseWithCashier = Expense & {
   cashier: Pick<User, "username" | "id">;
@@ -45,7 +45,7 @@ export class ExpenseService {
           cashier: { select: { id: true, username: true } },
         },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -68,7 +68,7 @@ export class ExpenseService {
         },
         orderBy: { createdAt: "desc" },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",

@@ -16,7 +16,7 @@ import { Separator } from "@/shadcn/components/ui/separator.tsx";
 import { useIsMobile } from "@/shadcn/hooks/use-mobile.ts";
 import { cn } from "@/shadcn/lib/utils.ts";
 
-import type { InvoiceType } from "@erp-system/server/prisma";
+import type { InvoiceType } from "@erp-system/server/prisma/index.ts";
 import type { ReactFormExtendedApi } from "@tanstack/react-form";
 
 import { InputNumpad } from "@/components/ui/input-numpad.tsx";

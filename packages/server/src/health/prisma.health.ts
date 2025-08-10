@@ -1,6 +1,5 @@
-import { PrismaClient } from "@/prisma-client.ts";
-
 import type { HealthCheckResponse } from "./index.ts";
+import { PrismaClient } from "../prisma/client.ts";
 
 const KEY = "database";
 

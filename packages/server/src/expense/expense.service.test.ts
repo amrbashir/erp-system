@@ -2,10 +2,10 @@ import { expect } from "@std/expect";
 import { afterAll, beforeAll, describe, it } from "@std/testing/bdd";
 
 import { OrgService } from "@/org/org.service.ts";
-import { PrismaClient } from "@/prisma-client.ts";
 import { UserService } from "@/user/user.service.ts";
 
 import { generateRandomOrgData, useRandomDatabase } from "../../../utils/src/testing.ts";
+import { PrismaClient } from "../prisma/client.ts";
 import { ExpenseService } from "./expense.service.ts";
 
 describe("ExpenseService", () => {

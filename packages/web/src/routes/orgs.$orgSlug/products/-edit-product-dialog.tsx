@@ -1,4 +1,4 @@
-import { UpdateProductDto } from "@erp-system/server/dto";
+import { UpdateProductDto } from "@erp-system/server/product/product.dto.ts";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { EditIcon, Loader2Icon } from "lucide-react";
@@ -19,7 +19,7 @@ import { Input } from "@/shadcn/components/ui/input.tsx";
 import { Label } from "@/shadcn/components/ui/label.tsx";
 import { cn } from "@/shadcn/lib/utils.ts";
 
-import type { Product } from "@erp-system/server/prisma";
+import type { Product } from "@erp-system/server/prisma/index.ts";
 import type z from "zod";
 
 import { FormErrors, FormFieldError } from "@/components/form-errors.tsx";

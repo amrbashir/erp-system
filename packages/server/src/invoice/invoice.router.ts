@@ -2,9 +2,9 @@ import { z } from "zod";
 
 import { authenticatedOrgProcedure } from "@/org/org.procedure.ts";
 import { PaginationDto } from "@/pagination.dto.ts";
-import { InvoiceType } from "@/prisma.ts";
 import { router } from "@/trpc/index.ts";
 
+import { InvoiceType } from "../prisma/index.ts";
 import { CreatePurchaseInvoiceDto, CreateSaleInvoiceDto } from "./invoice.dto.ts";
 
 export const invoiceRouter = router({

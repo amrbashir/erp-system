@@ -3,11 +3,11 @@ import { TRPCError } from "@trpc/server";
 import { Decimal } from "decimal.js";
 
 import type { PaginationDto } from "@/pagination.dto.ts";
-import type { PrismaClient } from "@/prisma-client.ts";
-import type { Customer, Transaction } from "@/prisma.ts";
-import { TransactionType } from "@/prisma.ts";
 
+import type { PrismaClient } from "../prisma/client.ts";
+import type { Customer, Transaction } from "../prisma/index.ts";
 import type { CreateCustomerDto, CustomerWithDetails, UpdateCustomerDto } from "./customer.dto.ts";
+import { TransactionType } from "../prisma/index.ts";
 
 export class CustomerService {
   constructor(private readonly prisma: PrismaClient) {}
@@ -35,7 +35,7 @@ export class CustomerService {
           },
         });
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -114,7 +114,7 @@ export class CustomerService {
           phone: dto.phone,
         },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -134,7 +134,7 @@ export class CustomerService {
         take: paginationDto?.take,
         orderBy: { createdAt: "desc" },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -157,7 +157,7 @@ export class CustomerService {
           organization: { connect: { slug: orgSlug } },
         },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -180,7 +180,7 @@ export class CustomerService {
           organization: { connect: { slug: orgSlug } },
         },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",

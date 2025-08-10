@@ -3,11 +3,11 @@ import { TRPCError } from "@trpc/server";
 import * as argon2 from "argon2";
 
 import type { PaginationDto } from "@/pagination.dto.ts";
-import type { PrismaClient } from "@/prisma-client.ts";
-import type { User, UserOrderByWithRelationInput, UserWhereInput } from "@/prisma.ts";
-import { UserRole } from "@/prisma.ts";
 
+import type { PrismaClient } from "../prisma/client.ts";
+import type { User, UserOrderByWithRelationInput, UserWhereInput } from "../prisma/index.ts";
 import type { CreateUserDto } from "./user.dto.ts";
+import { UserRole } from "../prisma/index.ts";
 
 export class UserService {
   constructor(private readonly prisma: PrismaClient) {}
@@ -34,7 +34,7 @@ export class UserService {
           },
         });
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -79,7 +79,7 @@ export class UserService {
           where: { id, organizationId: org.id },
         });
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -96,7 +96,7 @@ export class UserService {
       return await this.prisma.user.findFirst({
         where: { username, deletedAt: null, organization: { slug: orgSlug } },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -126,7 +126,7 @@ export class UserService {
         },
         orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",

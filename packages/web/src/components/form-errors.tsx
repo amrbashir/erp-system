@@ -56,14 +56,14 @@ export function FormErrors({
  *
  * If the error is an array, it maps through each error and displays them.
  */
-function ErrorElement({ error, fieldName }: { error: unknown; fieldName?: string }) {
+function ErrorElement({ error, fieldName }: { error; fieldName?: string }) {
   if (!error) return null;
 
   const { t } = useTranslation();
 
   const errors = Array.isArray(error) ? error : [error];
 
-  const getError = (error: unknown): string | null | (string | null)[] => {
+  const getError = (error): string | null | (string | null)[] => {
     if (error === null || error === undefined) return null;
 
     return typeof error === "string"

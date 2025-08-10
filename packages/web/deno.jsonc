@@ -10,6 +10,7 @@
       "exclude": ["no-window", "no-window-prefix", "jsx-no-children-prop", "no-sloppy-imports"]
     }
   },
+
   "imports": {
     // aliases
     "@/": "./src/"

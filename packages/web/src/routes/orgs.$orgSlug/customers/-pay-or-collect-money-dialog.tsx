@@ -1,4 +1,4 @@
-import { MoneyTransactionDto } from "@erp-system/server/dto";
+import { MoneyTransactionDto } from "@erp-system/server/customer/customer.dto.ts";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";

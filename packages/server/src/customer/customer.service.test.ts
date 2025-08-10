@@ -3,10 +3,10 @@ import { afterAll, beforeAll, describe, it } from "@std/testing/bdd";
 
 import { InvoiceService } from "@/invoice/invoice.service.ts";
 import { OrgService } from "@/org/org.service.ts";
-import { PrismaClient } from "@/prisma-client.ts";
 
 import type { CreateCustomerDto } from "./customer.dto.ts";
 import { generateRandomOrgData, useRandomDatabase } from "../../../utils/src/testing.ts";
+import { PrismaClient } from "../prisma/client.ts";
 import { CustomerService } from "./customer.service.ts";
 
 describe("CustomerService", () => {

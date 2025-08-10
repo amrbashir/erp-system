@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableRow } from "@/shadcn/components/ui/ta
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shadcn/components/ui/tabs.tsx";
 import { cn } from "@/shadcn/lib/utils.ts";
 
-import type { CustomerWithDetails } from "@erp-system/server/dto";
+import type { CustomerWithDetails } from "@erp-system/server/customer/customer.dto.ts";
 
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import i18n from "@/i18n.ts";

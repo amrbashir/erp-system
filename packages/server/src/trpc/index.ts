@@ -8,10 +8,11 @@ import { CustomerService } from "@/customer/customer.service.ts";
 import { ExpenseService } from "@/expense/expense.service.ts";
 import { InvoiceService } from "@/invoice/invoice.service.ts";
 import { OrgService } from "@/org/org.service.ts";
-import { PrismaClient } from "@/prisma-client.ts";
 import { ProductService } from "@/product/product.service.ts";
 import { TransactionService } from "@/transaction/transaction.service.ts";
 import { UserService } from "@/user/user.service.ts";
+
+import { PrismaClient } from "../prisma/client.ts";
 
 export const createContext = ({ req, resHeaders }: FetchCreateContextFnOptions) => {
   const prisma = new PrismaClient();
@@ -46,4 +47,5 @@ const t = initTRPC.context<Context>().create({
 });
 
 export const publicProcedure = t.procedure;
+
 export const router = t.router;

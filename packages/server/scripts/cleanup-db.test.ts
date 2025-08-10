@@ -1,9 +1,8 @@
 import { expect } from "@std/expect";
 import { afterAll, beforeAll, describe, it } from "@std/testing/bdd";
 
-import { PrismaClient } from "@/prisma-client.ts";
-
 import { useRandomDatabase } from "../../utils/src/testing.ts";
+import { PrismaClient } from "../src/prisma/client.ts";
 import { cleanupDatabase } from "./cleanup-db.ts";
 
 const { createDatabase, dropDatabase } = useRandomDatabase();

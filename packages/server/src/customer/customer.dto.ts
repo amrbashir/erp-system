@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import type { Decimal } from "decimal.js";
 
-import type { Customer } from "@/prisma.ts";
+import type { Customer } from "../prisma/index.ts";
 
 export const CustomerIdDto = z.object({
   customerId: z.number(),

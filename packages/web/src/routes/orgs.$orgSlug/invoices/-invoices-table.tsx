@@ -9,7 +9,7 @@ import {
 } from "@/shadcn/components/ui/table.tsx";
 import { cn } from "@/shadcn/lib/utils.ts";
 
-import type { InvoiceWithRelations } from "@erp-system/server/dto";
+import type { InvoiceWithRelations } from "@erp-system/server/invoice/invoice.dto.ts";
 
 import { EmptyTable } from "@/components/empty-table.tsx";
 import { ButtonLink } from "@/components/ui/ButtonLink.tsx";

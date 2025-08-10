@@ -2,8 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { Loader2Icon } from "lucide-react";
 import * as React from "react";
 
-import type { LoginResponse } from "@erp-system/server/dto";
-import type { AppRouter } from "@erp-system/server/trpc/router";
+import type { LoginResponse } from "@erp-system/server/auth/auth.dto.ts";
+import type { AppRouter } from "@erp-system/server/trpc/router.ts";
 import type { TRPCClientErrorLike } from "@trpc/client";
 
 import { trpc, trpcClient } from "@/trpc.ts";

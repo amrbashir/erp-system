@@ -2,7 +2,7 @@ import { createRootRouteWithContext, HeadContent, Outlet, redirect } from "@tans
 import { useTranslation } from "react-i18next";
 import { Toaster } from "@/shadcn/components/ui/sonner.tsx";
 
-import type { UserRole } from "@erp-system/server/prisma";
+import type { UserRole } from "@erp-system/server/prisma/index.ts";
 import type * as React from "react";
 
 import type { AuthProviderState } from "@/providers/auth.tsx";

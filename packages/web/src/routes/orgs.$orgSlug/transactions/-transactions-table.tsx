@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/shadcn/components/ui/table.tsx";
 
-import type { TransactionWithRelations } from "@erp-system/server/dto";
+import type { TransactionWithRelations } from "@erp-system/server/transaction/transaction.dto.ts";
 
 import { EmptyTable } from "@/components/empty-table.tsx";
 import { ButtonLink } from "@/components/ui/ButtonLink.tsx";

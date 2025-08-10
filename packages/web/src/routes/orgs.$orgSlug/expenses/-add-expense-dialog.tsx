@@ -1,4 +1,4 @@
-import { CreateExpenseDto } from "@erp-system/server/dto";
+import { CreateExpenseDto } from "@erp-system/server/expense/expense.dto.ts";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, PlusIcon } from "lucide-react";

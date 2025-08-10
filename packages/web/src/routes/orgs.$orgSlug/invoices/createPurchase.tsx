@@ -1,4 +1,4 @@
-import { CreatePurchaseInvoiceDto } from "@erp-system/server/dto";
+import { CreatePurchaseInvoiceDto } from "@erp-system/server/invoice/invoice.dto.ts";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";

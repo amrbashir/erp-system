@@ -3,15 +3,19 @@ import { TRPCError } from "@trpc/server";
 import { Decimal } from "decimal.js";
 
 import type { PaginationDto } from "@/pagination.dto.ts";
-import type { PrismaClient } from "@/prisma-client.ts";
-import type { InvoiceItem, InvoiceOrderByWithRelationInput, InvoiceWhereInput } from "@/prisma.ts";
-import { TransactionType } from "@/prisma.ts";
 
+import type { PrismaClient } from "../prisma/client.ts";
+import type {
+  InvoiceItem,
+  InvoiceOrderByWithRelationInput,
+  InvoiceWhereInput,
+} from "../prisma/index.ts";
 import type {
   CreatePurchaseInvoiceDto,
   CreateSaleInvoiceDto,
   InvoiceWithRelations,
 } from "./invoice.dto.ts";
+import { TransactionType } from "../prisma/index.ts";
 
 export class InvoiceService {
   constructor(private readonly prisma: PrismaClient) {}
@@ -39,7 +43,7 @@ export class InvoiceService {
         },
         orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -64,7 +68,7 @@ export class InvoiceService {
           items: true,
         },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -101,7 +105,7 @@ export class InvoiceService {
         },
         orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -250,7 +254,7 @@ export class InvoiceService {
 
         return invoice;
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -419,7 +423,7 @@ export class InvoiceService {
 
         return invoice;
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof TRPCError) {
         throw error;
       }

@@ -1,3 +1,4 @@
+import { registerSuperJsonExtensions } from "@erp-system/utils/super-json-ext.ts";
 import { DirectionProvider } from "@radix-ui/react-direction";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
@@ -10,9 +11,10 @@ import { ThemeProvider } from "@/providers/theme.tsx";
 import { routeTree } from "@/routeTree.gen.ts"; // Import the generated route tree
 import { queryClient } from "@/trpc.ts";
 
-import "@erp-system/utils/super-json-ext";
 import "./i18n.ts";
 import "./index.css";
+
+registerSuperJsonExtensions();
 
 const router = createRouter({
   routeTree,

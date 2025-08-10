@@ -1,4 +1,4 @@
-export * from "../prisma/generated/enums.ts";
+export * from "../../prisma/generated/enums.ts";
 
 export type {
   UserModel as User,
@@ -10,6 +10,6 @@ export type {
   ProductModel as Product,
   SessionModel as Session,
   TransactionModel as Transaction,
-} from "../prisma/generated/models.ts";
+} from "../../prisma/generated/models.ts";
 
-export * from "../prisma/generated/models.ts";
+export * from "../../prisma/generated/models.ts";

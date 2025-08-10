@@ -2,9 +2,12 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { TRPCError } from "@trpc/server";
 
 import type { PaginationDto } from "@/pagination.dto.ts";
-import type { PrismaClient } from "@/prisma-client.ts";
-import type { TransactionOrderByWithRelationInput, TransactionWhereInput } from "@/prisma.ts";
 
+import type { PrismaClient } from "../prisma/client.ts";
+import type {
+  TransactionOrderByWithRelationInput,
+  TransactionWhereInput,
+} from "../prisma/index.ts";
 import type { TransactionWithRelations } from "./transaction.dto.ts";
 
 const includeTransactionRelations = {
@@ -51,7 +54,7 @@ export class TransactionService {
         include: includeTransactionRelations,
         orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -87,7 +90,7 @@ export class TransactionService {
         include: includeTransactionRelations,
         orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",

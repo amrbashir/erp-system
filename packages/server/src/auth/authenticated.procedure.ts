@@ -1,9 +1,10 @@
+import { trace } from "@opentelemetry/api";
 import { TRPCError } from "@trpc/server";
 import { parse as parseCookie } from "cookie";
 
-import { publicProcedure } from "@/trpc/index.ts";
+import { otelProcedure } from "../otel/trpc-procedure.ts";
 
-export const authenticatedProcedure = publicProcedure.use(async ({ ctx, next }) => {
+export const authenticatedProcedure = otelProcedure.use(async ({ ctx, next }) => {
   const cookies = parseCookie(ctx.req.headers.get("Cookie") || "");
   const sid = cookies.sid;
 
@@ -21,6 +22,9 @@ export const authenticatedProcedure = publicProcedure.use(async ({ ctx, next }) 
       message: "Invalid or expired session",
     });
   }
+
+  const span = trace.getActiveSpan();
+  span?.setAttribute("user.id", user.id);
 
   return next({ ctx: { sid, user } });
 });

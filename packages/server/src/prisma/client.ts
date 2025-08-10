@@ -3,4 +3,4 @@
 //
 // This allows us to use the PrismaClient in server-side code without affecting the client bundle.
 
-export { PrismaClient } from "../prisma/generated/client.ts";
+export { PrismaClient } from "../../prisma/generated/client.ts";

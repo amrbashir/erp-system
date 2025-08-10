@@ -15,7 +15,7 @@ import { Label } from "@/shadcn/components/ui/label.tsx";
 import { PopoverContent, PopoverTrigger } from "@/shadcn/components/ui/popover.tsx";
 import { useIsMobile } from "@/shadcn/hooks/use-mobile.ts";
 
-import type { Customer } from "@erp-system/server/prisma";
+import type { Customer } from "@erp-system/server/prisma/index.ts";
 
 import { CustomerDialog } from "@/routes/orgs.$orgSlug/customers/-customer-dialog.tsx";
 

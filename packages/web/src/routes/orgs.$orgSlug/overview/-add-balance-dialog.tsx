@@ -1,4 +1,4 @@
-import { AddBalanceDto } from "@erp-system/server/dto";
+import { AddBalanceDto } from "@erp-system/server/org/org.dto.ts";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, PlusIcon } from "lucide-react";

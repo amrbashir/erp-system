@@ -1,14 +1,14 @@
-import { isValidSlug, slugify } from "@erp-system/utils/slug";
+import { isValidSlug, slugify } from "@erp-system/utils/slug.ts";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { TRPCError } from "@trpc/server";
 import * as argon2 from "argon2";
 import { Decimal } from "decimal.js";
 
-import type { PrismaClient } from "@/prisma-client.ts";
-import type { Organization } from "@/prisma.ts";
-import { TransactionType, UserRole } from "@/prisma.ts";
-
+import type { PrismaClient } from "../prisma/client.ts";
+import type { Organization } from "../prisma/index.ts";
 import type { AddBalanceDto, CreateOrgDto } from "./org.dto.ts";
+import { OTelInstrument } from "../otel/instrument.decorator.ts";
+import { TransactionType, UserRole } from "../prisma/index.ts";
 
 export interface OrganizationStatistics {
   name: string;
@@ -44,7 +44,7 @@ export class OrgService {
           },
         },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (
         error instanceof PrismaClientKnownRequestError &&
         Array.isArray(error.meta?.target) &&
@@ -84,7 +84,7 @@ export class OrgService {
           },
         },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -96,6 +96,7 @@ export class OrgService {
     }
   }
 
+  @OTelInstrument
   async getStatistics(orgSlug: string): Promise<OrganizationStatistics> {
     const org = await this.prisma.organization.findUnique({
       where: { slug: orgSlug },

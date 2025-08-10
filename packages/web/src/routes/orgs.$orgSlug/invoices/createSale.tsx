@@ -1,4 +1,4 @@
-import { CreateSaleInvoiceDto } from "@erp-system/server/dto";
+import { CreateSaleInvoiceDto } from "@erp-system/server/invoice/invoice.dto.ts";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -16,8 +16,8 @@ import {
   TableRow,
 } from "@/shadcn/components/ui/table.tsx";
 
-import type { CreateSaleInvoiceItemDto } from "@erp-system/server/dto";
-import type { Product } from "@erp-system/server/prisma";
+import type { CreateSaleInvoiceItemDto } from "@erp-system/server/invoice/invoice.dto.ts";
+import type { Product } from "@erp-system/server/prisma/index.ts";
 import type z from "zod";
 
 import { FormErrors } from "@/components/form-errors.tsx";

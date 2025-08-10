@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { Customer, Invoice, InvoiceItem, User } from "@/prisma.ts";
+import type { Customer, Invoice, InvoiceItem, User } from "../prisma/index.ts";
 
 export const CreateSaleInvoiceItemDto = z.object({
   productId: z.uuid(),

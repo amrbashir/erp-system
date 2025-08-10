@@ -1,7 +1,7 @@
 {
   "name": "@erp-system/web",
   "scripts": {
-    "dev": "vite --open",
+    "dev": "vite",
     "build": "vite build"
   },
   "dependencies": {

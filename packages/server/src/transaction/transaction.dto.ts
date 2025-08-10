@@ -1,6 +1,6 @@
 import z from "zod";
 
-import type { Transaction } from "@/prisma.ts";
+import type { Transaction } from "../prisma/index.ts";
 
 export const GetTransactionByCustomerIdDto = z.object({
   customerId: z.number(),
