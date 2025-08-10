@@ -45,19 +45,25 @@ export class AuthService {
   }
 
   @OTelInstrument
-  async createSession(userId: string): Promise<string> {
+  async createSession(userId: string, ipAddress?: string, userAgent?: string): Promise<string> {
     const sid = await generateSessionId(userId);
     await this.prisma.session.create({
-      data: { sid, userId },
+      data: {
+        sid,
+        userId,
+        ipAddress,
+        userAgent,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day
+      },
     });
 
     return sid;
   }
 
   @OTelInstrument
-  async validateSession(sid: string) {
+  async validateSession(sid: string, ipAddress?: string, userAgent?: string) {
     const session = await this.prisma.session.findUnique({
-      where: { sid },
+      where: { sid, ipAddress, userAgent },
       include: {
         user: {
           select: {
@@ -75,7 +81,14 @@ export class AuthService {
       },
     });
 
-    if (!session) return null;
+    if (
+      !session ||
+      session.expiresAt < new Date() ||
+      session.ipAddress !== ipAddress ||
+      session.userAgent !== userAgent
+    ) {
+      return null;
+    }
 
     return session.user;
   }

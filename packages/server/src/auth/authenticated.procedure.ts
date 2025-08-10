@@ -15,7 +15,7 @@ export const authenticatedProcedure = otelProcedure.use(async ({ ctx, next }) =>
     });
   }
 
-  const user = await ctx.authService.validateSession(sid);
+  const user = await ctx.authService.validateSession(sid, ctx.ipAddress, ctx.userAgent);
   if (!user) {
     throw new TRPCError({
       code: "UNAUTHORIZED",

@@ -10,7 +10,12 @@ import { appRouter } from "./trpc/router.ts";
 
 registerSuperJsonExtensions();
 
-async function fetchHandler(req: Request, pathname: string): Promise<Response> {
+async function fetchHandler(
+  req: Request,
+  reqInfo: Deno.ServeHandlerInfo<Deno.Addr>,
+): Promise<Response> {
+  const { pathname } = new URL(req.url);
+
   // Handle API requests
   if (pathname.startsWith("/api")) {
     // Handle health check endpoint separately from tRPC requests
@@ -23,7 +28,7 @@ async function fetchHandler(req: Request, pathname: string): Promise<Response> {
       endpoint: "/api/trpc",
       req,
       router: appRouter,
-      createContext,
+      createContext: (opts) => createContext({ ...opts, reqInfo }),
     });
   }
 
@@ -43,7 +48,7 @@ async function fetchHandler(req: Request, pathname: string): Promise<Response> {
 }
 
 export default {
-  async fetch(req) {
+  async fetch(req, info) {
     const { pathname } = new URL(req.url);
 
     // Update the active span name to match the request path
@@ -52,7 +57,7 @@ export default {
 
     // Catch and record any errors that occur during request handling
     try {
-      const response = await fetchHandler(req, pathname);
+      const response = await fetchHandler(req, info);
       span?.setStatus({
         code: response.ok ? SpanStatusCode.OK : SpanStatusCode.ERROR,
         message: response.statusText,

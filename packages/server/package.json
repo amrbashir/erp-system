@@ -4,7 +4,7 @@
     "./*": "./src/*"
   },
   "scripts": {
-    "build": "prisma generate && prisma db push",
+    "build": "prisma generate && prisma migrate deploy",
     "dev": "OTEL_SERVICE_NAME=@erp-system/server OTEL_DENO=true deno serve --watch --unstable-otel -ESRN --allow-ffi --env-file=.env.development ./src/main.ts",
     "prisma:dev": "export $(cat .env.development | xargs) && prisma",
     "prisma:generate": "deno task prisma:dev generate",

@@ -21,7 +21,8 @@ export const authRouter = router({
     .input(LoginUserDto)
     .mutation(async ({ ctx, input }): Promise<LoginResponse> => {
       const user = await ctx.authService.validateUser(input);
-      const sid = await ctx.authService.createSession(user.id);
+
+      const sid = await ctx.authService.createSession(user.id, ctx.ipAddress, ctx.userAgent);
       const org = await ctx.orgService.findBySlug(input.orgSlug);
       if (!org) {
         throw new TRPCError({

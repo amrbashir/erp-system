@@ -14,7 +14,11 @@ import { UserService } from "@/user/user.service.ts";
 
 import { PrismaClient } from "../prisma/client.ts";
 
-export const createContext = ({ req, resHeaders }: FetchCreateContextFnOptions) => {
+export const createContext = ({
+  req,
+  resHeaders,
+  reqInfo,
+}: FetchCreateContextFnOptions & { reqInfo: Deno.ServeHandlerInfo<Deno.Addr> }) => {
   const prisma = new PrismaClient();
   const orgService = new OrgService(prisma);
   const userService = new UserService(prisma);
@@ -37,6 +41,7 @@ export const createContext = ({ req, resHeaders }: FetchCreateContextFnOptions) 
     invoiceService,
     req,
     resHeaders,
+    reqInfo,
   };
 };
 
@@ -46,6 +51,21 @@ const t = initTRPC.context<Context>().create({
   transformer: superjson,
 });
 
-export const publicProcedure = t.procedure;
+export const publicProcedure = t.procedure.use(({ ctx, next }) => {
+  const ipAddress =
+    ctx.reqInfo.remoteAddr.transport === "tcp" || ctx.reqInfo.remoteAddr.transport === "udp"
+      ? ctx.reqInfo.remoteAddr.hostname
+      : undefined;
+
+  const userAgent = ctx.req.headers.get("user-agent") ?? undefined;
+
+  return next({
+    ctx: {
+      ...ctx,
+      ipAddress,
+      userAgent,
+    },
+  });
+});
 
 export const router = t.router;
