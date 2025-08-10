@@ -4,15 +4,16 @@
     "./*": "./src/*"
   },
   "scripts": {
-    "build": "prisma generate && prisma migrate deploy",
+    "build": "prisma generate",
     "dev": "OTEL_SERVICE_NAME=@erp-system/server OTEL_DENO=true deno serve --watch --unstable-otel -ESRN --allow-ffi --env-file=.env.development ./src/main.ts",
+    "prisma:deploy:prod": "prisma migrate deploy",
     "prisma:dev": "export $(cat .env.development | xargs) && prisma",
     "prisma:generate": "deno task prisma:dev generate",
     "prisma:studio": "deno task prisma:dev studio",
     "prisma:migrate:dev": "deno task prisma:dev migrate dev"
   },
   "dependencies": {
-    "@erp-system/utils": "workspace:*",
+    "@erp-system/utils": "file:../utils",
     "@opentelemetry/api": "^1.9.0",
     "@prisma/client": "^6.13.0",
     "argon2": "^0.43.1",
