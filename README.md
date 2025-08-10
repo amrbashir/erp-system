@@ -51,7 +51,6 @@ The ERP system follows a modern, monorepo-based architecture with clear separati
 
 Both the backend and frontend are deployed on [Deno Deploy](https://deno.com/deploy).
 
-
 ## LICENSE
 
 [MIT](./LICENSE) License
