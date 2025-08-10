@@ -49,7 +49,11 @@ The ERP system follows a modern, monorepo-based architecture with clear separati
 - **UI Components**: Shadcn/ui and Tailwind CSS.
 - **Internationalization**: i18next for multi-language support (English and Arabic).
 
-Both the backend and frontend are deployed on [Deno Deploy](https://deno.com/deploy).
+### Deployment
+
+- **Backend**: Deployed on [Deno Deploy](https://deno.com/deploy).
+- **Frontend**: Deployed as a SPA and served from same instance as backend on [Deno Deploy](https://deno.com/deploy).
+- **Database**: Managed PostgreSQL on [Neon](https://neon.tech)
 
 ## LICENSE
 
