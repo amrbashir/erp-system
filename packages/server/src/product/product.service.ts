@@ -6,10 +6,12 @@ import type { PaginationDto } from "@/pagination.dto.ts";
 import type { PrismaClient } from "../prisma/client.ts";
 import type { Product } from "../prisma/index.ts";
 import type { UpdateProductDto } from "./product.dto.ts";
+import { OTelInstrument } from "../otel/instrument.decorator.ts";
 
 export class ProductService {
   constructor(private readonly prisma: PrismaClient) {}
 
+  @OTelInstrument
   async update(id: string, dto: UpdateProductDto, orgSlug: string): Promise<Product> {
     try {
       return await this.prisma.$transaction(async (prisma) => {
@@ -71,6 +73,7 @@ export class ProductService {
     }
   }
 
+  @OTelInstrument
   async getAll(orgSlug: string, paginationDto?: PaginationDto): Promise<Product[]> {
     try {
       return await this.prisma.product.findMany({

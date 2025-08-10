@@ -20,6 +20,7 @@ export interface OrganizationStatistics {
 export class OrgService {
   constructor(private readonly prisma: PrismaClient) {}
 
+  @OTelInstrument
   async create(createOrgDto: CreateOrgDto): Promise<Organization> {
     if (createOrgDto.slug && !isValidSlug(createOrgDto.slug)) {
       throw new TRPCError({
@@ -61,10 +62,12 @@ export class OrgService {
     }
   }
 
+  @OTelInstrument
   findBySlug(slug: string): Promise<Organization | null> {
     return this.prisma.organization.findUnique({ where: { slug } });
   }
 
+  @OTelInstrument
   async addBalance(orgSlug: string, dto: AddBalanceDto, userId: string): Promise<void> {
     try {
       const amount = new Decimal(dto.amount);

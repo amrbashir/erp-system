@@ -15,11 +15,13 @@ import type {
   CreateSaleInvoiceDto,
   InvoiceWithRelations,
 } from "./invoice.dto.ts";
+import { OTelInstrument } from "../otel/instrument.decorator.ts";
 import { TransactionType } from "../prisma/index.ts";
 
 export class InvoiceService {
   constructor(private readonly prisma: PrismaClient) {}
 
+  @OTelInstrument
   async getAllInvoices(
     orgSlug: string,
     options?: {
@@ -55,6 +57,7 @@ export class InvoiceService {
     }
   }
 
+  @OTelInstrument
   async findById(orgSlug: string, id: number): Promise<InvoiceWithRelations> {
     try {
       return await this.prisma.invoice.findUniqueOrThrow({
@@ -80,6 +83,7 @@ export class InvoiceService {
     }
   }
 
+  @OTelInstrument
   async findByCustomerId(
     orgSlug: string,
     customerId: number,
@@ -117,6 +121,7 @@ export class InvoiceService {
     }
   }
 
+  @OTelInstrument
   async createSaleInvoice(
     orgSlug: string,
     dto: CreateSaleInvoiceDto,
@@ -266,6 +271,7 @@ export class InvoiceService {
     }
   }
 
+  @OTelInstrument
   async createPurchaseInvoice(
     orgSlug: string,
     dto: CreatePurchaseInvoiceDto,

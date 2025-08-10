@@ -9,6 +9,7 @@ import type {
   TransactionWhereInput,
 } from "../prisma/index.ts";
 import type { TransactionWithRelations } from "./transaction.dto.ts";
+import { OTelInstrument } from "../otel/instrument.decorator.ts";
 
 const includeTransactionRelations = {
   cashier: {
@@ -32,6 +33,7 @@ const includeTransactionRelations = {
 export class TransactionService {
   constructor(private readonly prisma: PrismaClient) {}
 
+  @OTelInstrument
   async getAll(
     orgSlug: string,
     options?: {
@@ -66,6 +68,7 @@ export class TransactionService {
     }
   }
 
+  @OTelInstrument
   async getByCustomerId(
     orgSlug: string,
     customerId: number,

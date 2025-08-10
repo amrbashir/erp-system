@@ -7,11 +7,13 @@ import type { PaginationDto } from "@/pagination.dto.ts";
 import type { PrismaClient } from "../prisma/client.ts";
 import type { User, UserOrderByWithRelationInput, UserWhereInput } from "../prisma/index.ts";
 import type { CreateUserDto } from "./user.dto.ts";
+import { OTelInstrument } from "../otel/instrument.decorator.ts";
 import { UserRole } from "../prisma/index.ts";
 
 export class UserService {
   constructor(private readonly prisma: PrismaClient) {}
 
+  @OTelInstrument
   async create(createUserDto: CreateUserDto, orgSlug: string): Promise<User> {
     try {
       return await this.prisma.$transaction(async (prisma) => {
@@ -46,6 +48,7 @@ export class UserService {
     }
   }
 
+  @OTelInstrument
   async delete(id: string, orgSlug: string): Promise<void> {
     try {
       await this.prisma.$transaction(async (prisma) => {
@@ -91,6 +94,7 @@ export class UserService {
     }
   }
 
+  @OTelInstrument
   async findByUsernameInOrg(username: string, orgSlug: string): Promise<User | null> {
     try {
       return await this.prisma.user.findFirst({
@@ -108,6 +112,7 @@ export class UserService {
     }
   }
 
+  @OTelInstrument
   async getAll(
     orgSlug: string,
     options?: {

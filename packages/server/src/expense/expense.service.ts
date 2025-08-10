@@ -7,6 +7,7 @@ import type { PaginationDto } from "@/pagination.dto.ts";
 import type { PrismaClient } from "../prisma/client.ts";
 import type { Expense, User } from "../prisma/index.ts";
 import type { CreateExpenseDto } from "./expense.dto.ts";
+import { OTelInstrument } from "../otel/instrument.decorator.ts";
 import { TransactionType } from "../prisma/index.ts";
 
 export type ExpenseWithCashier = Expense & {
@@ -16,6 +17,7 @@ export type ExpenseWithCashier = Expense & {
 export class ExpenseService {
   constructor(private readonly prisma: PrismaClient) {}
 
+  @OTelInstrument
   async create(
     orgSlug: string,
     dto: CreateExpenseDto,
@@ -57,6 +59,7 @@ export class ExpenseService {
     }
   }
 
+  @OTelInstrument
   async getAll(orgSlug: string, paginationDto?: PaginationDto): Promise<ExpenseWithCashier[]> {
     try {
       return await this.prisma.expense.findMany({

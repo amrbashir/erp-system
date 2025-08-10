@@ -6,6 +6,7 @@ import type { UserService } from "@/user/user.service.ts";
 import type { PrismaClient } from "../prisma/client.ts";
 import type { User } from "../prisma/index.ts";
 import type { LoginUserDto } from "./auth.dto.ts";
+import { OTelInstrument } from "../otel/instrument.decorator.ts";
 
 const SESSION_SECRET = Deno.env.get("SESSION_SECRET");
 
@@ -28,6 +29,7 @@ export class AuthService {
     private readonly userService: UserService,
   ) {}
 
+  @OTelInstrument
   async validateUser(dto: LoginUserDto & { orgSlug: string }): Promise<User> {
     const user = await this.userService.findByUsernameInOrg(dto.username, dto.orgSlug);
     if (!user) {
@@ -42,6 +44,7 @@ export class AuthService {
     return user;
   }
 
+  @OTelInstrument
   async createSession(userId: string): Promise<string> {
     const sid = await generateSessionId(userId);
     await this.prisma.session.create({
@@ -51,6 +54,7 @@ export class AuthService {
     return sid;
   }
 
+  @OTelInstrument
   async validateSession(sid: string) {
     const session = await this.prisma.session.findUnique({
       where: { sid },
@@ -76,6 +80,7 @@ export class AuthService {
     return session.user;
   }
 
+  @OTelInstrument
   async deleteSession(sid: string): Promise<void> {
     await this.prisma.session.delete({ where: { sid } });
   }

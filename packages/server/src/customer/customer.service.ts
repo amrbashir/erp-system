@@ -7,11 +7,13 @@ import type { PaginationDto } from "@/pagination.dto.ts";
 import type { PrismaClient } from "../prisma/client.ts";
 import type { Customer, Transaction } from "../prisma/index.ts";
 import type { CreateCustomerDto, CustomerWithDetails, UpdateCustomerDto } from "./customer.dto.ts";
+import { OTelInstrument } from "../otel/instrument.decorator.ts";
 import { TransactionType } from "../prisma/index.ts";
 
 export class CustomerService {
   constructor(private readonly prisma: PrismaClient) {}
 
+  @OTelInstrument
   async create(dto: CreateCustomerDto, orgSlug: string): Promise<Customer> {
     try {
       return await this.prisma.$transaction(async (prisma) => {
@@ -47,6 +49,7 @@ export class CustomerService {
     }
   }
 
+  @OTelInstrument
   async findById(id: number, orgSlug: string): Promise<CustomerWithDetails | null> {
     return await this.prisma.$transaction(async (prisma) => {
       const customer = await prisma.customer.findUnique({
@@ -104,6 +107,7 @@ export class CustomerService {
     });
   }
 
+  @OTelInstrument
   async update(id: number, dto: UpdateCustomerDto, orgSlug: string): Promise<Customer> {
     try {
       return await this.prisma.customer.update({
@@ -126,6 +130,7 @@ export class CustomerService {
     }
   }
 
+  @OTelInstrument
   async getAll(orgSlug: string, paginationDto?: PaginationDto): Promise<Customer[]> {
     try {
       return await this.prisma.customer.findMany({
@@ -146,6 +151,7 @@ export class CustomerService {
     }
   }
 
+  @OTelInstrument
   collectMoney(id: number, amount: string, orgSlug: string, userId: string): Promise<Transaction> {
     try {
       return this.prisma.transaction.create({
@@ -169,6 +175,7 @@ export class CustomerService {
     }
   }
 
+  @OTelInstrument
   payMoney(id: number, amount: string, orgSlug: string, userId: string): Promise<Transaction> {
     try {
       return this.prisma.transaction.create({
