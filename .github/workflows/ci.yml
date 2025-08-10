@@ -18,6 +18,7 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: latest
+      - run: deno install
       - run: deno task format:check
 
   lint:
@@ -27,6 +28,7 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: latest
+      - run: deno install
       - run: deno lint
 
   test:
@@ -37,5 +39,6 @@ jobs:
         with:
           deno-version: latest
       - run: docker compose up -d
+      - run: deno install
       - run: deno task --filter server prisma:generate
       - run: deno test -A
