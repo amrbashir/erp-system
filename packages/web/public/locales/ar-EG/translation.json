@@ -55,6 +55,15 @@
     "pricing": {
       "purchase": "سعر الشراء",
       "selling": "سعر البيع"
+    },
+    "pagination": {
+      "of": "من",
+      "rowsPerPage": "عدد الصفوف لكل صفحة",
+      "nextPage": "الصفحة التالية",
+      "previousPage": "الصفحة السابقة",
+      "firstPage": "الصفحة الأولى",
+      "lastPage": "الصفحة الأخيرة",
+      "page": "الصفحة"
     }
   },
 

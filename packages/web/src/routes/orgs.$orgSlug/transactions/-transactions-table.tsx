@@ -11,10 +11,11 @@ import {
 import type { TransactionWithRelations } from "@erp-system/server/transaction/transaction.dto.ts";
 
 import { EmptyTable } from "@/components/empty-table.tsx";
-import { ButtonLink } from "@/components/ui/ButtonLink.tsx";
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import { formatDate } from "@/utils/formatDate.ts";
 import { formatMoney } from "@/utils/formatMoney.ts";
+
+import { ButtonLink } from "../../../components/ui/button-link.tsx";
 
 export function TransactionsTable({
   transactions,

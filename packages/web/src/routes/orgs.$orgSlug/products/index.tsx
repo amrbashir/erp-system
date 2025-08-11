@@ -19,7 +19,7 @@ import { trpc } from "@/trpc.ts";
 import { formatDate } from "@/utils/formatDate.ts";
 import { formatMoney } from "@/utils/formatMoney.ts";
 
-import { ButtonLink } from "../../../components/ui/ButtonLink.tsx";
+import { ButtonLink } from "../../../components/ui/button-link.tsx";
 import { EditProductDialog } from "./-edit-product-dialog.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/products/")({

@@ -1,8 +1,13 @@
 import z from "zod";
 
-export const PaginationDto = z.object({
-  skip: z.number().default(0),
-  take: z.number().default(30),
-});
+export const PaginationDto = z
+  .object({
+    pageIndex: z.number().default(0),
+    pageSize: z.number().default(50),
+  })
+  .transform((data) => ({
+    skip: data.pageIndex * data.pageSize,
+    take: data.pageSize,
+  }));
 
 export type PaginationDto = z.infer<typeof PaginationDto>;

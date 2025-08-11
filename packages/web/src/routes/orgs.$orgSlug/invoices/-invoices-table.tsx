@@ -12,10 +12,11 @@ import { cn } from "@/shadcn/lib/utils.ts";
 import type { InvoiceWithRelations } from "@erp-system/server/invoice/invoice.dto.ts";
 
 import { EmptyTable } from "@/components/empty-table.tsx";
-import { ButtonLink } from "@/components/ui/ButtonLink.tsx";
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import { formatDate } from "@/utils/formatDate.ts";
 import { formatMoney } from "@/utils/formatMoney.ts";
+
+import { ButtonLink } from "../../../components/ui/button-link.tsx";
 
 export function InvoicesTable({ invoices }: { invoices: InvoiceWithRelations[] | undefined }) {
   const { t } = useTranslation();

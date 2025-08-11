@@ -8,8 +8,9 @@ import type * as React from "react";
 import type { AuthProviderState } from "@/providers/auth.tsx";
 import { NotFound404 } from "@/components/404.tsx";
 import { Header } from "@/components/header.tsx";
-import { ButtonLink } from "@/components/ui/ButtonLink.tsx";
 import i18n from "@/i18n.ts";
+
+import { ButtonLink } from "../components/ui/button-link.tsx";
 
 interface RouterContext {
   auth: AuthProviderState;

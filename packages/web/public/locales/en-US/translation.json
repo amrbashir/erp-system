@@ -55,6 +55,15 @@
     "pricing": {
       "purchase": "Purchase $t(common.form.price)",
       "selling": "Selling $t(common.form.price)"
+    },
+    "pagination": {
+      "of": "of",
+      "rowsPerPage": "Rows per page",
+      "nextPage": "Next page",
+      "previousPage": "Previous page",
+      "firstPage": "First page",
+      "lastPage": "Last page",
+      "page": "Page"
     }
   },
 
