@@ -17,6 +17,7 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: latest
+      - run: deno install
       - run: deno task --filter server prisma:generate
       - run: deno run -A ./packages/server/scripts/cleanup-db.ts
         env:
