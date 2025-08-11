@@ -3,7 +3,7 @@ import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { Loader2Icon, MinusIcon, PlusIcon } from "lucide-react";
-import { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button.tsx";
 import {
@@ -37,7 +37,7 @@ export function PayOrCollectMoneyDialog({
   const client = useQueryClient();
   const router = useRouter();
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const {
     mutateAsync: payOrCollectMoney,

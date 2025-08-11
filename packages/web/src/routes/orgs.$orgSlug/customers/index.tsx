@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { createColumnHelper } from "@tanstack/react-table";
 import { UserIcon } from "lucide-react";
-import { useMemo } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { DataTable } from "@/components/ui/data-table.tsx";
@@ -30,12 +30,11 @@ function RouteComponent() {
   const { data: customers = [] } = useQuery(trpc.orgs.customers.getAll.queryOptions({ orgSlug }));
 
   const columnHelper = createColumnHelper<Customer>();
-  const columns = useMemo(
+  const columns = React.useMemo(
     () => [
       {
         accessorKey: "id",
         header: t("customer.id"),
-        enableSorting: false,
       },
       {
         accessorKey: "name",
@@ -55,10 +54,8 @@ function RouteComponent() {
       }),
       columnHelper.display({
         id: "actions",
-        meta: {
-          className: "text-end",
-        },
-        header: () => null,
+        enableSorting: false,
+        meta: { className: "text-end" },
         cell: ({ row }) => (
           <ButtonLink
             variant="link"

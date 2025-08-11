@@ -1,16 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { createColumnHelper } from "@tanstack/react-table";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/components/ui/card.tsx";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/shadcn/components/ui/table.tsx";
+import { Table, TableBody, TableCell, TableRow } from "@/shadcn/components/ui/table.tsx";
 import { cn } from "@/shadcn/lib/utils.ts";
 
+import { DataTable } from "@/components/ui/data-table.tsx";
 import i18n from "@/i18n.ts";
 import { trpcClient } from "@/trpc.ts";
 import { formatDate } from "@/utils/formatDate.ts";
@@ -30,6 +26,41 @@ function RouteComponent() {
   const { t } = useTranslation();
 
   if (!invoice) return null;
+
+  const columnHelper = createColumnHelper<any>();
+  const itemsColumns = React.useMemo(
+    () => [
+      {
+        id: "index",
+        header: t("common.ui.number"),
+        cell: (info: any) => info.row.index + 1,
+      },
+      { accessorKey: "barcode", header: t("common.form.barcode") },
+      { accessorKey: "description", header: t("common.form.description") },
+      columnHelper.accessor("price", {
+        header: t("common.form.price"),
+        cell: (info) => formatMoney(info.getValue()),
+      }),
+      { accessorKey: "quantity", header: t("common.form.quantity") },
+      columnHelper.accessor("discountPercent", {
+        header: t("common.form.discountPercent"),
+        cell: (info) => `${info.getValue()}%`,
+      }),
+      columnHelper.accessor("discountAmount", {
+        header: t("common.form.discountAmount"),
+        cell: (info) => formatMoney(info.getValue()),
+      }),
+      columnHelper.accessor("subtotal", {
+        header: t("common.form.subtotal"),
+        cell: (info) => formatMoney(info.getValue()),
+      }),
+      columnHelper.accessor("total", {
+        header: t("common.form.total"),
+        cell: (info) => <span className="font-medium">{formatMoney(info.getValue())}</span>,
+      }),
+    ],
+    [t],
+  );
 
   return (
     <div className="p-4 gap-4 flex flex-col">
@@ -99,38 +130,7 @@ function RouteComponent() {
         </CardContent>
       </Card>
 
-      <div className="rounded border">
-        <Table>
-          <TableHeader className="bg-muted">
-            <TableRow className="*:font-bold">
-              <TableHead>{t("common.ui.number")}</TableHead>
-              <TableHead>{t("common.form.barcode")}</TableHead>
-              <TableHead>{t("common.form.description")}</TableHead>
-              <TableHead>{t("common.form.price")}</TableHead>
-              <TableHead>{t("common.form.quantity")}</TableHead>
-              <TableHead>{t("common.form.discountPercent")}</TableHead>
-              <TableHead>{t("common.form.discountAmount")}</TableHead>
-              <TableHead>{t("common.form.subtotal")}</TableHead>
-              <TableHead>{t("common.form.total")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {invoice.items.map((item, index) => (
-              <TableRow key={index}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{item.barcode}</TableCell>
-                <TableCell>{item.description}</TableCell>
-                <TableCell>{formatMoney(item.price)}</TableCell>
-                <TableCell>{item.quantity}</TableCell>
-                <TableCell>{item.discountPercent}%</TableCell>
-                <TableCell>{formatMoney(item.discountAmount)}</TableCell>
-                <TableCell>{formatMoney(item.subtotal)}</TableCell>
-                <TableCell className="font-medium">{formatMoney(item.total)}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable columns={itemsColumns} data={invoice.items ?? []} />
     </div>
   );
 }

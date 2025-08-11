@@ -2,7 +2,7 @@ import { UpdateProductDto } from "@erp-system/server/product/product.dto.ts";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { EditIcon, Loader2Icon } from "lucide-react";
-import { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button.tsx";
 import {
@@ -31,13 +31,15 @@ export function EditProductDialog({
   product,
   iconOnly = false,
   asMenuItem = false,
+  shortLabel = false,
 }: {
   product: Product;
   iconOnly?: boolean;
   asMenuItem?: boolean;
+  shortLabel?: boolean;
 }) {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
   const { orgSlug } = useAuthUser();
   const client = useQueryClient();
 
@@ -80,7 +82,7 @@ export function EditProductDialog({
   const Trigger = (
     <Button variant="ghost" className={cn(asMenuItem && "w-full h-full justify-start")}>
       {iconOnly && <EditIcon />}
-      {actionLabel}
+      {shortLabel ? actionLabelShort : actionLabel}
     </Button>
   );
 

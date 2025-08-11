@@ -2,7 +2,7 @@ import { CreateExpenseDto } from "@erp-system/server/expense/expense.dto.ts";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, PlusIcon } from "lucide-react";
-import { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/shadcn/components/ui/button.tsx";
 import {
@@ -27,7 +27,7 @@ import { trpc } from "@/trpc.ts";
 
 export function AddExpenseDialog() {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
   const { orgSlug } = useAuthUser();
   const client = useQueryClient();
 
