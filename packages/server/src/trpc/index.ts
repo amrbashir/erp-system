@@ -14,21 +14,21 @@ import { UserService } from "@/user/user.service.ts";
 
 import { PrismaClient } from "../prisma/client.ts";
 
+const prisma = new PrismaClient();
+const orgService = new OrgService(prisma);
+const userService = new UserService(prisma);
+const authService = new AuthService(prisma, userService);
+const customerService = new CustomerService(prisma);
+const expenseService = new ExpenseService(prisma);
+const productService = new ProductService(prisma);
+const transactionService = new TransactionService(prisma);
+const invoiceService = new InvoiceService(prisma);
+
 export const createContext = ({
   req,
   resHeaders,
   reqInfo,
 }: FetchCreateContextFnOptions & { reqInfo: Deno.ServeHandlerInfo<Deno.Addr> }) => {
-  const prisma = new PrismaClient();
-  const orgService = new OrgService(prisma);
-  const userService = new UserService(prisma);
-  const authService = new AuthService(prisma, userService);
-  const customerService = new CustomerService(prisma);
-  const expenseService = new ExpenseService(prisma);
-  const productService = new ProductService(prisma);
-  const transactionService = new TransactionService(prisma);
-  const invoiceService = new InvoiceService(prisma);
-
   return {
     prisma,
     orgService,

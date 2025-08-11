@@ -3,6 +3,9 @@ model Session {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+  ipAddress String?
+  userAgent String?
+  expiresAt DateTime
 
   @@map("sessions")
 }
