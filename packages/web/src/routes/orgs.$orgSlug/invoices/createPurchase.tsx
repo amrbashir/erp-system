@@ -1,7 +1,8 @@
 import { CreatePurchaseInvoiceDto } from "@erp-system/server/invoice/invoice.dto.ts";
-import { AnyFieldApi, useForm } from "@tanstack/react-form";
+import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { ParseKeys } from "i18next";
 import { Loader2Icon, PlusIcon, XIcon } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
@@ -90,7 +91,7 @@ function RouteComponent() {
 
   const form = useForm({
     defaultValues: {
-      items: Array.from({ length: 30 }, () => ({ ...DEFAULT_INVOICE_ITEM })),
+      items: [{ ...DEFAULT_INVOICE_ITEM }],
       customerId: undefined,
       discountPercent: 0,
       discountAmount: "0",
@@ -113,13 +114,23 @@ function RouteComponent() {
 
       onSubmit: CreatePurchaseInvoiceDto,
     },
-    onSubmit: async ({ value, formApi }) => {
+    onSubmitInvalid({ formApi }) {
+      formApi.state.errors
+        .filter((e) => !!e)
+        .map((error) => Object.values(error))
+        .flat()
+        .flat()
+        .forEach((error) => {
+          // error.message might contain a namespace separator `:`,
+          // so we use a different separator as we don't care about namespaces here
+          toast.error(t(`errors.${error.message}` as ParseKeys, { nsSeparator: "`" }));
+        });
+    },
+    onSubmit: async ({ value: { items, ...value }, formApi }) => {
       await createPurchaseInvoice({
         ...value,
         orgSlug,
-        items: value.items.filter(
-          (item) => !!item.productId || !!item.description || !!item.barcode,
-        ),
+        items: items.filter((item) => !!item.productId || !!item.barcode || !!item.description),
       });
 
       if (createPurchaseInvoiceIsError) return;
@@ -129,33 +140,6 @@ function RouteComponent() {
       formApi.reset();
     },
   });
-
-  // Memoize the product selection callbacks to prevent unnecessary re-renders
-  const handleBarcodeProductSelect = React.useCallback(
-    (barcode: string, field: AnyFieldApi) => {
-      const product = productsByBarcode.get(barcode);
-      if (!product) return;
-      field.handleChange({
-        ...DEFAULT_INVOICE_ITEM,
-        ...product,
-        productId: product.id,
-      });
-    },
-    [productsByBarcode],
-  );
-
-  const handleDescriptionProductSelect = React.useCallback(
-    (description: string, field: AnyFieldApi) => {
-      const product = productsByDescription.get(description);
-      if (!product) return;
-      field.handleChange({
-        ...DEFAULT_INVOICE_ITEM,
-        ...product,
-        productId: product.id,
-      });
-    },
-    [productsByDescription],
-  );
 
   const InvoiceHeader = () => (
     <div className="h-fit flex flex-col md:flex-row md:justify-between gap-2">
@@ -227,7 +211,7 @@ function RouteComponent() {
     </Button>
   );
 
-  const InvoiceTableRow = ({ index }: { index: number }) => {
+  const InvoiceTableRow = ({ index, onRemoveRow }: { index: number; onRemoveRow: () => void }) => {
     return (
       <form.Field
         name={`items[${index}]`}
@@ -247,11 +231,9 @@ function RouteComponent() {
           );
 
           return (
-            <TableRow className="*:not-last:border-e">
+            <TableRow className="last:border-b! *:not-last:border-e">
               <TableCell className="p-0 w-0">
-                <ResetItemButton
-                  onClick={() => itemField.handleChange({ ...DEFAULT_INVOICE_ITEM })}
-                />
+                <ResetItemButton onClick={onRemoveRow} />
               </TableCell>
               <TableCell>{index + 1}</TableCell>
               <TableCell className="p-0">
@@ -263,7 +245,18 @@ function RouteComponent() {
                       items={productsByBarcodeArray}
                       value={field.state.value}
                       onInputValueChange={(value: string) => field.handleChange(value)}
-                      onItemSelect={(barcode) => handleBarcodeProductSelect(barcode, itemField)}
+                      onItemSelect={(barcode) => {
+                        const product = productsByBarcode.get(barcode);
+                        if (!product) return;
+                        itemField.handleChange({
+                          ...DEFAULT_INVOICE_ITEM,
+                          ...product,
+                          productId: product.id,
+                          barcode: product.barcode ?? undefined,
+                          purchasePrice: product.purchasePrice.toString(),
+                          sellingPrice: product.sellingPrice.toString(),
+                        });
+                      }}
                     />
                   )}
                 />
@@ -277,9 +270,18 @@ function RouteComponent() {
                       items={productsByDescriptionArray}
                       value={field.state.value}
                       onInputValueChange={(value: string) => field.handleChange(value)}
-                      onItemSelect={(description) =>
-                        handleDescriptionProductSelect(description, itemField)
-                      }
+                      onItemSelect={(description) => {
+                        const product = productsByDescription.get(description);
+                        if (!product) return;
+                        itemField.handleChange({
+                          ...DEFAULT_INVOICE_ITEM,
+                          ...product,
+                          productId: product.id,
+                          barcode: product.barcode ?? undefined,
+                          purchasePrice: product.purchasePrice.toString(),
+                          sellingPrice: product.sellingPrice.toString(),
+                        });
+                      }}
                     />
                   )}
                 />
@@ -406,7 +408,17 @@ function RouteComponent() {
               children={(field) => (
                 <>
                   {field.state.value.map((_, index) => (
-                    <InvoiceTableRow key={index} index={index} />
+                    <InvoiceTableRow
+                      key={index}
+                      index={index}
+                      onRemoveRow={() => {
+                        field.removeValue(index);
+                        // Ensure at least one item remains
+                        if (field.state.value.length === 0) {
+                          field.pushValue({ ...DEFAULT_INVOICE_ITEM });
+                        }
+                      }}
+                    />
                   ))}
 
                   <AddNewRowButton onClick={() => field.pushValue({ ...DEFAULT_INVOICE_ITEM })} />

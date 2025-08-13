@@ -81,7 +81,9 @@ export function ActionsDropdownMenu({ actions }: { actions: (Action | ComponentA
         <DropdownMenuContent>
           {actions.map((action, index) =>
             "Component" in action ? (
-              <DropdownMenuItem asChild>{action.Component}</DropdownMenuItem>
+              <DropdownMenuItem key={index} asChild>
+                {action.Component}
+              </DropdownMenuItem>
             ) : (
               <DropdownMenuItem
                 key={index}
