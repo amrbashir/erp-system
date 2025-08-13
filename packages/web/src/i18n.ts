@@ -13,7 +13,7 @@ const httpBackendOptions = {
   loadPath: "/locales/{{lng}}/{{ns}}.json",
 };
 const localStorageBackendOptions = {
-  defaultVersion: "1.0.0",
+  defaultVersion: "1.0.1",
 };
 
 const backends = isDevelopment ? [HttpBackend] : [LocalStorageBackend, HttpBackend];
