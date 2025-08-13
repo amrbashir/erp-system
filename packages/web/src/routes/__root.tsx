@@ -58,7 +58,7 @@ function RouteComponent() {
       <HeadContent />
       <Header />
       <Outlet />
-      <Toaster position={i18n.dir() === "rtl" ? "bottom-left" : "bottom-right"} />
+      <Toaster richColors position={i18n.dir() === "rtl" ? "bottom-left" : "bottom-right"} />
     </>
   );
 }

@@ -57,7 +57,7 @@ type CreateSaleInvoice = Omit<z.input<typeof CreateSaleInvoiceDto>, "items"> & {
   items: CreateSaleInvoiceItem[];
 };
 
-const NULL_UUID = "{00000000-0000-0000-0000-000000000000}";
+const NULL_UUID = "00000000-0000-0000-0000-000000000000";
 
 const DEFAULT_INVOICE_ITEM = {
   product: {
