@@ -15,6 +15,8 @@ export function ErrorElement({
       {"- "}
       {t(`errors.${error.message}` as ParseKeys, {
         field: fieldName,
+        // error.message might contain a namespace separator `:`,
+        // so we use a different separator as we don't care about namespaces here
         nsSeparator: "`",
       })}
     </p>

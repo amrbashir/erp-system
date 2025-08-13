@@ -243,6 +243,7 @@
       "404": "غير موجود",
       "500": "خطأ داخلي في الخادم"
     },
+
     "NetworkError when attempting to fetch resource": "خطأ في الشبكة عند محاولة جلب الموارد",
     "Username must be alphanumeric": "يجب أن يحتوي على أحرف وأرقام فقط",
     "Password must be ASCII": "يجب أن تحتوي على أحرف وأرقام ورموز خاصة فقط",

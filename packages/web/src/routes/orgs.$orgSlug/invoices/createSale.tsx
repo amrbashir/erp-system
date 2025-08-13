@@ -5,6 +5,7 @@ import {
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { ParseKeys } from "i18next";
 import { Loader2Icon, XIcon } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
@@ -56,7 +57,7 @@ type CreateSaleInvoice = Omit<z.input<typeof CreateSaleInvoiceDto>, "items"> & {
   items: CreateSaleInvoiceItem[];
 };
 
-const NULL_UUID = "00000000-0000-0000-0000-000000000000";
+const NULL_UUID = "{00000000-0000-0000-0000-000000000000}";
 
 const DEFAULT_INVOICE_ITEM = {
   product: {
@@ -128,8 +129,17 @@ function RouteComponent() {
 
       onSubmit: CreateSaleInvoiceDto,
     },
-    onSubmitInvalid(props) {
-      console.log("Form submission failed with errors:", props);
+    onSubmitInvalid({ formApi }) {
+      formApi.state.errors
+        .filter((e) => !!e)
+        .map((error) => Object.values(error))
+        .flat()
+        .flat()
+        .forEach((error) => {
+          // error.message might contain a namespace separator `:`,
+          // so we use a different separator as we don't care about namespaces here
+          toast.error(t(`errors.${error.message}` as ParseKeys, { nsSeparator: "`" }));
+        });
     },
     onSubmit: async ({ value: { items, ...value }, formApi }) => {
       await createSaleInvoice({
