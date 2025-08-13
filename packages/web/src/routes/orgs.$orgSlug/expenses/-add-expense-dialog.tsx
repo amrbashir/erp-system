@@ -20,10 +20,11 @@ import { Label } from "@/shadcn/components/ui/label.tsx";
 
 import type z from "zod";
 
-import { FormErrors, FormFieldError } from "@/components/form-errors.tsx";
 import { InputNumpad } from "@/components/ui/input-numpad.tsx";
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import { trpc } from "@/trpc.ts";
+
+import { ErrorElement } from "../../../components/error-element.tsx";
 
 export function AddExpenseDialog() {
   const { t } = useTranslation();
@@ -48,10 +49,7 @@ export function AddExpenseDialog() {
     onSubmit: async ({ value, formApi }) => {
       await createExpense({ ...value, orgSlug });
 
-      if (createExpenseIsError) {
-        formApi.setErrorMap({ onSubmit: createExpenseError as any });
-        return;
-      }
+      if (createExpenseIsError) return;
 
       client.invalidateQueries({ queryKey: trpc.orgs.expenses.getAll.queryKey() });
 
@@ -87,37 +85,51 @@ export function AddExpenseDialog() {
         >
           <form.Field
             name="description"
-            children={(field) => (
-              <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`common.form.${field.name}`)}</Label>
+            children={(field) => {
+              const fieldName = t(`common.form.${field.name}`);
+              return (
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor={field.name}>{fieldName}</Label>
 
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                <FormFieldError field={field} />
-              </div>
-            )}
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                  {field.state.meta.errors
+                    .filter((e) => !!e)
+                    .map((error, index) => (
+                      <ErrorElement key={index} error={error} fieldName={fieldName} />
+                    ))}
+                </div>
+              );
+            }}
           />
           <form.Field
             name="amount"
-            children={(field) => (
-              <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`common.form.${field.name}`)}</Label>
-                <InputNumpad
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                <FormFieldError field={field} />
-              </div>
-            )}
+            children={(field) => {
+              const fieldName = t(`common.form.${field.name}`);
+              return (
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor={field.name}>{fieldName}</Label>
+                  <InputNumpad
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                  {field.state.meta.errors
+                    .filter((e) => !!e)
+                    .map((error, index) => (
+                      <ErrorElement key={index} error={error} fieldName={fieldName} />
+                    ))}
+                </div>
+              );
+            }}
           />
 
-          <form.Subscribe children={(state) => <FormErrors formState={state} />} />
+          {createExpenseError && <ErrorElement error={createExpenseError} />}
 
           <DialogFooter>
             <form.Subscribe

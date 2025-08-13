@@ -1,3 +1,4 @@
+import { InvoiceItem } from "@erp-system/server/prisma";
 import { createFileRoute } from "@tanstack/react-router";
 import { createColumnHelper } from "@tanstack/react-table";
 import React from "react";
@@ -27,14 +28,14 @@ function RouteComponent() {
 
   if (!invoice) return null;
 
-  const columnHelper = createColumnHelper<any>();
+  const columnHelper = createColumnHelper<InvoiceItem>();
   const itemsColumns = React.useMemo(
     () => [
-      {
+      columnHelper.display({
         id: "index",
         header: t("common.ui.number"),
-        cell: (info: any) => info.row.index + 1,
-      },
+        cell: (info) => info.row.index + 1,
+      }),
       { accessorKey: "barcode", header: t("common.form.barcode") },
       { accessorKey: "description", header: t("common.form.description") },
       columnHelper.accessor("price", {

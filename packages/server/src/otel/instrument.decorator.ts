@@ -3,8 +3,11 @@ import { SpanStatusCode } from "@opentelemetry/api";
 import { tracer } from "../otel/tracer.ts";
 import { toOtelException } from "./otel-exception.ts";
 
-export function OTelInstrument(method: any, { name }: any) {
-  return function (this: any, ...args: any[]) {
+export function OTelInstrument(
+  method: (...args: unknown[]) => unknown,
+  { name }: { name: string },
+) {
+  return function (this: object, ...args: unknown[]) {
     const className = this.constructor.name;
     const spanName = `${className}.${name}`;
 

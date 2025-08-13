@@ -12,7 +12,7 @@ import { formatMoney } from "@/utils/formatMoney.ts";
 
 import { ButtonLink } from "../../../components/ui/button-link.tsx";
 
-export function InvoicesTable({ invoices }: { invoices: InvoiceWithRelations[] | undefined }) {
+export function InvoicesTable({ invoices = [] }: { invoices: InvoiceWithRelations[] | undefined }) {
   const { t } = useTranslation();
   const { orgSlug } = useAuthUser();
 
@@ -93,5 +93,5 @@ export function InvoicesTable({ invoices }: { invoices: InvoiceWithRelations[] |
     [t, orgSlug],
   );
 
-  return <DataTable columns={columns} data={invoices ?? []} />;
+  return <DataTable columns={columns} data={invoices} />;
 }

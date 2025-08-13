@@ -16,7 +16,10 @@ export const invoiceRouter = router({
       }),
     )
     .query(({ ctx, input }) =>
-      ctx.invoiceService.getAllInvoices(input.orgSlug, { pagination: input.pagination }),
+      ctx.invoiceService.getAllInvoices(input.orgSlug, {
+        pagination: input.pagination,
+        where: { type: input.type },
+      }),
     ),
 
   createSale: authenticatedOrgProcedure

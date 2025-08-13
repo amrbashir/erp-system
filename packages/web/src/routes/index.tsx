@@ -21,7 +21,7 @@ import { Separator } from "@/shadcn/components/ui/separator.tsx";
 
 import type z from "zod";
 
-import { FormErrors, FormFieldError } from "@/components/form-errors.tsx";
+import { ErrorElement } from "@/components/error-element.tsx";
 import { useAuth } from "@/providers/auth.tsx";
 import { trpc } from "@/trpc.ts";
 
@@ -101,14 +101,11 @@ function LoginForm({
       username: username || "",
       password: "",
     },
-    onSubmit: async ({ value, formApi }) => {
+    onSubmit: async ({ value }) => {
       const { username, password, orgSlug } = value;
       await login(username, password, orgSlug);
 
-      if (loginIsError) {
-        formApi.setErrorMap({ onSubmit: loginError as any });
-        return;
-      }
+      if (loginIsError) return;
 
       navigate({ to: redirect || "/orgs/$orgSlug", params: { orgSlug }, reloadDocument: true });
     },
@@ -185,7 +182,7 @@ function LoginForm({
             />
           </div>
 
-          <form.Subscribe children={(state) => <FormErrors formState={state} />} />
+          {loginError && <ErrorElement error={loginError} />}
 
           <form.Subscribe
             selector={(state) => state.isSubmitting}
@@ -233,13 +230,10 @@ function CreateNewOrganizationCard({
         }
       },
     },
-    onSubmit: async ({ value, formApi }) => {
+    onSubmit: async ({ value }) => {
       await createOrg(value);
 
-      if (createOrgIsError) {
-        formApi.setErrorMap({ onSubmit: createOrgError as any });
-        return;
-      }
+      if (createOrgIsError) return;
 
       toast.success(t("org.createdSuccessfully"));
 
@@ -268,77 +262,106 @@ function CreateNewOrganizationCard({
           <div className="flex flex-col gap-2">
             <form.Field
               name="name"
-              children={(field) => (
-                <>
-                  <Label htmlFor={field.name}>{t("org.name")}</Label>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                  />
-                  <FormFieldError field={field} />
-                </>
-              )}
+              children={(field) => {
+                const fieldName = t("org.name");
+                return (
+                  <>
+                    <Label htmlFor={field.name}>{fieldName}</Label>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                    {field.state.meta.errors
+                      .filter((e) => !!e)
+                      .map((error, index) => (
+                        <ErrorElement key={index} error={error} fieldName={fieldName} />
+                      ))}
+                  </>
+                );
+              }}
             />
           </div>
 
           <div className="flex flex-col gap-2">
             <form.Field
               name="slug"
-              children={(field) => (
-                <>
-                  <Label htmlFor={field.name}>{t("org.slug")}</Label>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                  />
-                  <FormFieldError field={field} />
-                </>
-              )}
+              children={(field) => {
+                const fieldName = t("org.slug");
+                return (
+                  <>
+                    <Label htmlFor={field.name}>{fieldName}</Label>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                    {field.state.meta.errors
+                      .filter((e) => !!e)
+                      .map((error, index) => (
+                        <ErrorElement key={index} error={error} fieldName={fieldName} />
+                      ))}
+                  </>
+                );
+              }}
             />
           </div>
 
           <div className="flex flex-col gap-2">
             <form.Field
               name="username"
-              children={(field) => (
-                <>
-                  <Label htmlFor={field.name}>{t("org.username")}</Label>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                  />
-                  <FormFieldError field={field} />
-                </>
-              )}
+              children={(field) => {
+                const fieldName = t("org.username");
+                return (
+                  <>
+                    <Label htmlFor={field.name}>{fieldName}</Label>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                    {field.state.meta.errors
+                      .filter((e) => !!e)
+                      .map((error, index) => (
+                        <ErrorElement key={index} error={error} fieldName={fieldName} />
+                      ))}
+                  </>
+                );
+              }}
             />
           </div>
 
           <div className="flex flex-col gap-2">
             <form.Field
               name="password"
-              children={(field) => (
-                <>
-                  <Label htmlFor={field.name}>{t("org.password")}</Label>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    type="password"
-                  />
-                  <FormFieldError field={field} />
-                </>
-              )}
+              children={(field) => {
+                const fieldName = t("org.password");
+
+                return (
+                  <>
+                    <Label htmlFor={field.name}>{fieldName}</Label>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      type="password"
+                    />
+                    {field.state.meta.errors
+                      .filter((e) => !!e)
+                      .map((error, index) => (
+                        <ErrorElement key={index} error={error} fieldName={fieldName} />
+                      ))}
+                  </>
+                );
+              }}
             />
           </div>
 
-          <form.Subscribe children={(state) => <FormErrors formState={state} />} />
+          {createOrgError && <ErrorElement error={createOrgError} />}
 
           <form.Subscribe
             selector={(state) => state.isSubmitting}

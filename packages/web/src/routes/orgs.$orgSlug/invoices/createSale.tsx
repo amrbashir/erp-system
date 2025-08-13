@@ -1,11 +1,15 @@
-import { CreateSaleInvoiceDto } from "@erp-system/server/invoice/invoice.dto.ts";
+import {
+  CreateSaleInvoiceDto,
+  CreateSaleInvoiceItemDto,
+} from "@erp-system/server/invoice/invoice.dto.ts";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Loader2Icon, PlusIcon, XIcon } from "lucide-react";
+import { Loader2Icon, XIcon } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import z from "zod";
 import { Button } from "@/shadcn/components/ui/button.tsx";
 import {
   Table,
@@ -16,11 +20,9 @@ import {
   TableRow,
 } from "@/shadcn/components/ui/table.tsx";
 
-import type { CreateSaleInvoiceItemDto } from "@erp-system/server/invoice/invoice.dto.ts";
 import type { Product } from "@erp-system/server/prisma/index.ts";
-import type z from "zod";
 
-import { FormErrors } from "@/components/form-errors.tsx";
+import { ErrorElement } from "@/components/error-element.tsx";
 import { Hotkey } from "@/components/ui/hotkey.tsx";
 import { InputNumpad } from "@/components/ui/input-numpad.tsx";
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
@@ -54,8 +56,15 @@ type CreateSaleInvoice = Omit<z.input<typeof CreateSaleInvoiceDto>, "items"> & {
   items: CreateSaleInvoiceItem[];
 };
 
+const NULL_UUID = "00000000-0000-0000-0000-000000000000";
+
 const DEFAULT_INVOICE_ITEM = {
-  productId: "",
+  product: {
+    id: NULL_UUID,
+    description: "",
+    barcode: "",
+  } as Product,
+  productId: NULL_UUID,
   price: "0",
   quantity: 1,
   discountPercent: 0,
@@ -96,7 +105,7 @@ function RouteComponent() {
 
   const form = useForm({
     defaultValues: {
-      items: Array.from({ length: 30 }, () => ({ ...DEFAULT_INVOICE_ITEM })),
+      items: [{ ...DEFAULT_INVOICE_ITEM }],
       customerId: undefined,
       discountPercent: 0,
       discountAmount: "0",
@@ -119,48 +128,23 @@ function RouteComponent() {
 
       onSubmit: CreateSaleInvoiceDto,
     },
-    onSubmit: async ({ value, formApi }) => {
-      await createSaleInvoice({ ...value, orgSlug });
+    onSubmitInvalid(props) {
+      console.log("Form submission failed with errors:", props);
+    },
+    onSubmit: async ({ value: { items, ...value }, formApi }) => {
+      await createSaleInvoice({
+        ...value,
+        orgSlug,
+        items: items.filter((item) => item.productId !== NULL_UUID),
+      });
 
-      if (createSaleInvoiceIsError) {
-        formApi.setErrorMap({ onSubmit: createSaleInvoiceError as any });
-        return;
-      }
+      if (createSaleInvoiceIsError) return;
 
       toast.success(t("invoice.createdSuccessfully"));
       client.invalidateQueries({ queryKey: ["invoices", orgSlug, "SALE"] });
       formApi.reset();
     },
   });
-
-  // Memoize the product selection callbacks to prevent unnecessary re-renders
-  const handleBarcodeProductSelect = React.useCallback(
-    (barcode: string, field: any) => {
-      const product = productsByBarcode.get(barcode);
-      if (!product) return;
-      field.setValue({
-        ...DEFAULT_INVOICE_ITEM,
-        ...product,
-        productId: product.id,
-        price: product.sellingPrice,
-      });
-    },
-    [productsByBarcode],
-  );
-
-  const handleDescriptionProductSelect = React.useCallback(
-    (description: string, field: any) => {
-      const product = productsByDescription.get(description);
-      if (!product) return;
-      field.setValue({
-        ...DEFAULT_INVOICE_ITEM,
-        ...product,
-        productId: product.id,
-        price: product.sellingPrice,
-      });
-    },
-    [productsByDescription],
-  );
 
   const InvoiceHeader = () => (
     <div className="h-fit flex flex-col md:flex-row md:justify-between gap-2">
@@ -203,7 +187,7 @@ function RouteComponent() {
   );
 
   const InvoiceTableHeader = () => (
-    <TableHeader className="bg-muted sticky top-0 z-10">
+    <TableHeader className="sticky top-0 z-10">
       <TableRow className="*:font-bold">
         <TableHead></TableHead>
         <TableHead>{t("common.ui.number")}</TableHead>
@@ -231,7 +215,15 @@ function RouteComponent() {
     </Button>
   );
 
-  const InvoiceTableRow = ({ index }: { index: number }) => {
+  const InvoiceTableRow = ({
+    index,
+    onAddEmptyRow,
+    onRemoveRow,
+  }: {
+    index: number;
+    onAddEmptyRow: () => void;
+    onRemoveRow: () => void;
+  }) => {
     return (
       <form.Field
         name={`items[${index}]`}
@@ -251,9 +243,9 @@ function RouteComponent() {
           );
 
           return (
-            <TableRow className="*:not-last:border-e">
+            <TableRow className="last:border-b! *:not-last:border-e">
               <TableCell className="p-0 w-0">
-                <ResetItemButton onClick={() => itemField.setValue({ ...DEFAULT_INVOICE_ITEM })} />
+                <ResetItemButton onClick={onRemoveRow} />
               </TableCell>
               <TableCell>{index + 1}</TableCell>
               <TableCell className="p-0">
@@ -264,7 +256,17 @@ function RouteComponent() {
                       items={productsByBarcodeArray}
                       value={field.state.value || ""}
                       onInputValueChange={(value: string) => field.handleChange(value)}
-                      onItemSelect={(barcode) => handleBarcodeProductSelect(barcode, itemField)}
+                      onItemSelect={(barcode) => {
+                        const product = productsByBarcode.get(barcode);
+                        if (!product) return;
+                        itemField.handleChange({
+                          ...DEFAULT_INVOICE_ITEM,
+                          product,
+                          productId: product.id,
+                          price: product.sellingPrice.toString(),
+                        });
+                        onAddEmptyRow();
+                      }}
                     />
                   )}
                 />
@@ -277,9 +279,17 @@ function RouteComponent() {
                       items={productsByDescriptionArray}
                       value={field.state.value}
                       onInputValueChange={(value: string) => field.handleChange(value)}
-                      onItemSelect={(description) =>
-                        handleDescriptionProductSelect(description, itemField)
-                      }
+                      onItemSelect={(description) => {
+                        const product = productsByDescription.get(description);
+                        if (!product) return;
+                        itemField.handleChange({
+                          ...DEFAULT_INVOICE_ITEM,
+                          product,
+                          productId: product.id,
+                          price: product.sellingPrice.toString(),
+                        });
+                        onAddEmptyRow();
+                      }}
                     />
                   )}
                 />
@@ -352,25 +362,6 @@ function RouteComponent() {
     );
   };
 
-  const AddNewRowButton = (props: React.ComponentProps<typeof Button>) => {
-    const { t } = useTranslation();
-    return (
-      <TableRow>
-        <TableCell colSpan={11} className="p-0">
-          <Button
-            type="button"
-            variant="ghost"
-            className="w-full rounded-none bg-secondary/50"
-            {...props}
-          >
-            <PlusIcon />
-            {t("invoice.addRow")}
-          </Button>
-        </TableCell>
-      </TableRow>
-    );
-  };
-
   return (
     <form
       className="h-full p-2 flex flex-col gap-2"
@@ -393,10 +384,26 @@ function RouteComponent() {
               children={(field) => (
                 <>
                   {field.state.value.map((_, index) => (
-                    <InvoiceTableRow key={index} index={index} />
+                    <InvoiceTableRow
+                      key={index}
+                      index={index}
+                      onAddEmptyRow={() => {
+                        // avoid adding an empty row if the last row already is empty row
+                        const items = field.state.value;
+                        const lastItem = items[items.length - 1];
+                        if (lastItem.productId !== NULL_UUID) {
+                          field.pushValue({ ...DEFAULT_INVOICE_ITEM });
+                        }
+                      }}
+                      onRemoveRow={() => {
+                        field.removeValue(index);
+                        // Ensure at least one item remains
+                        if (field.state.value.length === 0) {
+                          field.pushValue({ ...DEFAULT_INVOICE_ITEM });
+                        }
+                      }}
+                    />
                   ))}
-
-                  <AddNewRowButton onClick={() => field.pushValue({ ...DEFAULT_INVOICE_ITEM })} />
                 </>
               )}
             />
@@ -404,7 +411,7 @@ function RouteComponent() {
         </Table>
       </div>
 
-      <form.Subscribe children={(state) => <FormErrors formState={state} />} />
+      {createSaleInvoiceError && <ErrorElement error={createSaleInvoiceError} />}
 
       <InvoiceFooter invoiceType="SALE" form={form} />
     </form>

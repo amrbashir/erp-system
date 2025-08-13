@@ -5,6 +5,8 @@ import { ShoppingCartIcon } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import type { Expense } from "@erp-system/server/prisma";
+
 import { DataTable } from "@/components/ui/data-table.tsx";
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import i18n from "@/i18n.ts";
@@ -26,18 +28,9 @@ function RouteComponent() {
   const { orgSlug } = useAuthUser();
   const { t } = useTranslation();
 
-  const { data: expenses } = useQuery(trpc.orgs.expenses.getAll.queryOptions({ orgSlug }));
+  const { data: expenses = [] } = useQuery(trpc.orgs.expenses.getAll.queryOptions({ orgSlug }));
 
-  type ExpenseRow = {
-    id: string | number;
-    description: string;
-    amount: any;
-    transactionId: string | number | null;
-    cashier: { username: string };
-    createdAt: string | Date;
-  };
-
-  const columnHelper = createColumnHelper<ExpenseRow>();
+  const columnHelper = createColumnHelper<Expense>();
   const columns = React.useMemo(
     () => [
       columnHelper.display({
@@ -74,7 +67,7 @@ function RouteComponent() {
         <AddExpenseDialog />
       </div>
 
-      <DataTable columns={columns} data={(expenses as ExpenseRow[]) ?? []} />
+      <DataTable columns={columns} data={expenses} />
     </div>
   );
 }

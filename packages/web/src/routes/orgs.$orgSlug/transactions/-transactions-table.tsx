@@ -13,7 +13,7 @@ import { formatMoney } from "@/utils/formatMoney.ts";
 import { ButtonLink } from "../../../components/ui/button-link.tsx";
 
 export function TransactionsTable({
-  transactions,
+  transactions = [],
 }: {
   transactions: TransactionWithRelations[] | undefined;
 }) {
@@ -86,5 +86,5 @@ export function TransactionsTable({
     [orgSlug, t],
   );
 
-  return <DataTable columns={columns} data={transactions ?? []} />;
+  return <DataTable columns={columns} data={transactions} />;
 }

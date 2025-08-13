@@ -1,5 +1,5 @@
 import { CreatePurchaseInvoiceDto } from "@erp-system/server/invoice/invoice.dto.ts";
-import { useForm } from "@tanstack/react-form";
+import { AnyFieldApi, useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Loader2Icon, PlusIcon, XIcon } from "lucide-react";
@@ -18,7 +18,7 @@ import {
 
 import type z from "zod";
 
-import { FormErrors } from "@/components/form-errors.tsx";
+import { ErrorElement } from "@/components/error-element.tsx";
 import { Hotkey } from "@/components/ui/hotkey.tsx";
 import { InputNumpad } from "@/components/ui/input-numpad.tsx";
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
@@ -47,7 +47,7 @@ export const Route = createFileRoute("/orgs/$orgSlug/invoices/createPurchase")({
 
 const DEFAULT_INVOICE_ITEM = {
   productId: undefined,
-  barcode: undefined,
+  barcode: "",
   description: "",
   quantity: 1,
   purchasePrice: "0",
@@ -114,12 +114,15 @@ function RouteComponent() {
       onSubmit: CreatePurchaseInvoiceDto,
     },
     onSubmit: async ({ value, formApi }) => {
-      await createPurchaseInvoice({ ...value, orgSlug });
+      await createPurchaseInvoice({
+        ...value,
+        orgSlug,
+        items: value.items.filter(
+          (item) => !!item.productId || !!item.description || !!item.barcode,
+        ),
+      });
 
-      if (createPurchaseInvoiceIsError) {
-        formApi.setErrorMap({ onSubmit: createPurchaseInvoiceError as any });
-        return;
-      }
+      if (createPurchaseInvoiceIsError) return;
 
       toast.success(t("invoice.createdSuccessfully"));
       client.invalidateQueries({ queryKey: ["invoices", orgSlug, "PURCHASE"] });
@@ -129,10 +132,10 @@ function RouteComponent() {
 
   // Memoize the product selection callbacks to prevent unnecessary re-renders
   const handleBarcodeProductSelect = React.useCallback(
-    (barcode: string, field: any) => {
+    (barcode: string, field: AnyFieldApi) => {
       const product = productsByBarcode.get(barcode);
       if (!product) return;
-      field.setValue({
+      field.handleChange({
         ...DEFAULT_INVOICE_ITEM,
         ...product,
         productId: product.id,
@@ -142,10 +145,10 @@ function RouteComponent() {
   );
 
   const handleDescriptionProductSelect = React.useCallback(
-    (description: string, field: any) => {
+    (description: string, field: AnyFieldApi) => {
       const product = productsByDescription.get(description);
       if (!product) return;
-      field.setValue({
+      field.handleChange({
         ...DEFAULT_INVOICE_ITEM,
         ...product,
         productId: product.id,
@@ -195,7 +198,7 @@ function RouteComponent() {
   );
 
   const InvoiceTableHeader = () => (
-    <TableHeader className="bg-muted sticky top-0 z-10">
+    <TableHeader className="sticky top-0 z-10">
       <TableRow className="*:font-bold">
         <TableHead></TableHead>
         <TableHead>{t("common.ui.number")}</TableHead>
@@ -246,7 +249,9 @@ function RouteComponent() {
           return (
             <TableRow className="*:not-last:border-e">
               <TableCell className="p-0 w-0">
-                <ResetItemButton onClick={() => itemField.setValue({ ...DEFAULT_INVOICE_ITEM })} />
+                <ResetItemButton
+                  onClick={() => itemField.handleChange({ ...DEFAULT_INVOICE_ITEM })}
+                />
               </TableCell>
               <TableCell>{index + 1}</TableCell>
               <TableCell className="p-0">
@@ -412,7 +417,7 @@ function RouteComponent() {
         </Table>
       </div>
 
-      <form.Subscribe children={(state) => <FormErrors formState={state} />} />
+      {createPurchaseInvoiceError && <ErrorElement error={createPurchaseInvoiceError} />}
 
       <InvoiceFooter invoiceType="PURCHASE" form={form} />
     </form>

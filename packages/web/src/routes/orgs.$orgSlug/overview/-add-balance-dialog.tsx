@@ -19,7 +19,7 @@ import { Label } from "@/shadcn/components/ui/label.tsx";
 
 import type z from "zod";
 
-import { FormErrors, FormFieldError } from "@/components/form-errors.tsx";
+import { ErrorElement } from "@/components/error-element.tsx";
 import { InputNumpad } from "@/components/ui/input-numpad.tsx";
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import { trpc } from "@/trpc.ts";
@@ -46,10 +46,7 @@ export function AddBalanceDialog({ shortLabel = false }: { shortLabel?: boolean 
     onSubmit: async ({ value, formApi }) => {
       await addBalance({ ...value, orgSlug });
 
-      if (addBalanceIsError) {
-        formApi.setErrorMap({ onSubmit: addBalanceError as any });
-        return;
-      }
+      if (addBalanceIsError) return;
 
       client.invalidateQueries({ queryKey: trpc.orgs.getStatistics.queryKey() });
       formApi.reset();
@@ -84,21 +81,28 @@ export function AddBalanceDialog({ shortLabel = false }: { shortLabel?: boolean 
         >
           <form.Field
             name="amount"
-            children={(field) => (
-              <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`common.form.${field.name}`)}</Label>
-                <InputNumpad
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                <FormFieldError field={field} />
-              </div>
-            )}
+            children={(field) => {
+              const fieldName = t(`common.form.${field.name}`);
+              return (
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor={field.name}>{fieldName}</Label>
+                  <InputNumpad
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                  {field.state.meta.errors
+                    .filter((e) => !!e)
+                    .map((error, index) => (
+                      <ErrorElement key={index} error={error} fieldName={fieldName} />
+                    ))}
+                </div>
+              );
+            }}
           />
 
-          <form.Subscribe children={(state) => <FormErrors formState={state} />} />
+          {addBalanceError && <ErrorElement error={addBalanceError} />}
 
           <DialogFooter>
             <form.Subscribe

@@ -20,7 +20,7 @@ import { Label } from "@/shadcn/components/ui/label.tsx";
 
 import type z from "zod";
 
-import { FormErrors, FormFieldError } from "@/components/form-errors.tsx";
+import { ErrorElement } from "@/components/error-element.tsx";
 import { InputNumpad } from "@/components/ui/input-numpad.tsx";
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import { trpc } from "@/trpc.ts";
@@ -52,13 +52,9 @@ export function PayOrCollectMoneyDialog({
     validators: {
       onSubmit: MoneyTransactionDto,
     },
-    onSubmit: async ({ value, formApi }) => {
+    onSubmit: async ({ value }) => {
       await payOrCollectMoney({ ...value, orgSlug, customerId });
-
-      if (payOrCollectMoneyIsError) {
-        formApi.setErrorMap({ onSubmit: payOrCollectMoneyError as any });
-        return;
-      }
+      if (payOrCollectMoneyIsError) return;
 
       client.invalidateQueries({ queryKey: trpc.orgs.customers.getAll.queryKey() });
       router.invalidate({ filter: (r) => r.id === `/orgs/${orgSlug}/customers/${customerId}` });
@@ -100,21 +96,28 @@ export function PayOrCollectMoneyDialog({
         >
           <form.Field
             name="amount"
-            children={(field) => (
-              <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`common.form.${field.name}`)}</Label>
-                <InputNumpad
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                <FormFieldError field={field} />
-              </div>
-            )}
+            children={(field) => {
+              const fieldName = t(`common.form.${field.name}`);
+              return (
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor={field.name}>{fieldName}</Label>
+                  <InputNumpad
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                  {field.state.meta.errors
+                    .filter((e) => !!e)
+                    .map((error, index) => (
+                      <ErrorElement key={index} error={error} fieldName={fieldName} />
+                    ))}
+                </div>
+              );
+            }}
           />
 
-          <form.Subscribe children={(state) => <FormErrors formState={state} />} />
+          {payOrCollectMoneyError && <ErrorElement error={payOrCollectMoneyError} />}
 
           <DialogFooter>
             <form.Subscribe

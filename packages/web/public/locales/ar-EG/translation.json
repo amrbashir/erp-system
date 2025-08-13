@@ -218,22 +218,24 @@
     "users": {
       "cannotDeleteLastAdmin": "لا يمكن حذف آخر مستخدم مدير في المؤسسة",
       "cannotDeleteOwnAccount": "لا يمكنك حذف حسابك الخاص",
-      "usernameExists": "يوجد مستخدم بهذا الاسم في المؤسسة بالفعل",
-      "usernameFormat": "يجب أن يحتوي اسم المستخدم على أحرف وأرقام فقط"
+      "usernameExists": "يوجد مستخدم بهذا الاسم في المؤسسة بالفعل"
     },
     "organization": {
       "notFound": "المؤسسة بهذا المعرف غير موجودة",
-      "slugExists": "المؤسسة بهذا المعرف موجودة بالفعل"
+      "slugExists": "المؤسسة بهذا المعرف موجودة بالفعل",
+      "slugMustBeASCII": "يجب أن يكون معرف المؤسسة أحرفًا وأرقامًا و'-' فقط"
     },
     "customers": {
       "nameExists": "يوجد عميل بهذا الاسم بالفعل"
     },
-    "server": {
-      "internalError": "خطأ داخلي في الخادم"
-    },
     "invoice": {
       "mustHaveItems": "يجب أن تحتوي الفاتورة على عنصر واحد على الأقل"
     },
+    "products": {
+      "barcodeExists": "يوجد منتج بهذا الباركود بالفعل",
+      "descriptionExists": "يوجد منتج بهذا الوصف بالفعل"
+    },
+
     "statusCode": {
       "400": "طلب غير صالح",
       "401": "غير مصرح",
@@ -241,14 +243,11 @@
       "404": "غير موجود",
       "500": "خطأ داخلي في الخادم"
     },
-    "products": {
-      "barcodeExists": "يوجد منتج بهذا الباركود بالفعل",
-      "descriptionExists": "يوجد منتج بهذا الوصف بالفعل"
-    }
-  },
-
-  "validationErrors": {
-    "too_small": "يجب أن يحتوي {{field}} على {{minimum}} حروف على الأقل"
+    "NetworkError when attempting to fetch resource": "خطأ في الشبكة عند محاولة جلب الموارد",
+    "Username must be alphanumeric": "يجب أن يحتوي على أحرف وأرقام فقط",
+    "Password must be ASCII": "يجب أن تحتوي على أحرف وأرقام ورموز خاصة فقط",
+    "Too small: expected string to have >=3 characters": "يجب أن يحتوي على 3 أحرف على الأقل",
+    "Too small: expected string to have >=8 characters": "يجب أن يحتوي على 8 أحرف على الأقل"
   },
 
   "goBackHome": "العودة إلى الصفحة الرئيسية",

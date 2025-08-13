@@ -21,7 +21,7 @@ import { Label } from "@/shadcn/components/ui/label.tsx";
 import type { Customer } from "@erp-system/server/prisma/index.ts";
 import type z from "zod";
 
-import { FormErrors, FormFieldError } from "@/components/form-errors.tsx";
+import { ErrorElement } from "@/components/error-element.tsx";
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import { trpc } from "@/trpc.ts";
 
@@ -58,6 +58,9 @@ export function CustomerDialog({
     error: updateCustomerError,
   } = useMutation(trpc.orgs.customers.update.mutationOptions());
 
+  const actionError = action === "create" ? createCustomerError : updateCustomerError;
+  const actionIsError = action === "create" ? createCustomerIsError : updateCustomerIsError;
+
   const ActionDto = action === "create" ? CreateCustomerDto : UpdateCustomerDto;
 
   const form = useForm({
@@ -69,19 +72,13 @@ export function CustomerDialog({
     validators: {
       onSubmit: ActionDto,
     },
-    onSubmit: async ({ value, formApi }) => {
-      const actionIsError = action === "create" ? createCustomerIsError : updateCustomerIsError;
-      const actionError = action === "create" ? createCustomerError : updateCustomerError;
-
+    onSubmit: async ({ value }) => {
       const data =
         action === "create"
           ? await createCustomerHandler({ ...value, name: value.name!, orgSlug })
           : await updateCustomerHandler({ ...value, orgSlug, customerId: customer!.id });
 
-      if (actionIsError) {
-        formApi.setErrorMap({ onSubmit: actionError as any });
-        return;
-      }
+      if (actionIsError) return;
 
       if (action === "create" && data && onCreated) {
         onCreated(data);
@@ -138,52 +135,73 @@ export function CustomerDialog({
         >
           <form.Field
             name="name"
-            children={(field) => (
-              <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`common.form.${field.name}`)}</Label>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                <FormFieldError field={field} />
-              </div>
-            )}
+            children={(field) => {
+              const fieldName = t(`common.form.${field.name}`);
+              return (
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor={field.name}>{fieldName}</Label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                  {field.state.meta.errors
+                    .filter((e) => !!e)
+                    .map((error, index) => (
+                      <ErrorElement key={index} error={error} fieldName={fieldName} />
+                    ))}
+                </div>
+              );
+            }}
           />
           <form.Field
             name="phone"
-            children={(field) => (
-              <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`common.form.${field.name}`)}</Label>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  type="tel"
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                <FormFieldError field={field} />
-              </div>
-            )}
+            children={(field) => {
+              const fieldName = t(`common.form.${field.name}`);
+              return (
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor={field.name}>{fieldName}</Label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    type="tel"
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                  {field.state.meta.errors
+                    .filter((e) => !!e)
+                    .map((error, index) => (
+                      <ErrorElement key={index} error={error} fieldName={fieldName} />
+                    ))}
+                </div>
+              );
+            }}
           />
           <form.Field
             name="address"
-            children={(field) => (
-              <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`common.form.${field.name}`)}</Label>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                <FormFieldError field={field} />
-              </div>
-            )}
+            children={(field) => {
+              const fieldName = t(`common.form.${field.name}`);
+              return (
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor={field.name}>{fieldName}</Label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                  {field.state.meta.errors
+                    .filter((e) => !!e)
+                    .map((error, index) => (
+                      <ErrorElement key={index} error={error} fieldName={fieldName} />
+                    ))}
+                </div>
+              );
+            }}
           />
 
-          <form.Subscribe children={(state) => <FormErrors formState={state} />} />
+          {actionError && <ErrorElement error={actionError} />}
 
           <DialogFooter>
             <form.Subscribe

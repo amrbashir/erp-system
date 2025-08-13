@@ -9,7 +9,7 @@
 
   "lint": {
     "rules": {
-      "exclude": ["no-slow-types", "no-explicit-any" /* TODO: remove this */]
+      "exclude": ["no-slow-types"]
     }
   },
 

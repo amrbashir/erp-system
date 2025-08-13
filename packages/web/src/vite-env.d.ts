@@ -1,6 +1,8 @@
 /// <reference types="vite/client" />
-
+import "@tanstack/react-table";
 import "i18next";
+
+import { RowData } from "@tanstack/react-table";
 
 // deno-lint-ignore verbatim-module-syntax
 import arTranslation from "../public/locales/ar-Eg/translation.json" with { type: "json" };
@@ -13,5 +15,11 @@ declare module "i18next" {
     resources: {
       translation: typeof enTranslation & typeof arTranslation;
     };
+  }
+}
+
+declare module "@tanstack/react-table" {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    className?: string;
   }
 }

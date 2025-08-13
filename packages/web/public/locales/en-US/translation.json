@@ -219,22 +219,24 @@
     "users": {
       "cannotDeleteLastAdmin": "Cannot delete the last admin user in the organization",
       "cannotDeleteOwnAccount": "You cannot delete your own account",
-      "usernameExists": "User with this username already exists in the organization",
-      "usernameFormat": "username must contain only letters and numbers"
+      "usernameExists": "User with this username already exists in the organization"
     },
     "organization": {
       "notFound": "Organization with this ID does not exist",
-      "slugExists": "Organization with this ID already exists"
+      "slugExists": "Organization with this ID already exists",
+      "slugMustBeASCII": "Organization ID must contain only letters, numbers and '-'"
     },
     "customers": {
       "nameExists": "Customer with this name already exists"
     },
-    "server": {
-      "internalError": "Internal server error"
-    },
     "invoice": {
       "mustHaveItems": "Invoice must have at least one item"
     },
+    "products": {
+      "barcodeExists": "A product with this barcode already exists",
+      "descriptionExists": "Product with this description already exists"
+    },
+
     "statusCode": {
       "400": "Bad Request",
       "401": "Unauthorized",
@@ -242,30 +244,27 @@
       "404": "Not Found",
       "500": "Internal Server Error"
     },
-    "products": {
-      "barcodeExists": "A product with this barcode already exists",
-      "descriptionExists": "Product with this description already exists"
-    },
 
+    "NetworkError when attempting to fetch resource": "Network error when attempting to fetch resource",
+    "Slug must be ASCII": "$t(errors.organization.slugMustBeASCII)",
+    "Internal server error": "$t(errors.statusCode.500)",
     "Username or password is incorrect": "$t(errors.auth.incorrectCredentials)",
     "Cannot delete the last admin user in the organization": "$t(errors.users.cannotDeleteLastAdmin)",
     "You cannot delete your own account": "$t(errors.users.cannotDeleteOwnAccount)",
     "User with this username already exists in the organization": "$t(errors.users.usernameExists)",
     "organizationNotFound": "$t(errors.organization.notFound)",
-    "username must contain only letters and numbers": "$t(errors.users.usernameFormat)",
     "Organization with this slug already exists": "$t(errors.organization.slugExists)",
-    "Internal server error": "$t(errors.server.internalError)",
     "Organization with this slug does not exist": "$t(errors.organization.notFound)",
     "notAuthorized": "$t(errors.auth.notAuthorized)",
     "invoiceMustHaveItems": "$t(errors.invoice.mustHaveItems)",
     "Invoice must have at least one item": "$t(errors.invoice.mustHaveItems)",
     "Customer with this name already exists": "$t(errors.customers.nameExists)",
     "A product with this barcode already exists": "$t(errors.products.barcodeExists)",
-    "A product with this description already exists": "$t(errors.products.descriptionExists)"
-  },
-
-  "validationErrors": {
-    "too_small": "{{field}} must contain at least {{minimum}} character(s)"
+    "A product with this description already exists": "$t(errors.products.descriptionExists)",
+    "Username must be alphanumeric": "must contain only letters and numbers",
+    "Password must be ASCII": "must contain only letters, numbers and special characters",
+    "Too small: expected string to have >=3 characters": "must have at least 3 characters",
+    "Too small: expected string to have >=8 characters": "must have at least 8 characters"
   },
 
   "welcomeToErp": "$t(common.welcome) to erp-system",

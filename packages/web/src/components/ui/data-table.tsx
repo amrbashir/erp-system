@@ -39,6 +39,7 @@ import {
 import { cn } from "@/shadcn/lib/utils.ts";
 
 interface DataTableProps<TData> {
+  // deno-lint-ignore no-explicit-any
   columns: ColumnDef<TData, any>[];
   data: TData[];
 }
@@ -135,15 +136,7 @@ export function DataTable<TData>({ columns, data }: DataTableProps<TData>) {
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cn(
-                        cell.column.columnDef.meta &&
-                          "className" in cell.column.columnDef.meta &&
-                          typeof cell.column.columnDef.meta.className === "string" &&
-                          cell.column.columnDef.meta.className,
-                      )}
-                    >
+                    <TableCell key={cell.id} className={cn(cell.column.columnDef.meta?.className)}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

@@ -28,7 +28,7 @@ import {
 import type { UserRole } from "@erp-system/server/prisma/index.ts";
 import type z from "zod";
 
-import { FormErrors, FormFieldError } from "@/components/form-errors.tsx";
+import { ErrorElement } from "@/components/error-element.tsx";
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import { trpc } from "@/trpc.ts";
 
@@ -54,13 +54,10 @@ export function AddUserDialog() {
     validators: {
       onSubmit: CreateUserDto,
     },
-    onSubmit: async ({ value, formApi }) => {
+    onSubmit: async ({ value }) => {
       await createUser({ ...value, orgSlug });
 
-      if (createUserIsError) {
-        formApi.setErrorMap({ onSubmit: createUserError as any });
-        return;
-      }
+      if (createUserIsError) return;
 
       client.invalidateQueries({ queryKey: trpc.orgs.users.getAll.queryKey() });
       setOpen(false);
@@ -99,18 +96,26 @@ export function AddUserDialog() {
           <div className="flex w-full items-center gap-2">
             <form.Field
               name="username"
-              children={(field) => (
-                <div className="w-full flex flex-col gap-3">
-                  <Label htmlFor={field.name}>{t(`common.form.${field.name}`)}</Label>
-                  <Input
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                  />
-                  <FormFieldError field={field} />
-                </div>
-              )}
+              children={(field) => {
+                const fieldName = t(`common.form.${field.name}`);
+
+                return (
+                  <div className="w-full flex flex-col gap-3">
+                    <Label htmlFor={field.name}>{fieldName}</Label>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                    {field.state.meta.errors
+                      .filter((e) => !!e)
+                      .map((error, index) => (
+                        <ErrorElement key={index} error={error} fieldName={fieldName} />
+                      ))}
+                  </div>
+                );
+              }}
             />
             <form.Field
               name="role"
@@ -126,22 +131,29 @@ export function AddUserDialog() {
 
           <form.Field
             name="password"
-            children={(field) => (
-              <div className="flex flex-col gap-3">
-                <Label htmlFor={field.name}>{t(`common.form.${field.name}`)}</Label>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  type="password"
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
-                <FormFieldError field={field} />
-              </div>
-            )}
+            children={(field) => {
+              const fieldName = t(`common.form.${field.name}`);
+              return (
+                <div className="flex flex-col gap-3">
+                  <Label htmlFor={field.name}>{fieldName}</Label>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    type="password"
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                  {field.state.meta.errors
+                    .filter((e) => !!e)
+                    .map((error, index) => (
+                      <ErrorElement key={index} error={error} fieldName={fieldName} />
+                    ))}
+                </div>
+              );
+            }}
           />
 
-          <form.Subscribe children={(state) => <FormErrors formState={state} />} />
+          {createUserError && <ErrorElement error={createUserError} />}
 
           <DialogFooter>
             <form.Subscribe
