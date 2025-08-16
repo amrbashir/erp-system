@@ -135,18 +135,18 @@ describe("UserService", () => {
     );
 
     await userService.delete(user1.id, org.slug);
-    let users = await userService.getAll(org.slug, { where: { deletedAt: null } });
-    expect(users).toHaveLength(3);
+    const { data: users1 } = await userService.getAll(org.slug, { where: { deletedAt: null } });
+    expect(users1).toHaveLength(3);
 
     await userService.delete(admin.id, org.slug);
-    users = await userService.getAll(org.slug, { where: { deletedAt: null } });
-    expect(users).toHaveLength(2);
+    const { data: users2 } = await userService.getAll(org.slug, { where: { deletedAt: null } });
+    expect(users2).toHaveLength(2);
 
     const deleteAdminResult = userService.delete(user2.id, org.slug);
     await expect(deleteAdminResult).rejects.toThrow();
 
     await userService.delete(user3.id, org.slug);
-    users = await userService.getAll(org.slug, { where: { deletedAt: null } });
-    expect(users).toHaveLength(1);
+    const { data: users3 } = await userService.getAll(org.slug, { where: { deletedAt: null } });
+    expect(users3).toHaveLength(1);
   });
 });
