@@ -31,11 +31,14 @@ export function AddExpenseDialog() {
   const { orgSlug } = useAuthUser();
   const client = useQueryClient();
 
-  const {
-    mutateAsync: createExpense,
-    isError: createExpenseIsError,
-    error: createExpenseError,
-  } = useMutation(trpc.orgs.expenses.create.mutationOptions());
+  const { mutateAsync: createExpense, error: createExpenseError } = useMutation(
+    trpc.orgs.expenses.create.mutationOptions({
+      onSuccess: () => {
+        client.invalidateQueries({ queryKey: trpc.orgs.expenses.getAll.queryKey() });
+        setOpen(false);
+      },
+    }),
+  );
 
   const form = useForm({
     defaultValues: {
@@ -45,16 +48,7 @@ export function AddExpenseDialog() {
     validators: {
       onSubmit: CreateExpenseDto,
     },
-    onSubmit: async ({ value, formApi }) => {
-      await createExpense({ ...value, orgSlug });
-
-      if (createExpenseIsError) return;
-
-      client.invalidateQueries({ queryKey: trpc.orgs.expenses.getAll.queryKey() });
-
-      formApi.reset();
-      setOpen(false);
-    },
+    onSubmit: ({ value }) => createExpense({ ...value, orgSlug }),
   });
 
   const actionLabel = t("expense.add");
@@ -62,7 +56,13 @@ export function AddExpenseDialog() {
   const actionDescription = t("expense.addDescription");
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        setOpen(open);
+        form.reset();
+      }}
+    >
       <DialogTrigger asChild>
         <Button>
           <PlusIcon />
@@ -136,7 +136,7 @@ export function AddExpenseDialog() {
               children={(isSubmitting) => (
                 <>
                   <DialogClose asChild>
-                    <Button disabled={isSubmitting} variant="outline" onClick={() => form.reset()}>
+                    <Button disabled={isSubmitting} variant="outline">
                       {t("common.actions.cancel")}
                     </Button>
                   </DialogClose>

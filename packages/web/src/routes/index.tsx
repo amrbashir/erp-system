@@ -200,11 +200,27 @@ function CreateNewOrganizationCard({
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const {
-    mutateAsync: createOrg,
-    isError: createOrgIsError,
-    error: createOrgError,
-  } = useMutation(trpc.orgs.create.mutationOptions());
+  const { mutateAsync: createOrg, error: createOrgError } = useMutation(
+    trpc.orgs.create.mutationOptions({
+      onSuccess: () => {
+        toast.success(t("org.createdSuccessfully"));
+
+        // Navigate to the new organization
+        navigate({
+          to: "/",
+          search: {
+            loginOrgSlug: form.getFieldValue("slug"),
+            loginUsername: form.getFieldValue("username"),
+          },
+        });
+
+        form.reset();
+
+        // Focus the password field in the login form
+        loginFormPasswordRef.current?.focus();
+      },
+    }),
+  );
 
   const form = useForm({
     defaultValues: {
@@ -222,18 +238,7 @@ function CreateNewOrganizationCard({
         }
       },
     },
-    onSubmit: async ({ value }) => {
-      await createOrg(value);
-
-      if (createOrgIsError) return;
-
-      toast.success(t("org.createdSuccessfully"));
-
-      // Navigate to the new organization
-      navigate({ to: "/", search: { loginOrgSlug: value.slug, loginUsername: value.username } });
-      form.reset();
-      loginFormPasswordRef.current?.focus();
-    },
+    onSubmit: ({ value }) => createOrg(value),
   });
 
   return (

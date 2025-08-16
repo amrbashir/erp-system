@@ -86,11 +86,15 @@ function RouteComponent() {
     [productsByDescription],
   );
 
-  const {
-    mutateAsync: createPurchaseInvoice,
-    isError: createPurchaseInvoiceIsError,
-    error: createPurchaseInvoiceError,
-  } = useMutation(trpc.orgs.invoices.createPurchase.mutationOptions());
+  const { mutateAsync: createPurchaseInvoice, error: createPurchaseInvoiceError } = useMutation(
+    trpc.orgs.invoices.createPurchase.mutationOptions({
+      onSuccess: () => {
+        client.invalidateQueries({ queryKey: ["invoices", orgSlug, "PURCHASE"] });
+        toast.success(t("invoice.createdSuccessfully"));
+        form.reset();
+      },
+    }),
+  );
 
   const form = useForm({
     defaultValues: {
@@ -129,19 +133,12 @@ function RouteComponent() {
           toast.error(t(`errors.${error.message}` as ParseKeys, { nsSeparator: "`" }));
         });
     },
-    onSubmit: async ({ value: { items, ...value }, formApi }) => {
-      await createPurchaseInvoice({
+    onSubmit: ({ value: { items, ...value } }) =>
+      createPurchaseInvoice({
         ...value,
         orgSlug,
         items: items.filter((item) => !!item.productId || !!item.barcode || !!item.description),
-      });
-
-      if (createPurchaseInvoiceIsError) return;
-
-      toast.success(t("invoice.createdSuccessfully"));
-      client.invalidateQueries({ queryKey: ["invoices", orgSlug, "PURCHASE"] });
-      formApi.reset();
-    },
+      }),
   });
 
   const InvoiceHeader = () => (

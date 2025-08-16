@@ -43,11 +43,14 @@ export function EditProductDialog({
   const { orgSlug } = useAuthUser();
   const client = useQueryClient();
 
-  const {
-    mutateAsync: updateProduct,
-    isError: updateProductIsError,
-    error: updateProductError,
-  } = useMutation(trpc.orgs.products.update.mutationOptions());
+  const { mutateAsync: updateProduct, error: updateProductError } = useMutation(
+    trpc.orgs.products.update.mutationOptions({
+      onSuccess: () => {
+        client.invalidateQueries({ queryKey: trpc.orgs.products.getAll.queryKey() });
+        setOpen(false);
+      },
+    }),
+  );
 
   const form = useForm({
     defaultValues: {
@@ -60,16 +63,7 @@ export function EditProductDialog({
     validators: {
       onSubmit: UpdateProductDto,
     },
-    onSubmit: async ({ value, formApi }) => {
-      await updateProduct({ ...value, orgSlug, productId: product.id });
-
-      if (updateProductIsError) return;
-
-      client.invalidateQueries({ queryKey: trpc.orgs.products.getAll.queryKey() });
-
-      formApi.reset();
-      setOpen(false);
-    },
+    onSubmit: ({ value }) => updateProduct({ ...value, orgSlug, productId: product.id }),
   });
 
   const actionLabel = t("product.edit");
@@ -84,7 +78,13 @@ export function EditProductDialog({
   );
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        setOpen(open);
+        form.reset();
+      }}
+    >
       <DialogTrigger asChild>{Trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -221,7 +221,7 @@ export function EditProductDialog({
               children={(isSubmitting) => (
                 <>
                   <DialogClose asChild>
-                    <Button disabled={isSubmitting} variant="outline" onClick={() => form.reset()}>
+                    <Button disabled={isSubmitting} variant="outline">
                       {t("common.actions.cancel")}
                     </Button>
                   </DialogClose>

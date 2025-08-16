@@ -30,11 +30,14 @@ export function AddBalanceDialog({ shortLabel = false }: { shortLabel?: boolean 
   const { orgSlug } = useAuthUser();
   const client = useQueryClient();
 
-  const {
-    mutateAsync: addBalance,
-    isError: addBalanceIsError,
-    error: addBalanceError,
-  } = useMutation(trpc.orgs.addBalance.mutationOptions());
+  const { mutateAsync: addBalance, error: addBalanceError } = useMutation(
+    trpc.orgs.addBalance.mutationOptions({
+      onSuccess: () => {
+        client.invalidateQueries({ queryKey: trpc.orgs.getStatistics.queryKey() });
+        setOpen(false);
+      },
+    }),
+  );
 
   const form = useForm({
     defaultValues: {
@@ -43,15 +46,7 @@ export function AddBalanceDialog({ shortLabel = false }: { shortLabel?: boolean 
     validators: {
       onSubmit: AddBalanceDto,
     },
-    onSubmit: async ({ value, formApi }) => {
-      await addBalance({ ...value, orgSlug });
-
-      if (addBalanceIsError) return;
-
-      client.invalidateQueries({ queryKey: trpc.orgs.getStatistics.queryKey() });
-      formApi.reset();
-      setOpen(false);
-    },
+    onSubmit: ({ value }) => addBalance({ ...value, orgSlug }),
   });
 
   const actionLabelShort = t("common.actions.add");
@@ -59,7 +54,13 @@ export function AddBalanceDialog({ shortLabel = false }: { shortLabel?: boolean 
   const actionDescription = t("org.addBalanceDescription");
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        setOpen(open);
+        form.reset();
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant="outline">
           <PlusIcon />
@@ -110,7 +111,7 @@ export function AddBalanceDialog({ shortLabel = false }: { shortLabel?: boolean 
               children={(isSubmitting) => (
                 <>
                   <DialogClose asChild>
-                    <Button disabled={isSubmitting} variant="outline" onClick={() => form.reset()}>
+                    <Button disabled={isSubmitting} variant="outline">
                       {t("common.actions.cancel")}
                     </Button>
                   </DialogClose>

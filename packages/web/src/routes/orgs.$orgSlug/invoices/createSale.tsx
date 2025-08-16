@@ -102,11 +102,15 @@ function RouteComponent() {
     [productsByDescription],
   );
 
-  const {
-    mutateAsync: createSaleInvoice,
-    isError: createSaleInvoiceIsError,
-    error: createSaleInvoiceError,
-  } = useMutation(trpc.orgs.invoices.createSale.mutationOptions());
+  const { mutateAsync: createSaleInvoice, error: createSaleInvoiceError } = useMutation(
+    trpc.orgs.invoices.createSale.mutationOptions({
+      onSuccess: () => {
+        client.invalidateQueries({ queryKey: ["invoices", orgSlug, "SALE"] });
+        toast.success(t("invoice.createdSuccessfully"));
+        form.reset();
+      },
+    }),
+  );
 
   const form = useForm({
     defaultValues: {
@@ -145,19 +149,12 @@ function RouteComponent() {
           toast.error(t(`errors.${error.message}` as ParseKeys, { nsSeparator: "`" }));
         });
     },
-    onSubmit: async ({ value: { items, ...value }, formApi }) => {
-      await createSaleInvoice({
+    onSubmit: ({ value: { items, ...value } }) =>
+      createSaleInvoice({
         ...value,
         orgSlug,
         items: items.filter((item) => item.productId !== NULL_UUID),
-      });
-
-      if (createSaleInvoiceIsError) return;
-
-      toast.success(t("invoice.createdSuccessfully"));
-      client.invalidateQueries({ queryKey: ["invoices", orgSlug, "SALE"] });
-      formApi.reset();
-    },
+      }),
   });
 
   const InvoiceHeader = () => (

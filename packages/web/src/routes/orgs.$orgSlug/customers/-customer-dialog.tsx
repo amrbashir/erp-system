@@ -46,17 +46,22 @@ export function CustomerDialog({
 
   const [open, setOpen] = React.useState(false);
 
+  const onSuccess = () => {
+    client.invalidateQueries({ queryKey: trpc.orgs.customers.getAll.queryKey() });
+    setOpen(false);
+  };
+
   const {
     mutateAsync: createCustomerHandler,
     isError: createCustomerIsError,
     error: createCustomerError,
-  } = useMutation(trpc.orgs.customers.create.mutationOptions());
+  } = useMutation(trpc.orgs.customers.create.mutationOptions({ onSuccess }));
 
   const {
     mutateAsync: updateCustomerHandler,
     isError: updateCustomerIsError,
     error: updateCustomerError,
-  } = useMutation(trpc.orgs.customers.update.mutationOptions());
+  } = useMutation(trpc.orgs.customers.update.mutationOptions({ onSuccess }));
 
   const actionError = action === "create" ? createCustomerError : updateCustomerError;
   const actionIsError = action === "create" ? createCustomerIsError : updateCustomerIsError;
@@ -84,9 +89,6 @@ export function CustomerDialog({
         onCreated(data);
       }
       if (action === "edit" && data && onEdited) onEdited();
-
-      client.invalidateQueries({ queryKey: trpc.orgs.customers.getAll.queryKey() });
-      setOpen(false);
     },
   });
 

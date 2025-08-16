@@ -39,11 +39,15 @@ export function PayOrCollectMoneyDialog({
 
   const [open, setOpen] = React.useState(false);
 
-  const {
-    mutateAsync: payOrCollectMoney,
-    isError: payOrCollectMoneyIsError,
-    error: payOrCollectMoneyError,
-  } = useMutation(trpc.orgs.customers[`${action}Money`].mutationOptions());
+  const { mutateAsync: payOrCollectMoney, error: payOrCollectMoneyError } = useMutation(
+    trpc.orgs.customers[`${action}Money`].mutationOptions({
+      onSuccess: () => {
+        client.invalidateQueries({ queryKey: trpc.orgs.customers.getAll.queryKey() });
+        router.invalidate({ filter: (r) => r.id === `/orgs/${orgSlug}/customers/${customerId}` });
+        setOpen(false);
+      },
+    }),
+  );
 
   const form = useForm({
     defaultValues: {
@@ -52,14 +56,7 @@ export function PayOrCollectMoneyDialog({
     validators: {
       onSubmit: MoneyTransactionDto,
     },
-    onSubmit: async ({ value }) => {
-      await payOrCollectMoney({ ...value, orgSlug, customerId });
-      if (payOrCollectMoneyIsError) return;
-
-      client.invalidateQueries({ queryKey: trpc.orgs.customers.getAll.queryKey() });
-      router.invalidate({ filter: (r) => r.id === `/orgs/${orgSlug}/customers/${customerId}` });
-      setOpen(false);
-    },
+    onSubmit: ({ value }) => payOrCollectMoney({ ...value, orgSlug, customerId }),
   });
 
   const actionLabel = t(`common.actions.${action}`);

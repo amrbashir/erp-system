@@ -39,11 +39,14 @@ export function AddUserDialog() {
 
   const [open, setOpen] = React.useState(false);
 
-  const {
-    mutateAsync: createUser,
-    isError: createUserIsError,
-    error: createUserError,
-  } = useMutation(trpc.orgs.users.create.mutationOptions());
+  const { mutateAsync: createUser, error: createUserError } = useMutation(
+    trpc.orgs.users.create.mutationOptions({
+      onSuccess: () => {
+        client.invalidateQueries({ queryKey: trpc.orgs.users.getAll.queryKey() });
+        setOpen(false);
+      },
+    }),
+  );
 
   const form = useForm({
     defaultValues: {
@@ -54,14 +57,7 @@ export function AddUserDialog() {
     validators: {
       onSubmit: CreateUserDto,
     },
-    onSubmit: async ({ value }) => {
-      await createUser({ ...value, orgSlug });
-
-      if (createUserIsError) return;
-
-      client.invalidateQueries({ queryKey: trpc.orgs.users.getAll.queryKey() });
-      setOpen(false);
-    },
+    onSubmit: ({ value }) => createUser({ ...value, orgSlug }),
   });
 
   return (
