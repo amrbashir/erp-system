@@ -2,12 +2,12 @@ import { authRouter } from "@/auth/auth.router.ts";
 import { customerRouter } from "@/customer/customer.router.ts";
 import { expenseRouter } from "@/expense/expense.router.ts";
 import { invoiceRouter } from "@/invoice/invoice.router.ts";
+import { otelProcedure } from "@/otel/trpc-procedure.ts";
 import { productRouter } from "@/product/product.router.ts";
 import { transactionRouter } from "@/transaction/transaction.router.ts";
 import { router } from "@/trpc/index.ts";
 import { userRouter } from "@/user/user.router.ts";
 
-import { otelProcedure } from "../otel/trpc-procedure.ts";
 import { AddBalanceDto, CreateOrgDto } from "./org.dto.ts";
 import { authenticatedOrgProcedure, orgProcedure } from "./org.procedure.ts";
 

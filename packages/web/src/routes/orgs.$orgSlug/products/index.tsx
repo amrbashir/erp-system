@@ -1,5 +1,3 @@
-import { Product } from "@erp-system/server/prisma";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { createColumnHelper } from "@tanstack/react-table";
 import { PackageIcon } from "lucide-react";
@@ -7,14 +5,14 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 
 import { ActionsDropdownMenu } from "@/components/actions-dropdown.tsx";
-import { DataTable } from "@/components/ui/data-table.tsx";
+import { ButtonLink } from "@/components/ui/button-link.tsx";
+import { DataTableServerPaginated } from "@/components/ui/data-table-server-paginated.tsx";
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import i18n from "@/i18n.ts";
 import { trpc } from "@/trpc.ts";
 import { formatDate } from "@/utils/formatDate.ts";
 import { formatMoney } from "@/utils/formatMoney.ts";
 
-import { ButtonLink } from "../../../components/ui/button-link.tsx";
 import { EditProductDialog } from "./-edit-product-dialog.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/products/")({
@@ -25,14 +23,14 @@ export const Route = createFileRoute("/orgs/$orgSlug/products/")({
   }),
 });
 
+const procedure = trpc.orgs.products.getAll;
+const columnHelper = createColumnHelper<(typeof procedure)["~types"]["output"]["data"][number]>();
+
 function RouteComponent() {
   const { orgSlug } = useAuthUser();
 
   const { t } = useTranslation();
 
-  const { data: products = [] } = useQuery(trpc.orgs.products.getAll.queryOptions({ orgSlug }));
-
-  const columnHelper = createColumnHelper<Product>();
   const columns = React.useMemo(
     () => [
       columnHelper.display({
@@ -40,18 +38,15 @@ function RouteComponent() {
         header: t("common.ui.number"),
         cell: (info) => info.row.index + 1,
       }),
-      {
-        accessorKey: "stockQuantity",
+      columnHelper.accessor("stockQuantity", {
         header: t("common.form.quantity"),
-      },
-      {
-        accessorKey: "barcode",
+      }),
+      columnHelper.accessor("barcode", {
         header: t("common.form.barcode"),
-      },
-      {
-        accessorKey: "description",
+      }),
+      columnHelper.accessor("description", {
         header: t("common.form.description"),
-      },
+      }),
       columnHelper.accessor("purchasePrice", {
         header: t("common.pricing.purchase"),
         cell: (info) => (
@@ -92,7 +87,7 @@ function RouteComponent() {
         </ButtonLink>
       </div>
 
-      <DataTable columns={columns} data={products} />
+      <DataTableServerPaginated procedure={procedure} input={{ orgSlug }} columns={columns} />
     </div>
   );
 }

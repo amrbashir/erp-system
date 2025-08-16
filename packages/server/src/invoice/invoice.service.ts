@@ -2,21 +2,21 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { TRPCError } from "@trpc/server";
 import { Decimal } from "decimal.js";
 
-import type { PaginationDto } from "@/pagination.dto.ts";
-
-import type { PrismaClient } from "../prisma/client.ts";
+import type { PaginatedOutput, PaginationDto } from "@/dto/pagination.dto.ts";
+import type { PrismaClient } from "@/prisma/client.ts";
 import type {
   InvoiceItem,
   InvoiceOrderByWithRelationInput,
   InvoiceWhereInput,
-} from "../prisma/index.ts";
+} from "@/prisma/index.ts";
+import { OTelInstrument } from "@/otel/instrument.decorator.ts";
+import { TransactionType } from "@/prisma/index.ts";
+
 import type {
   CreatePurchaseInvoiceDto,
   CreateSaleInvoiceDto,
   InvoiceWithRelations,
 } from "./invoice.dto.ts";
-import { OTelInstrument } from "../otel/instrument.decorator.ts";
-import { TransactionType } from "../prisma/index.ts";
 
 export class InvoiceService {
   constructor(private readonly prisma: PrismaClient) {}
@@ -27,11 +27,11 @@ export class InvoiceService {
     options?: {
       pagination?: PaginationDto;
       where?: Omit<InvoiceWhereInput, "organization" | "organizationId">;
-      orderBy?: InvoiceOrderByWithRelationInput | InvoiceOrderByWithRelationInput[] | undefined;
+      orderBy?: InvoiceOrderByWithRelationInput | InvoiceOrderByWithRelationInput[];
     },
-  ): Promise<InvoiceWithRelations[]> {
+  ): Promise<PaginatedOutput<InvoiceWithRelations[]>> {
     try {
-      return await this.prisma.invoice.findMany({
+      const invoices = await this.prisma.invoice.findMany({
         where: {
           ...options?.where,
           organization: { slug: orgSlug },
@@ -45,6 +45,15 @@ export class InvoiceService {
         },
         orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
+
+      const totalCount = await this.prisma.invoice.count({
+        where: {
+          ...options?.where,
+          organization: { slug: orgSlug },
+        },
+      });
+
+      return { data: invoices, totalCount };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({
@@ -90,11 +99,11 @@ export class InvoiceService {
     options?: {
       pagination?: PaginationDto;
       where?: Omit<InvoiceWhereInput, "organization" | "organizationId" | "customerId">;
-      orderBy?: InvoiceOrderByWithRelationInput | InvoiceOrderByWithRelationInput[] | undefined;
+      orderBy?: InvoiceOrderByWithRelationInput | InvoiceOrderByWithRelationInput[];
     },
-  ): Promise<InvoiceWithRelations[]> {
+  ): Promise<PaginatedOutput<InvoiceWithRelations[]>> {
     try {
-      return await this.prisma.invoice.findMany({
+      const invoices = await this.prisma.invoice.findMany({
         where: {
           ...options?.where,
           customerId,
@@ -109,6 +118,16 @@ export class InvoiceService {
         },
         orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
+
+      const totalCount = await this.prisma.invoice.count({
+        where: {
+          ...options?.where,
+          customerId,
+          organization: { slug: orgSlug },
+        },
+      });
+
+      return { data: invoices, totalCount };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({

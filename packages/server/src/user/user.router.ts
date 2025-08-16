@@ -1,7 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 
-import { PaginationDto } from "@/pagination.dto.ts";
+import { PaginationDto } from "@/dto/pagination.dto.ts";
+import { SortingDto } from "@/dto/sorting.dto.ts";
 import { router } from "@/trpc/index.ts";
 
 import { admingOrgProcedure } from "./admin.procedure.ts";
@@ -9,9 +10,12 @@ import { CreateUserDto, DeleteUserDto } from "./user.dto.ts";
 
 export const userRouter = router({
   getAll: admingOrgProcedure
-    .input(z.object({ pagination: PaginationDto.optional() }))
+    .input(z.object({ pagination: PaginationDto.optional(), sorting: SortingDto.optional() }))
     .query(({ ctx, input }) =>
-      ctx.userService.getAll(input.orgSlug, { pagination: input.pagination }),
+      ctx.userService.getAll(input.orgSlug, {
+        pagination: input.pagination,
+        orderBy: input.sorting,
+      }),
     ),
 
   create: admingOrgProcedure

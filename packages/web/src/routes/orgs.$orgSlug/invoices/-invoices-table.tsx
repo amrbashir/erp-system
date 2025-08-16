@@ -1,34 +1,66 @@
+import { PaginatedOutput } from "@erp-system/server/dto/pagination.dto.ts";
 import { createColumnHelper } from "@tanstack/react-table";
+import { DecorateQueryProcedure } from "@trpc/tanstack-react-query";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/shadcn/lib/utils.ts";
 
 import type { InvoiceWithRelations } from "@erp-system/server/invoice/invoice.dto.ts";
 
-import { DataTable } from "@/components/ui/data-table.tsx";
+import { ButtonLink } from "@/components/ui/button-link.tsx";
+import {
+  DataTableServerPaginated,
+  ServerPaginationParams,
+} from "@/components/ui/data-table-server-paginated.tsx";
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import { formatDate } from "@/utils/formatDate.ts";
 import { formatMoney } from "@/utils/formatMoney.ts";
 
-import { ButtonLink } from "../../../components/ui/button-link.tsx";
+interface InvoicesTableProps<TInput extends ServerPaginationParams> {
+  input: TInput;
+  procedure: DecorateQueryProcedure<{
+    input: TInput;
+    output: PaginatedOutput<InvoiceWithRelations[]>;
+    transformer: true;
+    // deno-lint-ignore no-explicit-any
+    errorShape: any;
+  }>;
+}
 
-export function InvoicesTable({ invoices = [] }: { invoices: InvoiceWithRelations[] | undefined }) {
+export function InvoicesTable<TInput extends ServerPaginationParams>(
+  props: InvoicesTableProps<TInput>,
+) {
   const { t } = useTranslation();
   const { orgSlug } = useAuthUser();
 
   const columnHelper = createColumnHelper<InvoiceWithRelations>();
   const columns = React.useMemo(
     () => [
-      { accessorKey: "id", header: t("invoice.number") },
+      columnHelper.accessor("id", {
+        header: t("invoice.number"),
+      }),
       columnHelper.accessor("type", {
         header: t("invoice.type"),
         cell: (info) => t(`invoice.types.${info.getValue()}`),
       }),
-      { accessorKey: "cashier.username", header: t("cashierName") },
-      {
-        accessorKey: "customer.name",
+      columnHelper.accessor("cashier.username", {
+        header: t("cashierName"),
+      }),
+      columnHelper.accessor("customer.name", {
         header: t("customer.name"),
-      },
+        cell: ({ row }) =>
+          row.original.customer?.id ? (
+            <ButtonLink
+              variant="link"
+              to="/orgs/$orgSlug/customers/$id"
+              params={{ id: row.original.customer.id.toString(), orgSlug }}
+            >
+              {row.original.customer?.name}
+            </ButtonLink>
+          ) : (
+            row.original.customer?.name
+          ),
+      }),
       columnHelper.accessor("createdAt", {
         header: t("common.dates.date"),
         cell: (info) => formatDate(info.getValue()),
@@ -93,5 +125,5 @@ export function InvoicesTable({ invoices = [] }: { invoices: InvoiceWithRelation
     [t, orgSlug],
   );
 
-  return <DataTable columns={columns} data={invoices} />;
+  return <DataTableServerPaginated {...props} columns={columns} />;
 }

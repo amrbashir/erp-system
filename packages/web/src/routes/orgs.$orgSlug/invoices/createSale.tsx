@@ -77,8 +77,12 @@ function RouteComponent() {
   const { t } = useTranslation();
   const client = useQueryClient();
 
-  const { data: products } = useQuery(trpc.orgs.products.getAll.queryOptions({ orgSlug }));
-  const { data: customers } = useQuery(trpc.orgs.customers.getAll.queryOptions({ orgSlug }));
+  const { data: { data: products } = { data: [] } } = useQuery(
+    trpc.orgs.products.getAll.queryOptions({ orgSlug }),
+  );
+  const { data: { data: customers } = { data: [] } } = useQuery(
+    trpc.orgs.customers.getAll.queryOptions({ orgSlug }),
+  );
 
   // Create lookup maps for faster product retrieval
   const productsByBarcode = React.useMemo(

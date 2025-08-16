@@ -9,10 +9,6 @@ import i18n from "@/i18n.ts";
 import { AppSidebarProvider } from "@/providers/sidebar.tsx";
 import { trpcClient } from "@/trpc.ts";
 
-interface RouteSearch {
-  redirect?: string;
-}
-
 export const Route = createFileRoute("/orgs/$orgSlug")({
   component: RouteComponent,
   notFoundComponent: () => <NotFound404 to="/orgs/$orgSlug" />,
@@ -20,7 +16,6 @@ export const Route = createFileRoute("/orgs/$orgSlug")({
     title: i18n.t("routes.home"),
     icon: HomeIcon,
   }),
-  validateSearch: ({ search }) => search as RouteSearch,
   beforeLoad: ({ context, location, search, params }) => {
     // redirect to home if not authenticated
     if (

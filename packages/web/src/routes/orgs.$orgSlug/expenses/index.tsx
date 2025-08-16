@@ -1,13 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ShoppingCartIcon } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import type { Expense } from "@erp-system/server/prisma";
-
-import { DataTable } from "@/components/ui/data-table.tsx";
+import { DataTableServerPaginated } from "@/components/ui/data-table-server-paginated.tsx";
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import i18n from "@/i18n.ts";
 import { trpc } from "@/trpc.ts";
@@ -24,13 +21,13 @@ export const Route = createFileRoute("/orgs/$orgSlug/expenses/")({
   }),
 });
 
+const procedure = trpc.orgs.expenses.getAll;
+const columnHelper = createColumnHelper<(typeof procedure)["~types"]["output"]["data"][number]>();
+
 function RouteComponent() {
-  const { orgSlug } = useAuthUser();
   const { t } = useTranslation();
+  const { orgSlug } = useAuthUser();
 
-  const { data: expenses = [] } = useQuery(trpc.orgs.expenses.getAll.queryOptions({ orgSlug }));
-
-  const columnHelper = createColumnHelper<Expense>();
   const columns = React.useMemo(
     () => [
       columnHelper.display({
@@ -38,21 +35,21 @@ function RouteComponent() {
         header: t("common.ui.number"),
         cell: (info) => info.row.index + 1,
       }),
-      {
-        accessorKey: "description",
+      columnHelper.accessor("description", {
         header: t("common.form.description"),
-      },
+      }),
       columnHelper.accessor("amount", {
         header: t("common.form.amount"),
         cell: ({ row }) => (
           <span className="text-red-500 dark:text-red-300">{formatMoney(row.original.amount)}</span>
         ),
       }),
-      {
-        accessorKey: "transactionId",
+      columnHelper.accessor("transactionId", {
         header: t("transactionNumber"),
-      },
-      { accessorKey: "cashier.username", header: t("cashierName") },
+      }),
+      columnHelper.accessor("cashier.username", {
+        header: t("cashierName"),
+      }),
       columnHelper.accessor("createdAt", {
         header: t("common.dates.createdAt"),
         cell: (info) => formatDate(info.getValue()),
@@ -67,7 +64,7 @@ function RouteComponent() {
         <AddExpenseDialog />
       </div>
 
-      <DataTable columns={columns} data={expenses} />
+      <DataTableServerPaginated procedure={procedure} input={{ orgSlug }} columns={columns} />
     </div>
   );
 }

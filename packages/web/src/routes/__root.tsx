@@ -1,5 +1,12 @@
-import { createRootRouteWithContext, HeadContent, Outlet, redirect } from "@tanstack/react-router";
+import {
+  createRootRouteWithContext,
+  HeadContent,
+  Outlet,
+  redirect,
+  stripSearchParams,
+} from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { z } from "zod";
 import { Toaster } from "@/shadcn/components/ui/sonner.tsx";
 
 import type { UserRole } from "@erp-system/server/prisma/index.ts";
@@ -8,9 +15,8 @@ import type * as React from "react";
 import type { AuthProviderState } from "@/providers/auth.tsx";
 import { NotFound404 } from "@/components/404.tsx";
 import { Header } from "@/components/header.tsx";
+import { ButtonLink } from "@/components/ui/button-link.tsx";
 import i18n from "@/i18n.ts";
-
-import { ButtonLink } from "../components/ui/button-link.tsx";
 
 interface RouterContext {
   auth: AuthProviderState;
@@ -19,10 +25,39 @@ interface RouterContext {
   roleRequirement?: UserRole;
 }
 
+const defaultSearchParams = {
+  page: 0,
+  pageSize: 30,
+  sorting: [],
+};
+
+const searchSchema = z.object({
+  redirect: z.string().optional(),
+  loginOrgSlug: z.string().optional(),
+  loginUsername: z.string().optional(),
+
+  // Pagination and sorting parameters
+  page: z.number().default(defaultSearchParams.page),
+  pageSize: z.number().default(defaultSearchParams.pageSize),
+  sorting: z
+    .array(
+      z.object({
+        orderBy: z.string(),
+        desc: z.boolean(),
+      }),
+    )
+    .default([]),
+});
+
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RouteComponent,
   errorComponent: ErrorComponent,
   notFoundComponent: () => <NotFound404 />,
+  validateSearch: searchSchema,
+  search: {
+    // strip default values
+    middlewares: [stripSearchParams(defaultSearchParams)],
+  },
   head: (c) => {
     const currentMatch = c.matches[c.matches.length - 1];
     const routeTitle = currentMatch.context.title ? currentMatch.context.title : "";

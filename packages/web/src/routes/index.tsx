@@ -7,6 +7,7 @@ import { Loader2Icon } from "lucide-react";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import z from "zod";
 import { Button } from "@/shadcn/components/ui/button.tsx";
 import {
   Card,
@@ -19,21 +20,12 @@ import { Input } from "@/shadcn/components/ui/input.tsx";
 import { Label } from "@/shadcn/components/ui/label.tsx";
 import { Separator } from "@/shadcn/components/ui/separator.tsx";
 
-import type z from "zod";
-
 import { ErrorElement } from "@/components/error-element.tsx";
 import { useAuth } from "@/providers/auth.tsx";
 import { trpc } from "@/trpc.ts";
 
-interface RouteSearch {
-  redirect?: string;
-  loginOrgSlug?: string;
-  loginUsername?: string;
-}
-
 export const Route = createFileRoute("/")({
   component: RouteComponent,
-  validateSearch: ({ search }) => search as RouteSearch,
 });
 
 function RouteComponent() {

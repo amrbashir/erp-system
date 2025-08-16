@@ -1,10 +1,11 @@
 import { z } from "zod";
 
+import { PaginationDto } from "@/dto/pagination.dto.ts";
+import { SortingDto } from "@/dto/sorting.dto.ts";
 import { authenticatedOrgProcedure } from "@/org/org.procedure.ts";
-import { PaginationDto } from "@/pagination.dto.ts";
+import { InvoiceType } from "@/prisma/index.ts";
 import { router } from "@/trpc/index.ts";
 
-import { InvoiceType } from "../prisma/index.ts";
 import { CreatePurchaseInvoiceDto, CreateSaleInvoiceDto } from "./invoice.dto.ts";
 
 export const invoiceRouter = router({
@@ -12,12 +13,14 @@ export const invoiceRouter = router({
     .input(
       z.object({
         pagination: PaginationDto.optional(),
+        sorting: SortingDto.optional(),
         type: z.enum(InvoiceType).optional(),
       }),
     )
     .query(({ ctx, input }) =>
       ctx.invoiceService.getAllInvoices(input.orgSlug, {
         pagination: input.pagination,
+        orderBy: input.sorting,
         where: { type: input.type },
       }),
     ),
@@ -39,8 +42,18 @@ export const invoiceRouter = router({
     .query(({ ctx, input }) => ctx.invoiceService.findById(input.orgSlug, input.id)),
 
   getByCustomerId: authenticatedOrgProcedure
-    .input(z.object({ customerId: z.number() }))
+    .input(
+      z.object({
+        customerId: z.number(),
+        pagination: PaginationDto.optional(),
+        sorting: SortingDto.optional(),
+        type: z.enum(InvoiceType).optional(),
+      }),
+    )
     .query(({ ctx, input }) =>
-      ctx.invoiceService.findByCustomerId(input.orgSlug, input.customerId),
+      ctx.invoiceService.findByCustomerId(input.orgSlug, input.customerId, {
+        pagination: input.pagination,
+        orderBy: input.sorting,
+      }),
     ),
 });

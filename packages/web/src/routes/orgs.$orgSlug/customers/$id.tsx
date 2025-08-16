@@ -17,21 +17,11 @@ import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import i18n from "@/i18n.ts";
 import { InvoicesTable } from "@/routes/orgs.$orgSlug/invoices/-invoices-table.tsx";
 import { TransactionsTable } from "@/routes/orgs.$orgSlug/transactions/-transactions-table.tsx";
-import { trpcClient } from "@/trpc.ts";
+import { trpc, trpcClient } from "@/trpc.ts";
 import { formatMoney } from "@/utils/formatMoney.ts";
 
 import { CustomerDialog } from "./-customer-dialog.tsx";
 import { PayOrCollectMoneyDialog } from "./-pay-or-collect-money-dialog.tsx";
-
-function fetchCustomerDetails(params: { id: number; orgSlug: string }) {
-  const paramsCustoemrId = { customerId: params.id, orgSlug: params.orgSlug };
-
-  return Promise.all([
-    trpcClient.orgs.customers.getById.query(paramsCustoemrId),
-    trpcClient.orgs.invoices.getByCustomerId.query(paramsCustoemrId),
-    trpcClient.orgs.transactions.getByCustomerId.query(paramsCustoemrId),
-  ]);
-}
 
 export const Route = createFileRoute("/orgs/$orgSlug/customers/$id")({
   component: RouteComponent,
@@ -39,11 +29,14 @@ export const Route = createFileRoute("/orgs/$orgSlug/customers/$id")({
     title: i18n.t("routes.customerDetails"),
   }),
   loader: async ({ params, context, route }) => {
-    const details = await fetchCustomerDetails({ id: +params.id, orgSlug: params.orgSlug });
+    const customer = await trpcClient.orgs.customers.getById.query({
+      customerId: +params.id,
+      orgSlug: params.orgSlug,
+    });
 
     // Set the page title based on the customer's name if available
-    if (details[0]?.name) {
-      const customerName = details[0].name;
+    if (customer?.name) {
+      const customerName = customer.name;
       context.title = customerName;
 
       route.update({
@@ -60,15 +53,15 @@ export const Route = createFileRoute("/orgs/$orgSlug/customers/$id")({
       });
     }
 
-    return details;
+    return customer;
   },
 });
 
 function RouteComponent() {
   const { t } = useTranslation();
+  const { orgSlug } = useAuthUser();
 
-  const [customer, invoices, transactions] = Route.useLoaderData();
-
+  const customer = Route.useLoaderData();
   if (!customer) return null;
 
   return (
@@ -82,11 +75,17 @@ function RouteComponent() {
         </TabsList>
 
         <TabsContent value="invoices" className="mt-4">
-          <InvoicesTable invoices={invoices} />
+          <InvoicesTable
+            procedure={trpc.orgs.invoices.getByCustomerId}
+            input={{ orgSlug, customerId: customer.id }}
+          />
         </TabsContent>
 
         <TabsContent value="transactions" className="mt-4">
-          <TransactionsTable transactions={transactions} />
+          <TransactionsTable
+            procedure={trpc.orgs.transactions.getByCustomerId}
+            input={{ orgSlug, customerId: customer.id }}
+          />
         </TabsContent>
       </Tabs>
     </div>

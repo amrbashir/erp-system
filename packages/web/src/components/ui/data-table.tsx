@@ -1,11 +1,8 @@
 import {
   Column,
-  ColumnDef,
+  getCoreRowModel as defaultGetCoreRowModel,
   flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  SortingState,
+  TableOptions,
   Table as TanstackReactTable,
   useReactTable,
 } from "@tanstack/react-table";
@@ -38,38 +35,28 @@ import {
 } from "@/shadcn/components/ui/table.tsx";
 import { cn } from "@/shadcn/lib/utils.ts";
 
-interface DataTableProps<TData> {
-  // deno-lint-ignore no-explicit-any
-  columns: ColumnDef<TData, any>[];
-  data: TData[];
-}
+type DataTableProps<TData> = Omit<TableOptions<TData>, "getCoreRowModel"> & {
+  getCoreRowModel?: ReturnType<typeof defaultGetCoreRowModel>;
+};
 
-export function DataTable<TData>({ columns, data }: DataTableProps<TData>) {
+export function DataTable<TData>({
+  columns,
+  getCoreRowModel = defaultGetCoreRowModel(),
+  state = {
+    pagination: { pageIndex: 0, pageSize: 30 },
+    sorting: [],
+  },
+  ...props
+}: DataTableProps<TData>) {
   const { t, i18n } = useTranslation();
 
-  const [sorting, setSorting] = React.useState<SortingState>([{ id: "createdAt", desc: true }]);
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0,
-    pageSize: 30,
-  });
-  const [rowSelection, setRowSelection] = React.useState({});
-
   const table = useReactTable({
-    data,
+    getCoreRowModel,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setSorting,
-    onPaginationChange: setPagination,
-    onRowSelectionChange: setRowSelection,
     columnResizeMode: "onChange",
     columnResizeDirection: i18n.dir(),
-    state: {
-      sorting,
-      pagination,
-      rowSelection,
-    },
+    state,
+    ...props,
   });
 
   /**
@@ -180,7 +167,7 @@ export function DataTableColumnHeader<TData, TValue>({
 
   return (
     <div className={cn("flex items-center gap-2", className)} {...props}>
-      <Button variant="ghost" size="sm" className="-ml-3" onClick={() => toggleSorting?.({})}>
+      <Button variant="ghost" size="sm" className="-ml-3" onClick={toggleSorting}>
         <span>{children}</span>
         {column.getIsSorted() === "desc" ? (
           <ChevronDownIcon />
@@ -205,6 +192,8 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
   const LastPageIcon = i18n.dir() === "rtl" ? ChevronsLeftIcon : ChevronsRightIcon;
   const PreviousPageIcon = i18n.dir() === "rtl" ? ChevronRightIcon : ChevronLeftIcon;
   const NextPageIcon = i18n.dir() === "rtl" ? ChevronLeftIcon : ChevronRightIcon;
+
+  if (table.getState().pagination === undefined) return null;
 
   return (
     <div className="flex items-center justify-between px-2">

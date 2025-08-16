@@ -1,10 +1,11 @@
+import { generateRandomOrgData, useRandomDatabase } from "@erp-system/utils/testing.ts";
 import { expect } from "@std/expect";
 import { afterAll, beforeAll, describe, it } from "@std/testing/bdd";
 import { Decimal } from "decimal.js";
 
+import { PrismaClient } from "@/prisma/client.ts";
+
 import type { CreatePurchaseInvoiceDto, CreateSaleInvoiceDto } from "./invoice.dto.ts";
-import { generateRandomOrgData, useRandomDatabase } from "../../../utils/src/testing.ts";
-import { PrismaClient } from "../prisma/client.ts";
 import { InvoiceService } from "./invoice.service.ts";
 
 describe("InvoiceService", () => {
@@ -610,7 +611,9 @@ describe("InvoiceService", () => {
       await service.createSaleInvoice(orgSlug, createInvoiceDto1, user.id);
       await service.createSaleInvoice(orgSlug, createInvoiceDto2, user.id);
 
-      const invoices = await service.getAllInvoices(orgSlug, { orderBy: { createdAt: "asc" } });
+      const { data: invoices } = await service.getAllInvoices(orgSlug, {
+        orderBy: { createdAt: "asc" },
+      });
 
       expect(invoices.length).toBe(2);
       expect(invoices[0].items.length).toBe(2);
@@ -638,7 +641,7 @@ describe("InvoiceService", () => {
       await service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
       await service.createSaleInvoice(orgSlug, createInvoiceDto, user.id);
 
-      const invoices = await service.findByCustomerId(orgSlug, customer.id, {
+      const { data: invoices } = await service.findByCustomerId(orgSlug, customer.id, {
         orderBy: { createdAt: "asc" },
       });
 

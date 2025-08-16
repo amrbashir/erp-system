@@ -1,11 +1,11 @@
+import { generateRandomOrgData, useRandomDatabase } from "@erp-system/utils/testing.ts";
 import { expect } from "@std/expect";
 import { afterAll, beforeAll, describe, it } from "@std/testing/bdd";
 
 import { OrgService } from "@/org/org.service.ts";
+import { PrismaClient } from "@/prisma/client.ts";
 import { UserService } from "@/user/user.service.ts";
 
-import { generateRandomOrgData, useRandomDatabase } from "../../../utils/src/testing.ts";
-import { PrismaClient } from "../prisma/client.ts";
 import { ExpenseService } from "./expense.service.ts";
 
 describe("ExpenseService", () => {
@@ -61,18 +61,18 @@ describe("ExpenseService", () => {
     );
 
     // Test the getAllExpenses method
-    const result = await expenseService.getAll(org.slug);
+    const { data } = await expenseService.getAll(org.slug);
 
-    expect(result).toBeDefined();
-    expect(result.length).toBe(1);
-    expect(result[0].id).toBe(expense.id);
-    expect(result[0].description).toBe("Test Expense");
-    expect(result[0].amount.toNumber()).toBe(100);
-    expect(result[0].cashier.id).toBe(adminUser!.id);
-    expect(result[0].transactionId).toBeDefined();
+    expect(data).toBeDefined();
+    expect(data.length).toBe(1);
+    expect(data[0].id).toBe(expense.id);
+    expect(data[0].description).toBe("Test Expense");
+    expect(data[0].amount.toNumber()).toBe(100);
+    expect(data[0].cashier.id).toBe(adminUser!.id);
+    expect(data[0].transactionId).toBeDefined();
 
     const transaction = await prisma.transaction.findUnique({
-      where: { id: result[0].transactionId },
+      where: { id: data[0].transactionId },
     });
 
     expect(transaction).toBeDefined();

@@ -8,11 +8,10 @@ import { CustomerService } from "@/customer/customer.service.ts";
 import { ExpenseService } from "@/expense/expense.service.ts";
 import { InvoiceService } from "@/invoice/invoice.service.ts";
 import { OrgService } from "@/org/org.service.ts";
+import { PrismaClient } from "@/prisma/client.ts";
 import { ProductService } from "@/product/product.service.ts";
 import { TransactionService } from "@/transaction/transaction.service.ts";
 import { UserService } from "@/user/user.service.ts";
-
-import { PrismaClient } from "../prisma/client.ts";
 
 const prisma = new PrismaClient();
 const orgService = new OrgService(prisma);

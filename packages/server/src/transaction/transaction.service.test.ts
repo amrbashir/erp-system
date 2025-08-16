@@ -1,11 +1,11 @@
+import { generateRandomOrgData, useRandomDatabase } from "@erp-system/utils/testing.ts";
 import { expect } from "@std/expect";
 import { afterAll, beforeAll, describe, it } from "@std/testing/bdd";
 
 import { OrgService } from "@/org/org.service.ts";
+import { PrismaClient } from "@/prisma/client.ts";
 import { UserService } from "@/user/user.service.ts";
 
-import { generateRandomOrgData, useRandomDatabase } from "../../../utils/src/testing.ts";
-import { PrismaClient } from "../prisma/client.ts";
 import { TransactionService } from "./transaction.service.ts";
 
 describe("TransactionService", () => {
@@ -52,14 +52,14 @@ describe("TransactionService", () => {
     await createTransaction(100, org.slug, adminUser!.id);
     await createTransaction(-200, org.slug, adminUser!.id);
 
-    const result = await transactionService.getAll(org.slug, { orderBy: { createdAt: "asc" } });
+    const { data } = await transactionService.getAll(org.slug, { orderBy: { createdAt: "asc" } });
 
-    expect(result).toBeDefined();
-    expect(result.length).toBe(2);
-    expect(result[0].amount.toNumber()).toBe(100);
-    expect(result[1].amount.toNumber()).toBe(-200);
-    expect(result[0].cashier.username).toBe(adminUser!.username);
-    expect(result[1].cashier.username).toBe(adminUser!.username);
+    expect(data).toBeDefined();
+    expect(data.length).toBe(2);
+    expect(data[0].amount.toNumber()).toBe(100);
+    expect(data[1].amount.toNumber()).toBe(-200);
+    expect(data[0].cashier.username).toBe(adminUser!.username);
+    expect(data[1].cashier.username).toBe(adminUser!.username);
   });
 
   it("should return transactions by customer ID", async () => {
@@ -77,7 +77,7 @@ describe("TransactionService", () => {
     await createTransaction(100, org.slug, adminUser!.id);
     await createTransaction(-200, org.slug, adminUser!.id);
 
-    const transactions = await transactionService.getByCustomerId(org.slug, customer.id, {
+    const { data: transactions } = await transactionService.getByCustomerId(org.slug, customer.id, {
       orderBy: { createdAt: "asc" },
     });
 
@@ -88,9 +88,13 @@ describe("TransactionService", () => {
     await createTransaction(150, org.slug, adminUser!.id, customer.id);
     await createTransaction(-50, org.slug, adminUser!.id, customer.id);
 
-    const customerTransactions = await transactionService.getByCustomerId(org.slug, customer.id, {
-      orderBy: { createdAt: "asc" },
-    });
+    const { data: customerTransactions } = await transactionService.getByCustomerId(
+      org.slug,
+      customer.id,
+      {
+        orderBy: { createdAt: "asc" },
+      },
+    );
 
     expect(customerTransactions).toBeDefined();
     expect(customerTransactions.length).toBe(2);

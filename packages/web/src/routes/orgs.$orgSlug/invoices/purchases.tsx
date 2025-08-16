@@ -1,12 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { PlusIcon } from "lucide-react";
 
+import { ButtonLink } from "@/components/ui/button-link.tsx";
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import i18n from "@/i18n.ts";
 import { trpc } from "@/trpc.ts";
 
-import { ButtonLink } from "../../../components/ui/button-link.tsx";
 import { InvoicesTable } from "./-invoices-table.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/invoices/purchases")({
@@ -19,10 +18,6 @@ export const Route = createFileRoute("/orgs/$orgSlug/invoices/purchases")({
 function RouteComponent() {
   const { orgSlug } = useAuthUser();
 
-  const { data: invoices } = useQuery(
-    trpc.orgs.invoices.getAll.queryOptions({ orgSlug, type: "PURCHASE" }),
-  );
-
   return (
     <div className="p-4 flex flex-col gap-4">
       <div>
@@ -32,7 +27,7 @@ function RouteComponent() {
         </ButtonLink>
       </div>
 
-      <InvoicesTable invoices={invoices} />
+      <InvoicesTable procedure={trpc.orgs.invoices.getAll} input={{ orgSlug, type: "PURCHASE" }} />
     </div>
   );
 }

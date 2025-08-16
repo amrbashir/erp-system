@@ -1,32 +1,44 @@
+import { PaginatedOutput } from "@erp-system/server/dto/pagination.dto.ts";
 import { createColumnHelper } from "@tanstack/react-table";
+import { DecorateQueryProcedure } from "@trpc/tanstack-react-query";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
 import type { TransactionWithRelations } from "@erp-system/server/transaction/transaction.dto.ts";
 import type { ParseKeys } from "i18next";
 
-import { DataTable } from "@/components/ui/data-table.tsx";
+import { ButtonLink } from "@/components/ui/button-link.tsx";
+import {
+  DataTableServerPaginated,
+  ServerPaginationParams,
+} from "@/components/ui/data-table-server-paginated.tsx";
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import { formatDate } from "@/utils/formatDate.ts";
 import { formatMoney } from "@/utils/formatMoney.ts";
 
-import { ButtonLink } from "../../../components/ui/button-link.tsx";
+interface TransactionsTableProps<TInput extends ServerPaginationParams> {
+  input: TInput;
+  procedure: DecorateQueryProcedure<{
+    input: TInput;
+    output: PaginatedOutput<TransactionWithRelations[]>;
+    transformer: true;
+    // deno-lint-ignore no-explicit-any
+    errorShape: any;
+  }>;
+}
 
-export function TransactionsTable({
-  transactions = [],
-}: {
-  transactions: TransactionWithRelations[] | undefined;
-}) {
+export function TransactionsTable<TInput extends ServerPaginationParams>(
+  props: TransactionsTableProps<TInput>,
+) {
   const { t } = useTranslation();
   const { orgSlug } = useAuthUser();
 
   const columnHelper = createColumnHelper<TransactionWithRelations>();
   const columns = React.useMemo(
     () => [
-      {
-        accessorKey: "id",
+      columnHelper.accessor("id", {
         header: t("transactionNumber"),
-      },
+      }),
       columnHelper.accessor("type", {
         header: t("transaction.type"),
         cell: (info) => t(`transaction.types.${info.getValue()}` as ParseKeys),
@@ -58,10 +70,9 @@ export function TransactionsTable({
             </ButtonLink>
           ) : null,
       }),
-      {
-        accessorKey: "cashier.username",
+      columnHelper.accessor("cashier.username", {
         header: t("cashierName"),
-      },
+      }),
       columnHelper.accessor("customer.name", {
         id: "customerName",
         header: t("customer.name"),
@@ -86,5 +97,5 @@ export function TransactionsTable({
     [orgSlug, t],
   );
 
-  return <DataTable columns={columns} data={transactions} />;
+  return <DataTableServerPaginated {...props} columns={columns} />;
 }

@@ -1,11 +1,11 @@
+import { generateRandomOrgData, useRandomDatabase } from "@erp-system/utils/testing.ts";
 import { expect } from "@std/expect";
 import { afterAll, beforeAll, describe, it } from "@std/testing/bdd";
 
 import { OrgService } from "@/org/org.service.ts";
+import { PrismaClient } from "@/prisma/client.ts";
+import { UserRole } from "@/prisma/index.ts";
 
-import { generateRandomOrgData, useRandomDatabase } from "../../../utils/src/testing.ts";
-import { PrismaClient } from "../prisma/client.ts";
-import { UserRole } from "../prisma/index.ts";
 import { UserService } from "./user.service.ts";
 
 describe("UserService", () => {
@@ -80,21 +80,21 @@ describe("UserService", () => {
 
     const orderBy = { createdAt: "asc" } as const;
 
-    const users = await userService.getAll(org.slug, {
+    const { data: users } = await userService.getAll(org.slug, {
       pagination: { skip: 0, take: 1 },
       orderBy,
     });
     expect(users).toHaveLength(1);
     expect(users[0].username).toBe(orgData.username);
 
-    const users2 = await userService.getAll(org.slug, {
+    const { data: users2 } = await userService.getAll(org.slug, {
       pagination: { skip: 1, take: 1 },
       orderBy,
     });
     expect(users2).toHaveLength(1);
     expect(users2[0].username).toBe(user1.username);
 
-    const users3 = await userService.getAll(org.slug, {
+    const { data: users3 } = await userService.getAll(org.slug, {
       pagination: { skip: 2, take: 2 },
       orderBy,
     });

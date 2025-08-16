@@ -2,13 +2,13 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { TRPCError } from "@trpc/server";
 import * as argon2 from "argon2";
 
-import type { PaginationDto } from "@/pagination.dto.ts";
+import type { PaginatedOutput, PaginationDto } from "@/dto/pagination.dto.ts";
+import type { PrismaClient } from "@/prisma/client.ts";
+import type { User, UserOrderByWithRelationInput, UserWhereInput } from "@/prisma/index.ts";
+import { OTelInstrument } from "@/otel/instrument.decorator.ts";
+import { UserRole } from "@/prisma/index.ts";
 
-import type { PrismaClient } from "../prisma/client.ts";
-import type { User, UserOrderByWithRelationInput, UserWhereInput } from "../prisma/index.ts";
 import type { CreateUserDto } from "./user.dto.ts";
-import { OTelInstrument } from "../otel/instrument.decorator.ts";
-import { UserRole } from "../prisma/index.ts";
 
 export class UserService {
   constructor(private readonly prisma: PrismaClient) {}
@@ -118,19 +118,25 @@ export class UserService {
     options?: {
       pagination?: PaginationDto;
       where?: Omit<UserWhereInput, "organization" | "organizationId">;
-      orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[] | undefined;
+      orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[];
     },
-  ): Promise<User[]> {
+  ): Promise<PaginatedOutput<User[]>> {
     try {
-      return await this.prisma.user.findMany({
+      const users = await this.prisma.user.findMany({
         skip: options?.pagination?.skip,
         take: options?.pagination?.take,
+        orderBy: options?.orderBy ?? { createdAt: "desc" },
         where: {
           ...options?.where,
           organization: { slug: orgSlug },
         },
-        orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
+
+      const totalCount = await this.prisma.user.count({
+        where: { organization: { slug: orgSlug }, ...options?.where },
+      });
+
+      return { data: users, totalCount };
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
         throw new TRPCError({

@@ -1,6 +1,7 @@
 import { SpanStatusCode } from "@opentelemetry/api";
 
-import { publicProcedure } from "../trpc/index.ts";
+import { publicProcedure } from "@/trpc/index.ts";
+
 import { tracer } from "./tracer.ts";
 
 export const otelProcedure = publicProcedure.use(({ ctx, input, path, type, next }) =>

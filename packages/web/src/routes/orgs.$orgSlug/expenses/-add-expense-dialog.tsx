@@ -20,11 +20,10 @@ import { Label } from "@/shadcn/components/ui/label.tsx";
 
 import type z from "zod";
 
+import { ErrorElement } from "@/components/error-element.tsx";
 import { InputNumpad } from "@/components/ui/input-numpad.tsx";
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import { trpc } from "@/trpc.ts";
-
-import { ErrorElement } from "../../../components/error-element.tsx";
 
 export function AddExpenseDialog() {
   const { t } = useTranslation();

@@ -1,15 +1,15 @@
 import { slugify } from "@erp-system/utils/slug.ts";
+import { generateRandomOrgData, useRandomDatabase } from "@erp-system/utils/testing.ts";
 import { expect } from "@std/expect";
 import { afterAll, beforeAll, describe, it } from "@std/testing/bdd";
 import * as argon2 from "argon2";
 import { Decimal } from "decimal.js";
 
+import { PrismaClient } from "@/prisma/client.ts";
+import { UserRole } from "@/prisma/index.ts";
 import { TransactionService } from "@/transaction/transaction.service.ts";
 import { UserService } from "@/user/user.service.ts";
 
-import { generateRandomOrgData, useRandomDatabase } from "../../../utils/src/testing.ts";
-import { PrismaClient } from "../prisma/client.ts";
-import { UserRole } from "../prisma/index.ts";
 import { OrgService } from "./org.service.ts";
 
 describe("OrgService", () => {
@@ -122,7 +122,7 @@ describe("OrgService", () => {
     expect(updatedOrg2).toBeDefined();
     expect(updatedOrg2!.balance.toNumber()).toBe(110);
 
-    const transactions = await transactionService.getAll(org.slug, {
+    const { data: transactions } = await transactionService.getAll(org.slug, {
       orderBy: { createdAt: "asc" },
     });
     expect(transactions.length).toBe(2);

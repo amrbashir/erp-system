@@ -1,18 +1,16 @@
-import { Customer } from "@erp-system/server/prisma";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { createColumnHelper } from "@tanstack/react-table";
 import { UserIcon } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { DataTable } from "@/components/ui/data-table.tsx";
+import { ButtonLink } from "@/components/ui/button-link.tsx";
+import { DataTableServerPaginated } from "@/components/ui/data-table-server-paginated.tsx";
 import { useAuthUser } from "@/hooks/use-auth-user.ts";
 import i18n from "@/i18n.ts";
 import { trpc } from "@/trpc.ts";
 import { formatDate } from "@/utils/formatDate.ts";
 
-import { ButtonLink } from "../../../components/ui/button-link.tsx";
 import { CustomerDialog } from "./-customer-dialog.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/customers/")({
@@ -23,31 +21,27 @@ export const Route = createFileRoute("/orgs/$orgSlug/customers/")({
   }),
 });
 
+const procedure = trpc.orgs.customers.getAll;
+const columnHelper = createColumnHelper<(typeof procedure)["~types"]["output"]["data"][number]>();
+
 function RouteComponent() {
-  const { orgSlug } = useAuthUser();
   const { t } = useTranslation();
+  const { orgSlug } = useAuthUser();
 
-  const { data: customers = [] } = useQuery(trpc.orgs.customers.getAll.queryOptions({ orgSlug }));
-
-  const columnHelper = createColumnHelper<Customer>();
   const columns = React.useMemo(
     () => [
-      {
-        accessorKey: "id",
+      columnHelper.accessor("id", {
         header: t("customer.id"),
-      },
-      {
-        accessorKey: "name",
+      }),
+      columnHelper.accessor("name", {
         header: t("common.form.name"),
-      },
-      {
-        accessorKey: "address",
+      }),
+      columnHelper.accessor("address", {
         header: t("common.form.address"),
-      },
-      {
-        accessorKey: "phone",
+      }),
+      columnHelper.accessor("phone", {
         header: t("common.form.phone"),
-      },
+      }),
       columnHelper.accessor("createdAt", {
         header: t("common.dates.createdAt"),
         cell: (info) => formatDate(info.getValue()),
@@ -76,7 +70,7 @@ function RouteComponent() {
         <CustomerDialog action="create" />
       </div>
 
-      <DataTable columns={columns} data={customers} />
+      <DataTableServerPaginated procedure={procedure} input={{ orgSlug }} columns={columns} />
     </div>
   );
 }

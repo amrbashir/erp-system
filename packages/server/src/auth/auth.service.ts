@@ -1,12 +1,12 @@
 import { TRPCError } from "@trpc/server";
 import * as argon2 from "argon2";
 
+import type { PrismaClient } from "@/prisma/client.ts";
+import type { User } from "@/prisma/index.ts";
 import type { UserService } from "@/user/user.service.ts";
+import { OTelInstrument } from "@/otel/instrument.decorator.ts";
 
-import type { PrismaClient } from "../prisma/client.ts";
-import type { User } from "../prisma/index.ts";
 import type { LoginUserDto } from "./auth.dto.ts";
-import { OTelInstrument } from "../otel/instrument.decorator.ts";
 
 const SESSION_SECRET = Deno.env.get("SESSION_SECRET");
 

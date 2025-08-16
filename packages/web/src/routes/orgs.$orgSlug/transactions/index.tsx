@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { BanknoteIcon } from "lucide-react";
 
@@ -20,11 +19,9 @@ export const Route = createFileRoute("/orgs/$orgSlug/transactions/")({
 function RouteComponent() {
   const { orgSlug } = useAuthUser();
 
-  const { data: transactions } = useQuery(trpc.orgs.transactions.getAll.queryOptions({ orgSlug }));
-
   return (
     <div className="gap-4 p-4">
-      <TransactionsTable transactions={transactions} />
+      <TransactionsTable input={{ orgSlug }} procedure={trpc.orgs.transactions.getAll} />
     </div>
   );
 }

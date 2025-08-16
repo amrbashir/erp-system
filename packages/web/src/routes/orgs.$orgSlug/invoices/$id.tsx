@@ -29,20 +29,26 @@ function RouteComponent() {
   if (!invoice) return null;
 
   const columnHelper = createColumnHelper<InvoiceItem>();
-  const itemsColumns = React.useMemo(
+  const columns = React.useMemo(
     () => [
       columnHelper.display({
         id: "index",
         header: t("common.ui.number"),
         cell: (info) => info.row.index + 1,
       }),
-      { accessorKey: "barcode", header: t("common.form.barcode") },
-      { accessorKey: "description", header: t("common.form.description") },
+      columnHelper.accessor("barcode", {
+        header: t("common.form.barcode"),
+      }),
+      columnHelper.accessor("description", {
+        header: t("common.form.description"),
+      }),
       columnHelper.accessor("price", {
         header: t("common.form.price"),
         cell: (info) => formatMoney(info.getValue()),
       }),
-      { accessorKey: "quantity", header: t("common.form.quantity") },
+      columnHelper.accessor("quantity", {
+        header: t("common.form.quantity"),
+      }),
       columnHelper.accessor("discountPercent", {
         header: t("common.form.discountPercent"),
         cell: (info) => `${info.getValue()}%`,
@@ -131,7 +137,7 @@ function RouteComponent() {
         </CardContent>
       </Card>
 
-      <DataTable columns={itemsColumns} data={invoice.items ?? []} />
+      <DataTable data={invoice.items} columns={columns} />
     </div>
   );
 }

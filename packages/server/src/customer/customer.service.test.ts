@@ -1,12 +1,12 @@
+import { generateRandomOrgData, useRandomDatabase } from "@erp-system/utils/testing.ts";
 import { expect } from "@std/expect";
 import { afterAll, beforeAll, describe, it } from "@std/testing/bdd";
 
 import { InvoiceService } from "@/invoice/invoice.service.ts";
 import { OrgService } from "@/org/org.service.ts";
+import { PrismaClient } from "@/prisma/client.ts";
 
 import type { CreateCustomerDto } from "./customer.dto.ts";
-import { generateRandomOrgData, useRandomDatabase } from "../../../utils/src/testing.ts";
-import { PrismaClient } from "../prisma/client.ts";
 import { CustomerService } from "./customer.service.ts";
 
 describe("CustomerService", () => {
@@ -54,7 +54,7 @@ describe("CustomerService", () => {
 
     const customer2 = await customerService.create({ name: "Customer Two" }, org.slug);
 
-    const customers = await customerService.getAll(org.slug);
+    const { data: customers } = await customerService.getAll(org.slug);
     expect(customers).toBeDefined();
     expect(customers.length).toBeGreaterThanOrEqual(2);
     expect(customers).toContainEqual(expect.objectContaining({ id: customer1.id }));

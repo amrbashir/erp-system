@@ -1,10 +1,10 @@
+import { generateRandomOrgData, useRandomDatabase } from "@erp-system/utils/testing.ts";
 import { expect } from "@std/expect";
 import { afterAll, beforeAll, describe, it } from "@std/testing/bdd";
 
 import { OrgService } from "@/org/org.service.ts";
+import { PrismaClient } from "@/prisma/client.ts";
 
-import { generateRandomOrgData, useRandomDatabase } from "../../../utils/src/testing.ts";
-import { PrismaClient } from "../prisma/client.ts";
 import { ProductService } from "./product.service.ts";
 
 describe("ProductService", () => {
@@ -70,7 +70,7 @@ describe("ProductService", () => {
       },
     });
 
-    const products = await productService.getAll(org.slug);
+    const { data: products } = await productService.getAll(org.slug);
     expect(products).toBeDefined();
     expect(products.length).toBeGreaterThanOrEqual(2);
     expect(products).toContainEqual(expect.objectContaining({ id: product1.id }));

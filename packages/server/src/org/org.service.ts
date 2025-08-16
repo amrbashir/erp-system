@@ -4,11 +4,12 @@ import { TRPCError } from "@trpc/server";
 import * as argon2 from "argon2";
 import { Decimal } from "decimal.js";
 
-import type { PrismaClient } from "../prisma/client.ts";
-import type { Organization } from "../prisma/index.ts";
+import type { PrismaClient } from "@/prisma/client.ts";
+import type { Organization } from "@/prisma/index.ts";
+import { OTelInstrument } from "@/otel/instrument.decorator.ts";
+import { TransactionType, UserRole } from "@/prisma/index.ts";
+
 import type { AddBalanceDto, CreateOrgDto } from "./org.dto.ts";
-import { OTelInstrument } from "../otel/instrument.decorator.ts";
-import { TransactionType, UserRole } from "../prisma/index.ts";
 
 export interface OrganizationStatistics {
   name: string;

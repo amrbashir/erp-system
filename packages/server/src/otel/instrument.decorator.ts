@@ -1,10 +1,12 @@
 import { SpanStatusCode } from "@opentelemetry/api";
 
-import { tracer } from "../otel/tracer.ts";
+import { tracer } from "@/otel/tracer.ts";
+
 import { toOtelException } from "./otel-exception.ts";
 
 export function OTelInstrument(
-  method: (...args: unknown[]) => unknown,
+  // deno-lint-ignore no-explicit-any
+  method: (...args: any[]) => any,
   { name }: { name: string },
 ) {
   return function (this: object, ...args: unknown[]) {

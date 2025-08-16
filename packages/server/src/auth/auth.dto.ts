@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { UserRole } from "../prisma/index.ts";
+import type { UserRole } from "@/prisma/index.ts";
 
 export const LoginUserDto = z.object({
   username: z.string().nonempty(),
