@@ -74,14 +74,14 @@ function RouteComponent() {
           <TabsTrigger value="transactions">{t("routes.transactions")}</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="invoices" className="mt-4">
+        <TabsContent value="invoices" className="flex flex-col gap-4">
           <InvoicesTable
             procedure={trpc.orgs.invoices.getByCustomerId}
             input={{ orgSlug, customerId: customer.id }}
           />
         </TabsContent>
 
-        <TabsContent value="transactions" className="mt-4">
+        <TabsContent value="transactions" className="flex flex-col gap-4">
           <TransactionsTable
             procedure={trpc.orgs.transactions.getByCustomerId}
             input={{ orgSlug, customerId: customer.id }}
