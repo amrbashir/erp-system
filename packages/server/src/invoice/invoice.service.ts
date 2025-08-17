@@ -31,11 +31,13 @@ export class InvoiceService {
     },
   ): Promise<PaginatedOutput<InvoiceWithRelations[]>> {
     try {
+      const where = {
+        ...options?.where,
+        organization: { slug: orgSlug },
+      };
+
       const invoices = await this.prisma.invoice.findMany({
-        where: {
-          ...options?.where,
-          organization: { slug: orgSlug },
-        },
+        where,
         skip: options?.pagination?.skip,
         take: options?.pagination?.take,
         include: {
@@ -46,12 +48,7 @@ export class InvoiceService {
         orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
 
-      const totalCount = await this.prisma.invoice.count({
-        where: {
-          ...options?.where,
-          organization: { slug: orgSlug },
-        },
-      });
+      const totalCount = await this.prisma.invoice.count({ where });
 
       return { data: invoices, totalCount };
     } catch (error) {
@@ -103,12 +100,14 @@ export class InvoiceService {
     },
   ): Promise<PaginatedOutput<InvoiceWithRelations[]>> {
     try {
+      const where = {
+        ...options?.where,
+        customerId,
+        organization: { slug: orgSlug },
+      };
+
       const invoices = await this.prisma.invoice.findMany({
-        where: {
-          ...options?.where,
-          customerId,
-          organization: { slug: orgSlug },
-        },
+        where,
         skip: options?.pagination?.skip,
         take: options?.pagination?.take,
         include: {
@@ -119,13 +118,7 @@ export class InvoiceService {
         orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
 
-      const totalCount = await this.prisma.invoice.count({
-        where: {
-          ...options?.where,
-          customerId,
-          organization: { slug: orgSlug },
-        },
-      });
+      const totalCount = await this.prisma.invoice.count({ where });
 
       return { data: invoices, totalCount };
     } catch (error) {

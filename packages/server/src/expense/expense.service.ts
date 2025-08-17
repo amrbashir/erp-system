@@ -4,7 +4,7 @@ import { Decimal } from "decimal.js";
 
 import type { PaginationDto } from "@/dto/pagination.dto.ts";
 import type { PrismaClient } from "@/prisma/client.ts";
-import type { ExpenseOrderByWithRelationInput } from "@/prisma/index.ts";
+import type { ExpenseOrderByWithRelationInput, ExpenseWhereInput } from "@/prisma/index.ts";
 import { PaginatedOutput } from "@/dto/pagination.dto.ts";
 import { OTelInstrument } from "@/otel/instrument.decorator.ts";
 import { TransactionType } from "@/prisma/index.ts";
@@ -60,13 +60,19 @@ export class ExpenseService {
   async getAll(
     orgSlug: string,
     options?: {
+      where?: Omit<ExpenseWhereInput, "organization" | "organizationId">;
       pagination?: PaginationDto;
       orderBy?: ExpenseOrderByWithRelationInput | ExpenseOrderByWithRelationInput[];
     },
   ): Promise<PaginatedOutput<ExpenseWithCashier[]>> {
     try {
+      const where = {
+        ...options?.where,
+        organization: { slug: orgSlug },
+      };
+
       const expenses = await this.prisma.expense.findMany({
-        where: { organization: { slug: orgSlug } },
+        where,
         skip: options?.pagination?.skip,
         take: options?.pagination?.take,
         orderBy: options?.orderBy ?? { createdAt: "desc" },
@@ -75,9 +81,7 @@ export class ExpenseService {
         },
       });
 
-      const totalCount = await this.prisma.expense.count({
-        where: { organization: { slug: orgSlug } },
-      });
+      const totalCount = await this.prisma.expense.count({ where });
 
       return { data: expenses, totalCount };
     } catch (error) {

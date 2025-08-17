@@ -1,7 +1,6 @@
 import { z } from "zod";
 
-import { PaginationDto } from "@/dto/pagination.dto.ts";
-import { SortingDto } from "@/dto/sorting.dto.ts";
+import { FilteringDto } from "@/dto/index.ts";
 import { authenticatedOrgProcedure } from "@/org/org.procedure.ts";
 import { InvoiceType } from "@/prisma/index.ts";
 import { router } from "@/trpc/index.ts";
@@ -10,18 +9,41 @@ import { CreatePurchaseInvoiceDto, CreateSaleInvoiceDto } from "./invoice.dto.ts
 
 export const invoiceRouter = router({
   getAll: authenticatedOrgProcedure
+    .input(FilteringDto)
     .input(
       z.object({
-        pagination: PaginationDto.optional(),
-        sorting: SortingDto.optional(),
         type: z.enum(InvoiceType).optional(),
       }),
     )
     .query(({ ctx, input }) =>
       ctx.invoiceService.getAllInvoices(input.orgSlug, {
+        where: {
+          type: input.type,
+          ...(input.search
+            ? {
+                OR: [
+                  {
+                    customer: {
+                      name: {
+                        contains: input.search,
+                        mode: "insensitive",
+                      },
+                    },
+                  },
+                  {
+                    cashier: {
+                      username: {
+                        contains: input.search,
+                        mode: "insensitive",
+                      },
+                    },
+                  },
+                ],
+              }
+            : {}),
+        },
         pagination: input.pagination,
         orderBy: input.sorting,
-        where: { type: input.type },
       }),
     ),
 
@@ -42,11 +64,10 @@ export const invoiceRouter = router({
     .query(({ ctx, input }) => ctx.invoiceService.findById(input.orgSlug, input.id)),
 
   getByCustomerId: authenticatedOrgProcedure
+    .input(FilteringDto)
     .input(
       z.object({
         customerId: z.number(),
-        pagination: PaginationDto.optional(),
-        sorting: SortingDto.optional(),
         type: z.enum(InvoiceType).optional(),
       }),
     )

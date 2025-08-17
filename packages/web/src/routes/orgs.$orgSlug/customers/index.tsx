@@ -70,7 +70,12 @@ function RouteComponent() {
         <CustomerDialog action="create" />
       </div>
 
-      <DataTableServerPaginated procedure={procedure} input={{ orgSlug }} columns={columns} />
+      <DataTableServerPaginated
+        procedure={procedure}
+        input={{ orgSlug }}
+        columns={columns}
+        searchPlaceholder={t("customer.search")}
+      />
     </div>
   );
 }

@@ -4,7 +4,12 @@ import { Decimal } from "decimal.js";
 
 import type { PaginatedOutput, PaginationDto } from "@/dto/pagination.dto.ts";
 import type { PrismaClient } from "@/prisma/client.ts";
-import type { Customer, CustomerOrderByWithRelationInput, Transaction } from "@/prisma/index.ts";
+import type {
+  Customer,
+  CustomerOrderByWithRelationInput,
+  CustomerWhereInput,
+  Transaction,
+} from "@/prisma/index.ts";
 import { OTelInstrument } from "@/otel/instrument.decorator.ts";
 import { TransactionType } from "@/prisma/index.ts";
 
@@ -134,21 +139,25 @@ export class CustomerService {
   async getAll(
     orgSlug: string,
     options?: {
+      where?: Omit<CustomerWhereInput, "organization" | "organizationId">;
       pagination?: PaginationDto;
       orderBy?: CustomerOrderByWithRelationInput | CustomerOrderByWithRelationInput[];
     },
   ): Promise<PaginatedOutput<Customer[]>> {
     try {
+      const where = {
+        ...options?.where,
+        organization: { slug: orgSlug },
+      };
+
       const customers = await this.prisma.customer.findMany({
-        where: { organization: { slug: orgSlug } },
+        where,
         skip: options?.pagination?.skip,
         take: options?.pagination?.take,
         orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
 
-      const totalCount = await this.prisma.customer.count({
-        where: { organization: { slug: orgSlug } },
-      });
+      const totalCount = await this.prisma.customer.count({ where });
 
       return { data: customers, totalCount };
     } catch (error) {

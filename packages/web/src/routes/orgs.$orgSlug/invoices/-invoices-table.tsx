@@ -125,5 +125,11 @@ export function InvoicesTable<TInput extends ServerPaginationParams>(
     [t, orgSlug],
   );
 
-  return <DataTableServerPaginated {...props} columns={columns} />;
+  return (
+    <DataTableServerPaginated
+      {...props}
+      columns={columns}
+      searchPlaceholder={t("invoice.search")}
+    />
+  );
 }

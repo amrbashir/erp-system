@@ -87,7 +87,12 @@ function RouteComponent() {
         </ButtonLink>
       </div>
 
-      <DataTableServerPaginated procedure={procedure} input={{ orgSlug }} columns={columns} />
+      <DataTableServerPaginated
+        procedure={procedure}
+        input={{ orgSlug }}
+        columns={columns}
+        searchPlaceholder={t("product.search")}
+      />
     </div>
   );
 }

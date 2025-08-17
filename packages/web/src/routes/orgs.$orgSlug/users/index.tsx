@@ -97,7 +97,12 @@ function RouteComponent() {
         <AddUserDialog />
       </div>
 
-      <DataTableServerPaginated procedure={procedure} input={{ orgSlug }} columns={columns} />
+      <DataTableServerPaginated
+        procedure={procedure}
+        input={{ orgSlug }}
+        columns={columns}
+        searchPlaceholder={t("user.search")}
+      />
     </div>
   );
 }

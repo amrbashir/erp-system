@@ -97,5 +97,11 @@ export function TransactionsTable<TInput extends ServerPaginationParams>(
     [orgSlug, t],
   );
 
-  return <DataTableServerPaginated {...props} columns={columns} />;
+  return (
+    <DataTableServerPaginated
+      {...props}
+      columns={columns}
+      searchPlaceholder={t("transaction.search")}
+    />
+  );
 }

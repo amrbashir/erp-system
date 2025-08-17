@@ -3,7 +3,11 @@ import { TRPCError } from "@trpc/server";
 
 import type { PaginationDto } from "@/dto/pagination.dto.ts";
 import type { PrismaClient } from "@/prisma/client.ts";
-import type { Product, ProductOrderByWithRelationInput } from "@/prisma/index.ts";
+import type {
+  Product,
+  ProductOrderByWithRelationInput,
+  ProductWhereInput,
+} from "@/prisma/index.ts";
 import { PaginatedOutput } from "@/dto/pagination.dto.ts";
 import { OTelInstrument } from "@/otel/instrument.decorator.ts";
 
@@ -78,21 +82,25 @@ export class ProductService {
   async getAll(
     orgSlug: string,
     options?: {
+      where?: Omit<ProductWhereInput, "organization" | "organizationId">;
       pagination?: PaginationDto;
       orderBy?: ProductOrderByWithRelationInput | ProductOrderByWithRelationInput[];
     },
   ): Promise<PaginatedOutput<Product[]>> {
     try {
+      const where = {
+        ...options?.where,
+        organization: { slug: orgSlug },
+      };
+
       const products = await this.prisma.product.findMany({
-        where: { organization: { slug: orgSlug } },
+        where,
         skip: options?.pagination?.skip,
         take: options?.pagination?.take,
         orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
 
-      const totalCount = await this.prisma.product.count({
-        where: { organization: { slug: orgSlug } },
-      });
+      const totalCount = await this.prisma.product.count({ where });
 
       return { data: products, totalCount };
     } catch (error) {

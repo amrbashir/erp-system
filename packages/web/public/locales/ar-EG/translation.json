@@ -50,7 +50,8 @@
       "count": "عدد",
       "or": "أو",
       "row": "صف",
-      "noMatches": "لم يتم العثور على عنصر مطابق"
+      "noMatches": "لم يتم العثور على عنصر مطابق",
+      "searchByName": "ابحث بالاسم..."
     },
     "pricing": {
       "purchase": "سعر الشراء",
@@ -134,6 +135,7 @@
     "add": "$t(common.actions.add) مستخدم",
     "addDescription": "يمكنك إضافة مستخدمين جدد إلى النظام. يرجى ملء التفاصيل أدناه",
     "deleteDescription": "أنت على وشك حذف المستخدم '{{username}}'",
+    "search": "$t(common.actions.search) المستخدمين...",
     "role": "$t(common.form.role)",
     "roles": {
       "ADMIN": "مدير",
@@ -182,6 +184,7 @@
     },
     "number": "$t(common.ui.number) الفاتورة",
     "type": "نوع الفاتورة",
+    "search": "$t(common.actions.search) الفواتير...",
     "createdSuccessfully": "تم إنشاء الفاتورة بنجاح",
     "addItemsTo": "أضف عناصر إلى الفاتورة",
     "total": "اجمالى الفاتورة"
@@ -189,6 +192,7 @@
 
   "transaction": {
     "type": "نوع المعاملة",
+    "search": "$t(common.actions.search) المعاملات...",
     "types": {
       "INVOICE": "فاتورة",
       "EXPENSE": "مصروف",
@@ -200,7 +204,8 @@
 
   "expense": {
     "add": "$t(common.actions.add) مصروف",
-    "addDescription": "يمكنك إضافة مصروفات جديدة إلى النظام. يرجى ملء التفاصيل أدناه"
+    "addDescription": "يمكنك إضافة مصروفات جديدة إلى النظام. يرجى ملء التفاصيل أدناه",
+    "search": "$t(common.actions.search) المصروفات..."
   },
 
   "overview": {

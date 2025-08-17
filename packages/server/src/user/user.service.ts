@@ -122,19 +122,19 @@ export class UserService {
     },
   ): Promise<PaginatedOutput<User[]>> {
     try {
+      const where = {
+        ...options?.where,
+        organization: { slug: orgSlug },
+      };
+
       const users = await this.prisma.user.findMany({
+        where,
         skip: options?.pagination?.skip,
         take: options?.pagination?.take,
         orderBy: options?.orderBy ?? { createdAt: "desc" },
-        where: {
-          ...options?.where,
-          organization: { slug: orgSlug },
-        },
       });
 
-      const totalCount = await this.prisma.user.count({
-        where: { organization: { slug: orgSlug }, ...options?.where },
-      });
+      const totalCount = await this.prisma.user.count({ where });
 
       return { data: users, totalCount };
     } catch (error) {

@@ -41,23 +41,20 @@ export class TransactionService {
     },
   ): Promise<PaginatedOutput<TransactionWithRelations[]>> {
     try {
+      const where = {
+        ...options?.where,
+        organization: { slug: orgSlug },
+      };
+
       const transactions = await this.prisma.transaction.findMany({
-        where: {
-          ...options?.where,
-          organization: { slug: orgSlug },
-        },
+        where,
         skip: options?.pagination?.skip,
         take: options?.pagination?.take,
         include: includeTransactionRelations,
         orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
 
-      const totalCount = await this.prisma.transaction.count({
-        where: {
-          ...options?.where,
-          organization: { slug: orgSlug },
-        },
-      });
+      const totalCount = await this.prisma.transaction.count({ where });
 
       return { data: transactions, totalCount };
     } catch (error) {
@@ -83,25 +80,21 @@ export class TransactionService {
     },
   ): Promise<PaginatedOutput<TransactionWithRelations[]>> {
     try {
+      const where = {
+        ...options?.where,
+        customerId,
+        organization: { slug: orgSlug },
+      };
+
       const transactions = await this.prisma.transaction.findMany({
-        where: {
-          ...options?.where,
-          customerId,
-          organization: { slug: orgSlug },
-        },
+        where,
         skip: options?.pagination?.skip,
         take: options?.pagination?.take,
         include: includeTransactionRelations,
         orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
 
-      const totalCount = await this.prisma.transaction.count({
-        where: {
-          ...options?.where,
-          customerId,
-          organization: { slug: orgSlug },
-        },
-      });
+      const totalCount = await this.prisma.transaction.count({ where });
 
       return { data: transactions, totalCount };
     } catch (error) {

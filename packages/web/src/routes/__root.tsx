@@ -29,6 +29,7 @@ const defaultSearchParams = {
   page: 0,
   pageSize: 30,
   sorting: [],
+  search: "",
 };
 
 const searchSchema = z.object({
@@ -37,6 +38,7 @@ const searchSchema = z.object({
   loginUsername: z.string().optional(),
 
   // Pagination and sorting parameters
+  search: z.string().optional(),
   page: z.number().default(defaultSearchParams.page),
   pageSize: z.number().default(defaultSearchParams.pageSize),
   sorting: z

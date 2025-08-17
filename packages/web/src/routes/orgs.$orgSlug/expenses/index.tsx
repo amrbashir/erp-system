@@ -64,7 +64,12 @@ function RouteComponent() {
         <AddExpenseDialog />
       </div>
 
-      <DataTableServerPaginated procedure={procedure} input={{ orgSlug }} columns={columns} />
+      <DataTableServerPaginated
+        procedure={procedure}
+        input={{ orgSlug }}
+        columns={columns}
+        searchPlaceholder={t("expense.search")}
+      />
     </div>
   );
 }

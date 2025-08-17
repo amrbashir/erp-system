@@ -130,6 +130,7 @@
     "add": "$t(common.actions.add) User",
     "addDescription": "You can add new users to the system. Please fill in the details below",
     "deleteDescription": "You are about to delete the user '{{username}}'",
+    "search": "$t(common.actions.search) users...",
     "role": "$t(common.form.role)",
     "roles": {
       "ADMIN": "Admin",
@@ -182,6 +183,7 @@
     },
     "number": "Invoice $t(common.ui.number)",
     "type": "Invoice Type",
+    "search": "$t(common.actions.search) invoices...",
     "createdSuccessfully": "Invoice created successfully",
     "addItemsTo": "$t(common.actions.add) items to the invoice",
     "addRow": "$t(common.actions.add) $t(common.ui.row)",
@@ -190,6 +192,7 @@
 
   "transaction": {
     "type": "Transaction Type",
+    "search": "$t(common.actions.search) transactions...",
     "types": {
       "INVOICE": "Invoice",
       "EXPENSE": "Expense",
@@ -201,7 +204,8 @@
 
   "expense": {
     "add": "$t(common.actions.add) Expense",
-    "addDescription": "You can add new expenses to the system. Please fill in the details below"
+    "addDescription": "You can add new expenses to the system. Please fill in the details below",
+    "search": "$t(common.actions.search) expenses..."
   },
 
   "overview": {

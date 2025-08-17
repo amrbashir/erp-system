@@ -20,7 +20,7 @@ function RouteComponent() {
   const { orgSlug } = useAuthUser();
 
   return (
-    <div className="gap-4 p-4">
+    <div className="flex flex-col gap-4 p-4">
       <TransactionsTable input={{ orgSlug }} procedure={trpc.orgs.transactions.getAll} />
     </div>
   );
