@@ -1,7 +1,9 @@
 import {
   Column,
-  getCoreRowModel as defaultGetCoreRowModel,
   flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  SortingState,
   TableOptions,
   Table as TanstackReactTable,
   useReactTable,
@@ -35,27 +37,43 @@ import {
 } from "@/shadcn/components/ui/table.tsx";
 import { cn } from "@/shadcn/lib/utils.ts";
 
-type DataTableProps<TData> = Omit<TableOptions<TData>, "getCoreRowModel"> & {
-  getCoreRowModel?: ReturnType<typeof defaultGetCoreRowModel>;
-};
-
+type DataTableProps<TData> = Pick<
+  TableOptions<TData>,
+  | "data"
+  | "columns"
+  | "rowCount"
+  | "manualFiltering"
+  | "manualPagination"
+  | "manualSorting"
+  | "state"
+  | "onPaginationChange"
+  | "onSortingChange"
+>;
 export function DataTable<TData>({
   columns,
-  getCoreRowModel = defaultGetCoreRowModel(),
-  state = {
-    pagination: { pageIndex: 0, pageSize: 30 },
-    sorting: [],
-  },
+  state,
+  onPaginationChange,
+  onSortingChange,
   ...props
 }: DataTableProps<TData>) {
   const { t, i18n } = useTranslation();
 
+  const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 30 });
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+
   const table = useReactTable({
-    getCoreRowModel,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getCoreRowModel(),
     columns,
     columnResizeMode: "onChange",
     columnResizeDirection: i18n.dir(),
-    state,
+    state: state ?? {
+      pagination,
+      sorting,
+    },
+    onPaginationChange: onPaginationChange ?? setPagination,
+    onSortingChange: onSortingChange ?? setSorting,
     ...props,
   });
 
