@@ -3,6 +3,7 @@ import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   OnChangeFn,
   PaginationState,
   SortingState,
@@ -76,9 +77,10 @@ export function DataTable<TData>({ columns, ...props }: DataTableProps<TData>) {
   };
 
   const table = useReactTable({
+    ...props,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     columns,
     columnResizeMode: "onChange",
     columnResizeDirection: i18n.dir(),
@@ -89,7 +91,6 @@ export function DataTable<TData>({ columns, ...props }: DataTableProps<TData>) {
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
     autoResetAll: false,
-    ...props,
   });
 
   /**
