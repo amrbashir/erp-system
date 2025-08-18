@@ -48,7 +48,6 @@ function RouteComponent() {
       }),
       columnHelper.display({
         id: "actions",
-        enableSorting: false,
         meta: { className: "text-end" },
         cell: ({ row }) => (
           <ButtonLink

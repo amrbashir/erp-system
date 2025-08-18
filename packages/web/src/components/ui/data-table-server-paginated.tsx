@@ -1,7 +1,6 @@
 import { PaginatedOutput } from "@erp-system/server/dto/pagination.dto.ts";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
-import { ColumnDef, OnChangeFn, PaginationState, SortingState } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { DecorateQueryProcedure } from "@trpc/tanstack-react-query";
 import { Input } from "@/shadcn/components/ui/input.tsx";
 
@@ -41,7 +40,7 @@ export function DataTableServerPaginated<TInput extends ServerPaginationParams, 
   input,
   searchPlaceholder,
 }: DataTableProps<TInput, TData>) {
-  const navigate = useNavigate({ from: OrgRoute.fullPath });
+  const navigate = OrgRoute.useNavigate();
 
   const { page, pageSize, sort, search } = OrgRoute.useSearch();
 
@@ -53,30 +52,6 @@ export function DataTableServerPaginated<TInput extends ServerPaginationParams, 
       ...input,
     }),
   );
-
-  const paginationState = { pageIndex: page, pageSize: pageSize };
-  const sortingState = sort.map((s) => ({ id: s.orderBy, desc: s.desc }));
-
-  const updateSearchParams = (pagination: PaginationState, sorting: SortingState) => {
-    navigate({
-      search: {
-        search,
-        page: pagination.pageIndex,
-        pageSize: pagination.pageSize,
-        sort: sorting.map((s) => ({ orderBy: s.id, desc: s.desc })),
-      },
-    });
-  };
-
-  const setPagination: OnChangeFn<PaginationState> = (state) => {
-    const newState = typeof state === "function" ? state(paginationState) : state;
-    updateSearchParams(newState, sortingState);
-  };
-
-  const setSorting: OnChangeFn<SortingState> = (state) => {
-    const newState = typeof state === "function" ? state(sortingState) : state;
-    updateSearchParams(paginationState, newState);
-  };
 
   return (
     <>
@@ -93,15 +68,9 @@ export function DataTableServerPaginated<TInput extends ServerPaginationParams, 
         data={data}
         columns={columns}
         rowCount={totalCount}
-        onPaginationChange={setPagination}
-        onSortingChange={setSorting}
         manualPagination
         manualSorting
         manualFiltering
-        state={{
-          pagination: paginationState,
-          sorting: sortingState,
-        }}
       />
     </>
   );

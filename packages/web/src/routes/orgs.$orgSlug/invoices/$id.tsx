@@ -31,7 +31,7 @@ function RouteComponent() {
   const columnHelper = createColumnHelper<InvoiceItem>();
   const columns = React.useMemo(
     () => [
-      columnHelper.display({
+      columnHelper.accessor((_, index) => index, {
         id: "index",
         header: t("common.ui.number"),
         cell: (info) => info.row.index + 1,

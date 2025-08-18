@@ -109,7 +109,6 @@ export function InvoicesTable<TInput extends ServerPaginationParams>(
       }),
       columnHelper.display({
         id: "actions",
-        enableSorting: false,
         meta: { className: "text-end" },
         cell: ({ row }) => (
           <ButtonLink

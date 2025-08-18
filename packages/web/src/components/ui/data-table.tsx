@@ -3,6 +3,8 @@ import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  OnChangeFn,
+  PaginationState,
   SortingState,
   TableOptions,
   Table as TanstackReactTable,
@@ -37,29 +39,41 @@ import {
 } from "@/shadcn/components/ui/table.tsx";
 import { cn } from "@/shadcn/lib/utils.ts";
 
+import { Route as OrgRoute } from "@/routes/orgs.$orgSlug/route.tsx";
+
 type DataTableProps<TData> = Pick<
   TableOptions<TData>,
-  | "data"
-  | "columns"
-  | "rowCount"
-  | "manualFiltering"
-  | "manualPagination"
-  | "manualSorting"
-  | "state"
-  | "onPaginationChange"
-  | "onSortingChange"
+  "data" | "columns" | "rowCount" | "manualFiltering" | "manualPagination" | "manualSorting"
 >;
-export function DataTable<TData>({
-  columns,
-  state,
-  onPaginationChange,
-  onSortingChange,
-  ...props
-}: DataTableProps<TData>) {
+export function DataTable<TData>({ columns, ...props }: DataTableProps<TData>) {
   const { t, i18n } = useTranslation();
 
-  const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 30 });
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const navigate = OrgRoute.useNavigate();
+  const { page, pageSize, sort, search } = OrgRoute.useSearch();
+
+  const paginationState = { pageIndex: page, pageSize: pageSize };
+  const sortingState = sort.map((s) => ({ id: s.orderBy, desc: s.desc }));
+
+  const updateSearchParams = (pagination: PaginationState, sorting: SortingState) => {
+    navigate({
+      search: {
+        search,
+        page: pagination.pageIndex,
+        pageSize: pagination.pageSize,
+        sort: sorting.map((s) => ({ orderBy: s.id, desc: s.desc })),
+      },
+    });
+  };
+
+  const setPagination: OnChangeFn<PaginationState> = (state) => {
+    const newState = typeof state === "function" ? state(paginationState) : state;
+    updateSearchParams(newState, sortingState);
+  };
+
+  const setSorting: OnChangeFn<SortingState> = (state) => {
+    const newState = typeof state === "function" ? state(sortingState) : state;
+    updateSearchParams(paginationState, newState);
+  };
 
   const table = useReactTable({
     getCoreRowModel: getCoreRowModel(),
@@ -68,12 +82,13 @@ export function DataTable<TData>({
     columns,
     columnResizeMode: "onChange",
     columnResizeDirection: i18n.dir(),
-    state: state ?? {
-      pagination,
-      sorting,
+    state: {
+      pagination: paginationState,
+      sorting: sortingState,
     },
-    onPaginationChange: onPaginationChange ?? setPagination,
-    onSortingChange: onSortingChange ?? setSorting,
+    onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    autoResetAll: false,
     ...props,
   });
 
