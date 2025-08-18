@@ -18,7 +18,7 @@ export const userRouter = router({
           }
         : undefined,
       pagination: input.pagination,
-      orderBy: input.sorting,
+      orderBy: input.sort,
     }),
   ),
 

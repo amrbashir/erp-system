@@ -30,7 +30,7 @@ export const transactionRouter = router({
           }
         : undefined,
       pagination: input.pagination,
-      orderBy: input.sorting,
+      orderBy: input.sort,
     }),
   ),
 
@@ -62,7 +62,7 @@ export const transactionRouter = router({
             }
           : undefined,
         pagination: input.pagination,
-        orderBy: input.sorting,
+        orderBy: input.sort,
       }),
     ),
 });

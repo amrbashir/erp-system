@@ -28,7 +28,7 @@ interface RouterContext {
 const defaultSearchParams = {
   page: 0,
   pageSize: 30,
-  sorting: [],
+  sort: [],
   search: "",
 };
 
@@ -37,11 +37,11 @@ const searchSchema = z.object({
   loginOrgSlug: z.string().optional(),
   loginUsername: z.string().optional(),
 
-  // Pagination and sorting parameters
+  // Pagination and sort parameters
   search: z.string().optional(),
   page: z.number().default(defaultSearchParams.page),
   pageSize: z.number().default(defaultSearchParams.pageSize),
-  sorting: z
+  sort: z
     .array(
       z.object({
         orderBy: z.string(),

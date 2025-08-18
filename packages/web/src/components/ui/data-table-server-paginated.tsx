@@ -43,19 +43,19 @@ export function DataTableServerPaginated<TInput extends ServerPaginationParams, 
 }: DataTableProps<TInput, TData>) {
   const navigate = useNavigate({ from: OrgRoute.fullPath });
 
-  const { page, pageSize, sorting, search } = OrgRoute.useSearch();
+  const { page, pageSize, sort, search } = OrgRoute.useSearch();
 
   const { data: { data, totalCount } = { data: [], totalCount: 0 } } = useQuery(
     procedure.queryOptions({
       search,
       pagination: { page, pageSize },
-      sorting,
+      sort,
       ...input,
     }),
   );
 
   const paginationState = { pageIndex: page, pageSize: pageSize };
-  const sortingState = sorting.map((s) => ({ id: s.orderBy, desc: s.desc }));
+  const sortingState = sort.map((s) => ({ id: s.orderBy, desc: s.desc }));
 
   const updateSearchParams = (pagination: PaginationState, sorting: SortingState) => {
     navigate({
@@ -63,7 +63,7 @@ export function DataTableServerPaginated<TInput extends ServerPaginationParams, 
         search,
         page: pagination.pageIndex,
         pageSize: pagination.pageSize,
-        sorting: sorting.map((s) => ({ orderBy: s.id, desc: s.desc })),
+        sort: sorting.map((s) => ({ orderBy: s.id, desc: s.desc })),
       },
     });
   };

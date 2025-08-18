@@ -43,7 +43,7 @@ export const invoiceRouter = router({
             : {}),
         },
         pagination: input.pagination,
-        orderBy: input.sorting,
+        orderBy: input.sort,
       }),
     ),
 
@@ -74,7 +74,7 @@ export const invoiceRouter = router({
     .query(({ ctx, input }) =>
       ctx.invoiceService.findByCustomerId(input.orgSlug, input.customerId, {
         pagination: input.pagination,
-        orderBy: input.sorting,
+        orderBy: input.sort,
       }),
     ),
 });

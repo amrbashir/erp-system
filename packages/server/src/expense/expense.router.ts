@@ -16,7 +16,7 @@ export const expenseRouter = router({
           }
         : undefined,
       pagination: input.pagination,
-      orderBy: input.sorting,
+      orderBy: input.sort,
     }),
   ),
 
