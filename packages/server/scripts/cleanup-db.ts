@@ -26,6 +26,7 @@ export async function cleanupDatabase() {
       // Delete remaining entities
       await prisma.product.deleteMany({ where: filter });
       await prisma.customer.deleteMany({ where: filter });
+      await prisma.session.deleteMany({ where: { user: filter } });
       await prisma.user.deleteMany({ where: filter });
 
       // Finally delete the organization

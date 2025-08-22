@@ -36,6 +36,15 @@ async function populateOrg(slug: string) {
     },
   });
 
+  // create a session for the user
+  await prisma.session.create({
+    data: {
+      userId: user.id,
+      sid: crypto.randomUUID(),
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours from now
+    },
+  });
+
   // create a customer
   const customer = await prisma.customer.create({
     data: {
