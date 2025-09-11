@@ -34,8 +34,8 @@ function RouteComponent() {
   const loginFormPasswordRef = React.useRef<HTMLInputElement>(null);
 
   return (
-    <main className="w-full px-5 py-10 md:pt-[25%]">
-      <div className="md:w-fit mx-auto flex flex-col items-center gap-10 *:w-full *:md:w-auto">
+    <main className="p-5 md:pt-[25vh]">
+      <div className="w-full *:w-full md:w-fit md:*:w-fit mx-auto flex flex-col items-center gap-10">
         <div className="flex flex-col md:flex-row items-center gap-10 md:gap-20">
           <Welcome />
           <Separator className="md:hidden" />

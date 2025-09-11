@@ -16,7 +16,7 @@ export function Header() {
   if (inOrgRoute) return null;
 
   return (
-    <header className="sticky top-0 z-49 w-screen h-(--header-height) p-4 flex items-center gap-2 backdrop-blur-sm bg-background/80 border-b border-border">
+    <header className="sticky top-0 z-49 h-(--header-height) p-4 flex items-center gap-2 backdrop-blur-sm bg-background/80 border-b border-border">
       <div className="flex-1" />
 
       <LanguageSelector />

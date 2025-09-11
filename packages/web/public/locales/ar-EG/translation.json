@@ -121,7 +121,7 @@
     "username": "$t(common.form.username) (للمدير)",
     "password": "$t(common.form.password) (للمدير)",
     "yours": "مؤسستك",
-    "createNew": "$t(common.actions.create) مؤسسة جديدة",
+    "createNew": "انشئ مؤسسة جديدة",
     "createNewDescription": "قم بإعداد مؤسسة جديدة. يرجى ملء التفاصيل أدناه",
     "goToYours": "$t(common.actions.go) إلى مؤسستك",
     "goToYoursDescription": "ادخل اسم المؤسسة الخاصة بك للمتابعة",
