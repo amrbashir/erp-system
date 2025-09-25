@@ -1,9 +1,17 @@
 import { InvoiceItem } from "@erp-system/server/prisma";
 import { createFileRoute } from "@tanstack/react-router";
 import { createColumnHelper } from "@tanstack/react-table";
+import { PrinterIcon } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/components/ui/card.tsx";
+import { Button } from "@/shadcn/components/ui/button.tsx";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/shadcn/components/ui/card.tsx";
 import { Table, TableBody, TableCell, TableRow } from "@/shadcn/components/ui/table.tsx";
 import { cn } from "@/shadcn/lib/utils.ts";
 
@@ -12,6 +20,8 @@ import i18n from "@/i18n.ts";
 import { trpcClient } from "@/trpc.ts";
 import { formatDate } from "@/utils/formatDate.ts";
 import { formatMoney } from "@/utils/formatMoney.ts";
+
+import { printInvoice } from "./-print-invoice.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/invoices/$id")({
   component: RouteComponent,
@@ -24,7 +34,7 @@ export const Route = createFileRoute("/orgs/$orgSlug/invoices/$id")({
 
 function RouteComponent() {
   const invoice = Route.useLoaderData();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   if (!invoice) return null;
 
@@ -76,6 +86,11 @@ function RouteComponent() {
           <CardTitle>
             {t("routes.invoiceDetails")} # {invoice.id}
           </CardTitle>
+          <CardAction>
+            <Button variant="ghost" onClick={() => printInvoice(invoice, i18n)}>
+              <PrinterIcon />
+            </Button>
+          </CardAction>
         </CardHeader>
         <CardContent>
           <Table>

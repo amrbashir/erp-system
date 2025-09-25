@@ -44,5 +44,6 @@ export type CreatePurchaseInvoiceDto = z.infer<typeof CreatePurchaseInvoiceDto>;
 export type InvoiceWithRelations = Invoice & {
   customer: Customer | null;
   cashier: User;
+  organization: { name: string } | null;
   items: InvoiceItem[];
 };

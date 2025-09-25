@@ -36,6 +36,7 @@
       "balance": "Balance",
       "total": "Total",
       "subtotal": "Subtotal",
+      "discount": "Discount",
       "discountPercent": "Discount %",
       "discountAmount": "Discount Amount",
       "paid": "Paid",
@@ -102,7 +103,8 @@
     },
     "overview": "Overview",
     "customerDetails": "Customer Details",
-    "invoiceDetails": "Invoice Details"
+    "invoiceDetails": "Invoice Details",
+    "invoicePrint": "Print Invoice"
   },
 
   "auth": {

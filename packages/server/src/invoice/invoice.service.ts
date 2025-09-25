@@ -44,6 +44,7 @@ export class InvoiceService {
           customer: true,
           cashier: true,
           items: true,
+          organization: { select: { name: true } },
         },
         orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
@@ -75,6 +76,7 @@ export class InvoiceService {
           customer: true,
           cashier: true,
           items: true,
+          organization: { select: { name: true } },
         },
       });
     } catch (error) {
@@ -114,6 +116,7 @@ export class InvoiceService {
           customer: true,
           cashier: true,
           items: true,
+          organization: { select: { name: true } },
         },
         orderBy: options?.orderBy ?? { createdAt: "desc" },
       });
@@ -261,6 +264,7 @@ export class InvoiceService {
             customer: true,
             cashier: true,
             items: true,
+            organization: { select: { name: true } },
           },
         });
 
@@ -431,6 +435,7 @@ export class InvoiceService {
             customer: true,
             cashier: true,
             items: true,
+            organization: { select: { name: true } },
           },
         });
 

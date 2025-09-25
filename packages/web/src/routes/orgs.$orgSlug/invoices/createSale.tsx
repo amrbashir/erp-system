@@ -41,6 +41,7 @@ import { SafeDecimal } from "@/utils/SafeDecimal.ts";
 
 import { InvoiceFooter } from "./-create-invoice-footer.tsx";
 import { CustomerSelector } from "./-customer-selector.tsx";
+import { printInvoice } from "./-print-invoice.tsx";
 import { ProductSelector } from "./-product-selector.tsx";
 
 export const Route = createFileRoute("/orgs/$orgSlug/invoices/createSale")({
@@ -149,12 +150,15 @@ function RouteComponent() {
           toast.error(t(`errors.${error.message}` as ParseKeys, { nsSeparator: "`" }));
         });
     },
-    onSubmit: ({ value: { items, ...value } }) =>
-      createSaleInvoice({
+    onSubmit: async ({ value: { items, ...value } }) => {
+      const invoice = await createSaleInvoice({
         ...value,
         orgSlug,
         items: items.filter((item) => item.productId !== NULL_UUID),
-      }),
+      });
+
+      printInvoice(invoice);
+    },
   });
 
   const InvoiceHeader = () => (

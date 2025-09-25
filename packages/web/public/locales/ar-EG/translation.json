@@ -36,6 +36,7 @@
       "balance": "الرصيد",
       "total": "الإجمالي",
       "subtotal": "المجموع الفرعي",
+      "discount": "الخصم",
       "discountPercent": "نسبة الخصم %",
       "discountAmount": "قيمة الخصم",
       "paid": "المدفوع",
@@ -107,7 +108,8 @@
     },
     "overview": "نظرة عامة",
     "customerDetails": "تفاصيل العميل",
-    "invoiceDetails": "تفاصيل الفاتورة"
+    "invoiceDetails": "تفاصيل الفاتورة",
+    "invoicePrint": "طباعة الفاتورة"
   },
 
   "auth": {
