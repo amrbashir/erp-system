@@ -67,10 +67,6 @@ function RouteComponent() {
         header: t("common.form.discountAmount"),
         cell: (info) => formatMoney(info.getValue()),
       }),
-      columnHelper.accessor("subtotal", {
-        header: t("common.form.subtotal"),
-        cell: (info) => formatMoney(info.getValue()),
-      }),
       columnHelper.accessor("total", {
         header: t("common.form.total"),
         cell: (info) => <span className="font-medium">{formatMoney(info.getValue())}</span>,

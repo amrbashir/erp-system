@@ -191,9 +191,7 @@ function RouteComponent() {
         <TableHead className="w-40">{t("common.form.quantity")}</TableHead>
         <TableHead className="w-40">{t("common.pricing.purchase")}</TableHead>
         <TableHead className="w-40">{t("common.pricing.selling")}</TableHead>
-        <TableHead>{t("common.form.subtotal")}</TableHead>
         <TableHead className="w-40">{t("common.form.discountPercent")}</TableHead>
-        <TableHead></TableHead>
         <TableHead className="w-40">{t("common.form.discountAmount")}</TableHead>
         <TableHead>{t("common.form.total")}</TableHead>
       </TableRow>
@@ -328,7 +326,6 @@ function RouteComponent() {
                   )}
                 />
               </TableCell>
-              <TableCell className="font-semibold">{formatMoney(itemSubtotal)}</TableCell>
               <TableCell className="p-0">
                 <form.Field
                   name={`items[${index}].discountPercent`}
@@ -344,7 +341,6 @@ function RouteComponent() {
                   )}
                 />
               </TableCell>
-              <TableCell>{formatMoney(percentDiscount)}</TableCell>
               <TableCell className="p-0">
                 <form.Field
                   name={`items[${index}].discountAmount`}
