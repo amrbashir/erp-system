@@ -202,7 +202,7 @@ function RouteComponent() {
   );
 
   const InvoiceTableHeader = () => (
-    <TableHeader className="sticky top-0 z-10">
+    <TableHeader className="sticky top-0 z-10 bg-muted">
       <TableRow className="*:font-bold">
         <TableHead></TableHead>
         <TableHead>{t("common.ui.number")}</TableHead>

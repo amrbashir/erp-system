@@ -119,7 +119,7 @@ export function DataTable<TData>({ columns, ...props }: DataTableProps<TData>) {
             minWidth: table.getTotalSize(),
           }}
         >
-          <TableHeader>
+          <TableHeader className="bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="*:font-bold">
                 {headerGroup.headers.map((header) => {
