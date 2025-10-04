@@ -67,61 +67,80 @@ export function InvoiceFooter<TInvoice extends Invoice>({
   const total = calculateInvoiceTotal(subtotal, discountPercent, discountAmount);
   const remaining = calculateInvoiceRemaining(total, paid);
 
+  const DiscountAmountElement = (
+    <>
+      <TableCell>{t("common.form.discountAmount")}</TableCell>
+      <TableCell className="p-0">
+        <form.Field
+          name="discountAmount"
+          children={(field) => (
+            <InputNumpad
+              variant="ghost"
+              name={field.name}
+              value={new SafeDecimal((field.state.value as string) || 0).toNumber()}
+              // TODO: Fix type
+              // deno-lint-ignore no-explicit-any
+              onChange={(e) => field.handleChange(e.target.value as any)}
+              min={0}
+              max={subtotal.toNumber()}
+            />
+          )}
+        />
+      </TableCell>
+    </>
+  );
+
+  const DiscountPercentElement = (
+    <>
+      <TableCell>{t("common.form.discountPercent")}</TableCell>
+      <TableCell className="p-0">
+        <form.Field
+          name="discountPercent"
+          children={(field) => (
+            <InputNumpad
+              variant="ghost"
+              name={field.name}
+              value={field.state.value as number}
+              // TODO: Fix type
+              // deno-lint-ignore no-explicit-any
+              onChange={(e) => field.handleChange(e.target.valueAsNumber as any)}
+              min={0}
+              max={100}
+            />
+          )}
+        />
+      </TableCell>
+    </>
+  );
+
+  const DiscountElements = isMobile ? (
+    <>
+      <TableRow>{DiscountAmountElement}</TableRow>
+      <TableRow>{DiscountPercentElement}</TableRow>
+    </>
+  ) : (
+    <TableRow>
+      {DiscountAmountElement}
+      {DiscountPercentElement}
+    </TableRow>
+  );
+
   const FooterCard = (
     <Card className="p-0 rounded-none">
       <Table>
-        <TableBody className="border *:*:not-last:border-e *:*:odd:bg-muted *:*:odd:font-bold *:*:even:w-full">
+        <TableBody className="border *:*:not-last:border-e *:*:odd:bg-muted *:*:odd:font-bold *:*:odd:w-0 *:*:odd:min-w-fit">
           <TableRow>
             <TableCell>{t("common.form.subtotal")}</TableCell>
-            <TableCell>{formatMoney(subtotal)}</TableCell>
+            <TableCell colSpan={3}>{formatMoney(subtotal)}</TableCell>
           </TableRow>
-          <TableRow>
-            <TableCell>{t("common.form.discountAmount")}</TableCell>
-            <TableCell className="p-0">
-              <form.Field
-                name="discountAmount"
-                children={(field) => (
-                  <InputNumpad
-                    variant="ghost"
-                    name={field.name}
-                    value={new SafeDecimal((field.state.value as string) || 0).toNumber()}
-                    // TODO: Fix type
-                    // deno-lint-ignore no-explicit-any
-                    onChange={(e) => field.handleChange(e.target.value as any)}
-                    min={0}
-                    max={subtotal.toNumber()}
-                  />
-                )}
-              />
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>{t("common.form.discountPercent")}</TableCell>
-            <TableCell className="p-0">
-              <form.Field
-                name="discountPercent"
-                children={(field) => (
-                  <InputNumpad
-                    variant="ghost"
-                    name={field.name}
-                    value={field.state.value as number}
-                    // TODO: Fix type
-                    // deno-lint-ignore no-explicit-any
-                    onChange={(e) => field.handleChange(e.target.valueAsNumber as any)}
-                    min={0}
-                    max={100}
-                  />
-                )}
-              />
-            </TableCell>
-          </TableRow>
+          {DiscountElements}
           <TableRow>
             <TableCell>{t("common.form.total")}</TableCell>
-            <TableCell>{formatMoney(total)}</TableCell>
+            <TableCell colSpan={3}>{formatMoney(total)}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>{t("common.form.paid")}</TableCell>
-            <TableCell className="p-0">
+            <TableCell colSpan={3} className="p-0">
               <form.Field
                 name="paid"
                 children={(field) => (
@@ -146,7 +165,7 @@ export function InvoiceFooter<TInvoice extends Invoice>({
           </TableRow>
           <TableRow>
             <TableCell>{t("common.form.remaining")}</TableCell>
-            <TableCell className="text-red-500 dark:text-red-300">
+            <TableCell colSpan={3} className="text-red-500 dark:text-red-300">
               {formatMoney(remaining)}
             </TableCell>
           </TableRow>
