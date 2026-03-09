@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schema.tauri.app/config/2",
+	"productName": "ERP System",
+	"version": "0.1.0",
+	"identifier": "me.amrbashir.erp-system",
+	"build": {
+		"frontendDist": "../web/dist",
+		"devUrl": "http://localhost:1420",
+		"beforeDevCommand": "pnpm -w dev:web --port 1420 --clearScreen=false",
+		"beforeBuildCommand": "pnpm -w build:web"
+	},
+	"app": {
+		"windows": [
+			{
+				"title": "ERP System"
+			}
+		]
+	},
+	"bundle": {
+		"active": true,
+		"targets": "all",
+		"icon": [
+			"icons/32x32.png",
+			"icons/128x128.png",
+			"icons/128x128@2x.png",
+			"icons/icon.icns",
+			"icons/icon.ico"
+		]
+	}
+}

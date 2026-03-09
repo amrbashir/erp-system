@@ -1,0 +1,16 @@
+{
+	"files.watcherExclude": {
+		"**/routeTree.gen.ts": true
+	},
+	"search.exclude": {
+		"**/routeTree.gen.ts": true
+	},
+	"files.readonlyInclude": {
+		"**/routeTree.gen.ts": true
+	},
+	"json.schemaDownload.trustedDomains": {
+		"https://ui.shadcn.com/schema.json": true,
+		"https://inlang.com/schema/project-settings": true,
+		"https://schema.tauri.app/config/2": true
+	}
+}

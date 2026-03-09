@@ -1,0 +1,13 @@
+{
+	"name": "@workspace/i18n",
+	"version": "0.0.0",
+	"private": true,
+	"exports": {
+		".": "./src/index.ts",
+		"./paraglide/messages": "./src/paraglide/messages.ts",
+		"./paraglide/runtime": "./src/paraglide/runtime.ts"
+	},
+	"devDependencies": {
+		"@inlang/paraglide-js": "^2.13.2"
+	}
+}
