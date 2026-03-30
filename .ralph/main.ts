@@ -391,32 +391,26 @@ async function main() {
 			break;
 		}
 
-		const results = await Promise.allSettled(
-			issues.map(async (issue) => {
-				const logFile = logFilePath(`issue-${issue.number}`);
-				writeFileSync(logFile, "");
+		const completed: PlannedIssue[] = [];
 
-				const complete = await implement(issue, baseBranch, logFile);
-				if (complete instanceof Error) {
-					log.error(complete.message);
-					return { issue, complete: false };
+		for (const issue of issues) {
+			const logFile = logFilePath(`issue-${issue.number}`);
+			writeFileSync(logFile, "");
+
+			const complete = await implement(issue, baseBranch, logFile);
+			if (complete instanceof Error) {
+				log.error(complete.message);
+				continue;
+			}
+
+			if (complete) {
+				const reviewErr = await review(issue, baseBranch, logFile);
+				if (reviewErr instanceof Error) {
+					log.error(reviewErr.message);
 				}
-
-				if (complete) {
-					const reviewErr = await review(issue, baseBranch, logFile);
-					if (reviewErr instanceof Error) {
-						log.error(reviewErr.message);
-					}
-				}
-
-				return { issue, complete };
-			}),
-		);
-
-		const completed = results
-			.filter((r) => r.status === "fulfilled" && r.value.complete)
-			.map((r) => (r.status === "fulfilled" ? r.value.issue : null))
-			.filter((i): i is PlannedIssue => i !== null);
+				completed.push(issue);
+			}
+		}
 
 		log.info(`${completed.length}/${issues.length} issues completed`);
 
