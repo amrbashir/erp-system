@@ -1,6 +1,7 @@
 packages:
     - "apps/*"
     - "packages/*"
+    - ".ralph"
 onlyBuiltDependencies:
     - esbuild
     - lightningcss
