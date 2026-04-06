@@ -22,45 +22,47 @@ export async function setupOwner(
 ) {
 	const hash = hashSync(input.password, 10);
 
-	const [user] = await db
-		.insert(users)
-		.values({
-			name: input.name,
-			username: input.username,
-		})
-		.returning();
+	return db.transaction(async (tx) => {
+		const [user] = await tx
+			.insert(users)
+			.values({
+				name: input.name,
+				username: input.username,
+			})
+			.returning();
 
-	await db.insert(accounts).values({
-		userId: user.id,
-		accountId: user.id,
-		providerId: "local",
-		password: hash,
-	});
-
-	const [org] = await db
-		.insert(orgs)
-		.values({ name: input.orgName, slug: input.orgSlug })
-		.returning();
-
-	await db.insert(orgMembers).values({
-		orgId: org.id,
-		userId: user.id,
-		role: "owner",
-	});
-
-	const token = crypto.randomUUID();
-	const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
-
-	const [session] = await db
-		.insert(sessions)
-		.values({
+		await tx.insert(accounts).values({
 			userId: user.id,
-			token,
-			expiresAt,
-		})
-		.returning();
+			accountId: user.id,
+			providerId: "local",
+			password: hash,
+		});
 
-	return { user, org, session };
+		const [org] = await tx
+			.insert(orgs)
+			.values({ name: input.orgName, slug: input.orgSlug })
+			.returning();
+
+		await tx.insert(orgMembers).values({
+			orgId: org.id,
+			userId: user.id,
+			role: "owner",
+		});
+
+		const token = crypto.randomUUID();
+		const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+
+		const [session] = await tx
+			.insert(sessions)
+			.values({
+				userId: user.id,
+				token,
+				expiresAt,
+			})
+			.returning();
+
+		return { user, org, session };
+	});
 }
 
 export async function login(
@@ -145,7 +147,6 @@ export async function createLocalUser(
 		throw new Error("No permission to assign this role");
 	}
 
-	// check duplicate username
 	const [existing] = await db
 		.select({ id: users.id })
 		.from(users)
@@ -155,24 +156,26 @@ export async function createLocalUser(
 
 	const hash = hashSync(input.password, 10);
 
-	const [user] = await db
-		.insert(users)
-		.values({ name: input.name, username: input.username })
-		.returning();
+	return db.transaction(async (tx) => {
+		const [user] = await tx
+			.insert(users)
+			.values({ name: input.name, username: input.username })
+			.returning();
 
-	await db.insert(accounts).values({
-		userId: user.id,
-		accountId: user.id,
-		providerId: "local",
-		password: hash,
+		await tx.insert(accounts).values({
+			userId: user.id,
+			accountId: user.id,
+			providerId: "local",
+			password: hash,
+		});
+
+		const [membership] = await tx
+			.insert(orgMembers)
+			.values({ orgId: input.orgId, userId: user.id, role: input.role })
+			.returning();
+
+		return { user, membership };
 	});
-
-	const [membership] = await db
-		.insert(orgMembers)
-		.values({ orgId: input.orgId, userId: user.id, role: input.role })
-		.returning();
-
-	return { user, membership };
 }
 
 export async function getLocalOrgMembers(db: Database, orgId: string) {
@@ -205,6 +208,24 @@ export async function updateLocalMemberRole(
 	}
 	if (input.actorRole === "admin" && input.newRole !== "member") {
 		throw new Error("No permission to assign this role");
+	}
+
+	if (input.actorRole === "admin") {
+		const [target] = await db
+			.select({ role: orgMembers.role })
+			.from(orgMembers)
+			.where(
+				and(
+					eq(orgMembers.id, input.memberId),
+					eq(orgMembers.orgId, input.orgId),
+				),
+			)
+			.limit(1);
+
+		if (!target) throw new Error("Member not found");
+		if (target.role !== "member") {
+			throw new Error("No permission to change this member's role");
+		}
 	}
 
 	const [updated] = await db
