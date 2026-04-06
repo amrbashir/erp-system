@@ -46,7 +46,6 @@ export async function updateMemberRole(
 		newRole: Role;
 	},
 ) {
-	// permission checks
 	if (input.actorRole === "member") {
 		throw new Error("No permission to change roles");
 	}

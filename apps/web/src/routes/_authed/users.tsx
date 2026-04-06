@@ -215,7 +215,8 @@ function MemberList({
 						<td className="py-2">{m.userName}</td>
 						<td className="py-2">{m.userEmail ?? "—"}</td>
 						<td className="py-2">
-							{canManage ? (
+							{canManage &&
+							(actorRole === "owner" || m.role === "member") ? (
 								<select
 									value={m.role}
 									onChange={(e) => handleRoleChange(m.id, e.target.value)}
@@ -227,9 +228,6 @@ function MemberList({
 											<option value="admin">Admin</option>
 											<option value="owner">Owner</option>
 										</>
-									)}
-									{actorRole === "admin" && (
-										<option value="member">Member</option>
 									)}
 								</select>
 							) : (
