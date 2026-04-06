@@ -4,6 +4,7 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
+import { generateKeyPair, exportPKCS8, exportSPKI } from "jose";
 import * as schema from "@workspace/db/schema";
 import {
 	checkActivation,
@@ -14,12 +15,17 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const migrationsFolder = path.resolve(__dirname, "../../../../packages/db/drizzle");
 
-const TEST_SECRET = "test-secret-key-for-activation-jwt-signing";
+let TEST_PRIVATE_KEY: string;
+let TEST_PUBLIC_KEY: string;
 
 let client: PGlite;
 let db: ReturnType<typeof drizzle<typeof schema>>;
 
 beforeAll(async () => {
+	const kp = await generateKeyPair("ES256", { extractable: true });
+	TEST_PRIVATE_KEY = await exportPKCS8(kp.privateKey);
+	TEST_PUBLIC_KEY = await exportSPKI(kp.publicKey);
+
 	client = new PGlite();
 	db = drizzle(client, { schema });
 	await migrate(db, { migrationsFolder });
@@ -63,27 +69,29 @@ describe("checkActivation", () => {
 	});
 });
 
-describe("JWT signing and verification", () => {
-	it("signs and verifies a token with correct hardware ID", async () => {
-		const token = await signActivationToken("hw-active-001", TEST_SECRET);
+describe("JWT signing and verification (ES256)", () => {
+	it("signs with private key and verifies with public key", async () => {
+		const token = await signActivationToken("hw-active-001", TEST_PRIVATE_KEY);
 		expect(typeof token).toBe("string");
 
-		const payload = await verifyActivationToken(token, TEST_SECRET);
+		const payload = await verifyActivationToken(token, TEST_PUBLIC_KEY);
 		expect(payload.hardwareId).toBe("hw-active-001");
 		expect(payload.activated).toBe(true);
 		expect(payload.iat).toBeDefined();
 	});
 
-	it("rejects token with wrong secret", async () => {
-		const token = await signActivationToken("hw-active-001", TEST_SECRET);
+	it("rejects token verified with wrong public key", async () => {
+		const token = await signActivationToken("hw-active-001", TEST_PRIVATE_KEY);
+		const otherKp = await generateKeyPair("ES256", { extractable: true });
+		const otherPublic = await exportSPKI(otherKp.publicKey);
 		await expect(
-			verifyActivationToken(token, "wrong-secret"),
+			verifyActivationToken(token, otherPublic),
 		).rejects.toThrow();
 	});
 
 	it("produces different tokens for different hardware IDs", async () => {
-		const token1 = await signActivationToken("hw-001", TEST_SECRET);
-		const token2 = await signActivationToken("hw-002", TEST_SECRET);
+		const token1 = await signActivationToken("hw-001", TEST_PRIVATE_KEY);
+		const token2 = await signActivationToken("hw-002", TEST_PRIVATE_KEY);
 		expect(token1).not.toBe(token2);
 	});
 });

@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { activations } from "@workspace/db/schema";
-import { SignJWT, jwtVerify } from "jose";
+import { SignJWT, jwtVerify, importPKCS8, importSPKI } from "jose";
 
 type CheckResult =
 	| { status: "active"; activation: typeof activations.$inferSelect }
@@ -31,20 +31,20 @@ export async function checkActivation(
 
 export async function signActivationToken(
 	hardwareId: string,
-	secret: string,
+	privateKeyPem: string,
 ): Promise<string> {
-	const key = new TextEncoder().encode(secret);
+	const key = await importPKCS8(privateKeyPem, "ES256");
 	return new SignJWT({ hardwareId, activated: true })
-		.setProtectedHeader({ alg: "HS256" })
+		.setProtectedHeader({ alg: "ES256" })
 		.setIssuedAt()
 		.sign(key);
 }
 
 export async function verifyActivationToken(
 	token: string,
-	secret: string,
+	publicKeyPem: string,
 ): Promise<{ hardwareId: string; activated: boolean; iat: number }> {
-	const key = new TextEncoder().encode(secret);
+	const key = await importSPKI(publicKeyPem, "ES256");
 	const { payload } = await jwtVerify(token, key);
 	return payload as { hardwareId: string; activated: boolean; iat: number };
 }

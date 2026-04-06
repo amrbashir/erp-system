@@ -21,12 +21,12 @@ export default defineEventHandler(async (event) => {
 		return { error: "not_activated", status: result.status };
 	}
 
-	const secret = process.env.ACTIVATION_JWT_SECRET;
-	if (!secret) {
+	const privateKey = process.env.ACTIVATION_PRIVATE_KEY;
+	if (!privateKey) {
 		setResponseStatus(event, 500);
 		return { error: "server_misconfigured" };
 	}
 
-	const token = await signActivationToken(body.hardwareId, secret);
+	const token = await signActivationToken(body.hardwareId, privateKey);
 	return { token };
 });

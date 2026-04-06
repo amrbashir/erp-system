@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod activation;
 mod config;
 mod hardware_id;
 mod sidecar;
@@ -18,6 +19,8 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             hardware_id::get_hardware_id,
+            activation::read_activation_token,
+            activation::write_activation_token,
             config::get_config,
             config::get_default_db_path,
             config::update_db_path,
