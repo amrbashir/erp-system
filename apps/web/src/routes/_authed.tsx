@@ -1,5 +1,6 @@
 import {
 	Outlet,
+	Link,
 	createFileRoute,
 	redirect,
 	useNavigate,
@@ -42,7 +43,13 @@ function AuthedLayout() {
 	return (
 		<>
 			<div className="flex items-center justify-between border-b px-4 py-2">
-				<OrgSwitcher orgs={orgs} currentOrgId={currentOrgId} />
+				<div className="flex items-center gap-4">
+					<OrgSwitcher orgs={orgs} currentOrgId={currentOrgId} />
+					<nav className="flex gap-2 text-sm">
+						<Link to="/dashboard" className="text-muted-foreground hover:text-foreground [&.active]:text-foreground">Dashboard</Link>
+						<Link to="/users" className="text-muted-foreground hover:text-foreground [&.active]:text-foreground">Users</Link>
+					</nav>
+				</div>
 				<Button variant="ghost" size="sm" onClick={handleLogout}>
 					Log out
 				</Button>
