@@ -1,6 +1,7 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
+import { toSlug } from "../../lib/slug";
 
 export const Route = createFileRoute("/_authed/onboarding")({
 	beforeLoad: async ({ context }) => {
@@ -15,13 +16,6 @@ function OnboardingPage() {
 	const navigate = useNavigate();
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
-
-	function toSlug(name: string) {
-		return name
-			.toLowerCase()
-			.replace(/[^a-z0-9]+/g, "-")
-			.replace(/^-|-$/g, "");
-	}
 
 	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
@@ -53,7 +47,6 @@ function OnboardingPage() {
 
 		const org = await res.json();
 
-		// set as current org
 		await fetch("/api/orgs/switch", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -61,7 +54,7 @@ function OnboardingPage() {
 		});
 
 		setLoading(false);
-		navigate({ to: "/dashboard" });
+		navigate({ to: "/dashboard", reloadDocument: true });
 	}
 
 	return (

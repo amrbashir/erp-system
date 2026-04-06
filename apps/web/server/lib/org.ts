@@ -9,22 +9,24 @@ export async function createOrg(
 	db: DB,
 	input: { name: string; slug: string; userId: string; currency?: string },
 ) {
-	const [org] = await db
-		.insert(orgs)
-		.values({
-			name: input.name,
-			slug: input.slug,
-			...(input.currency ? { defaultCurrency: input.currency } : {}),
-		})
-		.returning();
+	return db.transaction(async (tx) => {
+		const [org] = await tx
+			.insert(orgs)
+			.values({
+				name: input.name,
+				slug: input.slug,
+				...(input.currency ? { defaultCurrency: input.currency } : {}),
+			})
+			.returning();
 
-	await db.insert(orgMembers).values({
-		orgId: org.id,
-		userId: input.userId,
-		role: "owner",
+		await tx.insert(orgMembers).values({
+			orgId: org.id,
+			userId: input.userId,
+			role: "owner",
+		});
+
+		return org;
 	});
-
-	return org;
 }
 
 export async function getUserOrgs(db: DB, userId: string) {

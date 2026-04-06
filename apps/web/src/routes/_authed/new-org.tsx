@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
+import { toSlug } from "../../lib/slug";
 
 export const Route = createFileRoute("/_authed/new-org")({
 	component: NewOrgPage,
@@ -10,13 +11,6 @@ function NewOrgPage() {
 	const navigate = useNavigate();
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
-
-	function toSlug(name: string) {
-		return name
-			.toLowerCase()
-			.replace(/[^a-z0-9]+/g, "-")
-			.replace(/^-|-$/g, "");
-	}
 
 	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
@@ -55,7 +49,7 @@ function NewOrgPage() {
 		});
 
 		setLoading(false);
-		navigate({ to: "/dashboard" });
+		navigate({ to: "/dashboard", reloadDocument: true });
 	}
 
 	return (
