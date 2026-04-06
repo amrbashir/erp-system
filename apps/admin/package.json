@@ -1,5 +1,5 @@
 {
-	"name": "@workspace/web",
+	"name": "@workspace/admin",
 	"version": "0.0.1",
 	"private": true,
 	"type": "module",
@@ -10,25 +10,17 @@
 	},
 	"dependencies": {
 		"@neondatabase/serverless": "^1.0.2",
-		"@phosphor-icons/react": "^2.1.10",
 		"@tailwindcss/vite": "^4.1.18",
-		"@tanstack/react-router": "^1.132.0",
-		"@tanstack/react-start": "^1.132.0",
-		"@tanstack/router-plugin": "^1.132.0",
 		"@workspace/db": "workspace:*",
-		"@workspace/i18n": "workspace:*",
 		"@workspace/ui": "workspace:*",
 		"drizzle-orm": "^0.44.7",
-		"jose": "^6.2.2",
 		"nitro": "latest",
 		"react": "^19.2.4",
 		"react-dom": "^19.2.4",
-		"tailwindcss": "^4.1.18",
-		"vite-tsconfig-paths": "^5.1.4"
+		"tailwindcss": "^4.1.18"
 	},
 	"devDependencies": {
 		"@electric-sql/pglite": "^0.2.17",
-		"@inlang/paraglide-js": "^2.13.2",
 		"@types/node": "^25.1.0",
 		"@types/react": "^19.2.10",
 		"@types/react-dom": "^19.2.3",
