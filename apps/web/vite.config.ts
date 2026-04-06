@@ -11,6 +11,7 @@ export default defineConfig({
 		paraglideVitePlugin({
 			project: "../../packages/i18n/project.inlang",
 			outdir: "../../packages/i18n/src/paraglide",
+			strategy: ["localStorage", "preferredLanguage", "baseLocale"],
 		}),
 		nitro(),
 		viteTsConfigPaths({

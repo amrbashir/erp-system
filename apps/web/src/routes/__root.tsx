@@ -1,6 +1,12 @@
-import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
+import {
+	HeadContent,
+	Outlet,
+	Scripts,
+	createRootRoute,
+} from "@tanstack/react-router";
 import { getLocale, getTextDirection } from "@workspace/i18n";
 
+import { LanguageSwitcher } from "../components/language-switcher";
 import appCss from "@workspace/ui/globals.css?url";
 
 export const Route = createRootRoute({
@@ -25,6 +31,7 @@ export const Route = createRootRoute({
 		],
 	}),
 	shellComponent: RootDocument,
+	component: RootLayout,
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
@@ -38,5 +45,16 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<Scripts />
 			</body>
 		</html>
+	);
+}
+
+function RootLayout() {
+	return (
+		<>
+			<header className="flex items-center justify-end border-b px-4 py-2">
+				<LanguageSwitcher />
+			</header>
+			<Outlet />
+		</>
 	);
 }

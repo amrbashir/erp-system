@@ -1,2 +1,9 @@
 export * as m from "./paraglide/messages";
-export { getLocale, setLocale, getTextDirection } from "./paraglide/runtime";
+export {
+	baseLocale,
+	getLocale,
+	getTextDirection,
+	locales,
+	setLocale,
+} from "./paraglide/runtime";
+export { getNextLocale, localeNames } from "./locale-utils";

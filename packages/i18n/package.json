@@ -4,8 +4,8 @@
 	"private": true,
 	"exports": {
 		".": "./src/index.ts",
-		"./paraglide/messages": "./src/paraglide/messages.ts",
-		"./paraglide/runtime": "./src/paraglide/runtime.ts"
+		"./paraglide/messages": "./src/paraglide/messages.js",
+		"./paraglide/runtime": "./src/paraglide/runtime.js"
 	},
 	"devDependencies": {
 		"@inlang/paraglide-js": "^2.13.2"
