@@ -1,0 +1,9 @@
+{
+	"extends": "../../../tsconfig.json",
+	"compilerOptions": {
+		"paths": {
+			"@workspace/db/*": ["../../../packages/db/*"]
+		}
+	},
+	"include": ["server/**/*.ts", "test/**/*.ts", "nitro.config.ts"]
+}

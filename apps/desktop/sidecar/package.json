@@ -1,0 +1,20 @@
+{
+	"name": "@workspace/sidecar",
+	"version": "0.0.1",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "nitro dev",
+		"build": "nitro build",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@electric-sql/pglite": "^0.2.17",
+		"@workspace/db": "workspace:*",
+		"drizzle-orm": "^0.44.0",
+		"nitro": "latest"
+	},
+	"devDependencies": {
+		"typescript": "^5.9.3"
+	}
+}

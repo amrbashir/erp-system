@@ -2,12 +2,25 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod hardware_id;
+mod sidecar;
 
 fn main() {
-    tauri::Builder::default()
+    let app = tauri::Builder::default()
+        .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
+        .manage(sidecar::SidecarManager::new())
+        .setup(|app| {
+            sidecar::start(&app.handle());
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![hardware_id::get_hardware_id])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application");
+
+    app.run(|app_handle, event| {
+        if let tauri::RunEvent::Exit = event {
+            sidecar::stop(app_handle);
+        }
+    });
 }
