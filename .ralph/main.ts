@@ -101,11 +101,13 @@ function createWorktree(baseBranch: string, branch: string): string {
 	const created = exec(`git worktree add "${wtPath}" -b "${branch}" "${baseBranch}"`);
 
 	if (created instanceof Error) {
-		// branch may already exist from a prior run — reset it to baseBranch
-		exec(`git branch -f "${branch}" "${baseBranch}"`);
-		const attached = exec(`git worktree add "${wtPath}" "${branch}"`);
-		if (attached instanceof Error) {
-			log(`Reusing existing worktree for ${branch}`);
+		// clean up stale worktree from a prior run
+		removeWorktree(wtPath);
+		exec(`git branch -D "${branch}"`);
+
+		const retry = exec(`git worktree add "${wtPath}" -b "${branch}" "${baseBranch}"`);
+		if (retry instanceof Error) {
+			log(`Failed to recreate worktree for ${branch}: ${retry.message}`);
 		}
 	}
 
