@@ -54,11 +54,22 @@ pub fn start(app: &tauri::AppHandle) {
                     eprintln!("[sidecar stderr] {text}");
                 }
                 CommandEvent::Terminated(payload) => {
-                    eprintln!(
-                        "[sidecar] exited code={:?} signal={:?}, restarting...",
-                        payload.code, payload.signal
-                    );
-                    start(&handle);
+                    // If stop() already took the child, don't restart
+                    let should_restart = handle
+                        .state::<SidecarManager>()
+                        .child
+                        .lock()
+                        .unwrap()
+                        .is_some();
+                    if should_restart {
+                        eprintln!(
+                            "[sidecar] crashed code={:?} signal={:?}, restarting...",
+                            payload.code, payload.signal
+                        );
+                        start(&handle);
+                    } else {
+                        eprintln!("[sidecar] stopped intentionally");
+                    }
                     break;
                 }
                 _ => {}
