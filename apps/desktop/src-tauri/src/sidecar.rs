@@ -2,6 +2,8 @@ use std::sync::Mutex;
 use tauri::Manager;
 use tauri_plugin_shell::{process::CommandChild, ShellExt};
 
+use crate::config;
+
 const SIDECAR_PORT: &str = "11435";
 
 pub struct SidecarManager {
@@ -17,19 +19,28 @@ impl SidecarManager {
 }
 
 pub fn start(app: &tauri::AppHandle) {
-    let pgdata = app
-        .path()
-        .app_data_dir()
-        .expect("failed to resolve app data dir")
-        .join("pgdata");
+    let cfg = config::read_config(app);
+    let pgdata = std::path::PathBuf::from(&cfg.db_path);
 
-    std::fs::create_dir_all(&pgdata).expect("failed to create pgdata dir");
+    if let Err(e) = config::validate_db_path(&cfg.db_path) {
+        eprintln!("[sidecar] db path inaccessible: {e}, falling back to default");
+        let default_path = config::default_db_path(app);
+        std::fs::create_dir_all(&default_path).expect("failed to create default pgdata dir");
+        // Update config to default so it's consistent
+        let mut cfg = cfg;
+        cfg.db_path = default_path.clone();
+        let _ = config::write_config(app, &cfg);
+    } else {
+        std::fs::create_dir_all(&pgdata).expect("failed to create pgdata dir");
+    }
+
+    let cfg = config::read_config(app);
 
     let sidecar = app
         .shell()
         .sidecar("erp-sidecar")
         .expect("failed to create sidecar command")
-        .env("NITRO_PGDATA_DIR", pgdata.to_str().unwrap())
+        .env("NITRO_PGDATA_DIR", &cfg.db_path)
         .env("PORT", SIDECAR_PORT);
 
     let (mut rx, child) = sidecar.spawn().expect("failed to spawn sidecar");
