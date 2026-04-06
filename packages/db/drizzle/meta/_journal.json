@@ -8,6 +8,13 @@
       "when": 1775445729855,
       "tag": "0000_curved_leopardon",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1775446757226,
+      "tag": "0001_slow_outlaw_kid",
+      "breakpoints": true
     }
   ]
 }

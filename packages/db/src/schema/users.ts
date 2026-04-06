@@ -16,9 +16,7 @@ export const users = pgTable("users", {
 	image: text(),
 	username: text(),
 	phone: text(),
-	orgId: uuid("org_id")
-		.notNull()
-		.references(() => orgs.id, { onDelete: "cascade" }),
+	orgId: uuid("org_id").references(() => orgs.id, { onDelete: "cascade" }),
 	createdAt: timestamp("created_at", { withTimezone: true })
 		.notNull()
 		.defaultNow(),
