@@ -1,13 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/button";
 import { useState, useEffect, useCallback } from "react";
+import { isDesktop } from "../../lib/activation";
+import {
+	getDesktopMembers,
+	addDesktopMember,
+	updateDesktopMemberRole,
+	removeDesktopMember,
+} from "../../lib/desktop-auth";
 
 type Member = {
 	id: string;
 	userId: string;
 	role: "owner" | "admin" | "member";
 	userName: string;
-	userEmail: string | null;
+	username?: string | null;
+	userEmail?: string | null;
 };
 
 export const Route = createFileRoute("/_authed/users")({
@@ -18,6 +26,7 @@ function UsersPage() {
 	const { orgs, currentOrgId } = Route.useRouteContext();
 	const currentOrg = orgs.find((o) => o.id === currentOrgId) ?? orgs[0];
 	const actorRole = currentOrg?.role as "owner" | "admin" | "member";
+	const desktop = isDesktop();
 
 	const [members, setMembers] = useState<Member[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -25,12 +34,17 @@ function UsersPage() {
 	const [showForm, setShowForm] = useState(false);
 
 	const fetchMembers = useCallback(async () => {
-		const res = await fetch("/api/orgs/members");
-		if (res.ok) {
-			setMembers(await res.json());
+		if (desktop && currentOrg) {
+			const data = await getDesktopMembers(currentOrg.id);
+			setMembers(data);
+		} else {
+			const res = await fetch("/api/orgs/members");
+			if (res.ok) {
+				setMembers(await res.json());
+			}
 		}
 		setLoading(false);
-	}, []);
+	}, [desktop, currentOrg]);
 
 	useEffect(() => {
 		fetchMembers();
@@ -54,6 +68,8 @@ function UsersPage() {
 			{showForm && canManage && (
 				<AddUserForm
 					actorRole={actorRole}
+					desktop={desktop}
+					orgId={currentOrg?.id}
 					onDone={() => {
 						setShowForm(false);
 						fetchMembers();
@@ -68,6 +84,8 @@ function UsersPage() {
 				<MemberList
 					members={members}
 					actorRole={actorRole}
+					desktop={desktop}
+					orgId={currentOrg?.id}
 					onUpdate={fetchMembers}
 					onError={setError}
 				/>
@@ -78,10 +96,14 @@ function UsersPage() {
 
 function AddUserForm({
 	actorRole,
+	desktop,
+	orgId,
 	onDone,
 	onError,
 }: {
 	actorRole: "owner" | "admin";
+	desktop: boolean;
+	orgId?: string;
 	onDone: () => void;
 	onError: (msg: string) => void;
 }) {
@@ -94,8 +116,25 @@ function AddUserForm({
 
 		const form = new FormData(e.currentTarget);
 		const name = (form.get("name") as string).trim();
-		const email = (form.get("email") as string).trim();
 		const role = form.get("role") as string;
+
+		if (desktop && orgId) {
+			const username = (form.get("username") as string).trim();
+			const password = form.get("password") as string;
+
+			try {
+				await addDesktopMember(orgId, { username, password, name, role });
+				onDone();
+			} catch (err: any) {
+				onError(err.message ?? "Failed to add user");
+			} finally {
+				setSubmitting(false);
+			}
+			return;
+		}
+
+		// web flow
+		const email = (form.get("email") as string).trim();
 
 		const res = await fetch("/api/orgs/members", {
 			method: "POST",
@@ -124,13 +163,33 @@ function AddUserForm({
 					required
 					className="border-border bg-background h-9 flex-1 rounded-none border px-3 text-sm"
 				/>
-				<input
-					name="email"
-					type="email"
-					placeholder="Email"
-					required
-					className="border-border bg-background h-9 flex-1 rounded-none border px-3 text-sm"
-				/>
+				{desktop ? (
+					<>
+						<input
+							name="username"
+							type="text"
+							placeholder="Username"
+							required
+							className="border-border bg-background h-9 flex-1 rounded-none border px-3 text-sm"
+						/>
+						<input
+							name="password"
+							type="password"
+							placeholder="Password"
+							required
+							minLength={8}
+							className="border-border bg-background h-9 flex-1 rounded-none border px-3 text-sm"
+						/>
+					</>
+				) : (
+					<input
+						name="email"
+						type="email"
+						placeholder="Email"
+						required
+						className="border-border bg-background h-9 flex-1 rounded-none border px-3 text-sm"
+					/>
+				)}
 				<select
 					name="role"
 					defaultValue="member"
@@ -157,11 +216,15 @@ function AddUserForm({
 function MemberList({
 	members,
 	actorRole,
+	desktop,
+	orgId,
 	onUpdate,
 	onError,
 }: {
 	members: Member[];
 	actorRole: "owner" | "admin" | "member";
+	desktop: boolean;
+	orgId?: string;
 	onUpdate: () => void;
 	onError: (msg: string) => void;
 }) {
@@ -169,6 +232,16 @@ function MemberList({
 
 	async function handleRoleChange(memberId: string, newRole: string) {
 		onError("");
+		if (desktop && orgId) {
+			try {
+				await updateDesktopMemberRole(orgId, memberId, newRole);
+				onUpdate();
+			} catch (err: any) {
+				onError(err.message ?? "Failed to update role");
+			}
+			return;
+		}
+
 		const res = await fetch(`/api/orgs/members/${memberId}`, {
 			method: "PATCH",
 			headers: { "Content-Type": "application/json" },
@@ -184,6 +257,16 @@ function MemberList({
 
 	async function handleRemove(memberId: string) {
 		onError("");
+		if (desktop && orgId) {
+			try {
+				await removeDesktopMember(orgId, memberId);
+				onUpdate();
+			} catch (err: any) {
+				onError(err.message ?? "Failed to remove user");
+			}
+			return;
+		}
+
 		const res = await fetch(`/api/orgs/members/${memberId}`, {
 			method: "DELETE",
 		});
@@ -204,7 +287,9 @@ function MemberList({
 			<thead>
 				<tr className="border-border border-b text-left">
 					<th className="py-2 font-medium">Name</th>
-					<th className="py-2 font-medium">Email</th>
+					<th className="py-2 font-medium">
+						{desktop ? "Username" : "Email"}
+					</th>
 					<th className="py-2 font-medium">Role</th>
 					{canManage && <th className="py-2 font-medium">Actions</th>}
 				</tr>
@@ -213,7 +298,9 @@ function MemberList({
 				{members.map((m) => (
 					<tr key={m.id} className="border-border border-b">
 						<td className="py-2">{m.userName}</td>
-						<td className="py-2">{m.userEmail ?? "—"}</td>
+						<td className="py-2">
+							{desktop ? (m.username ?? "—") : (m.userEmail ?? "—")}
+						</td>
 						<td className="py-2">
 							{canManage &&
 							(actorRole === "owner" || m.role === "member") ? (

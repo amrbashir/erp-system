@@ -11,10 +11,12 @@
 	"dependencies": {
 		"@electric-sql/pglite": "^0.2.17",
 		"@workspace/db": "workspace:*",
+		"bcryptjs": "^3.0.3",
 		"drizzle-orm": "^0.44.0",
 		"nitro": "latest"
 	},
 	"devDependencies": {
+		"@types/bcryptjs": "^3.0.0",
 		"typescript": "^5.9.3"
 	}
 }

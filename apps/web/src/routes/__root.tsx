@@ -9,11 +9,16 @@ import { getLocale, getTextDirection } from "@workspace/i18n";
 
 import { LanguageSwitcher } from "../components/language-switcher";
 import { ActivationScreen } from "../components/activation-screen";
+import { DesktopOnboarding } from "../components/desktop-onboarding";
+import { DesktopLogin } from "../components/desktop-login";
 import {
 	isDesktop,
 	checkActivationState,
-	type ActivationState,
 } from "../lib/activation";
+import {
+	getDesktopAuthStatus,
+	getStoredToken,
+} from "../lib/desktop-auth";
 import appCss from "@workspace/ui/globals.css?url";
 
 export const Route = createRootRoute({
@@ -55,31 +60,101 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 	);
 }
 
+type DesktopState =
+	| { step: "loading" }
+	| { step: "activation"; hardwareId: string }
+	| { step: "onboarding" }
+	| { step: "login" }
+	| { step: "ready" };
+
 function RootLayout() {
-	const [activation, setActivation] = useState<ActivationState>(
-		isDesktop() ? { status: "loading" } : { status: "not_desktop" },
+	const [state, setState] = useState<DesktopState | null>(
+		isDesktop() ? { step: "loading" } : null,
 	);
 
 	useEffect(() => {
 		if (!isDesktop()) return;
-		checkActivationState().then(setActivation);
+
+		(async () => {
+			// check activation first
+			const activation = await checkActivationState();
+			if (activation.status === "not_activated") {
+				setState({ step: "activation", hardwareId: activation.hardwareId });
+				return;
+			}
+
+			// check auth status
+			try {
+				const auth = await getDesktopAuthStatus();
+				if (!auth.setupComplete) {
+					setState({ step: "onboarding" });
+				} else if (!auth.loggedIn) {
+					setState({ step: "login" });
+				} else {
+					setState({ step: "ready" });
+				}
+			} catch {
+				// sidecar not ready yet, show login
+				if (getStoredToken()) {
+					setState({ step: "ready" });
+				} else {
+					setState({ step: "login" });
+				}
+			}
+		})();
 	}, []);
 
-	if (activation.status === "loading") {
-		return null;
+	// web mode — pass through
+	if (!state) {
+		return (
+			<>
+				<header className="flex items-center justify-end gap-2 border-b px-4 py-2">
+					<LanguageSwitcher />
+				</header>
+				<Outlet />
+			</>
+		);
 	}
 
-	if (activation.status === "not_activated") {
+	if (state.step === "loading") return null;
+
+	if (state.step === "activation") {
 		return (
 			<ActivationScreen
-				hardwareId={activation.hardwareId}
-				onActivated={() =>
-					setActivation({ status: "activated", hardwareId: activation.hardwareId })
-				}
+				hardwareId={state.hardwareId}
+				onActivated={async () => {
+					try {
+						const auth = await getDesktopAuthStatus();
+						if (!auth.setupComplete) {
+							setState({ step: "onboarding" });
+						} else {
+							setState({ step: "login" });
+						}
+					} catch {
+						setState({ step: "onboarding" });
+					}
+				}}
 			/>
 		);
 	}
 
+	if (state.step === "onboarding") {
+		return (
+			<DesktopOnboarding
+				onComplete={() => setState({ step: "ready" })}
+			/>
+		);
+	}
+
+	if (state.step === "login") {
+		return (
+			<DesktopLogin
+				onLoggedIn={() => setState({ step: "ready" })}
+			/>
+		);
+	}
+
+	// ready
 	return (
 		<>
 			<header className="flex items-center justify-end gap-2 border-b px-4 py-2">

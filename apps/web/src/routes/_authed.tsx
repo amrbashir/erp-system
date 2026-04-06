@@ -6,13 +6,32 @@ import {
 	useNavigate,
 } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/button";
+import { isDesktop } from "../lib/activation";
 import { getSession } from "../lib/auth-session";
 import { getOrgs, getCurrentOrgId } from "../lib/org-fns";
 import { signOut } from "../lib/auth-client";
 import { OrgSwitcher } from "../components/org-switcher";
+import { getDesktopSession, desktopLogout } from "../lib/desktop-auth";
 
 export const Route = createFileRoute("/_authed")({
 	beforeLoad: async ({ location }) => {
+		if (isDesktop()) {
+			const desktopSession = await getDesktopSession();
+			if (!desktopSession) {
+				// root layout will handle login
+				throw redirect({ to: "/" });
+			}
+
+			const orgs = desktopSession.orgs;
+			const currentOrgId = orgs[0]?.id ?? null;
+
+			return {
+				session: { user: desktopSession.user },
+				orgs,
+				currentOrgId,
+			};
+		}
+
 		const session = await getSession();
 		if (!session) {
 			throw redirect({ to: "/login" });
@@ -34,8 +53,15 @@ export const Route = createFileRoute("/_authed")({
 function AuthedLayout() {
 	const navigate = useNavigate();
 	const { orgs, currentOrgId } = Route.useRouteContext();
+	const desktop = isDesktop();
 
 	async function handleLogout() {
+		if (desktop) {
+			await desktopLogout();
+			// force full reload to go back to login screen
+			window.location.href = "/";
+			return;
+		}
 		await signOut();
 		navigate({ to: "/login" });
 	}
@@ -44,7 +70,12 @@ function AuthedLayout() {
 		<>
 			<div className="flex items-center justify-between border-b px-4 py-2">
 				<div className="flex items-center gap-4">
-					<OrgSwitcher orgs={orgs} currentOrgId={currentOrgId} />
+					{!desktop && (
+						<OrgSwitcher orgs={orgs} currentOrgId={currentOrgId} />
+					)}
+					{desktop && orgs[0] && (
+						<span className="text-sm font-medium">{orgs[0].name}</span>
+					)}
 					<nav className="flex gap-2 text-sm">
 						<Link to="/dashboard" className="text-muted-foreground hover:text-foreground [&.active]:text-foreground">Dashboard</Link>
 						<Link to="/users" className="text-muted-foreground hover:text-foreground [&.active]:text-foreground">Users</Link>
