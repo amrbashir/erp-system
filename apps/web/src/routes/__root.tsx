@@ -20,7 +20,7 @@ export const Route = createRootRoute({
 				content: "width=device-width, initial-scale=1",
 			},
 			{
-				title: "TanStack Start Starter",
+				title: "ERP System",
 			},
 		],
 		links: [
@@ -51,7 +51,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 function RootLayout() {
 	return (
 		<>
-			<header className="flex items-center justify-end border-b px-4 py-2">
+			<header className="flex items-center justify-end gap-2 border-b px-4 py-2">
 				<LanguageSwitcher />
 			</header>
 			<Outlet />
