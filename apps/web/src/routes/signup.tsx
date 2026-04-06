@@ -33,7 +33,7 @@ function SignupPage() {
 			return;
 		}
 
-		navigate({ to: "/" });
+		navigate({ to: "/onboarding" });
 	}
 
 	return (
