@@ -17,7 +17,14 @@ export default defineEventHandler((event) => {
 		return "Unauthorized";
 	}
 
-	const decoded = atob(auth.slice(6));
+	let decoded: string;
+	try {
+		decoded = atob(auth.slice(6));
+	} catch {
+		setResponseStatus(event, 401);
+		setResponseHeader(event, "WWW-Authenticate", 'Basic realm="Admin"');
+		return "Unauthorized";
+	}
 	const colonIdx = decoded.indexOf(":");
 	const user = decoded.slice(0, colonIdx);
 	const pass = decoded.slice(colonIdx + 1);

@@ -7,10 +7,10 @@ type CheckResult =
 	| { status: "pending" | "revoked" | "unknown"; activation?: undefined };
 
 export async function checkActivation(
-	db: { select: Function },
+	db: any,
 	hardwareId: string,
 ): Promise<CheckResult> {
-	const rows = await (db as any)
+	const rows = await db
 		.select()
 		.from(activations)
 		.where(eq(activations.hardwareId, hardwareId))
