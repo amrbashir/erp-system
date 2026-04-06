@@ -12,7 +12,7 @@ export default defineConfig({
 			project: "../../packages/i18n/project.inlang",
 			outdir: "../../packages/i18n/src/paraglide",
 			strategy: ["localStorage", "preferredLanguage", "baseLocale"],
-		}),
+		}) as any,
 		nitro(),
 		viteTsConfigPaths({
 			projects: ["./tsconfig.json"],
