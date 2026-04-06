@@ -127,7 +127,7 @@ pub fn migrate_db_path(app: tauri::AppHandle, new_path: String) -> Result<(), St
     write_config(&app, &config)
 }
 
-fn copy_dir_recursive(src: &PathBuf, dst: &PathBuf) -> std::io::Result<()> {
+fn copy_dir_recursive(src: &std::path::Path, dst: &std::path::Path) -> std::io::Result<()> {
     fs::create_dir_all(dst)?;
     for entry in fs::read_dir(src)? {
         let entry = entry?;

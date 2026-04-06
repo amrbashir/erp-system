@@ -19,22 +19,14 @@ impl SidecarManager {
 }
 
 pub fn start(app: &tauri::AppHandle) {
-    let cfg = config::read_config(app);
-    let pgdata = std::path::PathBuf::from(&cfg.db_path);
+    let mut cfg = config::read_config(app);
 
     if let Err(e) = config::validate_db_path(&cfg.db_path) {
         eprintln!("[sidecar] db path inaccessible: {e}, falling back to default");
-        let default_path = config::default_db_path(app);
-        std::fs::create_dir_all(&default_path).expect("failed to create default pgdata dir");
-        // Update config to default so it's consistent
-        let mut cfg = cfg;
-        cfg.db_path = default_path.clone();
+        cfg.db_path = config::default_db_path(app);
+        config::validate_db_path(&cfg.db_path).expect("default pgdata dir inaccessible");
         let _ = config::write_config(app, &cfg);
-    } else {
-        std::fs::create_dir_all(&pgdata).expect("failed to create pgdata dir");
     }
-
-    let cfg = config::read_config(app);
 
     let sidecar = app
         .shell()
