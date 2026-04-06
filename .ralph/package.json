@@ -1,0 +1,14 @@
+{
+	"name": "@workspace/ralph",
+	"bin": {
+		"ralph": "./main.ts"
+	},
+	"type": "module",
+	"main": "./main.ts",
+	"dependencies": {
+		"errore": "^0.14.1"
+	},
+	"devDependencies": {
+		"@types/node": "^25.5.2"
+	}
+}

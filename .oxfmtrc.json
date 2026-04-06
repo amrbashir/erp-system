@@ -3,5 +3,7 @@
 	"semi": true,
 
 	"sortImports": {},
-	"sortTailwindcss": {}
+	"sortTailwindcss": {},
+
+	"ignorePatterns": [".agents"]
 }
