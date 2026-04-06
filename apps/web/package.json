@@ -14,6 +14,7 @@
 		"@tanstack/react-router": "^1.132.0",
 		"@tanstack/react-start": "^1.132.0",
 		"@tanstack/router-plugin": "^1.132.0",
+		"@tauri-apps/plugin-updater": "^2",
 		"@workspace/i18n": "workspace:*",
 		"@workspace/ui": "workspace:*",
 		"nitro": "latest",

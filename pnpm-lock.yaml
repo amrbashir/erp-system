@@ -39,6 +39,9 @@ importers:
       '@tauri-apps/api':
         specifier: ^2.10.1
         version: 2.10.1
+      '@tauri-apps/plugin-updater':
+        specifier: ^2
+        version: 2.10.1
     devDependencies:
       '@tauri-apps/cli':
         specifier: ^2.10.1
@@ -61,6 +64,9 @@ importers:
       '@tanstack/router-plugin':
         specifier: ^1.132.0
         version: 1.166.3(@tanstack/react-router@1.166.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(vite@7.3.1(@types/node@25.3.5)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0))
+      '@tauri-apps/plugin-updater':
+        specifier: ^2
+        version: 2.10.1
       '@workspace/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
@@ -2049,6 +2055,9 @@ packages:
     resolution: {integrity: sha512-jQNGF/5quwORdZSSLtTluyKQ+o6SMa/AUICfhf4egCGFdMHqWssApVgYSbg+jmrZoc8e1DscNvjTnXtlHLS11g==}
     engines: {node: '>= 10'}
     hasBin: true
+
+  '@tauri-apps/plugin-updater@2.10.1':
+    resolution: {integrity: sha512-NFYMg+tWOZPJdzE/PpFj2qfqwAWwNS3kXrb1tm1gnBJ9mYzZ4WDRrwy8udzWoAnfGCHLuePNLY1WVCNHnh3eRA==}
 
   '@ts-morph/common@0.27.0':
     resolution: {integrity: sha512-Wf29UqxWDpc+i61k3oIOzcUfQt79PIT9y/MWfAGlrkjg6lBC1hwDECLXPVJAhWjiGbfBCxZd65F/LIZF3+jeJQ==}
@@ -5759,6 +5768,10 @@ snapshots:
       '@tauri-apps/cli-win32-arm64-msvc': 2.10.1
       '@tauri-apps/cli-win32-ia32-msvc': 2.10.1
       '@tauri-apps/cli-win32-x64-msvc': 2.10.1
+
+  '@tauri-apps/plugin-updater@2.10.1':
+    dependencies:
+      '@tauri-apps/api': 2.10.1
 
   '@ts-morph/common@0.27.0':
     dependencies:

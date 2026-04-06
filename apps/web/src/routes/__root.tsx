@@ -15,6 +15,7 @@ import {
 	setLocale,
 	type SupportedLocale,
 } from "@workspace/i18n";
+import { UpdatePrompt } from "@/components/update-prompt";
 import appCss from "@workspace/ui/globals.css?url";
 
 import { LanguageSwitcher } from "@workspace/ui/components/language-switcher";
@@ -52,6 +53,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				{children}
+				<UpdatePrompt />
 				<Scripts />
 			</body>
 		</html>
