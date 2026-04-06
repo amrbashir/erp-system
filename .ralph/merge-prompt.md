@@ -19,4 +19,6 @@ Here are all the issues:
 
 {{ISSUES}}
 
+NEVER run `git push` - all branches are local only.
+
 Once you've merged everything you can, output <promise>COMPLETE</promise>.

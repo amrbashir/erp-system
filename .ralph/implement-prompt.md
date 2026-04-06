@@ -60,3 +60,4 @@ Once complete, output <promise>COMPLETE</promise>.
 # FINAL RULES
 
 ONLY WORK ON A SINGLE TASK.
+NEVER run `git push` - all branches are local only.

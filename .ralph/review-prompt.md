@@ -60,4 +60,6 @@ If you find improvements to make:
 
 If the code is already clean and well-structured, do nothing.
 
+NEVER run `git push` - all branches are local only.
+
 Once complete, output <promise>COMPLETE</promise>.
