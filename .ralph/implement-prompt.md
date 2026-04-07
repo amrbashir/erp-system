@@ -35,7 +35,10 @@ If applicable, use RGR to complete the task.
 
 # FEEDBACK LOOPS
 
-Before committing, run `pnpm run typecheck` and `pnpm run test` to ensure the tests pass.
+Before committing:
+
+1. Run `pnpm fmt` to auto-format all changed files
+2. Run `pnpm run typecheck` and `pnpm run test` to ensure the tests pass
 
 # COMMIT
 

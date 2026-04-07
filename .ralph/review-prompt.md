@@ -55,8 +55,9 @@ Here are the last 10 commits:
 If you find improvements to make:
 
 1. Make the changes directly on this branch
-2. Run `pnpm run typecheck` and `pnpm run test` to ensure nothing is broken
-3. Commit with a message starting with `RALPH: Review -` describing the refinements
+2. Run `pnpm fmt` to auto-format all changed files
+3. Run `pnpm run typecheck` and `pnpm run test` to ensure nothing is broken
+4. Commit with a message starting with `RALPH: Review -` describing the refinements
 
 If the code is already clean and well-structured, do nothing.
 
