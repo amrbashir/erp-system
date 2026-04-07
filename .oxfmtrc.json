@@ -5,5 +5,5 @@
 	"sortImports": {},
 	"sortTailwindcss": {},
 
-	"ignorePatterns": [".agents"]
+	"ignorePatterns": [".agents", "routeTree.gen.ts"]
 }

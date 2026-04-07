@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeAll } from "vitest";
 import { generateKeyPair, exportPKCS8, exportSPKI, SignJWT, importPKCS8 } from "jose";
+import { describe, it, expect, beforeAll } from "vitest";
+
 import { verifyTokenOffline } from "./activation-verify";
 
 let privateKeyPem: string;

@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeAll } from "vitest";
-import { getTestInstance } from "better-auth/test";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
+import { getTestInstance } from "better-auth/test";
+import { describe, it, expect, beforeAll } from "vitest";
 
 let client: Awaited<ReturnType<typeof getTestInstance>>["client"];
 

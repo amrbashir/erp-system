@@ -1,6 +1,7 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
+
 import { toSlug } from "../../lib/slug";
 
 export const Route = createFileRoute("/_authed/onboarding")({
@@ -59,10 +60,7 @@ function OnboardingPage() {
 
 	return (
 		<div className="flex min-h-svh items-center justify-center p-6">
-			<form
-				onSubmit={handleSubmit}
-				className="flex w-full max-w-sm flex-col gap-4"
-			>
+			<form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
 				<h1 className="text-lg font-medium">Create your organization</h1>
 				<p className="text-muted-foreground text-sm">
 					Create your first organization to get started.

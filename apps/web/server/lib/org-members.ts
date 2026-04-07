@@ -1,7 +1,7 @@
-import { eq, and } from "drizzle-orm";
 import { orgMembers, users } from "@workspace/db/schema";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
 import type * as schema from "@workspace/db/schema";
+import { eq, and } from "drizzle-orm";
+import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
 
 type DB = NeonHttpDatabase<typeof schema>;
 type Role = "owner" | "admin" | "member";
@@ -22,10 +22,7 @@ export async function getOrgMembers(db: DB, orgId: string) {
 		.where(eq(orgMembers.orgId, orgId));
 }
 
-export async function addMemberToOrg(
-	db: DB,
-	input: { orgId: string; userId: string; role: Role },
-) {
+export async function addMemberToOrg(db: DB, input: { orgId: string; userId: string; role: Role }) {
 	const [row] = await db
 		.insert(orgMembers)
 		.values({
@@ -56,12 +53,7 @@ export async function updateMemberRole(
 	const [updated] = await db
 		.update(orgMembers)
 		.set({ role: input.newRole })
-		.where(
-			and(
-				eq(orgMembers.id, input.memberId),
-				eq(orgMembers.orgId, input.orgId),
-			),
-		)
+		.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
 		.returning();
 
 	if (!updated) throw new Error("Member not found");
@@ -85,12 +77,7 @@ export async function removeMember(
 		const [target] = await db
 			.select({ role: orgMembers.role })
 			.from(orgMembers)
-			.where(
-				and(
-					eq(orgMembers.id, input.memberId),
-					eq(orgMembers.orgId, input.orgId),
-				),
-			)
+			.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
 			.limit(1);
 
 		if (!target) throw new Error("Member not found");
@@ -101,12 +88,7 @@ export async function removeMember(
 
 	const [deleted] = await db
 		.delete(orgMembers)
-		.where(
-			and(
-				eq(orgMembers.id, input.memberId),
-				eq(orgMembers.orgId, input.orgId),
-			),
-		)
+		.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
 		.returning();
 
 	if (!deleted) throw new Error("Member not found");

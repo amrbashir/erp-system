@@ -1,10 +1,12 @@
-import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { fileURLToPath } from "node:url";
+
 import { PGlite } from "@electric-sql/pglite";
+import * as schema from "@workspace/db/schema";
 import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
-import * as schema from "@workspace/db/schema";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+
 import {
 	isSetupComplete,
 	setupOwner,
@@ -17,10 +19,7 @@ import {
 } from "./local-auth.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const migrationsFolder = path.resolve(
-	__dirname,
-	"../../../../../packages/db/drizzle",
-);
+const migrationsFolder = path.resolve(__dirname, "../../../../../packages/db/drizzle");
 
 let client: PGlite;
 let db: ReturnType<typeof drizzle<typeof schema>>;
@@ -83,9 +82,9 @@ describe("login", () => {
 	});
 
 	it("fails with wrong password", async () => {
-		await expect(
-			login(db as any, { username: "admin", password: "wrong" }),
-		).rejects.toThrow("Invalid credentials");
+		await expect(login(db as any, { username: "admin", password: "wrong" })).rejects.toThrow(
+			"Invalid credentials",
+		);
 	});
 
 	it("fails with nonexistent username", async () => {

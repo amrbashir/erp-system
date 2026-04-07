@@ -1,4 +1,5 @@
 import { pgTable, uuid, varchar, timestamp } from "drizzle-orm/pg-core";
+
 import { users } from "./users.js";
 
 export const sessions = pgTable("sessions", {
@@ -10,9 +11,7 @@ export const sessions = pgTable("sessions", {
 	expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
 	ipAddress: varchar("ip_address", { length: 45 }),
 	userAgent: varchar("user_agent", { length: 512 }),
-	createdAt: timestamp("created_at", { withTimezone: true })
-		.notNull()
-		.defaultNow(),
+	createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 	updatedAt: timestamp("updated_at", { withTimezone: true })
 		.notNull()
 		.defaultNow()

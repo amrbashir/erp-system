@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { Button } from "@workspace/ui/components/button";
-import {
-	checkActivationApi,
-	writeCachedToken,
-} from "../lib/activation";
+import { useState } from "react";
+
+import { checkActivationApi, writeCachedToken } from "../lib/activation";
 
 export function ActivationScreen({
 	hardwareId,
@@ -58,11 +56,9 @@ export function ActivationScreen({
 				</p>
 
 				<div className="w-full">
-					<label className="text-muted-foreground mb-1 block text-xs">
-						Hardware ID
-					</label>
+					<label className="text-muted-foreground mb-1 block text-xs">Hardware ID</label>
 					<div className="flex items-center gap-2">
-						<code className="bg-muted flex-1 truncate rounded-none border px-3 py-2 text-xs font-mono select-all">
+						<code className="bg-muted flex-1 truncate rounded-none border px-3 py-2 font-mono text-xs select-all">
 							{hardwareId}
 						</code>
 						<Button variant="outline" size="sm" onClick={handleCopy}>
@@ -71,21 +67,13 @@ export function ActivationScreen({
 					</div>
 				</div>
 
-				{error && (
-					<p className="text-destructive text-sm">{error}</p>
-				)}
+				{error && <p className="text-destructive text-sm">{error}</p>}
 
-				<Button
-					onClick={handleCheck}
-					disabled={status === "checking"}
-					className="w-full"
-				>
+				<Button onClick={handleCheck} disabled={status === "checking"} className="w-full">
 					{status === "checking" ? "Checking…" : "Check activation"}
 				</Button>
 
-				<p className="text-muted-foreground text-xs">
-					Waiting for activation…
-				</p>
+				<p className="text-muted-foreground text-xs">Waiting for activation…</p>
 			</div>
 		</div>
 	);

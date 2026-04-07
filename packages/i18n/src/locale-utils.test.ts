@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { getNextLocale, localeNames } from "./locale-utils";
 
 describe("localeNames", () => {

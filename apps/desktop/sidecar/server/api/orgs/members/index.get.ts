@@ -1,9 +1,10 @@
+import { orgMembers } from "@workspace/db/schema";
+import { eq, and } from "drizzle-orm";
 import { defineEventHandler, createError, getQuery } from "nitro/h3";
+
+import { getLocalOrgMembers } from "../../../lib/local-auth";
 import { requireSession } from "../../../utils/auth";
 import { useDatabase } from "../../../utils/db";
-import { getLocalOrgMembers } from "../../../lib/local-auth";
-import { eq, and } from "drizzle-orm";
-import { orgMembers } from "@workspace/db/schema";
 
 export default defineEventHandler(async (event) => {
 	const { user } = await requireSession(event);

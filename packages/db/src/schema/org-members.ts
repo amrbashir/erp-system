@@ -1,10 +1,5 @@
-import {
-	pgTable,
-	pgEnum,
-	uuid,
-	timestamp,
-	unique,
-} from "drizzle-orm/pg-core";
+import { pgTable, pgEnum, uuid, timestamp, unique } from "drizzle-orm/pg-core";
+
 import { orgs } from "./orgs.js";
 import { users } from "./users.js";
 
@@ -21,9 +16,7 @@ export const orgMembers = pgTable(
 			.notNull()
 			.references(() => users.id, { onDelete: "cascade" }),
 		role: roleEnum("role").notNull().default("member"),
-		createdAt: timestamp("created_at", { withTimezone: true })
-			.notNull()
-			.defaultNow(),
+		createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 		updatedAt: timestamp("updated_at", { withTimezone: true })
 			.notNull()
 			.defaultNow()

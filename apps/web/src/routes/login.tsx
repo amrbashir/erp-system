@@ -1,6 +1,7 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
+
 import { signIn } from "../lib/auth-client";
 
 export const Route = createFileRoute("/login")({ component: LoginPage });
@@ -36,15 +37,10 @@ function LoginPage() {
 
 	return (
 		<div className="flex min-h-svh items-center justify-center p-6">
-			<form
-				onSubmit={handleSubmit}
-				className="flex w-full max-w-sm flex-col gap-4"
-			>
+			<form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
 				<h1 className="text-lg font-medium">Log in</h1>
 
-				{error && (
-					<p className="text-destructive text-sm">{error}</p>
-				)}
+				{error && <p className="text-destructive text-sm">{error}</p>}
 
 				<input
 					name="email"

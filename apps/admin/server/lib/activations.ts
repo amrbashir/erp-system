@@ -1,5 +1,5 @@
-import { eq } from "drizzle-orm";
 import { activations } from "@workspace/db/schema";
+import { eq } from "drizzle-orm";
 
 type Activation = typeof activations.$inferSelect;
 

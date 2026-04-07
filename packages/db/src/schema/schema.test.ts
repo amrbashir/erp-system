@@ -1,12 +1,14 @@
-import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { fileURLToPath } from "node:url";
+
 import { PGlite } from "@electric-sql/pglite";
+import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
-import { sql } from "drizzle-orm";
-import * as schema from "./index.js";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+
 import { rlsStatements } from "../rls/index.js";
+import * as schema from "./index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const migrationsFolder = path.resolve(__dirname, "../../drizzle");
@@ -62,9 +64,7 @@ describe("orgs table", () => {
 	});
 
 	it("should enforce unique slug", async () => {
-		await db
-			.insert(schema.orgs)
-			.values({ name: "Org A", slug: "unique-slug" });
+		await db.insert(schema.orgs).values({ name: "Org A", slug: "unique-slug" });
 		await expect(
 			db.insert(schema.orgs).values({ name: "Org B", slug: "unique-slug" }),
 		).rejects.toThrow();
@@ -77,18 +77,13 @@ describe("users table", () => {
 			.insert(schema.users)
 			.values({ name: "Alice", email: "alice@test.com" })
 			.returning();
-		expect(user.id).toMatch(
-			/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
-		);
+		expect(user.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
 		expect(user.createdAt).toBeInstanceOf(Date);
 		expect(user.updatedAt).toBeInstanceOf(Date);
 	});
 
 	it("should allow nullable email (desktop users)", async () => {
-		const [user] = await db
-			.insert(schema.users)
-			.values({ name: "Desktop User" })
-			.returning();
+		const [user] = await db.insert(schema.users).values({ name: "Desktop User" }).returning();
 		expect(user.email).toBeNull();
 	});
 });
@@ -99,19 +94,14 @@ describe("org_members table", () => {
 			.insert(schema.orgs)
 			.values({ name: "Member Org", slug: "member-org" })
 			.returning();
-		const [user] = await db
-			.insert(schema.users)
-			.values({ name: "Bob" })
-			.returning();
+		const [user] = await db.insert(schema.users).values({ name: "Bob" }).returning();
 
 		await db
 			.insert(schema.orgMembers)
 			.values({ orgId: org.id, userId: user.id, role: "owner" });
 
 		await expect(
-			db
-				.insert(schema.orgMembers)
-				.values({ orgId: org.id, userId: user.id, role: "member" }),
+			db.insert(schema.orgMembers).values({ orgId: org.id, userId: user.id, role: "member" }),
 		).rejects.toThrow();
 	});
 
@@ -120,10 +110,7 @@ describe("org_members table", () => {
 			.insert(schema.orgs)
 			.values({ name: "Role Org", slug: "role-org" })
 			.returning();
-		const [user] = await db
-			.insert(schema.users)
-			.values({ name: "Charlie" })
-			.returning();
+		const [user] = await db.insert(schema.users).values({ name: "Charlie" }).returning();
 
 		const [member] = await db
 			.insert(schema.orgMembers)
@@ -144,9 +131,7 @@ describe("activations table", () => {
 	});
 
 	it("should enforce unique hardware_id", async () => {
-		await db
-			.insert(schema.activations)
-			.values({ hardwareId: "sha256-unique" });
+		await db.insert(schema.activations).values({ hardwareId: "sha256-unique" });
 		await expect(
 			db.insert(schema.activations).values({ hardwareId: "sha256-unique" }),
 		).rejects.toThrow();

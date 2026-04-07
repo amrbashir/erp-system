@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/button";
 import { useState, useEffect, useCallback } from "react";
+
 import { isDesktop } from "../../lib/activation";
 import {
 	getDesktopMembers,
@@ -287,9 +288,7 @@ function MemberList({
 			<thead>
 				<tr className="border-border border-b text-left">
 					<th className="py-2 font-medium">Name</th>
-					<th className="py-2 font-medium">
-						{desktop ? "Username" : "Email"}
-					</th>
+					<th className="py-2 font-medium">{desktop ? "Username" : "Email"}</th>
 					<th className="py-2 font-medium">Role</th>
 					{canManage && <th className="py-2 font-medium">Actions</th>}
 				</tr>
@@ -302,8 +301,7 @@ function MemberList({
 							{desktop ? (m.username ?? "—") : (m.userEmail ?? "—")}
 						</td>
 						<td className="py-2">
-							{canManage &&
-							(actorRole === "owner" || m.role === "member") ? (
+							{canManage && (actorRole === "owner" || m.role === "member") ? (
 								<select
 									value={m.role}
 									onChange={(e) => handleRoleChange(m.id, e.target.value)}

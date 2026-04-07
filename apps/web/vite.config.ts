@@ -8,9 +8,7 @@ import viteTsConfigPaths from "vite-tsconfig-paths";
 
 // Tauri sets TAURI_ENV_PLATFORM during dev/build; use it to detect desktop context
 if (!process.env.VITE_PLATFORM) {
-	process.env.VITE_PLATFORM = process.env.TAURI_ENV_PLATFORM
-		? "desktop"
-		: "web";
+	process.env.VITE_PLATFORM = process.env.TAURI_ENV_PLATFORM ? "desktop" : "web";
 }
 
 export default defineConfig({

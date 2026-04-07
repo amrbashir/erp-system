@@ -1,20 +1,16 @@
-import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { fileURLToPath } from "node:url";
+
 import { PGlite } from "@electric-sql/pglite";
+import * as schema from "@workspace/db/schema";
 import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
-import * as schema from "@workspace/db/schema";
-import {
-	listActivations,
-	toggleActivationStatus,
-} from "./activations.js";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+
+import { listActivations, toggleActivationStatus } from "./activations.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const migrationsFolder = path.resolve(
-	__dirname,
-	"../../../../packages/db/drizzle",
-);
+const migrationsFolder = path.resolve(__dirname, "../../../../packages/db/drizzle");
 
 let client: PGlite;
 let db: ReturnType<typeof drizzle<typeof schema>>;

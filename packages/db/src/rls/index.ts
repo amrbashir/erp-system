@@ -21,9 +21,7 @@ export const createPolicies = tenantTables.map((table) =>
 );
 
 export const dropPolicies = tenantTables.map((table) =>
-	sql.raw(
-		`DROP POLICY IF EXISTS org_isolation_${table} ON "${table}"`,
-	),
+	sql.raw(`DROP POLICY IF EXISTS org_isolation_${table} ON "${table}"`),
 );
 
 export const rlsStatements = [...enableRls, ...createPolicies];

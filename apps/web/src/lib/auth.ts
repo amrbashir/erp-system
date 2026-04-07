@@ -1,9 +1,9 @@
+import { Pool } from "@neondatabase/serverless";
+import * as schema from "@workspace/db/schema";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
-import { Pool } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-serverless";
-import * as schema from "@workspace/db/schema";
 
 const pool = new Pool({
 	connectionString: process.env.DATABASE_URL,

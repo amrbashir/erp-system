@@ -9,13 +9,7 @@ type Org = {
 	role: string;
 };
 
-export function OrgSwitcher({
-	orgs,
-	currentOrgId,
-}: {
-	orgs: Org[];
-	currentOrgId: string | null;
-}) {
+export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId: string | null }) {
 	const navigate = useNavigate();
 	const [open, setOpen] = useState(false);
 	const currentOrg = orgs.find((o) => o.id === currentOrgId) ?? orgs[0];
@@ -55,9 +49,7 @@ export function OrgSwitcher({
 							}`}
 						>
 							<span className="truncate">{org.name}</span>
-							<span className="text-muted-foreground text-xs">
-								{org.role}
-							</span>
+							<span className="text-muted-foreground text-xs">{org.role}</span>
 						</button>
 					))}
 					<div className="border-border border-t">

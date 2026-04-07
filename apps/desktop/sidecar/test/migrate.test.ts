@@ -1,11 +1,13 @@
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+
 import { PGlite } from "@electric-sql/pglite";
+import * as schema from "@workspace/db/schema";
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/pglite";
-import * as schema from "@workspace/db/schema";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+
 import { applyMigrations } from "../server/utils/migrate";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -64,10 +66,7 @@ describe("sidecar migrations", () => {
 		expect(org.id).toBeDefined();
 		expect(org.defaultCurrency).toBe("USD");
 
-		const [user] = await db
-			.insert(schema.users)
-			.values({ name: "Sidecar User" })
-			.returning();
+		const [user] = await db.insert(schema.users).values({ name: "Sidecar User" }).returning();
 		expect(user.id).toBeDefined();
 		expect(user.email).toBeNull();
 	});

@@ -1,16 +1,14 @@
-import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { fileURLToPath } from "node:url";
+
 import { PGlite } from "@electric-sql/pglite";
+import * as schema from "@workspace/db/schema";
 import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
 import { generateKeyPair, exportPKCS8, exportSPKI } from "jose";
-import * as schema from "@workspace/db/schema";
-import {
-	checkActivation,
-	signActivationToken,
-	verifyActivationToken,
-} from "./activation.js";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+
+import { checkActivation, signActivationToken, verifyActivationToken } from "./activation.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const migrationsFolder = path.resolve(__dirname, "../../../../packages/db/drizzle");
@@ -84,9 +82,7 @@ describe("JWT signing and verification (ES256)", () => {
 		const token = await signActivationToken("hw-active-001", TEST_PRIVATE_KEY);
 		const otherKp = await generateKeyPair("ES256", { extractable: true });
 		const otherPublic = await exportSPKI(otherKp.publicKey);
-		await expect(
-			verifyActivationToken(token, otherPublic),
-		).rejects.toThrow();
+		await expect(verifyActivationToken(token, otherPublic)).rejects.toThrow();
 	});
 
 	it("produces different tokens for different hardware IDs", async () => {

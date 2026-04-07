@@ -1,8 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
-import { auth } from "./auth";
-import { useDB } from "../../server/utils/db";
+
 import { getUserOrgs } from "../../server/lib/org";
+import { useDB } from "../../server/utils/db";
+import { auth } from "./auth";
 
 const CURRENT_ORG_COOKIE = "current_org_id";
 
@@ -14,14 +15,12 @@ export const getOrgs = createServerFn({ method: "GET" }).handler(async () => {
 	return getUserOrgs(db, session.user.id);
 });
 
-export const getCurrentOrgId = createServerFn({ method: "GET" }).handler(
-	async () => {
-		const request = getRequest();
-		const cookies = request.headers.get("cookie") ?? "";
-		const match = cookies
-			.split(";")
-			.map((c) => c.trim())
-			.find((c) => c.startsWith(`${CURRENT_ORG_COOKIE}=`));
-		return match ? match.split("=")[1] : null;
-	},
-);
+export const getCurrentOrgId = createServerFn({ method: "GET" }).handler(async () => {
+	const request = getRequest();
+	const cookies = request.headers.get("cookie") ?? "";
+	const match = cookies
+		.split(";")
+		.map((c) => c.trim())
+		.find((c) => c.startsWith(`${CURRENT_ORG_COOKIE}=`));
+	return match ? match.split("=")[1] : null;
+});

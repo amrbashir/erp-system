@@ -1,7 +1,7 @@
-import { eq, and } from "drizzle-orm";
 import { orgs, orgMembers } from "@workspace/db/schema";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
 import type * as schema from "@workspace/db/schema";
+import { eq, and } from "drizzle-orm";
+import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
 
 type DB = NeonHttpDatabase<typeof schema>;
 
@@ -45,11 +45,7 @@ export async function getUserOrgs(db: DB, userId: string) {
 	return rows;
 }
 
-export async function getOrgMembership(
-	db: DB,
-	userId: string,
-	orgId: string,
-) {
+export async function getOrgMembership(db: DB, userId: string, orgId: string) {
 	const [row] = await db
 		.select()
 		.from(orgMembers)

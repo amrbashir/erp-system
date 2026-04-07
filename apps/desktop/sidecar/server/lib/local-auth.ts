@@ -1,6 +1,7 @@
-import { eq, and } from "drizzle-orm";
 import { users, accounts, orgs, orgMembers, sessions } from "@workspace/db/schema";
 import { hashSync, compareSync } from "bcryptjs";
+import { eq, and } from "drizzle-orm";
+
 import type { Database } from "../utils/db";
 
 type Role = "owner" | "admin" | "member";
@@ -65,27 +66,15 @@ export async function setupOwner(
 	});
 }
 
-export async function login(
-	db: Database,
-	input: { username: string; password: string },
-) {
-	const [user] = await db
-		.select()
-		.from(users)
-		.where(eq(users.username, input.username))
-		.limit(1);
+export async function login(db: Database, input: { username: string; password: string }) {
+	const [user] = await db.select().from(users).where(eq(users.username, input.username)).limit(1);
 
 	if (!user) throw new Error("Invalid credentials");
 
 	const [account] = await db
 		.select()
 		.from(accounts)
-		.where(
-			and(
-				eq(accounts.userId, user.id),
-				eq(accounts.providerId, "local"),
-			),
-		)
+		.where(and(eq(accounts.userId, user.id), eq(accounts.providerId, "local")))
 		.limit(1);
 
 	if (!account?.password) throw new Error("Invalid credentials");
@@ -105,20 +94,12 @@ export async function login(
 }
 
 export async function getSessionByToken(db: Database, token: string) {
-	const [session] = await db
-		.select()
-		.from(sessions)
-		.where(eq(sessions.token, token))
-		.limit(1);
+	const [session] = await db.select().from(sessions).where(eq(sessions.token, token)).limit(1);
 
 	if (!session) return null;
 	if (session.expiresAt < new Date()) return null;
 
-	const [user] = await db
-		.select()
-		.from(users)
-		.where(eq(users.id, session.userId))
-		.limit(1);
+	const [user] = await db.select().from(users).where(eq(users.id, session.userId)).limit(1);
 
 	if (!user) return null;
 
@@ -214,12 +195,7 @@ export async function updateLocalMemberRole(
 		const [target] = await db
 			.select({ role: orgMembers.role })
 			.from(orgMembers)
-			.where(
-				and(
-					eq(orgMembers.id, input.memberId),
-					eq(orgMembers.orgId, input.orgId),
-				),
-			)
+			.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
 			.limit(1);
 
 		if (!target) throw new Error("Member not found");
@@ -231,12 +207,7 @@ export async function updateLocalMemberRole(
 	const [updated] = await db
 		.update(orgMembers)
 		.set({ role: input.newRole })
-		.where(
-			and(
-				eq(orgMembers.id, input.memberId),
-				eq(orgMembers.orgId, input.orgId),
-			),
-		)
+		.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
 		.returning();
 
 	if (!updated) throw new Error("Member not found");
@@ -259,12 +230,7 @@ export async function removeLocalMember(
 		const [target] = await db
 			.select({ role: orgMembers.role })
 			.from(orgMembers)
-			.where(
-				and(
-					eq(orgMembers.id, input.memberId),
-					eq(orgMembers.orgId, input.orgId),
-				),
-			)
+			.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
 			.limit(1);
 
 		if (!target) throw new Error("Member not found");
@@ -275,12 +241,7 @@ export async function removeLocalMember(
 
 	const [deleted] = await db
 		.delete(orgMembers)
-		.where(
-			and(
-				eq(orgMembers.id, input.memberId),
-				eq(orgMembers.orgId, input.orgId),
-			),
-		)
+		.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
 		.returning();
 
 	if (!deleted) throw new Error("Member not found");

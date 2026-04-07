@@ -1,8 +1,9 @@
+import { orgMembers, orgs } from "@workspace/db/schema";
+import { eq } from "drizzle-orm";
 import { defineEventHandler } from "nitro/h3";
+
 import { requireSession } from "../../utils/auth";
 import { useDatabase } from "../../utils/db";
-import { eq } from "drizzle-orm";
-import { orgMembers, orgs } from "@workspace/db/schema";
 
 export default defineEventHandler(async (event) => {
 	const { user } = await requireSession(event);

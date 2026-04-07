@@ -1,11 +1,7 @@
-import {
-	defineEventHandler,
-	readBody,
-	setResponseStatus,
-	getRouterParam,
-} from "nitro/h3";
-import { useDB } from "../../../utils/db.js";
+import { defineEventHandler, readBody, setResponseStatus, getRouterParam } from "nitro/h3";
+
 import { toggleActivationStatus } from "../../../lib/activations.js";
+import { useDB } from "../../../utils/db.js";
 
 export default defineEventHandler(async (event) => {
 	const id = getRouterParam(event, "id");
@@ -23,11 +19,7 @@ export default defineEventHandler(async (event) => {
 	const db = useDB();
 
 	try {
-		const updated = await toggleActivationStatus(
-			db,
-			id,
-			body.status as "active" | "revoked",
-		);
+		const updated = await toggleActivationStatus(db, id, body.status as "active" | "revoked");
 		return updated;
 	} catch {
 		setResponseStatus(event, 404);

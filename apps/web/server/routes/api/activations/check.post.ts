@@ -1,9 +1,7 @@
 import { defineEventHandler, readBody, setResponseStatus } from "nitro/h3";
+
+import { checkActivation, signActivationToken } from "../../../lib/activation.js";
 import { useDB } from "../../../utils/db.js";
-import {
-	checkActivation,
-	signActivationToken,
-} from "../../../lib/activation.js";
 
 export default defineEventHandler(async (event) => {
 	const body = await readBody<{ hardwareId?: string }>(event);

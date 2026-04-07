@@ -1,7 +1,8 @@
 import { defineEventHandler, readBody, createError } from "nitro/h3";
-import { useDatabase } from "../../utils/db";
+
 import { isSetupComplete, setupOwner } from "../../lib/local-auth";
 import { toSlug } from "../../lib/slug";
+import { useDatabase } from "../../utils/db";
 
 export default defineEventHandler(async (event) => {
 	const db = useDatabase();

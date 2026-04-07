@@ -1,7 +1,8 @@
 import { defineEventHandler, readBody, toRequest, createError } from "h3";
+
 import { auth } from "../../../../src/lib/auth";
-import { useDB } from "../../../utils/db";
 import { createOrg } from "../../../lib/org";
+import { useDB } from "../../../utils/db";
 
 export default defineEventHandler(async (event) => {
 	const session = await auth.api.getSession({

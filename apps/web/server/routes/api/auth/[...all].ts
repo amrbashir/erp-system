@@ -1,4 +1,5 @@
 import { defineEventHandler, toRequest } from "h3";
+
 import { auth } from "../../../../src/lib/auth";
 
 export default defineEventHandler(async (event) => {

@@ -46,8 +46,8 @@ export function App() {
 	};
 
 	return (
-		<div className="min-h-screen bg-background text-foreground p-8">
-			<h1 className="text-2xl font-bold mb-6">Activation Dashboard</h1>
+		<div className="bg-background text-foreground min-h-screen p-8">
+			<h1 className="mb-6 text-2xl font-bold">Activation Dashboard</h1>
 
 			{loading ? (
 				<p className="text-muted-foreground">Loading...</p>
@@ -56,39 +56,37 @@ export function App() {
 			) : (
 				<table className="w-full border-collapse">
 					<thead>
-						<tr className="border-b border-border text-left">
-							<th className="py-3 px-4 font-medium">Hardware ID</th>
-							<th className="py-3 px-4 font-medium">Status</th>
-							<th className="py-3 px-4 font-medium">Activated At</th>
-							<th className="py-3 px-4 font-medium">Created At</th>
-							<th className="py-3 px-4 font-medium">Actions</th>
+						<tr className="border-border border-b text-left">
+							<th className="px-4 py-3 font-medium">Hardware ID</th>
+							<th className="px-4 py-3 font-medium">Status</th>
+							<th className="px-4 py-3 font-medium">Activated At</th>
+							<th className="px-4 py-3 font-medium">Created At</th>
+							<th className="px-4 py-3 font-medium">Actions</th>
 						</tr>
 					</thead>
 					<tbody>
 						{activations.map((a) => (
-							<tr key={a.id} className="border-b border-border">
-								<td className="py-3 px-4 font-mono text-sm">
-									{a.hardwareId}
-								</td>
-								<td className="py-3 px-4">
+							<tr key={a.id} className="border-border border-b">
+								<td className="px-4 py-3 font-mono text-sm">{a.hardwareId}</td>
+								<td className="px-4 py-3">
 									<span
-										className={`px-2 py-1 rounded text-xs font-medium ${statusColor[a.status] ?? ""}`}
+										className={`rounded px-2 py-1 text-xs font-medium ${statusColor[a.status] ?? ""}`}
 									>
 										{a.status}
 									</span>
 								</td>
-								<td className="py-3 px-4 text-sm text-muted-foreground">
+								<td className="text-muted-foreground px-4 py-3 text-sm">
 									{a.activatedAt
 										? new Date(a.activatedAt).toLocaleDateString()
 										: "-"}
 								</td>
-								<td className="py-3 px-4 text-sm text-muted-foreground">
+								<td className="text-muted-foreground px-4 py-3 text-sm">
 									{new Date(a.createdAt).toLocaleDateString()}
 								</td>
-								<td className="py-3 px-4">
+								<td className="px-4 py-3">
 									{a.status === "active" ? (
 										<button
-											className="px-3 py-1 text-sm bg-destructive text-white rounded disabled:opacity-50"
+											className="bg-destructive rounded px-3 py-1 text-sm text-white disabled:opacity-50"
 											disabled={toggling === a.id}
 											onClick={() => toggle(a.id, "revoked")}
 										>
@@ -96,7 +94,7 @@ export function App() {
 										</button>
 									) : (
 										<button
-											className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded disabled:opacity-50"
+											className="bg-primary text-primary-foreground rounded px-3 py-1 text-sm disabled:opacity-50"
 											disabled={toggling === a.id}
 											onClick={() => toggle(a.id, "active")}
 										>

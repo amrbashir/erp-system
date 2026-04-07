@@ -63,10 +63,7 @@ export async function desktopSetup(input: {
 	return data;
 }
 
-export async function desktopLogin(input: {
-	username: string;
-	password: string;
-}): Promise<{
+export async function desktopLogin(input: { username: string; password: string }): Promise<{
 	token: string;
 	user: { id: string; name: string; username: string };
 }> {
@@ -132,18 +129,11 @@ export async function addDesktopMember(
 	return res.json();
 }
 
-export async function updateDesktopMemberRole(
-	orgId: string,
-	memberId: string,
-	role: string,
-) {
-	const res = await sidecarFetch(
-		`/api/orgs/members/${memberId}?orgId=${orgId}`,
-		{
-			method: "PATCH",
-			body: JSON.stringify({ role }),
-		},
-	);
+export async function updateDesktopMemberRole(orgId: string, memberId: string, role: string) {
+	const res = await sidecarFetch(`/api/orgs/members/${memberId}?orgId=${orgId}`, {
+		method: "PATCH",
+		body: JSON.stringify({ role }),
+	});
 	if (!res.ok) {
 		const data = await res.json().catch(() => null);
 		throw new Error(data?.message ?? "Failed to update role");
@@ -152,10 +142,9 @@ export async function updateDesktopMemberRole(
 }
 
 export async function removeDesktopMember(orgId: string, memberId: string) {
-	const res = await sidecarFetch(
-		`/api/orgs/members/${memberId}?orgId=${orgId}`,
-		{ method: "DELETE" },
-	);
+	const res = await sidecarFetch(`/api/orgs/members/${memberId}?orgId=${orgId}`, {
+		method: "DELETE",
+	});
 	if (!res.ok) {
 		const data = await res.json().catch(() => null);
 		throw new Error(data?.message ?? "Failed to remove user");

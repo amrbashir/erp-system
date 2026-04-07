@@ -1,27 +1,20 @@
-import {
-	defineEventHandler,
-	readBody,
-	toRequest,
-	createError,
-	getCookie,
-} from "h3";
-import { auth } from "../../../../../src/lib/auth";
-import { useDB } from "../../../../utils/db";
-import { getOrgMembership } from "../../../../lib/org";
-import { addMemberToOrg } from "../../../../lib/org-members";
 import { users } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
+import { defineEventHandler, readBody, toRequest, createError, getCookie } from "h3";
+
+import { auth } from "../../../../../src/lib/auth";
+import { getOrgMembership } from "../../../../lib/org";
+import { addMemberToOrg } from "../../../../lib/org-members";
+import { useDB } from "../../../../utils/db";
 
 export default defineEventHandler(async (event) => {
 	const session = await auth.api.getSession({
 		headers: toRequest(event as any).headers,
 	});
-	if (!session)
-		throw createError({ statusCode: 401, message: "Unauthorized" });
+	if (!session) throw createError({ statusCode: 401, message: "Unauthorized" });
 
 	const orgId = getCookie(event, "current_org_id");
-	if (!orgId)
-		throw createError({ statusCode: 400, message: "No org selected" });
+	if (!orgId) throw createError({ statusCode: 400, message: "No org selected" });
 
 	const db = useDB();
 	const membership = await getOrgMembership(db, session.user.id, orgId);
@@ -61,17 +54,10 @@ export default defineEventHandler(async (event) => {
 	}
 
 	// find or create user by email
-	let [user] = await db
-		.select()
-		.from(users)
-		.where(eq(users.email, body.email))
-		.limit(1);
+	let [user] = await db.select().from(users).where(eq(users.email, body.email)).limit(1);
 
 	if (!user) {
-		[user] = await db
-			.insert(users)
-			.values({ name: body.name, email: body.email })
-			.returning();
+		[user] = await db.insert(users).values({ name: body.name, email: body.email }).returning();
 	}
 
 	try {

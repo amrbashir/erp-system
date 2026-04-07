@@ -8,9 +8,7 @@ export const users = pgTable("users", {
 	image: varchar("image", { length: 2048 }),
 	username: varchar("username", { length: 255 }),
 	phone: varchar("phone", { length: 50 }),
-	createdAt: timestamp("created_at", { withTimezone: true })
-		.notNull()
-		.defaultNow(),
+	createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 	updatedAt: timestamp("updated_at", { withTimezone: true })
 		.notNull()
 		.defaultNow()

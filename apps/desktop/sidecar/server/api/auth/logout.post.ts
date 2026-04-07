@@ -1,6 +1,7 @@
 import { defineEventHandler, getHeader, createError } from "nitro/h3";
-import { useDatabase } from "../../utils/db";
+
 import { deleteSession } from "../../lib/local-auth";
+import { useDatabase } from "../../utils/db";
 
 export default defineEventHandler(async (event) => {
 	const authHeader = getHeader(event, "authorization");

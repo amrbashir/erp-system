@@ -1,5 +1,6 @@
-import { useState } from "react";
 import { Button } from "@workspace/ui/components/button";
+import { useState } from "react";
+
 import { desktopLogin } from "../lib/desktop-auth";
 
 export function DesktopLogin({ onLoggedIn }: { onLoggedIn: () => void }) {
@@ -27,10 +28,7 @@ export function DesktopLogin({ onLoggedIn }: { onLoggedIn: () => void }) {
 
 	return (
 		<div className="flex min-h-svh items-center justify-center p-6">
-			<form
-				onSubmit={handleSubmit}
-				className="flex w-full max-w-sm flex-col gap-4"
-			>
+			<form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
 				<h1 className="text-lg font-medium">Log in</h1>
 
 				{error && <p className="text-destructive text-sm">{error}</p>}

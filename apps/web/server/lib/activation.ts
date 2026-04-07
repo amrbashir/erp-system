@@ -1,15 +1,12 @@
-import { eq } from "drizzle-orm";
 import { activations } from "@workspace/db/schema";
+import { eq } from "drizzle-orm";
 import { SignJWT, jwtVerify, importPKCS8, importSPKI } from "jose";
 
 type CheckResult =
 	| { status: "active"; activation: typeof activations.$inferSelect }
 	| { status: "pending" | "revoked" | "unknown"; activation?: undefined };
 
-export async function checkActivation(
-	db: any,
-	hardwareId: string,
-): Promise<CheckResult> {
+export async function checkActivation(db: any, hardwareId: string): Promise<CheckResult> {
 	const rows = await db
 		.select()
 		.from(activations)

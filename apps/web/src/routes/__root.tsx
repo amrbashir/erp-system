@@ -1,24 +1,14 @@
-import { useEffect, useState } from "react";
-import {
-	HeadContent,
-	Outlet,
-	Scripts,
-	createRootRoute,
-} from "@tanstack/react-router";
+import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 import { getLocale, getTextDirection } from "@workspace/i18n";
+import { useEffect, useState } from "react";
 
-import { LanguageSwitcher } from "../components/language-switcher";
 import { ActivationScreen } from "../components/activation-screen";
-import { DesktopOnboarding } from "../components/desktop-onboarding";
 import { DesktopLogin } from "../components/desktop-login";
-import {
-	isDesktop,
-	checkActivationState,
-} from "../lib/activation";
-import {
-	getDesktopAuthStatus,
-	getStoredToken,
-} from "../lib/desktop-auth";
+import { DesktopOnboarding } from "../components/desktop-onboarding";
+import { LanguageSwitcher } from "../components/language-switcher";
+import { isDesktop, checkActivationState } from "../lib/activation";
+import { getDesktopAuthStatus, getStoredToken } from "../lib/desktop-auth";
+
 import appCss from "@workspace/ui/globals.css?url";
 
 export const Route = createRootRoute({
@@ -139,19 +129,11 @@ function RootLayout() {
 	}
 
 	if (state.step === "onboarding") {
-		return (
-			<DesktopOnboarding
-				onComplete={() => setState({ step: "ready" })}
-			/>
-		);
+		return <DesktopOnboarding onComplete={() => setState({ step: "ready" })} />;
 	}
 
 	if (state.step === "login") {
-		return (
-			<DesktopLogin
-				onLoggedIn={() => setState({ step: "ready" })}
-			/>
-		);
+		return <DesktopLogin onLoggedIn={() => setState({ step: "ready" })} />;
 	}
 
 	// ready

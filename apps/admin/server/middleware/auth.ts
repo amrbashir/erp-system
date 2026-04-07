@@ -1,9 +1,4 @@
-import {
-	defineEventHandler,
-	getHeader,
-	setResponseStatus,
-	setResponseHeader,
-} from "nitro/h3";
+import { defineEventHandler, getHeader, setResponseStatus, setResponseHeader } from "nitro/h3";
 
 export default defineEventHandler((event) => {
 	// skip auth for static assets in dev

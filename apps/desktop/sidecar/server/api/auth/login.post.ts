@@ -1,6 +1,7 @@
 import { defineEventHandler, readBody, createError } from "nitro/h3";
-import { useDatabase } from "../../utils/db";
+
 import { login } from "../../lib/local-auth";
+import { useDatabase } from "../../utils/db";
 
 export default defineEventHandler(async (event) => {
 	const body = await readBody<{ username: string; password: string }>(event);

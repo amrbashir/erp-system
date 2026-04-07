@@ -1,4 +1,5 @@
 import { pgTable, uuid, varchar, timestamp } from "drizzle-orm/pg-core";
+
 import { users } from "./users.js";
 
 export const accounts = pgTable("accounts", {
@@ -18,9 +19,7 @@ export const accounts = pgTable("accounts", {
 	}),
 	scope: varchar("scope", { length: 512 }),
 	password: varchar("password", { length: 255 }),
-	createdAt: timestamp("created_at", { withTimezone: true })
-		.notNull()
-		.defaultNow(),
+	createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 	updatedAt: timestamp("updated_at", { withTimezone: true })
 		.notNull()
 		.defaultNow()

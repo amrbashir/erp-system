@@ -1,18 +1,17 @@
-import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { fileURLToPath } from "node:url";
+
 import { PGlite } from "@electric-sql/pglite";
+import * as schema from "@workspace/db/schema";
+import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
-import { sql } from "drizzle-orm";
-import * as schema from "@workspace/db/schema";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+
 import { createOrg, getUserOrgs, getOrgMembership } from "./org.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const migrationsFolder = path.resolve(
-	__dirname,
-	"../../../../packages/db/drizzle",
-);
+const migrationsFolder = path.resolve(__dirname, "../../../../packages/db/drizzle");
 
 let client: PGlite;
 let db: ReturnType<typeof drizzle<typeof schema>>;
@@ -104,9 +103,7 @@ describe("org data isolation", () => {
 		const aliceOrgId = aliceOrgs[0].id;
 
 		// set session var used by RLS policies
-		await db.execute(
-			sql`SELECT set_config('app.current_org_id', ${aliceOrgId}, false)`,
-		);
+		await db.execute(sql`SELECT set_config('app.current_org_id', ${aliceOrgId}, false)`);
 
 		// simulate what an RLS policy does: filter by current_setting
 		const rows = await db.execute(

@@ -1,5 +1,6 @@
-import { useState } from "react";
 import { Button } from "@workspace/ui/components/button";
+import { useState } from "react";
+
 import { desktopSetup } from "../lib/desktop-auth";
 
 export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
@@ -35,10 +36,7 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 
 	return (
 		<div className="flex min-h-svh items-center justify-center p-6">
-			<form
-				onSubmit={handleSubmit}
-				className="flex w-full max-w-sm flex-col gap-4"
-			>
+			<form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
 				<h1 className="text-lg font-medium">Welcome</h1>
 				<p className="text-muted-foreground text-sm">
 					Set up your organization and owner account to get started.

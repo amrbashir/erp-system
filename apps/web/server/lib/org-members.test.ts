@@ -1,23 +1,17 @@
-import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { fileURLToPath } from "node:url";
+
 import { PGlite } from "@electric-sql/pglite";
+import * as schema from "@workspace/db/schema";
 import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
-import * as schema from "@workspace/db/schema";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+
+import { getOrgMembers, addMemberToOrg, updateMemberRole, removeMember } from "./org-members.js";
 import { createOrg, getOrgMembership } from "./org.js";
-import {
-	getOrgMembers,
-	addMemberToOrg,
-	updateMemberRole,
-	removeMember,
-} from "./org-members.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const migrationsFolder = path.resolve(
-	__dirname,
-	"../../../../packages/db/drizzle",
-);
+const migrationsFolder = path.resolve(__dirname, "../../../../packages/db/drizzle");
 
 let client: PGlite;
 let db: ReturnType<typeof drizzle<typeof schema>>;
@@ -105,11 +99,7 @@ describe("addMemberToOrg", () => {
 			userId: newUser[0].id,
 			role: "member",
 		});
-		const membership = await getOrgMembership(
-			db as any,
-			newUser[0].id,
-			orgId,
-		);
+		const membership = await getOrgMembership(db as any, newUser[0].id, orgId);
 		expect(membership).not.toBeNull();
 		expect(membership!.role).toBe("member");
 	});
@@ -188,11 +178,7 @@ describe("removeMember", () => {
 			userId: tempUser[0].id,
 			role: "member",
 		});
-		const membership = await getOrgMembership(
-			db as any,
-			tempUser[0].id,
-			orgId,
-		);
+		const membership = await getOrgMembership(db as any, tempUser[0].id, orgId);
 		await removeMember(db as any, {
 			memberId: membership!.id,
 			orgId,
@@ -212,11 +198,7 @@ describe("removeMember", () => {
 			userId: tempUser[0].id,
 			role: "member",
 		});
-		const membership = await getOrgMembership(
-			db as any,
-			tempUser[0].id,
-			orgId,
-		);
+		const membership = await getOrgMembership(db as any, tempUser[0].id, orgId);
 		await removeMember(db as any, {
 			memberId: membership!.id,
 			orgId,
