@@ -1,6 +1,5 @@
 packages:
     - "apps/*"
-    - "apps/desktop/sidecar"
     - "packages/*"
     - ".ralph"
 onlyBuiltDependencies:

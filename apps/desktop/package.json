@@ -5,8 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "tauri dev",
-		"build": "pnpm build:sidecar && tauri build",
-		"build:sidecar": "pnpm --filter @workspace/sidecar build"
+		"build": "pnpm -w build:server:desktop && tauri build"
 	},
 	"dependencies": {
 		"@tauri-apps/api": "^2.10.1"
