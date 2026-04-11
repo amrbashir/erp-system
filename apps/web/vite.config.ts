@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { paraglideVitePlugin } from "@inlang/paraglide-js";
@@ -7,6 +8,9 @@ import viteReact from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
 import viteTsConfigPaths from "vite-tsconfig-paths";
+
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
+const serverPkg = resolve(__dirname, "../../packages/server");
 
 // Tauri sets TAURI_ENV_PLATFORM during dev/build; use it to detect desktop context
 if (!process.env.VITE_PLATFORM) {
@@ -23,7 +27,11 @@ export default defineConfig({
 			strategy: ["localStorage", "preferredLanguage", "baseLocale"],
 		}) as any,
 		nitro({
-			alias: { "#db": dbAlias },
+			scanDirs: [serverPkg],
+			alias: {
+				"#db": dbAlias,
+				"#auth": resolve(__dirname, "src/lib/auth.ts"),
+			},
 		}),
 		viteTsConfigPaths({
 			projects: ["./tsconfig.json"],

@@ -1,7 +1,8 @@
-import { defineEventHandler, readBody, setResponseStatus } from "nitro/h3";
+import { defineEventHandler, readBody, setResponseStatus } from "h3";
 
-import { checkActivation, signActivationToken } from "../../../lib/activation.js";
-import { useDB } from "../../../utils/db.js";
+import { useDatabase } from "#db";
+
+import { checkActivation, signActivationToken } from "../../../lib/activation";
 
 export default defineEventHandler(async (event) => {
 	const body = await readBody<{ hardwareId?: string }>(event);
@@ -11,7 +12,7 @@ export default defineEventHandler(async (event) => {
 		return { error: "hardwareId is required" };
 	}
 
-	const db = useDB();
+	const db = useDatabase();
 	const result = await checkActivation(db, body.hardwareId);
 
 	if (result.status !== "active") {

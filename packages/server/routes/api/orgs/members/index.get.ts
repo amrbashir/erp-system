@@ -1,9 +1,10 @@
 import { defineEventHandler, toRequest, createError, getCookie } from "h3";
 
-import { auth } from "../../../../../src/lib/auth";
+import { auth } from "#auth";
+import { useDatabase } from "#db";
+
 import { getOrgMembership } from "../../../../lib/org";
 import { getOrgMembers } from "../../../../lib/org-members";
-import { useDB } from "../../../../utils/db";
 
 export default defineEventHandler(async (event) => {
 	const session = await auth.api.getSession({
@@ -14,7 +15,7 @@ export default defineEventHandler(async (event) => {
 	const orgId = getCookie(event, "current_org_id");
 	if (!orgId) throw createError({ statusCode: 400, message: "No org selected" });
 
-	const db = useDB();
+	const db = useDatabase();
 	const membership = await getOrgMembership(db, session.user.id, orgId);
 	if (!membership)
 		throw createError({

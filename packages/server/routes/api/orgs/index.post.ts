@@ -1,8 +1,9 @@
 import { defineEventHandler, readBody, toRequest, createError } from "h3";
 
-import { auth } from "../../../../src/lib/auth";
+import { auth } from "#auth";
+import { useDatabase } from "#db";
+
 import { createOrg } from "../../../lib/org";
-import { useDB } from "../../../utils/db";
 
 export default defineEventHandler(async (event) => {
 	const session = await auth.api.getSession({
@@ -15,7 +16,7 @@ export default defineEventHandler(async (event) => {
 		throw createError({ statusCode: 400, message: "name and slug required" });
 	}
 
-	const db = useDB();
+	const db = useDatabase();
 	const org = await createOrg(db, {
 		name: body.name,
 		slug: body.slug,

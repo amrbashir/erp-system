@@ -1,16 +1,10 @@
-import {
-	defineEventHandler,
-	readBody,
-	toRequest,
-	createError,
-	getCookie,
-	getRouterParam,
-} from "h3";
+import { defineEventHandler, toRequest, createError, getCookie, getRouterParam } from "h3";
 
-import { auth } from "../../../../../src/lib/auth";
+import { auth } from "#auth";
+import { useDatabase } from "#db";
+
 import { getOrgMembership } from "../../../../lib/org";
-import { updateMemberRole } from "../../../../lib/org-members";
-import { useDB } from "../../../../utils/db";
+import { removeMember } from "../../../../lib/org-members";
 
 export default defineEventHandler(async (event) => {
 	const session = await auth.api.getSession({
@@ -24,7 +18,7 @@ export default defineEventHandler(async (event) => {
 	const memberId = getRouterParam(event, "id");
 	if (!memberId) throw createError({ statusCode: 400, message: "Member ID required" });
 
-	const db = useDB();
+	const db = useDatabase();
 	const membership = await getOrgMembership(db, session.user.id, orgId);
 	if (!membership)
 		throw createError({
@@ -32,19 +26,21 @@ export default defineEventHandler(async (event) => {
 			message: "Not a member of this org",
 		});
 
-	const body = await readBody<{ role: "owner" | "admin" | "member" }>(event);
-	if (!body?.role) {
-		throw createError({ statusCode: 400, message: "role required" });
+	// prevent self-removal
+	if (memberId === membership.id) {
+		throw createError({
+			statusCode: 400,
+			message: "Cannot remove yourself",
+		});
 	}
 
 	try {
-		const updated = await updateMemberRole(db, {
+		await removeMember(db, {
 			memberId,
 			orgId,
 			actorRole: membership.role as "owner" | "admin" | "member",
-			newRole: body.role,
 		});
-		return updated;
+		return { ok: true };
 	} catch (e: any) {
 		if (e.message?.includes("permission")) {
 			throw createError({ statusCode: 403, message: e.message });

@@ -1,8 +1,9 @@
 import { defineEventHandler, readBody, setCookie, toRequest, createError } from "h3";
 
-import { auth } from "../../../../src/lib/auth";
+import { auth } from "#auth";
+import { useDatabase } from "#db";
+
 import { getOrgMembership } from "../../../lib/org";
-import { useDB } from "../../../utils/db";
 
 export default defineEventHandler(async (event) => {
 	const session = await auth.api.getSession({
@@ -15,7 +16,7 @@ export default defineEventHandler(async (event) => {
 		throw createError({ statusCode: 400, message: "orgId required" });
 	}
 
-	const db = useDB();
+	const db = useDatabase();
 	const membership = await getOrgMembership(db, session.user.id, body.orgId);
 	if (!membership) {
 		throw createError({ statusCode: 403, message: "Not a member of this org" });
