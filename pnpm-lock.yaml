@@ -45,24 +45,12 @@ importers:
 
   apps/admin:
     dependencies:
-      '@neondatabase/serverless':
-        specifier: ^1.0.2
-        version: 1.0.2
       '@tailwindcss/vite':
         specifier: ^4.1.18
         version: 4.2.1(vite@7.3.1(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0))
-      '@workspace/db':
-        specifier: workspace:*
-        version: link:../../packages/db
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      drizzle-orm:
-        specifier: ^0.44.7
-        version: 0.44.7(@electric-sql/pglite@0.2.17)(@neondatabase/serverless@1.0.2)(@opentelemetry/api@1.9.1)(@types/pg@8.18.0)(kysely@0.28.15)(pg@8.20.0)
-      nitro:
-        specifier: latest
-        version: 3.0.260311-beta(@electric-sql/pglite@0.2.17)(dotenv@17.3.1)(drizzle-orm@0.44.7(@electric-sql/pglite@0.2.17)(@neondatabase/serverless@1.0.2)(@opentelemetry/api@1.9.1)(@types/pg@8.18.0)(kysely@0.28.15)(pg@8.20.0))(jiti@2.6.1)(lru-cache@11.2.6)(rollup@4.59.0)(vite@7.3.1(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0))
       react:
         specifier: ^19.2.4
         version: 19.2.4
@@ -73,9 +61,6 @@ importers:
         specifier: ^4.1.18
         version: 4.2.1
     devDependencies:
-      '@electric-sql/pglite':
-        specifier: ^0.2.17
-        version: 0.2.17
       '@types/node':
         specifier: ^25.1.0
         version: 25.5.2
@@ -143,9 +128,6 @@ importers:
       drizzle-orm:
         specifier: ^0.44.7
         version: 0.44.7(@electric-sql/pglite@0.2.17)(@neondatabase/serverless@1.0.2)(@opentelemetry/api@1.9.1)(@types/pg@8.18.0)(kysely@0.28.15)(pg@8.20.0)
-      h3:
-        specifier: 2.0.1-rc.20
-        version: 2.0.1-rc.20(crossws@0.4.4(srvx@0.10.1))
       jose:
         specifier: ^6.2.2
         version: 6.2.2
@@ -165,9 +147,6 @@ importers:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.9.3)(vite@7.3.1(@types/node@25.3.5)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0))
     devDependencies:
-      '@electric-sql/pglite':
-        specifier: ^0.2.17
-        version: 0.2.17
       '@inlang/paraglide-js':
         specifier: ^2.13.2
         version: 2.13.2

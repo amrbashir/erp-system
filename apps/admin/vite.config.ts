@@ -1,8 +1,7 @@
 import tailwindcss from "@tailwindcss/vite";
 import viteReact from "@vitejs/plugin-react";
-import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-	plugins: [nitro(), tailwindcss(), viteReact()],
+	plugins: [tailwindcss(), viteReact()],
 });

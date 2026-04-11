@@ -9,18 +9,13 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@neondatabase/serverless": "^1.0.2",
 		"@tailwindcss/vite": "^4.1.18",
-		"@workspace/db": "workspace:*",
 		"@workspace/ui": "workspace:*",
-		"drizzle-orm": "^0.44.7",
-		"nitro": "latest",
 		"react": "^19.2.4",
 		"react-dom": "^19.2.4",
 		"tailwindcss": "^4.1.18"
 	},
 	"devDependencies": {
-		"@electric-sql/pglite": "^0.2.17",
 		"@types/node": "^25.1.0",
 		"@types/react": "^19.2.10",
 		"@types/react-dom": "^19.2.3",

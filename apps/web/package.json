@@ -21,7 +21,6 @@
 		"@workspace/ui": "workspace:*",
 		"better-auth": "^1.5.6",
 		"drizzle-orm": "^0.44.7",
-		"h3": "2.0.1-rc.20",
 		"jose": "^6.2.2",
 		"nitro": "latest",
 		"react": "^19.2.4",
@@ -30,7 +29,6 @@
 		"vite-tsconfig-paths": "^5.1.4"
 	},
 	"devDependencies": {
-		"@electric-sql/pglite": "^0.2.17",
 		"@inlang/paraglide-js": "^2.13.2",
 		"@types/node": "^25.1.0",
 		"@types/react": "^19.2.10",
