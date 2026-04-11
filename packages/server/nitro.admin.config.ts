@@ -10,7 +10,7 @@ export default defineNitroConfig({
 	},
 	publicAssets: [
 		{
-			dir: "../admin/dist",
+			dir: "../../apps/admin/dist",
 			baseURL: "/",
 			fallthrough: true,
 		},
