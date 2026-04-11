@@ -58,7 +58,7 @@ describe("user admin role", () => {
 
 describe("assertAdmin", () => {
 	it("throws 401 for null session", () => {
-		expect(() => assertAdmin(null)).toThrow();
+		expect.assertions(1);
 		try {
 			assertAdmin(null);
 		} catch (e: any) {
@@ -67,8 +67,8 @@ describe("assertAdmin", () => {
 	});
 
 	it("throws 403 for non-admin user", () => {
+		expect.assertions(1);
 		const session = { user: { id: "1", role: "user" } };
-		expect(() => assertAdmin(session)).toThrow();
 		try {
 			assertAdmin(session);
 		} catch (e: any) {

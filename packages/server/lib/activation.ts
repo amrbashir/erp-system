@@ -20,14 +20,12 @@ export async function toggleActivationStatus(
 	id: string,
 	status: "active" | "revoked",
 ): Promise<Activation> {
-	const values: Record<string, unknown> = {
+	const now = new Date();
+	const values = {
 		status,
-		updatedAt: new Date(),
+		updatedAt: now,
+		...(status === "active" && { activatedAt: now }),
 	};
-
-	if (status === "active") {
-		values.activatedAt = new Date();
-	}
 
 	const [updated] = await db
 		.update(activations)
