@@ -3,8 +3,8 @@ import { defineEventHandler, toRequest, createError, getCookie, getRouterParam }
 import { auth } from "#auth";
 import { useDatabase } from "#db";
 
-import { getOrgMembership } from "../../../../lib/org";
-import { removeMember } from "../../../../lib/org-members";
+import { getOrgMembership } from "@/lib/org";
+import { removeMember } from "@/lib/org-members";
 
 export default defineEventHandler(async (event) => {
 	const session = await auth.api.getSession({

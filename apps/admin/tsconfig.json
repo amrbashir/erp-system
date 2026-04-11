@@ -20,6 +20,7 @@
 		"noUncheckedSideEffectImports": true,
 		"paths": {
 			"@/*": ["./src/*"],
+			// Important for shadcn to resolve correctly
 			"@workspace/ui/*": ["../../packages/ui/src/*"]
 		}
 	}

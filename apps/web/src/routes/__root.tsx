@@ -2,12 +2,12 @@ import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-r
 import { getLocale, getTextDirection } from "@workspace/i18n";
 import { useEffect, useState } from "react";
 
-import { ActivationScreen } from "../components/activation-screen";
-import { DesktopLogin } from "../components/desktop-login";
-import { DesktopOnboarding } from "../components/desktop-onboarding";
-import { LanguageSwitcher } from "../components/language-switcher";
-import { isDesktop, checkActivationState } from "../lib/activation";
-import { getDesktopAuthStatus, getStoredToken } from "../lib/desktop-auth";
+import { ActivationScreen } from "@/components/activation-screen";
+import { DesktopLogin } from "@/components/desktop-login";
+import { DesktopOnboarding } from "@/components/desktop-onboarding";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { isDesktop, checkActivationState } from "@/lib/activation";
+import { getDesktopAuthStatus, getStoredToken } from "@/lib/desktop-auth";
 
 import appCss from "@workspace/ui/globals.css?url";
 

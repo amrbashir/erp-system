@@ -2,13 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/button";
 import { useState, useEffect, useCallback } from "react";
 
-import { isDesktop } from "../../lib/activation";
+import { isDesktop } from "@/lib/activation";
 import {
 	getDesktopMembers,
 	addDesktopMember,
 	updateDesktopMemberRole,
 	removeDesktopMember,
-} from "../../lib/desktop-auth";
+} from "@/lib/desktop-auth";
 
 type Member = {
 	id: string;

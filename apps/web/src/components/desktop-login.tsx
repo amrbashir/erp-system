@@ -1,7 +1,7 @@
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
-import { desktopLogin } from "../lib/desktop-auth";
+import { desktopLogin } from "@/lib/desktop-auth";
 
 export function DesktopLogin({ onLoggedIn }: { onLoggedIn: () => void }) {
 	const [error, setError] = useState("");

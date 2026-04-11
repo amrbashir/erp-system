@@ -5,6 +5,7 @@ export default defineNitroConfig({
 	serverDir: ".",
 	ignore: ["routes/api/**", "routes/desktop/**"],
 	alias: {
+		"@/": "./",
 		"#db": "./adapters/neon.ts",
 		"#auth": "./lib/admin-auth.ts",
 	},

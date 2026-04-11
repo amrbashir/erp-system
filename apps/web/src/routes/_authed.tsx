@@ -1,12 +1,12 @@
 import { Outlet, Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/button";
 
-import { OrgSwitcher } from "../components/org-switcher";
-import { isDesktop } from "../lib/activation";
-import { signOut } from "../lib/auth-client";
-import { getSession } from "../lib/auth-session";
-import { getDesktopSession, desktopLogout } from "../lib/desktop-auth";
-import { getOrgs, getCurrentOrgId } from "../lib/org-fns";
+import { OrgSwitcher } from "@/components/org-switcher";
+import { isDesktop } from "@/lib/activation";
+import { signOut } from "@/lib/auth-client";
+import { getSession } from "@/lib/auth-session";
+import { getDesktopSession, desktopLogout } from "@/lib/desktop-auth";
+import { getOrgs, getCurrentOrgId } from "@/lib/org-fns";
 
 export const Route = createFileRoute("/_authed")({
 	beforeLoad: async ({ location }) => {

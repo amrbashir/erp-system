@@ -5,8 +5,8 @@ import { defineEventHandler, readBody, toRequest, createError, getCookie } from 
 import { auth } from "#auth";
 import { useDatabase } from "#db";
 
-import { getOrgMembership } from "../../../../lib/org";
-import { addMemberToOrg } from "../../../../lib/org-members";
+import { getOrgMembership } from "@/lib/org";
+import { addMemberToOrg } from "@/lib/org-members";
 
 export default defineEventHandler(async (event) => {
 	const session = await auth.api.getSession({

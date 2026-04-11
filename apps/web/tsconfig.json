@@ -24,8 +24,7 @@
 		"paths": {
 			"@/*": ["./src/*"],
 			"#db": ["../../packages/server/adapters/neon.ts"],
-			"@workspace/db/schema": ["../../packages/db/src/schema/index.ts"],
-			"@workspace/server/*": ["../../packages/server/*"],
+			// Important for shadcn to resolve correctly
 			"@workspace/ui/*": ["../../packages/ui/src/*"]
 		}
 	}

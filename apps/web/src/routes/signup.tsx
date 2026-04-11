@@ -2,7 +2,7 @@ import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
-import { signUp } from "../lib/auth-client";
+import { signUp } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/signup")({ component: SignupPage });
 

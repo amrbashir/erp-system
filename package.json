@@ -1,6 +1,7 @@
 {
 	"name": "erp-system",
 	"private": true,
+	"type": "module",
 	"scripts": {
 		"dev:web": "pnpm --filter @workspace/web dev",
 		"dev:desktop": "pnpm --filter @workspace/desktop dev",

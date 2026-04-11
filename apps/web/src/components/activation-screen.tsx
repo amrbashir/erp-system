@@ -1,7 +1,7 @@
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
-import { checkActivationApi, writeCachedToken } from "../lib/activation";
+import { checkActivationApi, writeCachedToken } from "@/lib/activation";
 
 export function ActivationScreen({
 	hardwareId,

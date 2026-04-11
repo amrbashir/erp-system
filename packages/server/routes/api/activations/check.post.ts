@@ -2,7 +2,7 @@ import { defineEventHandler, readBody, setResponseStatus } from "h3";
 
 import { useDatabase } from "#db";
 
-import { checkActivation, signActivationToken } from "../../../lib/activation";
+import { checkActivation, signActivationToken } from "@/lib/activation";
 
 export default defineEventHandler(async (event) => {
 	const body = await readBody<{ hardwareId?: string }>(event);

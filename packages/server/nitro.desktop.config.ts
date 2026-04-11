@@ -5,6 +5,7 @@ export default defineNitroConfig({
 	serverDir: ".",
 	plugins: ["plugins/desktop-startup.ts"],
 	alias: {
+		"@/": "./",
 		"#db": "./adapters/pglite.ts",
 		"#auth": "./lib/desktop-auth.ts",
 	},

@@ -7,6 +7,7 @@
 		"strict": true,
 		"noEmit": true,
 		"paths": {
+			"@/*": ["./*"],
 			"#db": ["./adapters/pglite.ts"],
 			"#auth": ["./lib/desktop-auth.ts"]
 		}

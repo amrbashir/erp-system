@@ -1,7 +1,7 @@
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
-import { desktopSetup } from "../lib/desktop-auth";
+import { desktopSetup } from "@/lib/desktop-auth";
 
 export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 	const [error, setError] = useState("");

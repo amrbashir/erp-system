@@ -20,26 +20,12 @@ pnpm fmt                  # Format code with oxfmt
 pnpm fmt:check            # Check formatting without writing
 ```
 
-### Web App (`apps/web`)
 
-- **Router:** TanStack Router (file-based, type-safe); `routeTree.gen.ts` is auto-generated (read-only, excluded from search)
-- **SSR:** TanStack Start with Nitro backend
-- **Styling:** TailwindCSS 4 with OKLCH color space CSS variables, light/dark mode
-- **Path alias:** Use path aliases as defined in tsconfig.json for each package.
+## Import Conventions
 
-### Desktop App (`apps/desktop`)
+- **`@/`** — intra-package alias, maps to the package's own source root (e.g. `@/lib/auth` instead of `../../lib/auth`)
+- **`#`** — build-time adapter switches (`#db`, `#auth`), resolve to different implementations per build target. Do not rename or migrate these.
+- **`@workspace/*`** — cross-package imports resolved via `workspace:*` deps in package.json + the package's `exports` field. Never use tsconfig path aliases for cross-package resolution (except `@workspace/ui/*` which is required for shadcn).
+- **`./` relative imports** are allowed for same-directory imports only. Any `../` or deeper must use `@/` alias instead.
+- Do not create new tsconfig path aliases for workspace packages — add the package as a `workspace:*` dependency and use its `exports` field.
 
-- Tauri 2 (Rust backend in `src-tauri/`); frontend points to the web build output
-- Dev URL: `localhost:1420`
-
-### UI Package (`packages/ui`)
-
-- Shadcn: Headless components built on `@base-ui/react`, styled with TailwindCSS
-- Icon library: Phosphor Icons
-- Font: Geist Variable
-- RTL support enabled
-
-### i18n Package (`packages/i18n`)
-
-- Paraglide-js (code-first, strongly typed messages)
-- Generated output is committed; run the Paraglide compiler when messages change

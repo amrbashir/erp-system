@@ -2,7 +2,7 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
-import { toSlug } from "../../lib/slug";
+import { toSlug } from "@/lib/slug";
 
 export const Route = createFileRoute("/_authed/onboarding")({
 	beforeLoad: async ({ context }) => {
