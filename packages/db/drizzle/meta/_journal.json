@@ -8,6 +8,13 @@
 			"when": 1775451365451,
 			"tag": "0000_robust_cable",
 			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "7",
+			"when": 1775451365452,
+			"tag": "0001_add_user_role",
+			"breakpoints": true
 		}
 	]
 }
