@@ -1,3 +1,5 @@
+import { fileURLToPath } from "node:url";
+
 import { paraglideVitePlugin } from "@inlang/paraglide-js";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
@@ -11,6 +13,8 @@ if (!process.env.VITE_PLATFORM) {
 	process.env.VITE_PLATFORM = process.env.TAURI_ENV_PLATFORM ? "desktop" : "web";
 }
 
+const dbAlias = fileURLToPath(new URL("../../packages/server/adapters/neon.ts", import.meta.url));
+
 export default defineConfig({
 	plugins: [
 		paraglideVitePlugin({
@@ -18,7 +22,9 @@ export default defineConfig({
 			outdir: "../../packages/i18n/src/paraglide",
 			strategy: ["localStorage", "preferredLanguage", "baseLocale"],
 		}) as any,
-		nitro(),
+		nitro({
+			alias: { "#db": dbAlias },
+		}),
 		viteTsConfigPaths({
 			projects: ["./tsconfig.json"],
 		}),
@@ -26,4 +32,7 @@ export default defineConfig({
 		tanstackStart(),
 		viteReact(),
 	],
+	resolve: {
+		alias: { "#db": dbAlias },
+	},
 });
