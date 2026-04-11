@@ -8,9 +8,10 @@
 		"noEmit": true,
 		"baseUrl": ".",
 		"paths": {
-			"#db": ["./adapters/pglite.ts"]
+			"#db": ["./adapters/pglite.ts"],
+			"#auth": ["./lib/desktop-auth.ts"]
 		}
 	},
 	"include": ["."],
-	"exclude": ["node_modules", "dist", "routes"]
+	"exclude": ["node_modules", "dist", ".output", "routes", "plugins"]
 }

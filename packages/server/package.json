@@ -8,18 +8,22 @@
 		"./lib/org": "./lib/org.ts",
 		"./lib/org-members": "./lib/org-members.ts",
 		"./lib/activation": "./lib/activation.ts",
+		"./lib/migrate": "./lib/migrate.ts",
 		"./lib/admin": "./lib/admin.ts",
 		"./adapters/neon": "./adapters/neon.ts",
 		"./adapters/pglite": "./adapters/pglite.ts"
 	},
 	"scripts": {
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"build:desktop": "jiti build-desktop.ts"
 	},
 	"dependencies": {
 		"@workspace/db": "workspace:*",
 		"better-auth": "^1.5.6",
 		"drizzle-orm": "^0.44.0",
-		"jose": "^6.2.2"
+		"h3": "latest",
+		"jose": "^6.2.2",
+		"nitro": "latest"
 	},
 	"devDependencies": {
 		"@electric-sql/pglite": "^0.2.17",
