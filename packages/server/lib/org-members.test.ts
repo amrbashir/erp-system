@@ -154,6 +154,30 @@ describe("updateMemberRole", () => {
 		).rejects.toThrow(/permission/i);
 	});
 
+	it("admin cannot modify owner role", async () => {
+		const membership = await getOrgMembership(db as any, owner, orgId);
+		await expect(
+			updateMemberRole(db as any, {
+				memberId: membership!.id,
+				orgId,
+				actorRole: "admin",
+				newRole: "member",
+			}),
+		).rejects.toThrow(/permission/i);
+	});
+
+	it("admin cannot modify admin role", async () => {
+		const membership = await getOrgMembership(db as any, admin, orgId);
+		await expect(
+			updateMemberRole(db as any, {
+				memberId: membership!.id,
+				orgId,
+				actorRole: "admin",
+				newRole: "member",
+			}),
+		).rejects.toThrow(/permission/i);
+	});
+
 	it("member cannot change roles", async () => {
 		const membership = await getOrgMembership(db as any, admin, orgId);
 		await expect(

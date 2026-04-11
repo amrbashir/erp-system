@@ -49,6 +49,19 @@ export async function updateMemberRole(
 		throw new Error("No permission to assign this role");
 	}
 
+	if (input.actorRole === "admin") {
+		const [target] = await db
+			.select({ role: orgMembers.role })
+			.from(orgMembers)
+			.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
+			.limit(1);
+
+		if (!target) throw new Error("Member not found");
+		if (target.role !== "member") {
+			throw new Error("No permission to change this member's role");
+		}
+	}
+
 	const [updated] = await db
 		.update(orgMembers)
 		.set({ role: input.newRole })
