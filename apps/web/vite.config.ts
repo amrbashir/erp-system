@@ -28,6 +28,7 @@ export default defineConfig({
 		}) as any,
 		nitro({
 			scanDirs: [serverPkg],
+			ignore: ["routes/desktop/**"],
 			alias: {
 				"#db": dbAlias,
 				"#auth": resolve(__dirname, "src/lib/auth.ts"),
