@@ -15,7 +15,8 @@
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
-		"build:desktop": "jiti build-desktop.ts"
+		"build:desktop": "jiti build-desktop.ts",
+		"build:admin": "jiti build-admin.ts"
 	},
 	"dependencies": {
 		"@workspace/db": "workspace:*",

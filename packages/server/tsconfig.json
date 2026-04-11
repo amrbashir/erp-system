@@ -20,6 +20,8 @@
 		"routes",
 		"plugins",
 		"build-desktop.ts",
-		"nitro.desktop.config.ts"
+		"nitro.desktop.config.ts",
+		"build-admin.ts",
+		"nitro.admin.config.ts"
 	]
 }
