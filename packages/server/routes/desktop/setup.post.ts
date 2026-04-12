@@ -3,7 +3,6 @@ import { defineEventHandler, readBody, createError } from "h3";
 
 import { auth } from "#auth";
 import { useDatabase } from "#db";
-
 import { createOrg } from "@/lib/org";
 
 function toSlug(name: string) {

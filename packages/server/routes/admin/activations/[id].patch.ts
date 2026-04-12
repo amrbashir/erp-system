@@ -2,7 +2,6 @@ import { defineEventHandler, readBody, toRequest, createError, getRouterParam } 
 
 import { auth } from "#auth";
 import { useDatabase } from "#db";
-
 import { toggleActivationStatus } from "@/lib/activation";
 import { assertAdmin } from "@/lib/admin";
 

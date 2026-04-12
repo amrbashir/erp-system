@@ -3,7 +3,6 @@ import { useRuntimeConfig } from "nitro/runtime-config";
 import { useStorage } from "nitro/storage";
 
 import { initDatabase } from "#db";
-
 import { applyMigrations } from "@/lib/migrate";
 
 export default definePlugin(async () => {

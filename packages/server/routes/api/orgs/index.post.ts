@@ -2,7 +2,6 @@ import { defineEventHandler, readBody, toRequest, createError } from "h3";
 
 import { auth } from "#auth";
 import { useDatabase } from "#db";
-
 import { createOrg } from "@/lib/org";
 
 export default defineEventHandler(async (event) => {

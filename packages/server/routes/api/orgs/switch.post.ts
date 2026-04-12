@@ -2,7 +2,6 @@ import { defineEventHandler, readBody, setCookie, toRequest, createError } from 
 
 import { auth } from "#auth";
 import { useDatabase } from "#db";
-
 import { getOrgMembership } from "@/lib/org";
 
 export default defineEventHandler(async (event) => {

@@ -20,7 +20,6 @@ pnpm fmt                  # Format code with oxfmt
 pnpm fmt:check            # Check formatting without writing
 ```
 
-
 ## Import Conventions
 
 - **`@/`** — intra-package alias, maps to the package's own source root (e.g. `@/lib/auth` instead of `../../lib/auth`)
@@ -28,4 +27,3 @@ pnpm fmt:check            # Check formatting without writing
 - **`@workspace/*`** — cross-package imports resolved via `workspace:*` deps in package.json + the package's `exports` field. Never use tsconfig path aliases for cross-package resolution (except `@workspace/ui/*` which is required for shadcn).
 - **`./` relative imports** are allowed for same-directory imports only. Any `../` or deeper must use `@/` alias instead.
 - Do not create new tsconfig path aliases for workspace packages — add the package as a `workspace:*` dependency and use its `exports` field.
-
