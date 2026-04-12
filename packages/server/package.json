@@ -9,14 +9,11 @@
 		"./lib/org-members": "./lib/org-members.ts",
 		"./lib/activation": "./lib/activation.ts",
 		"./lib/migrate": "./lib/migrate.ts",
-		"./lib/admin": "./lib/admin.ts",
 		"./adapters/neon": "./adapters/neon.ts",
 		"./adapters/pglite": "./adapters/pglite.ts"
 	},
 	"scripts": {
-		"typecheck": "tsc --noEmit",
-		"build:desktop": "jiti build-desktop.ts",
-		"build:admin": "jiti build-admin.ts"
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@workspace/db": "workspace:*",

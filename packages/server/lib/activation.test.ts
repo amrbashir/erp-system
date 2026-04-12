@@ -8,7 +8,13 @@ import { migrate } from "drizzle-orm/pglite/migrator";
 import { generateKeyPair, exportPKCS8, exportSPKI } from "jose";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 
-import { checkActivation, signActivationToken, verifyActivationToken } from "./activation.js";
+import {
+	checkActivation,
+	listActivations,
+	toggleActivationStatus,
+	signActivationToken,
+	verifyActivationToken,
+} from "./activation.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const migrationsFolder = path.resolve(__dirname, "../../db/drizzle");
@@ -64,6 +70,46 @@ describe("checkActivation", () => {
 		const result = await checkActivation(db as any, "hw-nonexistent");
 		expect(result.status).toBe("unknown");
 		expect(result.activation).toBeUndefined();
+	});
+});
+
+describe("listActivations", () => {
+	it("returns all activations", async () => {
+		const result = await listActivations(db as any);
+		expect(result.length).toBe(3);
+	});
+
+	it("each activation has expected fields", async () => {
+		const result = await listActivations(db as any);
+		for (const a of result) {
+			expect(a.id).toBeDefined();
+			expect(a.hardwareId).toBeDefined();
+			expect(a.status).toBeDefined();
+			expect(a.createdAt).toBeInstanceOf(Date);
+		}
+	});
+});
+
+describe("toggleActivationStatus", () => {
+	it("activates a pending activation", async () => {
+		const all = await listActivations(db as any);
+		const pending = all.find((a) => a.hardwareId === "hw-pending-001")!;
+		const updated = await toggleActivationStatus(db as any, pending.id, "active");
+		expect(updated.status).toBe("active");
+		expect(updated.activatedAt).toBeInstanceOf(Date);
+	});
+
+	it("revokes an active activation", async () => {
+		const all = await listActivations(db as any);
+		const active = all.find((a) => a.hardwareId === "hw-active-001")!;
+		const updated = await toggleActivationStatus(db as any, active.id, "revoked");
+		expect(updated.status).toBe("revoked");
+	});
+
+	it("throws for non-existent ID", async () => {
+		await expect(
+			toggleActivationStatus(db as any, "00000000-0000-0000-0000-000000000000", "active"),
+		).rejects.toThrow();
 	});
 });
 

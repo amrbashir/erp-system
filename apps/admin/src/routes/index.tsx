@@ -1,41 +1,22 @@
-import { useEffect, useState } from "react";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useState } from "react";
 
-interface Activation {
-	id: string;
-	hardwareId: string;
-	status: "pending" | "active" | "revoked";
-	activatedAt: string | null;
-	createdAt: string;
-	updatedAt: string;
-}
+import { getActivations, toggleActivation } from "@/lib/activation-fns";
 
-export function App() {
-	const [activations, setActivations] = useState<Activation[]>([]);
-	const [loading, setLoading] = useState(true);
+export const Route = createFileRoute("/")({
+	loader: () => getActivations(),
+	component: ActivationDashboard,
+});
+
+function ActivationDashboard() {
+	const activations = Route.useLoaderData();
 	const [toggling, setToggling] = useState<string | null>(null);
-
-	async function fetchActivations() {
-		const res = await fetch("/api/activations");
-		if (res.ok) {
-			setActivations(await res.json());
-		}
-		setLoading(false);
-	}
-
-	useEffect(() => {
-		fetchActivations();
-	}, []);
+	const router = useRouter();
 
 	async function toggle(id: string, newStatus: "active" | "revoked") {
 		setToggling(id);
-		const res = await fetch(`/api/activations/${id}`, {
-			method: "PATCH",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ status: newStatus }),
-		});
-		if (res.ok) {
-			await fetchActivations();
-		}
+		await toggleActivation({ data: { id, status: newStatus } });
+		await router.invalidate();
 		setToggling(null);
 	}
 
@@ -46,12 +27,10 @@ export function App() {
 	};
 
 	return (
-		<div className="bg-background text-foreground min-h-screen p-8">
-			<h1 className="mb-6 text-2xl font-bold">Activation Dashboard</h1>
+		<div className="p-8">
+			<h2 className="mb-6 text-2xl font-bold">Activations</h2>
 
-			{loading ? (
-				<p className="text-muted-foreground">Loading...</p>
-			) : activations.length === 0 ? (
+			{activations.length === 0 ? (
 				<p className="text-muted-foreground">No activations found.</p>
 			) : (
 				<table className="w-full border-collapse">
