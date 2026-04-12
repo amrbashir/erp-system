@@ -1,13 +1,13 @@
 import { execSync } from "node:child_process";
 import { resolve } from "node:path";
 
-const root = resolve(import.meta.dirname, "..");
+const root = resolve(import.meta.dirname, "../../..");
 const serverDir = resolve(root, "packages/server");
-const binDir = resolve(root, "apps/desktop/src-tauri/binaries");
+const binDir = resolve(import.meta.dirname, "../src-tauri/binaries");
 
 // Step 1: Nitro build (desktop config, deno-server preset)
 console.log("Building Nitro desktop server…");
-execSync("node build-desktop.ts", { cwd: serverDir, stdio: "inherit" });
+execSync("node build-desktop.mjs", { cwd: serverDir, stdio: "inherit" });
 
 // Step 2: Deno compile
 const targetTriple = execSync("rustc -vV", { encoding: "utf-8" })

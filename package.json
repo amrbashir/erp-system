@@ -8,7 +8,7 @@
 		"build:web": "pnpm --filter @workspace/web build",
 		"build:desktop": "pnpm --filter @workspace/desktop build",
 		"dev:admin": "pnpm --filter @workspace/admin dev",
-		"build:server:desktop": "node scripts/build-desktop.mjs",
+		"build:server:desktop": "pnpm --filter @workspace/desktop build:sidecar",
 		"test": "vitest run",
 		"typecheck": "pnpm -r typecheck",
 		"fmt": "oxfmt",

@@ -19,7 +19,7 @@
 		".output",
 		"routes",
 		"plugins",
-		"build-desktop.ts",
+		"build-desktop.mjs",
 		"nitro.desktop.config.ts"
 	]
 }

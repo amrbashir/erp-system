@@ -13,7 +13,8 @@
 		"./adapters/pglite": "./adapters/pglite.ts"
 	},
 	"scripts": {
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"build:desktop": "node build-desktop.mjs"
 	},
 	"dependencies": {
 		"@workspace/db": "workspace:*",

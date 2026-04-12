@@ -5,7 +5,8 @@
 	"type": "module",
 	"scripts": {
 		"dev": "tauri dev",
-		"build": "pnpm -w build:server:desktop && tauri build"
+		"build:sidecar": "node scripts/build-sidecar.mjs",
+		"build": "pnpm run build:sidecar && tauri build"
 	},
 	"dependencies": {
 		"@tauri-apps/api": "^2.10.1"
