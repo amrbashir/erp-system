@@ -8,8 +8,7 @@
 		"noEmit": true,
 		"paths": {
 			"@/*": ["./*"],
-			"#db": ["./adapters/pglite.ts"],
-			"#auth": ["./lib/desktop-auth.ts"]
+			"#db": ["./adapters/pglite.ts"]
 		}
 	},
 	"include": ["."],
@@ -19,7 +18,6 @@
 		".output",
 		"routes",
 		"plugins",
-		"build-desktop.mjs",
-		"nitro.desktop.config.ts"
+		"nitro.config.ts"
 	]
 }

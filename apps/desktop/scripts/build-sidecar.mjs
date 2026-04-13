@@ -7,7 +7,7 @@ const binDir = resolve(import.meta.dirname, "../src-tauri/binaries");
 
 // Step 1: Nitro build (desktop config, deno-server preset)
 console.log("Building Nitro desktop server…");
-execSync("node build-desktop.mjs", { cwd: serverDir, stdio: "inherit" });
+execSync("pnpm run build:desktop", { cwd: serverDir, stdio: "inherit" });
 
 // Step 2: Deno compile
 const targetTriple = execSync("rustc -vV", { encoding: "utf-8" })

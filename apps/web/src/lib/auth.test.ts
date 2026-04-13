@@ -1,4 +1,3 @@
-import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { getTestInstance } from "better-auth/test";
 import { describe, it, expect, beforeAll } from "vitest";
 
@@ -14,7 +13,6 @@ beforeAll(async () => {
 				},
 			},
 			emailAndPassword: { enabled: true },
-			plugins: [tanstackStartCookies()],
 		},
 		{ disableTestUser: true },
 	);

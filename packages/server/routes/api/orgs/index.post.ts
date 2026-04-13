@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody, toRequest, createError } from "h3";
 
-import { auth } from "#auth";
+import { auth } from "@/lib/auth";
 import { useDatabase } from "#db";
 import { createOrg } from "@/lib/org";
 

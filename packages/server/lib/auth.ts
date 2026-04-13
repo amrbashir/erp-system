@@ -55,3 +55,7 @@ export function createAuth(options: CreateAuthOptions = {}) {
 }
 
 export type Auth = ReturnType<typeof createAuth>;
+
+export const auth = createAuth({
+	desktop: process.env.DEPLOY_TARGET === "desktop",
+});

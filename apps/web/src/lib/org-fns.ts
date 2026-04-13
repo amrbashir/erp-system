@@ -3,7 +3,7 @@ import { getRequest } from "@tanstack/react-start/server";
 import { useDatabase } from "@workspace/server/adapters/neon";
 import { getUserOrgs } from "@workspace/server/lib/org";
 
-import { auth } from "./auth";
+import { auth } from "@workspace/server/lib/auth";
 
 const CURRENT_ORG_COOKIE = "current_org_id";
 

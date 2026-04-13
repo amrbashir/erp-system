@@ -14,7 +14,7 @@
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
-		"build:desktop": "node build-desktop.mjs"
+		"build:desktop": "DEPLOY_TARGET=desktop nitro build"
 	},
 	"dependencies": {
 		"@workspace/db": "workspace:*",

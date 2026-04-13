@@ -2,7 +2,7 @@ import { users } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import { defineEventHandler, readBody, toRequest, createError, getCookie } from "h3";
 
-import { auth } from "#auth";
+import { auth } from "@/lib/auth";
 import { useDatabase } from "#db";
 import { getOrgMembership } from "@/lib/org";
 import { addMemberToOrg } from "@/lib/org-members";
