@@ -1,6 +1,16 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 
+import { Badge } from "@workspace/ui/components/badge";
+import { Button } from "@workspace/ui/components/button";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@workspace/ui/components/table";
 import { getActivations, toggleActivation } from "@/lib/activation-fns";
 
 export const Route = createFileRoute("/")({
@@ -20,10 +30,10 @@ function ActivationDashboard() {
 		setToggling(null);
 	}
 
-	const statusColor: Record<string, string> = {
-		active: "bg-green-100 text-green-800",
-		pending: "bg-yellow-100 text-yellow-800",
-		revoked: "bg-red-100 text-red-800",
+	const statusVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+		active: "default",
+		pending: "outline",
+		revoked: "destructive",
 	};
 
 	return (
@@ -33,58 +43,57 @@ function ActivationDashboard() {
 			{activations.length === 0 ? (
 				<p className="text-muted-foreground">No activations found.</p>
 			) : (
-				<table className="w-full border-collapse">
-					<thead>
-						<tr className="border-border border-b text-left">
-							<th className="px-4 py-3 font-medium">Hardware ID</th>
-							<th className="px-4 py-3 font-medium">Status</th>
-							<th className="px-4 py-3 font-medium">Activated At</th>
-							<th className="px-4 py-3 font-medium">Created At</th>
-							<th className="px-4 py-3 font-medium">Actions</th>
-						</tr>
-					</thead>
-					<tbody>
+				<Table>
+					<TableHeader>
+						<TableRow>
+							<TableHead>Hardware ID</TableHead>
+							<TableHead>Status</TableHead>
+							<TableHead>Activated At</TableHead>
+							<TableHead>Created At</TableHead>
+							<TableHead>Actions</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
 						{activations.map((a) => (
-							<tr key={a.id} className="border-border border-b">
-								<td className="px-4 py-3 font-mono text-sm">{a.hardwareId}</td>
-								<td className="px-4 py-3">
-									<span
-										className={`rounded px-2 py-1 text-xs font-medium ${statusColor[a.status] ?? ""}`}
-									>
+							<TableRow key={a.id}>
+								<TableCell className="font-mono">{a.hardwareId}</TableCell>
+								<TableCell>
+									<Badge variant={statusVariant[a.status]}>
 										{a.status}
-									</span>
-								</td>
-								<td className="text-muted-foreground px-4 py-3 text-sm">
+									</Badge>
+								</TableCell>
+								<TableCell className="text-muted-foreground">
 									{a.activatedAt
 										? new Date(a.activatedAt).toLocaleDateString()
 										: "-"}
-								</td>
-								<td className="text-muted-foreground px-4 py-3 text-sm">
+								</TableCell>
+								<TableCell className="text-muted-foreground">
 									{new Date(a.createdAt).toLocaleDateString()}
-								</td>
-								<td className="px-4 py-3">
+								</TableCell>
+								<TableCell>
 									{a.status === "active" ? (
-										<button
-											className="bg-destructive rounded px-3 py-1 text-sm text-white disabled:opacity-50"
+										<Button
+											variant="destructive"
+											size="sm"
 											disabled={toggling === a.id}
 											onClick={() => toggle(a.id, "revoked")}
 										>
 											Revoke
-										</button>
+										</Button>
 									) : (
-										<button
-											className="bg-primary text-primary-foreground rounded px-3 py-1 text-sm disabled:opacity-50"
+										<Button
+											size="sm"
 											disabled={toggling === a.id}
 											onClick={() => toggle(a.id, "active")}
 										>
 											Activate
-										</button>
+										</Button>
 									)}
-								</td>
-							</tr>
+								</TableCell>
+							</TableRow>
 						))}
-					</tbody>
-				</table>
+					</TableBody>
+				</Table>
 			)}
 		</div>
 	);
