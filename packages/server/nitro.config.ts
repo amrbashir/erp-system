@@ -9,12 +9,12 @@ export default defineNitroConfig({
 	serverDir: dir,
 	plugins: isDesktop ? ["plugins/desktop-startup.ts"] : [],
 	alias: {
-		"@/": dir + "/",
+		"~/": dir + "/",
 		"#db": resolve(dir, isDesktop ? "adapters/pglite.ts" : "adapters/neon.ts"),
 	},
 	runtimeConfig: isDesktop ? { pgdataDir: "" } : {},
 	serverAssets: isDesktop
 		? [{ baseName: "migrations", dir: resolve(dir, "../db/drizzle") }]
 		: [],
-	ignore: isDesktop ? [] : ["routes/desktop/**"],
+	ignore: isDesktop ? [] : ["routes/desktop/**", "plugins/desktop-startup.ts"],
 });

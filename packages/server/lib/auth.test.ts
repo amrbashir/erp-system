@@ -6,8 +6,8 @@ import { eq } from "drizzle-orm";
 import { migrate } from "drizzle-orm/pglite/migrator";
 import { describe, it, expect, beforeAll } from "vitest";
 
-import { initDatabase } from "@/adapters/pglite.js";
-import type { Database } from "@/adapters/pglite.js";
+import { initDatabase } from "~/adapters/pglite.js";
+import type { Database } from "~/adapters/pglite.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const migrationsFolder = path.resolve(__dirname, "../../db/drizzle");
