@@ -12,7 +12,5 @@
 			// Important for shadcn to resolve correctly
 			"@workspace/ui/*": ["./src/*"]
 		}
-	},
-	"include": ["."],
-	"exclude": ["node_modules", "dist"]
+	}
 }

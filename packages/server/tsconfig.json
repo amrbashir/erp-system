@@ -10,14 +10,5 @@
 			"~/*": ["./*"],
 			"#db": ["./adapters/pglite.ts"]
 		}
-	},
-	"include": ["."],
-	"exclude": [
-		"node_modules",
-		"dist",
-		".output",
-		"routes",
-		"plugins",
-		"nitro.config.ts"
-	]
+	}
 }
