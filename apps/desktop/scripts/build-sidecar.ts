@@ -1,25 +1,52 @@
 import { execSync } from "node:child_process";
+import { builtinModules } from "node:module";
 import { resolve } from "node:path";
+import { readFileSync, writeFileSync } from "node:fs";
 
 const root = resolve(import.meta.dirname, "../../..");
 const serverDir = resolve(root, "packages/server");
 const binDir = resolve(import.meta.dirname, "../src-tauri/binaries");
 
-// Step 1: Nitro build (desktop config, deno-server preset)
-console.log("Building Nitro desktop server…");
-execSync("pnpm run build:desktop", { cwd: serverDir, stdio: "inherit" });
+function buildNitro() {
+	execSync("pnpm run build:desktop", { cwd: serverDir, stdio: "inherit" });
+}
 
-// Step 2: Deno compile
-const targetTriple = execSync("rustc -vV", { encoding: "utf-8" })
-	.match(/host: (.+)/)?.[1]
-	.trim();
+function patchNodeImports() {
+	const PROBLEMATIC_FILES = ["_libs/electric-sql__pglite.mjs"];
+	const NODE_BUILTINS = new Set(builtinModules.filter((m) => !m.startsWith("_")));
 
-const entry = resolve(serverDir, ".output/server/index.mjs");
-const outPath = resolve(binDir, `erp-sidecar-${targetTriple}`);
+	const importPattern = new RegExp(
+		`(from\\s+["'])(?!node:)(${[...NODE_BUILTINS].join("|")})(["'])`,
+		"g",
+	);
 
-console.log(`Compiling sidecar for ${targetTriple}…`);
-execSync(`deno compile --no-check --allow-all --output "${outPath}" "${entry}"`, {
-	stdio: "inherit",
-});
+	const outputDir = resolve(serverDir, ".output/server");
+	for (const file of PROBLEMATIC_FILES) {
+		const full = resolve(outputDir, file);
+		const content = readFileSync(full, "utf-8");
+		const fixed = content.replace(importPattern, "$1node:$2$3");
+		if (fixed !== content) {
+			writeFileSync(full, fixed);
+			console.log(`✔ Patched bare node imports in ${full}`);
+		}
+	}
+}
 
-console.log(`Sidecar binary: ${outPath}`);
+function denoCompile() {
+	const targetTriple = execSync("rustc -vV", { encoding: "utf-8" })
+		.match(/host: (.+)/)?.[1]
+		.trim();
+
+	const entry = resolve(serverDir, ".output/server/index.mjs");
+	const outPath = resolve(binDir, `erp-sidecar-${targetTriple}`);
+
+	execSync(`deno compile --no-check --allow-all --output "${outPath}" "${entry}"`, {
+		stdio: "inherit",
+	});
+
+	console.log(`Sidecar binary: ${outPath}`);
+}
+
+buildNitro();
+patchNodeImports();
+denoCompile();
