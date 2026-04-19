@@ -5,10 +5,10 @@ import { defineNitroConfig } from "nitro/config";
 const isDesktop = process.env.DEPLOY_TARGET === "desktop";
 const isProduction = process.env.NODE_ENV === "production";
 const databaseAdapter = isDesktop
-	? "adapters/pglite.ts"
+	? "@workspace/db/adapters/pglite"
 	: isProduction
-		? "adapters/neon.ts"
-		: "adapters/postgres.ts";
+		? "@workspace/db/adapters/neon"
+		: "@workspace/db/adapters/postgres";
 
 const dir = import.meta.dirname;
 
@@ -18,7 +18,7 @@ export default defineNitroConfig({
 	plugins: isDesktop ? ["plugins/desktop-startup.ts"] : [],
 	alias: {
 		"~/": dir + "/",
-		"#db": resolve(dir, databaseAdapter),
+		"#db": databaseAdapter,
 	},
 	runtimeConfig: isDesktop ? { pgdataDir: "" } : {},
 	serverAssets: isDesktop ? [{ baseName: "migrations", dir: resolve(dir, "../db/drizzle") }] : [],

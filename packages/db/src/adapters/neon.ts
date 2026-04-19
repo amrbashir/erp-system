@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import * as schema from "@workspace/db/schema";
+import * as schema from "../schema/index.js";
 import { drizzle } from "drizzle-orm/neon-http";
 
 export function useDatabase() {

@@ -1,5 +1,5 @@
 import { PGlite } from "@electric-sql/pglite";
-import * as schema from "@workspace/db/schema";
+import * as schema from "../schema/index.js";
 import { drizzle, type PgliteDatabase } from "drizzle-orm/pglite";
 
 let _db: PgliteDatabase<typeof schema> | null = null;

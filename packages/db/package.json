@@ -6,7 +6,10 @@
 	"exports": {
 		".": "./src/index.ts",
 		"./schema": "./src/schema/index.ts",
-		"./rls": "./src/rls/index.ts"
+		"./rls": "./src/rls/index.ts",
+		"./adapters/neon": "./src/adapters/neon.ts",
+		"./adapters/pglite": "./src/adapters/pglite.ts",
+		"./adapters/postgres": "./src/adapters/postgres.ts"
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
@@ -18,6 +21,8 @@
 	},
 	"devDependencies": {
 		"@electric-sql/pglite": "catalog:",
+		"@neondatabase/serverless": "^1.0.2",
+		"postgres": "^3.4.9",
 		"drizzle-kit": "catalog:drizzle",
 		"typescript": "catalog:"
 	}

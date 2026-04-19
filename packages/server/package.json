@@ -8,10 +8,7 @@
 		"./lib/org": "./lib/org.ts",
 		"./lib/org-members": "./lib/org-members.ts",
 		"./lib/activation": "./lib/activation.ts",
-		"./lib/migrate": "./lib/migrate.ts",
-		"./adapters/neon": "./adapters/neon.ts",
-		"./adapters/pglite": "./adapters/pglite.ts",
-		"./adapters/postgres": "./adapters/postgres.ts"
+		"./lib/migrate": "./lib/migrate.ts"
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
@@ -26,9 +23,6 @@
 		"nitro": "catalog:"
 	},
 	"devDependencies": {
-		"@electric-sql/pglite": "catalog:",
-		"@neondatabase/serverless": "^1.0.2",
-		"postgres": "^3.4.9",
 		"typescript": "catalog:"
 	}
 }
