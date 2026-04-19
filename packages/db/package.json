@@ -22,8 +22,8 @@
 	"devDependencies": {
 		"@electric-sql/pglite": "catalog:",
 		"@neondatabase/serverless": "^1.0.2",
-		"postgres": "^3.4.9",
 		"drizzle-kit": "catalog:drizzle",
+		"postgres": "^3.4.9",
 		"typescript": "catalog:"
 	}
 }

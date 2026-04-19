@@ -1,13 +1,12 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { initDatabase } from "@workspace/db/adapters/pglite";
+import type { Database } from "@workspace/db/adapters/pglite";
 import * as schema from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import { migrate } from "drizzle-orm/pglite/migrator";
 import { describe, it, expect, beforeAll } from "vitest";
-
-import { initDatabase } from "@workspace/db/adapters/pglite";
-import type { Database } from "@workspace/db/adapters/pglite";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const migrationsFolder = path.resolve(__dirname, "../../db/drizzle");

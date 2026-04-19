@@ -1,7 +1,7 @@
 import { execSync } from "node:child_process";
+import { readFileSync, writeFileSync } from "node:fs";
 import { builtinModules } from "node:module";
 import { resolve } from "node:path";
-import { readFileSync, writeFileSync } from "node:fs";
 
 const root = resolve(import.meta.dirname, "../../..");
 const serverDir = resolve(root, "packages/server");
