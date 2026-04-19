@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
-import { useDatabase } from "#db";
 import { listActivations, toggleActivationStatus } from "@workspace/server/lib/activation";
+
+import { useDatabase } from "#db";
 
 export const getActivations = createServerFn({ method: "GET" }).handler(async () => {
 	const db = useDatabase();

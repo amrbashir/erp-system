@@ -1,8 +1,8 @@
 import { users } from "@workspace/db/schema";
 import { defineEventHandler, readBody, createError } from "h3";
 
-import { auth } from "~/lib/auth";
 import { useDatabase } from "#db";
+import { auth } from "~/lib/auth";
 import { createOrg } from "~/lib/org";
 
 function toSlug(name: string) {

@@ -1,9 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
-import { useDatabase } from "#db";
+import { auth } from "@workspace/server/lib/auth";
 import { getUserOrgs } from "@workspace/server/lib/org";
 
-import { auth } from "@workspace/server/lib/auth";
+import { useDatabase } from "#db";
 
 const CURRENT_ORG_COOKIE = "current_org_id";
 

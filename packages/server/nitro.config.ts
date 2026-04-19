@@ -1,4 +1,5 @@
 import { resolve } from "node:path";
+
 import { defineNitroConfig } from "nitro/config";
 
 const isDesktop = process.env.DEPLOY_TARGET === "desktop";

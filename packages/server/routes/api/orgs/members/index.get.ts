@@ -1,7 +1,7 @@
 import { defineEventHandler, toRequest, createError, getCookie } from "h3";
 
-import { auth } from "~/lib/auth";
 import { useDatabase } from "#db";
+import { auth } from "~/lib/auth";
 import { getOrgMembership } from "~/lib/org";
 import { getOrgMembers } from "~/lib/org-members";
 

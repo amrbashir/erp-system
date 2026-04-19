@@ -1,7 +1,7 @@
 import { defineEventHandler, readBody, setCookie, toRequest, createError } from "h3";
 
-import { auth } from "~/lib/auth";
 import { useDatabase } from "#db";
+import { auth } from "~/lib/auth";
 import { getOrgMembership } from "~/lib/org";
 
 export default defineEventHandler(async (event) => {

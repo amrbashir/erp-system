@@ -7,8 +7,8 @@ import {
 	getRouterParam,
 } from "h3";
 
-import { auth } from "~/lib/auth";
 import { useDatabase } from "#db";
+import { auth } from "~/lib/auth";
 import { getOrgMembership } from "~/lib/org";
 import { updateMemberRole } from "~/lib/org-members";
 

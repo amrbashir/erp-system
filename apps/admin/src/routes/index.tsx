@@ -1,6 +1,4 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
-
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -11,6 +9,8 @@ import {
 	TableHeader,
 	TableRow,
 } from "@workspace/ui/components/table";
+import { useState } from "react";
+
 import { getActivations, toggleActivation } from "@/lib/activation-fns";
 
 export const Route = createFileRoute("/")({
@@ -58,9 +58,7 @@ function ActivationDashboard() {
 							<TableRow key={a.id}>
 								<TableCell className="font-mono">{a.hardwareId}</TableCell>
 								<TableCell>
-									<Badge variant={statusVariant[a.status]}>
-										{a.status}
-									</Badge>
+									<Badge variant={statusVariant[a.status]}>{a.status}</Badge>
 								</TableCell>
 								<TableCell className="text-muted-foreground">
 									{a.activatedAt
