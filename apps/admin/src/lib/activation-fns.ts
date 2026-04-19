@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { useDatabase } from "@workspace/server/adapters/neon";
+import { useDatabase } from "#db";
 import { listActivations, toggleActivationStatus } from "@workspace/server/lib/activation";
 
 export const getActivations = createServerFn({ method: "GET" }).handler(async () => {

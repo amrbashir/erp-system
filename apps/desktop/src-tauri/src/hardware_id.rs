@@ -43,7 +43,8 @@ pub fn compute_hardware_id(cpu_id: &str, motherboard_serial: &str) -> String {
 }
 
 pub fn get_hardware_id_inner() -> Result<String, String> {
-    let com = COMLibrary::new().map_err(|e| format!("Failed to init COM: {e}"))?;
+    // SAFETY: COM is already initialized by Tauri/WebView2 on the main thread
+    let com = unsafe { COMLibrary::assume_initialized() };
     let wmi = WMIConnection::new(com).map_err(|e| format!("Failed to connect WMI: {e}"))?;
     let cpu_id = query_cpu_id(&wmi)?;
     let motherboard_serial = query_motherboard_serial(&wmi)?;

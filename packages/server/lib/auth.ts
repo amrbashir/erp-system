@@ -30,12 +30,6 @@ export function createAuth(options: CreateAuthOptions = {}) {
 		},
 		user: {
 			additionalFields: {
-				role: {
-					type: "string",
-					required: false,
-					defaultValue: "user",
-					input: false,
-				},
 				username: {
 					type: "string",
 					required: false,

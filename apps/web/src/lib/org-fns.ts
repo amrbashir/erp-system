@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
-import { useDatabase } from "@workspace/server/adapters/neon";
+import { useDatabase } from "#db";
 import { getUserOrgs } from "@workspace/server/lib/org";
 
 import { auth } from "@workspace/server/lib/auth";

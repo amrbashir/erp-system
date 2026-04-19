@@ -11,14 +11,14 @@ execSync("pnpm run build:desktop", { cwd: serverDir, stdio: "inherit" });
 
 // Step 2: Deno compile
 const targetTriple = execSync("rustc -vV", { encoding: "utf-8" })
-	.match(/host: (.+)/)[1]
+	.match(/host: (.+)/)?.[1]
 	.trim();
 
 const entry = resolve(serverDir, ".output/server/index.mjs");
 const outPath = resolve(binDir, `erp-sidecar-${targetTriple}`);
 
 console.log(`Compiling sidecar for ${targetTriple}…`);
-execSync(`deno compile --allow-all --output "${outPath}" "${entry}"`, {
+execSync(`deno compile --no-check --allow-all --output "${outPath}" "${entry}"`, {
 	stdio: "inherit",
 });
 

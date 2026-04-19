@@ -10,7 +10,8 @@
 		"./lib/activation": "./lib/activation.ts",
 		"./lib/migrate": "./lib/migrate.ts",
 		"./adapters/neon": "./adapters/neon.ts",
-		"./adapters/pglite": "./adapters/pglite.ts"
+		"./adapters/pglite": "./adapters/pglite.ts",
+		"./adapters/postgres": "./adapters/postgres.ts"
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
@@ -27,6 +28,7 @@
 	"devDependencies": {
 		"@electric-sql/pglite": "^0.2.17",
 		"@neondatabase/serverless": "^1.0.2",
+		"postgres": "^3.4.9",
 		"typescript": "^5.9.3"
 	}
 }

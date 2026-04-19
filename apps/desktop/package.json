@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "tauri dev",
-		"build:sidecar": "node scripts/build-sidecar.mjs",
+		"build:sidecar": "node scripts/build-sidecar.ts",
 		"build": "pnpm run build:sidecar && tauri build"
 	},
 	"dependencies": {
