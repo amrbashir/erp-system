@@ -9,9 +9,9 @@
 		"build": "pnpm run build:sidecar && tauri build"
 	},
 	"dependencies": {
-		"@tauri-apps/api": "^2.10.1"
+		"@tauri-apps/api": "catalog:tauri"
 	},
 	"devDependencies": {
-		"@tauri-apps/cli": "^2.10.1"
+		"@tauri-apps/cli": "catalog:tauri"
 	}
 }

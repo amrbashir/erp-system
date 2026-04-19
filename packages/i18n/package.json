@@ -8,6 +8,6 @@
 		"./paraglide/runtime": "./src/paraglide/runtime.js"
 	},
 	"devDependencies": {
-		"@inlang/paraglide-js": "^2.13.2"
+		"@inlang/paraglide-js": "catalog:"
 	}
 }

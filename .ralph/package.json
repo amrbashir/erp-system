@@ -9,6 +9,6 @@
 		"errore": "^0.14.1"
 	},
 	"devDependencies": {
-		"@types/node": "^25.5.2"
+		"@types/node": "catalog:"
 	}
 }

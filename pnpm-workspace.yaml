@@ -6,3 +6,35 @@ onlyBuiltDependencies:
     - esbuild
     - lightningcss
 shellEmulator: true
+catalog:
+    "@electric-sql/pglite": ^0.2.17
+    "@inlang/paraglide-js": ^2.13.2
+    "@phosphor-icons/react": ^2.1.10
+    "@types/node": ^25.5.2
+    better-auth: ^1.5.6
+    jose: ^6.2.2
+    nitro: latest
+    typescript: ^5.9.3
+catalogs:
+    react:
+        react: ^19.2.4
+        react-dom: ^19.2.4
+        "@types/react": ^19.2.10
+        "@types/react-dom": ^19.2.3
+    tanstack:
+        "@tanstack/react-router": ^1.132.0
+        "@tanstack/react-start": ^1.132.0
+        "@tanstack/router-plugin": ^1.132.0
+    drizzle:
+        drizzle-orm: ^0.44.7
+        drizzle-kit: ^0.31.0
+    tailwind:
+        tailwindcss: ^4.1.18
+        "@tailwindcss/vite": ^4.1.18
+    vite:
+        vite: ^7.2.4
+        "@vitejs/plugin-react": ^5.1.1
+        vite-tsconfig-paths: ^5.1.4
+    tauri:
+        "@tauri-apps/api": ^2.10.1
+        "@tauri-apps/cli": ^2.10.1
