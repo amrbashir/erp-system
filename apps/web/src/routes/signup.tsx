@@ -1,10 +1,19 @@
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
 import { signUp } from "@/lib/auth-client";
+import { getSession } from "@/lib/auth-session";
 
-export const Route = createFileRoute("/signup")({ component: SignupPage });
+export const Route = createFileRoute("/signup")({
+	beforeLoad: async () => {
+		const session = await getSession();
+		if (session) {
+			throw redirect({ to: "/dashboard" });
+		}
+	},
+	component: SignupPage,
+});
 
 function SignupPage() {
 	const navigate = useNavigate();

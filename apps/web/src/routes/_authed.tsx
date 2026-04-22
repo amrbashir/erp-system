@@ -29,7 +29,10 @@ export const Route = createFileRoute("/_authed")({
 
 		const session = await getSession();
 		if (!session) {
-			throw redirect({ to: "/login" });
+			throw redirect({
+				to: "/login",
+				search: { redirect: location.pathname },
+			});
 		}
 
 		const orgs = await getOrgs();
