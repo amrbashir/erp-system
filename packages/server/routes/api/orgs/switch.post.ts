@@ -2,6 +2,7 @@ import { defineEventHandler, readBody, setCookie, toRequest, HTTPError } from "h
 
 import { useDatabase } from "#db";
 import { auth } from "~/lib/auth";
+import { orgSwitchCookieOptions } from "~/lib/cookie";
 import { getOrgMembership } from "~/lib/org";
 
 export default defineEventHandler(async (event) => {
@@ -21,12 +22,7 @@ export default defineEventHandler(async (event) => {
 		throw new HTTPError("Not a member of this org", { status: 403 });
 	}
 
-	setCookie(event, "current_org_id", body.orgId, {
-		httpOnly: true,
-		sameSite: "lax",
-		path: "/",
-		maxAge: 60 * 60 * 24 * 365,
-	});
+	setCookie(event, "current_org_id", body.orgId, orgSwitchCookieOptions());
 
 	return { orgId: body.orgId };
 });
