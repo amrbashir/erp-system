@@ -63,13 +63,13 @@ export async function updateMemberRole(
 		throw new Error("Cannot change your own role");
 	}
 
-	if (input.actorRole === "admin") {
-		const [target] = await db
-			.select({ role: orgMembers.role })
-			.from(orgMembers)
-			.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
-			.limit(1);
+	const [target] = await db
+		.select({ role: orgMembers.role })
+		.from(orgMembers)
+		.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
+		.limit(1);
 
+	if (input.actorRole === "admin") {
 		if (!target) throw new Error("Member not found");
 		if (target.role !== "member") {
 			throw new Error("No permission to change this member's role");
@@ -77,18 +77,10 @@ export async function updateMemberRole(
 	}
 
 	// prevent demoting last owner
-	if (input.newRole !== "owner") {
-		const [target] = await db
-			.select({ role: orgMembers.role })
-			.from(orgMembers)
-			.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
-			.limit(1);
-
-		if (target?.role === "owner") {
-			const ownerCount = await countOwners(db, input.orgId);
-			if (ownerCount <= 1) {
-				throw new Error("Cannot demote the last owner of the organization");
-			}
+	if (input.newRole !== "owner" && target?.role === "owner") {
+		const ownerCount = await countOwners(db, input.orgId);
+		if (ownerCount <= 1) {
+			throw new Error("Cannot demote the last owner of the organization");
 		}
 	}
 
@@ -114,14 +106,14 @@ export async function removeMember(
 		throw new Error("No permission to remove members");
 	}
 
+	const [target] = await db
+		.select({ role: orgMembers.role })
+		.from(orgMembers)
+		.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
+		.limit(1);
+
 	// admin can only remove members, not owners/admins
 	if (input.actorRole === "admin") {
-		const [target] = await db
-			.select({ role: orgMembers.role })
-			.from(orgMembers)
-			.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
-			.limit(1);
-
 		if (!target) throw new Error("Member not found");
 		if (target.role !== "member") {
 			throw new Error("No permission to remove this member");
@@ -129,18 +121,10 @@ export async function removeMember(
 	}
 
 	// prevent removing last owner
-	{
-		const [target] = await db
-			.select({ role: orgMembers.role })
-			.from(orgMembers)
-			.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
-			.limit(1);
-
-		if (target?.role === "owner") {
-			const ownerCount = await countOwners(db, input.orgId);
-			if (ownerCount <= 1) {
-				throw new Error("Cannot remove the last owner of the organization");
-			}
+	if (target?.role === "owner") {
+		const ownerCount = await countOwners(db, input.orgId);
+		if (ownerCount <= 1) {
+			throw new Error("Cannot remove the last owner of the organization");
 		}
 	}
 
