@@ -431,7 +431,11 @@ function MemberList({
 										)}
 									</select>
 								) : (
-									member.role
+									{
+										owner: m.role_owner(),
+										admin: m.role_admin(),
+										member: m.role_member(),
+									}[member.role]
 								)}
 							</td>
 							{canManage && (
