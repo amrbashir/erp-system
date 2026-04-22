@@ -12,14 +12,24 @@ type Org = {
 export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId: string | null }) {
 	const navigate = useNavigate();
 	const [open, setOpen] = useState(false);
+	const [error, setError] = useState("");
 	const currentOrg = orgs.find((o) => o.id === currentOrgId) ?? orgs[0];
 
 	async function switchOrg(orgId: string) {
-		await fetch("/api/orgs/switch", {
+		setError("");
+
+		const res = await fetch("/api/orgs/switch", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ orgId }),
 		});
+
+		if (!res.ok) {
+			const data = await res.json().catch(() => null);
+			setError(data?.message ?? "Failed to switch organization");
+			return;
+		}
+
 		setOpen(false);
 		navigate({ to: "/dashboard", reloadDocument: true });
 	}
@@ -39,6 +49,7 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 
 			{open && (
 				<div className="border-border bg-background absolute top-full right-0 z-50 mt-1 min-w-48 rounded border shadow-md">
+					{error && <p className="text-destructive px-3 py-2 text-sm">{error}</p>}
 					{orgs.map((org) => (
 						<button
 							key={org.id}

@@ -48,11 +48,18 @@ function OnboardingPage() {
 
 		const org = await res.json();
 
-		await fetch("/api/orgs/switch", {
+		const switchRes = await fetch("/api/orgs/switch", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ orgId: org.id }),
 		});
+
+		if (!switchRes.ok) {
+			const data = await switchRes.json().catch(() => null);
+			setError(data?.message ?? "Failed to switch to organization");
+			setLoading(false);
+			return;
+		}
 
 		setLoading(false);
 		navigate({ to: "/dashboard", reloadDocument: true });
