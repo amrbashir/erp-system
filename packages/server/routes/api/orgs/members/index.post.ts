@@ -1,6 +1,6 @@
 import { users } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
-import { defineEventHandler, readBody, toRequest, createError, getCookie } from "h3";
+import { defineEventHandler, readBody, toRequest, HTTPError, getCookie } from "h3";
 
 import { useDatabase } from "#db";
 import { auth } from "~/lib/auth";
@@ -11,24 +11,22 @@ export default defineEventHandler(async (event) => {
 	const session = await auth.api.getSession({
 		headers: toRequest(event as any).headers,
 	});
-	if (!session) throw createError({ statusCode: 401, message: "Unauthorized" });
+	if (!session) throw new HTTPError("Unauthorized", { status: 401 });
 
 	const orgId = getCookie(event, "current_org_id");
-	if (!orgId) throw createError({ statusCode: 400, message: "No org selected" });
+	if (!orgId) throw new HTTPError("No org selected", { status: 400 });
 
 	const db = useDatabase();
 	const membership = await getOrgMembership(db, session.user.id, orgId);
 	if (!membership)
-		throw createError({
-			statusCode: 403,
-			message: "Not a member of this org",
+		throw new HTTPError("Not a member of this org", {
+			status: 403,
 		});
 
 	const actorRole = membership.role as "owner" | "admin" | "member";
 	if (actorRole === "member") {
-		throw createError({
-			statusCode: 403,
-			message: "No permission to add members",
+		throw new HTTPError("No permission to add members", {
+			status: 403,
 		});
 	}
 
@@ -39,17 +37,15 @@ export default defineEventHandler(async (event) => {
 	}>(event);
 
 	if (!body?.name || !body?.email || !body?.role) {
-		throw createError({
-			statusCode: 400,
-			message: "name, email, and role required",
+		throw new HTTPError("name, email, and role required", {
+			status: 400,
 		});
 	}
 
 	// admin can only create members
 	if (actorRole === "admin" && body.role !== "member") {
-		throw createError({
-			statusCode: 403,
-			message: "Admins can only create members",
+		throw new HTTPError("Admins can only create members", {
+			status: 403,
 		});
 	}
 
@@ -69,9 +65,8 @@ export default defineEventHandler(async (event) => {
 		return member;
 	} catch (e: any) {
 		if (e.message?.includes("unique") || e.code === "23505") {
-			throw createError({
-				statusCode: 409,
-				message: "User is already a member of this org",
+			throw new HTTPError("User is already a member of this org", {
+				status: 409,
 			});
 		}
 		throw e;

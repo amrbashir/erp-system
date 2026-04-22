@@ -1,5 +1,5 @@
 import { users } from "@workspace/db/schema";
-import { defineEventHandler, readBody, createError } from "h3";
+import { defineEventHandler, readBody, HTTPError } from "h3";
 
 import { useDatabase } from "#db";
 import { auth } from "~/lib/auth";
@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
 
 	const [existing] = await db.select({ id: users.id }).from(users).limit(1);
 	if (existing) {
-		throw createError({ statusCode: 409, message: "Setup already complete" });
+		throw new HTTPError("Setup already complete", { status: 409 });
 	}
 
 	const body = await readBody<{
@@ -29,15 +29,14 @@ export default defineEventHandler(async (event) => {
 	}>(event);
 
 	if (!body?.email || !body?.password || !body?.name || !body?.orgName) {
-		throw createError({
-			statusCode: 400,
-			message: "email, password, name, and orgName required",
+		throw new HTTPError("email, password, name, and orgName required", {
+			status: 400,
 		});
 	}
 
 	const slug = toSlug(body.orgName);
 	if (!slug) {
-		throw createError({ statusCode: 400, message: "Invalid org name" });
+		throw new HTTPError("Invalid org name", { status: 400 });
 	}
 
 	const signup = await auth.api.signUpEmail({

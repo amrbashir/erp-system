@@ -2,7 +2,7 @@ import {
 	defineEventHandler,
 	readBody,
 	toRequest,
-	createError,
+	HTTPError,
 	getCookie,
 	getRouterParam,
 } from "h3";
@@ -16,25 +16,24 @@ export default defineEventHandler(async (event) => {
 	const session = await auth.api.getSession({
 		headers: toRequest(event as any).headers,
 	});
-	if (!session) throw createError({ statusCode: 401, message: "Unauthorized" });
+	if (!session) throw new HTTPError("Unauthorized", { status: 401 });
 
 	const orgId = getCookie(event, "current_org_id");
-	if (!orgId) throw createError({ statusCode: 400, message: "No org selected" });
+	if (!orgId) throw new HTTPError("No org selected", { status: 400 });
 
 	const memberId = getRouterParam(event, "id");
-	if (!memberId) throw createError({ statusCode: 400, message: "Member ID required" });
+	if (!memberId) throw new HTTPError("Member ID required", { status: 400 });
 
 	const db = useDatabase();
 	const membership = await getOrgMembership(db, session.user.id, orgId);
 	if (!membership)
-		throw createError({
-			statusCode: 403,
-			message: "Not a member of this org",
+		throw new HTTPError("Not a member of this org", {
+			status: 403,
 		});
 
 	const body = await readBody<{ role: "owner" | "admin" | "member" }>(event);
 	if (!body?.role) {
-		throw createError({ statusCode: 400, message: "role required" });
+		throw new HTTPError("role required", { status: 400 });
 	}
 
 	try {
@@ -47,10 +46,10 @@ export default defineEventHandler(async (event) => {
 		return updated;
 	} catch (e: any) {
 		if (e.message?.includes("permission")) {
-			throw createError({ statusCode: 403, message: e.message });
+			throw new HTTPError(e.message, { status: 403 });
 		}
 		if (e.message === "Member not found") {
-			throw createError({ statusCode: 404, message: e.message });
+			throw new HTTPError(e.message, { status: 404 });
 		}
 		throw e;
 	}

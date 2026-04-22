@@ -1,4 +1,4 @@
-import { defineEventHandler, readBody, toRequest, createError } from "h3";
+import { defineEventHandler, readBody, toRequest, HTTPError } from "h3";
 
 import { useDatabase } from "#db";
 import { auth } from "~/lib/auth";
@@ -8,11 +8,11 @@ export default defineEventHandler(async (event) => {
 	const session = await auth.api.getSession({
 		headers: toRequest(event as any).headers,
 	});
-	if (!session) throw createError({ statusCode: 401, message: "Unauthorized" });
+	if (!session) throw new HTTPError("Unauthorized", { status: 401 });
 
 	const body = await readBody<{ name: string; slug: string; currency?: string }>(event);
 	if (!body?.name || !body?.slug) {
-		throw createError({ statusCode: 400, message: "name and slug required" });
+		throw new HTTPError("name and slug required", { status: 400 });
 	}
 
 	const db = useDatabase();
