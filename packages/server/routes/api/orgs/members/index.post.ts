@@ -1,5 +1,5 @@
 import { users } from "@workspace/db/schema";
-import { ilike } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { defineEventHandler, readBody, toRequest, HTTPError, getCookie } from "h3";
 
 import { useDatabase } from "#db";
@@ -55,7 +55,11 @@ export default defineEventHandler(async (event) => {
 	}
 
 	// find or create user by email (case-insensitive)
-	let [user] = await db.select().from(users).where(ilike(users.email, body.email)).limit(1);
+	let [user] = await db
+		.select()
+		.from(users)
+		.where(eq(sql`lower(${users.email})`, sql`lower(${body.email})`))
+		.limit(1);
 
 	if (!user) {
 		[user] = await db.insert(users).values({ name: body.name, email: body.email }).returning();

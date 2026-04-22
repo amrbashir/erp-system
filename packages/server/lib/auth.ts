@@ -50,14 +50,12 @@ export function createAuth(options: CreateAuthOptions = {}) {
 		},
 		hooks: {
 			before: async (ctx) => {
-				if ((ctx as any).path === "/sign-up/email") {
-					const body = ctx.body as { password?: string } | undefined;
-					if (body?.password) {
-						const result = validatePassword(body.password);
-						if (!result.valid) {
-							throw new APIError("BAD_REQUEST", { message: result.message });
-						}
-					}
+				if ((ctx as any).path !== "/sign-up/email") return;
+				const body = ctx.body as { password?: string } | undefined;
+				if (!body?.password) return;
+				const result = validatePassword(body.password);
+				if (!result.valid) {
+					throw new APIError("BAD_REQUEST", { message: result.message });
 				}
 			},
 		},
