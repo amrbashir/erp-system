@@ -44,7 +44,7 @@ describe("email/password signup", () => {
 		const res = await auth.api.signUpEmail({
 			body: {
 				email: "test@example.com",
-				password: "password123",
+				password: "Password1",
 				name: "Test User",
 			},
 		});
@@ -72,7 +72,7 @@ describe("email/password signin", () => {
 		const res = await auth.api.signInEmail({
 			body: {
 				email: "test@example.com",
-				password: "password123",
+				password: "Password1",
 			},
 		});
 		expect(res.token).toBeDefined();
@@ -109,5 +109,47 @@ describe("desktop mode", () => {
 		});
 		expect(desktopAuth).toBeDefined();
 		expect(desktopAuth.api.signUpEmail).toBeInstanceOf(Function);
+	});
+});
+
+describe("password validation", () => {
+	it("rejects password shorter than 6 characters", async () => {
+		await expect(
+			auth.api.signUpEmail({
+				body: { email: "short@example.com", password: "Ab1cd", name: "Short" },
+			}),
+		).rejects.toThrow();
+	});
+
+	it("rejects password missing uppercase letter", async () => {
+		await expect(
+			auth.api.signUpEmail({
+				body: { email: "noup@example.com", password: "abcdef1", name: "NoUp" },
+			}),
+		).rejects.toThrow();
+	});
+
+	it("rejects password missing lowercase letter", async () => {
+		await expect(
+			auth.api.signUpEmail({
+				body: { email: "nolow@example.com", password: "ABCDEF1", name: "NoLow" },
+			}),
+		).rejects.toThrow();
+	});
+
+	it("rejects password missing digit", async () => {
+		await expect(
+			auth.api.signUpEmail({
+				body: { email: "nodigit@example.com", password: "Abcdefg", name: "NoDigit" },
+			}),
+		).rejects.toThrow();
+	});
+
+	it("accepts valid password", async () => {
+		const res = await auth.api.signUpEmail({
+			body: { email: "valid@example.com", password: "Valid1x", name: "Valid" },
+		});
+		expect(res.user).toBeDefined();
+		expect(res.user.email).toBe("valid@example.com");
 	});
 });

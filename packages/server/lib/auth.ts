@@ -1,9 +1,11 @@
 import * as schema from "@workspace/db/schema";
-import { betterAuth } from "better-auth";
+import { APIError, betterAuth } from "better-auth";
 import type { BetterAuthOptions } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
 import { useDatabase } from "#db";
+
+import { validatePassword } from "./validate-password.js";
 
 export interface CreateAuthOptions {
 	plugins?: BetterAuthOptions["plugins"];
@@ -43,7 +45,21 @@ export function createAuth(options: CreateAuthOptions = {}) {
 		},
 		emailAndPassword: {
 			enabled: true,
+			minPasswordLength: 6,
 			requireEmailVerification: options.desktop ? false : undefined,
+		},
+		hooks: {
+			before: async (ctx) => {
+				if ((ctx as any).path === "/sign-up/email") {
+					const body = ctx.body as { password?: string } | undefined;
+					if (body?.password) {
+						const result = validatePassword(body.password);
+						if (!result.valid) {
+							throw new APIError("BAD_REQUEST", { message: result.message });
+						}
+					}
+				}
+			},
 		},
 		plugins: options.plugins ?? [],
 	});

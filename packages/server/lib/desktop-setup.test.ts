@@ -49,7 +49,7 @@ describe("desktopSetup – atomic success", () => {
 			db as any,
 			{
 				email: "setup@test.com",
-				password: "password123",
+				password: "Password1",
 				name: "Setup User",
 				orgName: "Setup Corp",
 				slug: "setup-corp",
@@ -109,7 +109,7 @@ describe("desktopSetup – rollback on org failure", () => {
 				db as any,
 				{
 					email: "rollback@test.com",
-					password: "password123",
+					password: "Password1",
 					name: "Rollback User",
 					orgName: "Taken Corp 2",
 					slug: "taken-slug",
@@ -142,7 +142,7 @@ describe("desktopSetup – existing user guard", () => {
 			db as any,
 			{
 				email: "first@test.com",
-				password: "password123",
+				password: "Password1",
 				name: "First User",
 				orgName: "First Corp",
 				slug: "first-corp",
@@ -162,7 +162,7 @@ describe("desktopSetup – existing user guard", () => {
 				db as any,
 				{
 					email: "second@test.com",
-					password: "password123",
+					password: "Password1",
 					name: "Second User",
 					orgName: "Second Corp",
 					slug: "second-corp",

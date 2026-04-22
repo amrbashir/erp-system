@@ -1,11 +1,12 @@
 import { users } from "@workspace/db/schema";
-import { eq } from "drizzle-orm";
+import { ilike } from "drizzle-orm";
 import { defineEventHandler, readBody, toRequest, HTTPError, getCookie } from "h3";
 
 import { useDatabase } from "#db";
 import { auth } from "~/lib/auth";
 import { getOrgMembership } from "~/lib/org";
 import { addMemberToOrg } from "~/lib/org-members";
+import { isValidEmail } from "~/lib/validate-email";
 
 export default defineEventHandler(async (event) => {
 	const session = await auth.api.getSession({
@@ -42,6 +43,10 @@ export default defineEventHandler(async (event) => {
 		});
 	}
 
+	if (!isValidEmail(body.email)) {
+		throw new HTTPError("Invalid email format", { status: 400 });
+	}
+
 	// admin can only create members
 	if (actorRole === "admin" && body.role !== "member") {
 		throw new HTTPError("Admins can only create members", {
@@ -49,8 +54,8 @@ export default defineEventHandler(async (event) => {
 		});
 	}
 
-	// find or create user by email
-	let [user] = await db.select().from(users).where(eq(users.email, body.email)).limit(1);
+	// find or create user by email (case-insensitive)
+	let [user] = await db.select().from(users).where(ilike(users.email, body.email)).limit(1);
 
 	if (!user) {
 		[user] = await db.insert(users).values({ name: body.name, email: body.email }).returning();

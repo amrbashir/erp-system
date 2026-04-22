@@ -38,7 +38,7 @@ describe("desktop setup flow", () => {
 		const res = await auth.api.signUpEmail({
 			body: {
 				email: "owner@local.test",
-				password: "password123",
+				password: "Password1",
 				name: "Desktop Owner",
 			},
 		});
