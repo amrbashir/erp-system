@@ -1,18 +1,12 @@
-import { users } from "@workspace/db/schema";
 import { defineEventHandler, readBody, HTTPError } from "h3";
 
 import { useDatabase } from "#db";
-import { auth } from "~/lib/auth";
-import { createOrg } from "~/lib/org";
+import { createAuth } from "~/lib/auth";
+import { desktopSetup } from "~/lib/desktop-setup";
 import { toSlug } from "~/lib/slug";
 
 export default defineEventHandler(async (event) => {
 	const db = useDatabase();
-
-	const [existing] = await db.select({ id: users.id }).from(users).limit(1);
-	if (existing) {
-		throw new HTTPError("Setup already complete", { status: 409 });
-	}
 
 	const body = await readBody<{
 		email: string;
@@ -33,24 +27,23 @@ export default defineEventHandler(async (event) => {
 		throw new HTTPError("Invalid org name", { status: 400 });
 	}
 
-	const signup = await auth.api.signUpEmail({
-		body: {
-			email: body.email,
-			password: body.password,
-			name: body.name,
-			username: body.username,
-		},
-	});
-
-	const org = await createOrg(db, {
-		name: body.orgName,
-		slug,
-		userId: signup.user.id,
-	});
-
-	return {
-		token: signup.token,
-		user: { id: signup.user.id, name: signup.user.name, email: signup.user.email },
-		org: { id: org.id, name: org.name, slug: org.slug },
-	};
+	try {
+		return await desktopSetup(
+			db,
+			{
+				email: body.email,
+				password: body.password,
+				name: body.name,
+				orgName: body.orgName,
+				slug,
+				username: body.username,
+			},
+			createAuth,
+		);
+	} catch (err) {
+		if (err instanceof Error && /setup already complete/i.test(err.message)) {
+			throw new HTTPError("Setup already complete", { status: 409 });
+		}
+		throw err;
+	}
 });

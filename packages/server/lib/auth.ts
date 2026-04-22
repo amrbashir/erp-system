@@ -10,10 +10,11 @@ export interface CreateAuthOptions {
 	desktop?: boolean;
 	baseURL?: string;
 	secret?: string;
+	db?: any;
 }
 
 export function createAuth(options: CreateAuthOptions = {}) {
-	const db = useDatabase();
+	const db = options.db ?? useDatabase();
 
 	return betterAuth({
 		baseURL: options.baseURL,
