@@ -44,35 +44,59 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 
 				{error && <p className="text-destructive text-sm">{error}</p>}
 
-				<input
-					name="orgName"
-					type="text"
-					placeholder="Organization name"
-					required
-					className="border-border bg-background h-9 rounded-none border px-3 text-sm"
-				/>
-				<input
-					name="name"
-					type="text"
-					placeholder="Your name"
-					required
-					className="border-border bg-background h-9 rounded-none border px-3 text-sm"
-				/>
-				<input
-					name="username"
-					type="text"
-					placeholder="Username"
-					required
-					className="border-border bg-background h-9 rounded-none border px-3 text-sm"
-				/>
-				<input
-					name="password"
-					type="password"
-					placeholder="Password"
-					required
-					minLength={8}
-					className="border-border bg-background h-9 rounded-none border px-3 text-sm"
-				/>
+				<div className="flex flex-col gap-1">
+					<label htmlFor="org-name" className="text-sm font-medium">
+						Organization name
+					</label>
+					<input
+						id="org-name"
+						name="orgName"
+						type="text"
+						placeholder="Organization name"
+						required
+						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
+					/>
+				</div>
+				<div className="flex flex-col gap-1">
+					<label htmlFor="name" className="text-sm font-medium">
+						Your name
+					</label>
+					<input
+						id="name"
+						name="name"
+						type="text"
+						placeholder="Your name"
+						required
+						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
+					/>
+				</div>
+				<div className="flex flex-col gap-1">
+					<label htmlFor="username" className="text-sm font-medium">
+						Username
+					</label>
+					<input
+						id="username"
+						name="username"
+						type="text"
+						placeholder="Username"
+						required
+						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
+					/>
+				</div>
+				<div className="flex flex-col gap-1">
+					<label htmlFor="password" className="text-sm font-medium">
+						Password
+					</label>
+					<input
+						id="password"
+						name="password"
+						type="password"
+						placeholder="Password"
+						required
+						minLength={8}
+						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
+					/>
+				</div>
 
 				<Button type="submit" disabled={loading}>
 					{loading ? "Setting up…" : "Get started"}

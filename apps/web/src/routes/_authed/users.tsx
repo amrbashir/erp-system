@@ -158,53 +158,83 @@ function AddUserForm({
 	return (
 		<form onSubmit={handleSubmit} className="mb-6 flex flex-col gap-3">
 			<div className="flex gap-3">
-				<input
-					name="name"
-					type="text"
-					placeholder="Name"
-					required
-					className="border-border bg-background h-9 flex-1 rounded-none border px-3 text-sm"
-				/>
+				<div className="flex flex-1 flex-col gap-1">
+					<label htmlFor="add-user-name" className="text-sm font-medium">
+						Name
+					</label>
+					<input
+						id="add-user-name"
+						name="name"
+						type="text"
+						placeholder="Name"
+						required
+						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
+					/>
+				</div>
 				{desktop ? (
 					<>
-						<input
-							name="username"
-							type="text"
-							placeholder="Username"
-							required
-							className="border-border bg-background h-9 flex-1 rounded-none border px-3 text-sm"
-						/>
-						<input
-							name="password"
-							type="password"
-							placeholder="Password"
-							required
-							minLength={8}
-							className="border-border bg-background h-9 flex-1 rounded-none border px-3 text-sm"
-						/>
+						<div className="flex flex-1 flex-col gap-1">
+							<label htmlFor="add-user-username" className="text-sm font-medium">
+								Username
+							</label>
+							<input
+								id="add-user-username"
+								name="username"
+								type="text"
+								placeholder="Username"
+								required
+								className="border-border bg-background h-9 rounded-none border px-3 text-sm"
+							/>
+						</div>
+						<div className="flex flex-1 flex-col gap-1">
+							<label htmlFor="add-user-password" className="text-sm font-medium">
+								Password
+							</label>
+							<input
+								id="add-user-password"
+								name="password"
+								type="password"
+								placeholder="Password"
+								required
+								minLength={8}
+								className="border-border bg-background h-9 rounded-none border px-3 text-sm"
+							/>
+						</div>
 					</>
 				) : (
-					<input
-						name="email"
-						type="email"
-						placeholder="Email"
-						required
-						className="border-border bg-background h-9 flex-1 rounded-none border px-3 text-sm"
-					/>
+					<div className="flex flex-1 flex-col gap-1">
+						<label htmlFor="add-user-email" className="text-sm font-medium">
+							Email
+						</label>
+						<input
+							id="add-user-email"
+							name="email"
+							type="email"
+							placeholder="Email"
+							required
+							className="border-border bg-background h-9 rounded-none border px-3 text-sm"
+						/>
+					</div>
 				)}
-				<select
-					name="role"
-					defaultValue="member"
-					className="border-border bg-background h-9 rounded-none border px-3 text-sm"
-				>
-					<option value="member">Member</option>
-					{actorRole === "owner" && (
-						<>
-							<option value="admin">Admin</option>
-							<option value="owner">Owner</option>
-						</>
-					)}
-				</select>
+				<div className="flex flex-col gap-1">
+					<label htmlFor="add-user-role" className="text-sm font-medium">
+						Role
+					</label>
+					<select
+						id="add-user-role"
+						name="role"
+						defaultValue="member"
+						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
+					>
+						<option value="member">Member</option>
+						{actorRole === "owner" && (
+							<>
+								<option value="admin">Admin</option>
+								<option value="owner">Owner</option>
+							</>
+						)}
+					</select>
+				</div>
 			</div>
 			<div>
 				<Button type="submit" size="sm" disabled={submitting}>

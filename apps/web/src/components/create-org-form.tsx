@@ -70,13 +70,19 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 
 				{error && <p className="text-destructive text-sm">{error}</p>}
 
-				<input
-					name="name"
-					type="text"
-					placeholder="Organization name"
-					required
-					className="border-border bg-background h-9 rounded-none border px-3 text-sm"
-				/>
+				<div className="flex flex-col gap-1">
+					<label htmlFor="org-name" className="text-sm font-medium">
+						Organization name
+					</label>
+					<input
+						id="org-name"
+						name="name"
+						type="text"
+						placeholder="Organization name"
+						required
+						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
+					/>
+				</div>
 
 				<Button type="submit" disabled={loading}>
 					{loading ? "Creating…" : "Create organization"}
