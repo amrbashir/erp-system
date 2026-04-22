@@ -1,4 +1,5 @@
 import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
@@ -39,7 +40,7 @@ function SignupPage() {
 		setLoading(false);
 
 		if (err) {
-			setError(err.message ?? "Signup failed");
+			setError(err.message ?? m.signup_failed());
 			return;
 		}
 
@@ -49,45 +50,45 @@ function SignupPage() {
 	return (
 		<div className="flex min-h-svh items-center justify-center p-6">
 			<form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
-				<h1 className="text-lg font-medium">Sign up</h1>
+				<h1 className="text-lg font-medium">{m.signup_heading()}</h1>
 
 				{error && <p className="text-destructive text-sm">{error}</p>}
 
 				<div className="flex flex-col gap-1">
 					<label htmlFor="name" className="text-sm font-medium">
-						Name
+						{m.label_name()}
 					</label>
 					<input
 						id="name"
 						name="name"
 						type="text"
-						placeholder="Name"
+						placeholder={m.label_name()}
 						required
 						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
 					/>
 				</div>
 				<div className="flex flex-col gap-1">
 					<label htmlFor="email" className="text-sm font-medium">
-						Email
+						{m.label_email()}
 					</label>
 					<input
 						id="email"
 						name="email"
 						type="email"
-						placeholder="Email"
+						placeholder={m.label_email()}
 						required
 						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
 					/>
 				</div>
 				<div className="flex flex-col gap-1">
 					<label htmlFor="password" className="text-sm font-medium">
-						Password
+						{m.label_password()}
 					</label>
 					<input
 						id="password"
 						name="password"
 						type="password"
-						placeholder="Password"
+						placeholder={m.label_password()}
 						required
 						minLength={8}
 						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
@@ -95,13 +96,13 @@ function SignupPage() {
 				</div>
 
 				<Button type="submit" disabled={loading}>
-					{loading ? "Signing up…" : "Sign up"}
+					{loading ? m.signup_submitting() : m.signup_submit()}
 				</Button>
 
 				<p className="text-muted-foreground text-sm">
-					Already have an account?{" "}
+					{m.signup_has_account()}{" "}
 					<Link to="/login" className="text-primary underline">
-						Log in
+						{m.signup_login_link()}
 					</Link>
 				</p>
 			</form>

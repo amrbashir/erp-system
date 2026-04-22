@@ -1,3 +1,4 @@
+import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
@@ -19,7 +20,7 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 		const password = form.get("password") as string;
 
 		if (!orgName || !name || !username || !password) {
-			setError("All fields are required");
+			setError(m.desktop_onboarding_fields_required());
 			setLoading(false);
 			return;
 		}
@@ -28,7 +29,7 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 			await desktopSetup({ orgName, username, password, name });
 			onComplete();
 		} catch (err: any) {
-			setError(err.message ?? "Setup failed");
+			setError(err.message ?? m.desktop_onboarding_failed());
 		} finally {
 			setLoading(false);
 		}
@@ -37,61 +38,61 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 	return (
 		<div className="flex min-h-svh items-center justify-center p-6">
 			<form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
-				<h1 className="text-lg font-medium">Welcome</h1>
+				<h1 className="text-lg font-medium">{m.desktop_onboarding_heading()}</h1>
 				<p className="text-muted-foreground text-sm">
-					Set up your organization and owner account to get started.
+					{m.desktop_onboarding_description()}
 				</p>
 
 				{error && <p className="text-destructive text-sm">{error}</p>}
 
 				<div className="flex flex-col gap-1">
 					<label htmlFor="org-name" className="text-sm font-medium">
-						Organization name
+						{m.label_org_name()}
 					</label>
 					<input
 						id="org-name"
 						name="orgName"
 						type="text"
-						placeholder="Organization name"
+						placeholder={m.label_org_name()}
 						required
 						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
 					/>
 				</div>
 				<div className="flex flex-col gap-1">
 					<label htmlFor="name" className="text-sm font-medium">
-						Your name
+						{m.desktop_onboarding_your_name()}
 					</label>
 					<input
 						id="name"
 						name="name"
 						type="text"
-						placeholder="Your name"
+						placeholder={m.desktop_onboarding_your_name()}
 						required
 						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
 					/>
 				</div>
 				<div className="flex flex-col gap-1">
 					<label htmlFor="username" className="text-sm font-medium">
-						Username
+						{m.label_username()}
 					</label>
 					<input
 						id="username"
 						name="username"
 						type="text"
-						placeholder="Username"
+						placeholder={m.label_username()}
 						required
 						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
 					/>
 				</div>
 				<div className="flex flex-col gap-1">
 					<label htmlFor="password" className="text-sm font-medium">
-						Password
+						{m.label_password()}
 					</label>
 					<input
 						id="password"
 						name="password"
 						type="password"
-						placeholder="Password"
+						placeholder={m.label_password()}
 						required
 						minLength={8}
 						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
@@ -99,7 +100,7 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 				</div>
 
 				<Button type="submit" disabled={loading}>
-					{loading ? "Setting up…" : "Get started"}
+					{loading ? m.desktop_onboarding_submitting() : m.desktop_onboarding_submit()}
 				</Button>
 			</form>
 		</div>

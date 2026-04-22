@@ -1,5 +1,92 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"example_message": "مرحباً {username}",
-	"language_switcher_label": "اللغة"
+
+	"language_switcher_label": "اللغة",
+
+	"label_email": "البريد الإلكتروني",
+	"label_password": "كلمة المرور",
+	"label_name": "الاسم",
+	"label_username": "اسم المستخدم",
+	"label_role": "الدور",
+	"label_org_name": "اسم المنظمة",
+
+	"role_member": "عضو",
+	"role_admin": "مسؤول",
+	"role_owner": "مالك",
+
+	"login_heading": "تسجيل الدخول",
+	"login_submitting": "جارٍ تسجيل الدخول\u2026",
+	"login_submit": "تسجيل الدخول",
+	"login_failed": "فشل تسجيل الدخول",
+	"login_no_account": "ليس لديك حساب؟",
+	"login_signup_link": "إنشاء حساب",
+
+	"signup_heading": "إنشاء حساب",
+	"signup_submitting": "جارٍ إنشاء الحساب\u2026",
+	"signup_submit": "إنشاء حساب",
+	"signup_failed": "فشل إنشاء الحساب",
+	"signup_has_account": "لديك حساب بالفعل؟",
+	"signup_login_link": "تسجيل الدخول",
+
+	"create_org_invalid_name": "اسم المنظمة غير صالح",
+	"create_org_failed": "فشل إنشاء المنظمة",
+	"switch_org_failed": "فشل التبديل إلى المنظمة",
+	"create_org_submitting": "جارٍ الإنشاء\u2026",
+	"create_org_submit": "إنشاء المنظمة",
+	"cancel": "إلغاء",
+
+	"dashboard_welcome": "مرحباً، {name}",
+	"dashboard_current_org": "المنظمة الحالية:",
+
+	"users_heading": "المستخدمون",
+	"users_add": "إضافة مستخدم",
+	"users_loading": "جارٍ التحميل\u2026",
+	"users_no_members": "لم يتم العثور على أعضاء.",
+	"users_add_failed": "فشل إضافة المستخدم",
+	"users_role_update_failed": "فشل تحديث الدور",
+	"users_remove_failed": "فشل إزالة المستخدم",
+	"users_transfer_failed": "فشل نقل الملكية",
+	"users_transfer_confirm": "نقل الملكية إلى {name}؟ سيتم تخفيض دورك إلى:",
+	"users_transferring": "جارٍ النقل\u2026",
+	"users_confirm_transfer": "تأكيد النقل",
+	"users_transfer": "نقل",
+	"users_removing": "جارٍ الإزالة\u2026",
+	"users_remove": "إزالة",
+	"users_adding": "جارٍ الإضافة\u2026",
+	"users_add_submit": "إضافة",
+	"users_actions": "الإجراءات",
+
+	"org_switcher_select": "اختر المنظمة",
+	"org_switcher_failed": "فشل تبديل المنظمة",
+	"org_switcher_new": "+ منظمة جديدة",
+
+	"desktop_onboarding_heading": "مرحباً",
+	"desktop_onboarding_description": "قم بإعداد منظمتك وحساب المالك للبدء.",
+	"desktop_onboarding_your_name": "اسمك",
+	"desktop_onboarding_fields_required": "جميع الحقول مطلوبة",
+	"desktop_onboarding_submitting": "جارٍ الإعداد\u2026",
+	"desktop_onboarding_submit": "ابدأ",
+	"desktop_onboarding_failed": "فشل الإعداد",
+
+	"activation_heading": "تفعيل سطح المكتب",
+	"activation_description": "شارك معرّف الجهاز هذا مع المسؤول لتفعيل هذا الجهاز.",
+	"activation_hardware_id": "معرّف الجهاز",
+	"activation_copied": "تم النسخ",
+	"activation_copy": "نسخ",
+	"activation_checking": "جارٍ التحقق\u2026",
+	"activation_check": "التحقق من التفعيل",
+	"activation_waiting": "في انتظار التفعيل\u2026",
+	"activation_pending": "التفعيل معلّق. تواصل مع المسؤول.",
+	"activation_revoked": "تم إلغاء التفعيل. تواصل مع المسؤول.",
+	"activation_unknown": "معرّف الجهاز غير مسجّل. تواصل مع المسؤول.",
+	"activation_network_error": "تعذر الوصول إلى خادم التفعيل. تحقق من اتصالك بالإنترنت.",
+
+	"nav_dashboard": "لوحة التحكم",
+	"nav_users": "المستخدمون",
+	"nav_logout": "تسجيل الخروج",
+
+	"onboarding_title": "أنشئ منظمتك",
+	"onboarding_description": "أنشئ منظمتك الأولى للبدء.",
+
+	"new_org_title": "منظمة جديدة"
 }

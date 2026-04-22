@@ -1,4 +1,5 @@
 import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
@@ -42,7 +43,7 @@ function LoginPage() {
 		setLoading(false);
 
 		if (err) {
-			setError(err.message ?? "Login failed");
+			setError(err.message ?? m.login_failed());
 			return;
 		}
 
@@ -53,45 +54,45 @@ function LoginPage() {
 	return (
 		<div className="flex min-h-svh items-center justify-center p-6">
 			<form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
-				<h1 className="text-lg font-medium">Log in</h1>
+				<h1 className="text-lg font-medium">{m.login_heading()}</h1>
 
 				{error && <p className="text-destructive text-sm">{error}</p>}
 
 				<div className="flex flex-col gap-1">
 					<label htmlFor="email" className="text-sm font-medium">
-						Email
+						{m.label_email()}
 					</label>
 					<input
 						id="email"
 						name="email"
 						type="email"
-						placeholder="Email"
+						placeholder={m.label_email()}
 						required
 						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
 					/>
 				</div>
 				<div className="flex flex-col gap-1">
 					<label htmlFor="password" className="text-sm font-medium">
-						Password
+						{m.label_password()}
 					</label>
 					<input
 						id="password"
 						name="password"
 						type="password"
-						placeholder="Password"
+						placeholder={m.label_password()}
 						required
 						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
 					/>
 				</div>
 
 				<Button type="submit" disabled={loading}>
-					{loading ? "Logging in…" : "Log in"}
+					{loading ? m.login_submitting() : m.login_submit()}
 				</Button>
 
 				<p className="text-muted-foreground text-sm">
-					Don&apos;t have an account?{" "}
+					{m.login_no_account()}{" "}
 					<Link to="/signup" className="text-primary underline">
-						Sign up
+						{m.login_signup_link()}
 					</Link>
 				</p>
 			</form>

@@ -1,4 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
+import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
@@ -26,7 +27,7 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 
 		if (!res.ok) {
 			const data = await res.json().catch(() => null);
-			setError(data?.message ?? "Failed to switch organization");
+			setError(data?.message ?? m.org_switcher_failed());
 			return;
 		}
 
@@ -44,7 +45,7 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 				onClick={() => setOpen(!open)}
 				className="max-w-48 truncate"
 			>
-				{currentOrg?.name ?? "Select org"}
+				{currentOrg?.name ?? m.org_switcher_select()}
 			</Button>
 
 			{open && (
@@ -72,7 +73,7 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 							}}
 							className="hover:bg-muted w-full px-3 py-2 text-left text-sm"
 						>
-							+ New organization
+							{m.org_switcher_new()}
 						</button>
 					</div>
 				</div>

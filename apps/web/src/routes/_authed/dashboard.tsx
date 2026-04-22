@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { m } from "@workspace/i18n";
 
 export const Route = createFileRoute("/_authed/dashboard")({
 	component: Dashboard,
@@ -11,10 +12,10 @@ function Dashboard() {
 	return (
 		<div className="flex min-h-svh p-6">
 			<div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-				<h1 className="font-medium">Welcome, {session.user.name}</h1>
+				<h1 className="font-medium">{m.dashboard_welcome({ name: session.user.name })}</h1>
 				{currentOrg && (
 					<p>
-						Current organization: <strong>{currentOrg.name}</strong>
+						{m.dashboard_current_org()} <strong>{currentOrg.name}</strong>
 					</p>
 				)}
 			</div>

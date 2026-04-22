@@ -1,3 +1,4 @@
+import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
@@ -32,37 +33,37 @@ export function ActivationScreen({
 			} else {
 				setStatus("error");
 				if (result.status === "pending") {
-					setError("Activation pending. Contact your administrator.");
+					setError(m.activation_pending());
 				} else if (result.status === "revoked") {
-					setError("Activation revoked. Contact your administrator.");
+					setError(m.activation_revoked());
 				} else if (result.status === "unknown") {
-					setError("Hardware ID not registered. Contact your administrator.");
+					setError(m.activation_unknown());
 				} else {
 					setError(result.error);
 				}
 			}
 		} catch {
 			setStatus("error");
-			setError("Could not reach activation server. Check your internet connection.");
+			setError(m.activation_network_error());
 		}
 	}
 
 	return (
 		<div className="flex min-h-svh items-center justify-center p-6">
 			<div className="flex w-full max-w-md flex-col items-center gap-6 text-center">
-				<h1 className="text-lg font-medium">Desktop Activation</h1>
-				<p className="text-muted-foreground text-sm">
-					Share this hardware ID with your administrator to activate this device.
-				</p>
+				<h1 className="text-lg font-medium">{m.activation_heading()}</h1>
+				<p className="text-muted-foreground text-sm">{m.activation_description()}</p>
 
 				<div className="w-full">
-					<label className="text-muted-foreground mb-1 block text-xs">Hardware ID</label>
+					<label className="text-muted-foreground mb-1 block text-xs">
+						{m.activation_hardware_id()}
+					</label>
 					<div className="flex items-center gap-2">
 						<code className="bg-muted flex-1 truncate rounded-none border px-3 py-2 font-mono text-xs select-all">
 							{hardwareId}
 						</code>
 						<Button variant="outline" size="sm" onClick={handleCopy}>
-							{copied ? "Copied" : "Copy"}
+							{copied ? m.activation_copied() : m.activation_copy()}
 						</Button>
 					</div>
 				</div>
@@ -70,10 +71,10 @@ export function ActivationScreen({
 				{error && <p className="text-destructive text-sm">{error}</p>}
 
 				<Button onClick={handleCheck} disabled={status === "checking"} className="w-full">
-					{status === "checking" ? "Checking…" : "Check activation"}
+					{status === "checking" ? m.activation_checking() : m.activation_check()}
 				</Button>
 
-				<p className="text-muted-foreground text-xs">Waiting for activation…</p>
+				<p className="text-muted-foreground text-xs">{m.activation_waiting()}</p>
 			</div>
 		</div>
 	);

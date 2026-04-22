@@ -1,5 +1,92 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"example_message": "Hello world {username}",
-	"language_switcher_label": "Language"
+
+	"language_switcher_label": "Language",
+
+	"label_email": "Email",
+	"label_password": "Password",
+	"label_name": "Name",
+	"label_username": "Username",
+	"label_role": "Role",
+	"label_org_name": "Organization name",
+
+	"role_member": "Member",
+	"role_admin": "Admin",
+	"role_owner": "Owner",
+
+	"login_heading": "Log in",
+	"login_submitting": "Logging in\u2026",
+	"login_submit": "Log in",
+	"login_failed": "Login failed",
+	"login_no_account": "Don\u2019t have an account?",
+	"login_signup_link": "Sign up",
+
+	"signup_heading": "Sign up",
+	"signup_submitting": "Signing up\u2026",
+	"signup_submit": "Sign up",
+	"signup_failed": "Signup failed",
+	"signup_has_account": "Already have an account?",
+	"signup_login_link": "Log in",
+
+	"create_org_invalid_name": "Invalid org name",
+	"create_org_failed": "Failed to create organization",
+	"switch_org_failed": "Failed to switch to organization",
+	"create_org_submitting": "Creating\u2026",
+	"create_org_submit": "Create organization",
+	"cancel": "Cancel",
+
+	"dashboard_welcome": "Welcome, {name}",
+	"dashboard_current_org": "Current organization:",
+
+	"users_heading": "Users",
+	"users_add": "Add user",
+	"users_loading": "Loading\u2026",
+	"users_no_members": "No members found.",
+	"users_add_failed": "Failed to add user",
+	"users_role_update_failed": "Failed to update role",
+	"users_remove_failed": "Failed to remove user",
+	"users_transfer_failed": "Failed to transfer ownership",
+	"users_transfer_confirm": "Transfer ownership to {name}? You will be demoted to:",
+	"users_transferring": "Transferring\u2026",
+	"users_confirm_transfer": "Confirm transfer",
+	"users_transfer": "Transfer",
+	"users_removing": "Removing\u2026",
+	"users_remove": "Remove",
+	"users_adding": "Adding\u2026",
+	"users_add_submit": "Add",
+	"users_actions": "Actions",
+
+	"org_switcher_select": "Select org",
+	"org_switcher_failed": "Failed to switch organization",
+	"org_switcher_new": "+ New organization",
+
+	"desktop_onboarding_heading": "Welcome",
+	"desktop_onboarding_description": "Set up your organization and owner account to get started.",
+	"desktop_onboarding_your_name": "Your name",
+	"desktop_onboarding_fields_required": "All fields are required",
+	"desktop_onboarding_submitting": "Setting up\u2026",
+	"desktop_onboarding_submit": "Get started",
+	"desktop_onboarding_failed": "Setup failed",
+
+	"activation_heading": "Desktop Activation",
+	"activation_description": "Share this hardware ID with your administrator to activate this device.",
+	"activation_hardware_id": "Hardware ID",
+	"activation_copied": "Copied",
+	"activation_copy": "Copy",
+	"activation_checking": "Checking\u2026",
+	"activation_check": "Check activation",
+	"activation_waiting": "Waiting for activation\u2026",
+	"activation_pending": "Activation pending. Contact your administrator.",
+	"activation_revoked": "Activation revoked. Contact your administrator.",
+	"activation_unknown": "Hardware ID not registered. Contact your administrator.",
+	"activation_network_error": "Could not reach activation server. Check your internet connection.",
+
+	"nav_dashboard": "Dashboard",
+	"nav_users": "Users",
+	"nav_logout": "Log out",
+
+	"onboarding_title": "Create your organization",
+	"onboarding_description": "Create your first organization to get started.",
+
+	"new_org_title": "New organization"
 }

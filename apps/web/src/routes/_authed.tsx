@@ -1,4 +1,5 @@
 import { Outlet, Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 
 import { OrgSwitcher } from "@/components/org-switcher";
@@ -77,18 +78,18 @@ function AuthedLayout() {
 							to="/dashboard"
 							className="text-muted-foreground hover:text-foreground [&.active]:text-foreground"
 						>
-							Dashboard
+							{m.nav_dashboard()}
 						</Link>
 						<Link
 							to="/users"
 							className="text-muted-foreground hover:text-foreground [&.active]:text-foreground"
 						>
-							Users
+							{m.nav_users()}
 						</Link>
 					</nav>
 				</div>
 				<Button variant="ghost" size="sm" onClick={handleLogout}>
-					Log out
+					{m.nav_logout()}
 				</Button>
 			</div>
 			<Outlet />

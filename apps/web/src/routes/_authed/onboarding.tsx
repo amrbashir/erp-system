@@ -1,4 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { m } from "@workspace/i18n";
 
 import { CreateOrgForm } from "@/components/create-org-form";
 
@@ -12,10 +13,5 @@ export const Route = createFileRoute("/_authed/onboarding")({
 });
 
 function OnboardingPage() {
-	return (
-		<CreateOrgForm
-			title="Create your organization"
-			description="Create your first organization to get started."
-		/>
-	);
+	return <CreateOrgForm title={m.onboarding_title()} description={m.onboarding_description()} />;
 }

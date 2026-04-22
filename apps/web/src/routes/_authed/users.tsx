@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { useState, useEffect, useCallback } from "react";
 
@@ -57,10 +58,10 @@ function UsersPage() {
 	return (
 		<div className="p-6">
 			<div className="mb-6 flex items-center justify-between">
-				<h1 className="text-lg font-medium">Users</h1>
+				<h1 className="text-lg font-medium">{m.users_heading()}</h1>
 				{canManage && (
 					<Button size="sm" onClick={() => setShowForm(!showForm)}>
-						{showForm ? "Cancel" : "Add user"}
+						{showForm ? m.cancel() : m.users_add()}
 					</Button>
 				)}
 			</div>
@@ -81,7 +82,7 @@ function UsersPage() {
 			)}
 
 			{loading ? (
-				<p className="text-muted-foreground text-sm">Loading…</p>
+				<p className="text-muted-foreground text-sm">{m.users_loading()}</p>
 			) : (
 				<MemberList
 					members={members}
@@ -128,7 +129,7 @@ function AddUserForm({
 				await addDesktopMember(orgId, { username, password, name, role });
 				onDone();
 			} catch (err: any) {
-				onError(err.message ?? "Failed to add user");
+				onError(err.message ?? m.users_add_failed());
 			} finally {
 				setSubmitting(false);
 			}
@@ -148,7 +149,7 @@ function AddUserForm({
 
 		if (!res.ok) {
 			const data = await res.json().catch(() => null);
-			onError(data?.message ?? "Failed to add user");
+			onError(data?.message ?? m.users_add_failed());
 			return;
 		}
 
@@ -160,13 +161,13 @@ function AddUserForm({
 			<div className="flex gap-3">
 				<div className="flex flex-1 flex-col gap-1">
 					<label htmlFor="add-user-name" className="text-sm font-medium">
-						Name
+						{m.label_name()}
 					</label>
 					<input
 						id="add-user-name"
 						name="name"
 						type="text"
-						placeholder="Name"
+						placeholder={m.label_name()}
 						required
 						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
 					/>
@@ -175,26 +176,26 @@ function AddUserForm({
 					<>
 						<div className="flex flex-1 flex-col gap-1">
 							<label htmlFor="add-user-username" className="text-sm font-medium">
-								Username
+								{m.label_username()}
 							</label>
 							<input
 								id="add-user-username"
 								name="username"
 								type="text"
-								placeholder="Username"
+								placeholder={m.label_username()}
 								required
 								className="border-border bg-background h-9 rounded-none border px-3 text-sm"
 							/>
 						</div>
 						<div className="flex flex-1 flex-col gap-1">
 							<label htmlFor="add-user-password" className="text-sm font-medium">
-								Password
+								{m.label_password()}
 							</label>
 							<input
 								id="add-user-password"
 								name="password"
 								type="password"
-								placeholder="Password"
+								placeholder={m.label_password()}
 								required
 								minLength={8}
 								className="border-border bg-background h-9 rounded-none border px-3 text-sm"
@@ -204,13 +205,13 @@ function AddUserForm({
 				) : (
 					<div className="flex flex-1 flex-col gap-1">
 						<label htmlFor="add-user-email" className="text-sm font-medium">
-							Email
+							{m.label_email()}
 						</label>
 						<input
 							id="add-user-email"
 							name="email"
 							type="email"
-							placeholder="Email"
+							placeholder={m.label_email()}
 							required
 							className="border-border bg-background h-9 rounded-none border px-3 text-sm"
 						/>
@@ -218,7 +219,7 @@ function AddUserForm({
 				)}
 				<div className="flex flex-col gap-1">
 					<label htmlFor="add-user-role" className="text-sm font-medium">
-						Role
+						{m.label_role()}
 					</label>
 					<select
 						id="add-user-role"
@@ -226,11 +227,11 @@ function AddUserForm({
 						defaultValue="member"
 						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
 					>
-						<option value="member">Member</option>
+						<option value="member">{m.role_member()}</option>
 						{actorRole === "owner" && (
 							<>
-								<option value="admin">Admin</option>
-								<option value="owner">Owner</option>
+								<option value="admin">{m.role_admin()}</option>
+								<option value="owner">{m.role_owner()}</option>
 							</>
 						)}
 					</select>
@@ -238,7 +239,7 @@ function AddUserForm({
 			</div>
 			<div>
 				<Button type="submit" size="sm" disabled={submitting}>
-					{submitting ? "Adding…" : "Add"}
+					{submitting ? m.users_adding() : m.users_add_submit()}
 				</Button>
 			</div>
 		</form>
@@ -281,13 +282,13 @@ function MemberList({
 				});
 				if (!res.ok) {
 					const data = await res.json().catch(() => null);
-					onError(data?.message ?? "Failed to update role");
+					onError(data?.message ?? m.users_role_update_failed());
 					return;
 				}
 			}
 			onUpdate();
 		} catch (err: any) {
-			onError(err.message ?? "Failed to update role");
+			onError(err.message ?? m.users_role_update_failed());
 		} finally {
 			setPendingRoleChanges((prev) => {
 				const next = new Set(prev);
@@ -309,13 +310,13 @@ function MemberList({
 				});
 				if (!res.ok) {
 					const data = await res.json().catch(() => null);
-					onError(data?.message ?? "Failed to remove user");
+					onError(data?.message ?? m.users_remove_failed());
 					return;
 				}
 			}
 			onUpdate();
 		} catch (err: any) {
-			onError(err.message ?? "Failed to remove user");
+			onError(err.message ?? m.users_remove_failed());
 		} finally {
 			setPendingRemovals((prev) => {
 				const next = new Set(prev);
@@ -343,21 +344,21 @@ function MemberList({
 				});
 				if (!res.ok) {
 					const data = await res.json().catch(() => null);
-					onError(data?.message ?? "Failed to transfer ownership");
+					onError(data?.message ?? m.users_transfer_failed());
 					return;
 				}
 			}
 			setTransferTarget(null);
 			onUpdate();
 		} catch (err: any) {
-			onError(err.message ?? "Failed to transfer ownership");
+			onError(err.message ?? m.users_transfer_failed());
 		} finally {
 			setTransferring(false);
 		}
 	}
 
 	if (members.length === 0) {
-		return <p className="text-muted-foreground text-sm">No members found.</p>;
+		return <p className="text-muted-foreground text-sm">{m.users_no_members()}</p>;
 	}
 
 	return (
@@ -365,8 +366,7 @@ function MemberList({
 			{transferTarget && (
 				<div className="bg-background border-border mb-4 rounded border p-4">
 					<p className="mb-3 text-sm">
-						Transfer ownership to <strong>{transferTarget.userName}</strong>? You will
-						be demoted to:
+						{m.users_transfer_confirm({ name: transferTarget.userName })}
 					</p>
 					<div className="mb-3 flex gap-3">
 						<select
@@ -374,13 +374,13 @@ function MemberList({
 							onChange={(e) => setTransferRole(e.target.value as "admin" | "member")}
 							className="border-border bg-background h-8 rounded-none border px-2 text-sm"
 						>
-							<option value="admin">Admin</option>
-							<option value="member">Member</option>
+							<option value="admin">{m.role_admin()}</option>
+							<option value="member">{m.role_member()}</option>
 						</select>
 					</div>
 					<div className="flex gap-2">
 						<Button size="sm" onClick={handleTransfer} disabled={transferring}>
-							{transferring ? "Transferring…" : "Confirm transfer"}
+							{transferring ? m.users_transferring() : m.users_confirm_transfer()}
 						</Button>
 						<Button
 							variant="ghost"
@@ -388,7 +388,7 @@ function MemberList({
 							onClick={() => setTransferTarget(null)}
 							disabled={transferring}
 						>
-							Cancel
+							{m.cancel()}
 						</Button>
 					</div>
 				</div>
@@ -396,59 +396,66 @@ function MemberList({
 			<table className="w-full text-sm">
 				<thead>
 					<tr className="border-border border-b text-left">
-						<th className="py-2 font-medium">Name</th>
-						<th className="py-2 font-medium">{desktop ? "Username" : "Email"}</th>
-						<th className="py-2 font-medium">Role</th>
-						{canManage && <th className="py-2 font-medium">Actions</th>}
+						<th className="py-2 font-medium">{m.label_name()}</th>
+						<th className="py-2 font-medium">
+							{desktop ? m.label_username() : m.label_email()}
+						</th>
+						<th className="py-2 font-medium">{m.label_role()}</th>
+						{canManage && <th className="py-2 font-medium">{m.users_actions()}</th>}
 					</tr>
 				</thead>
 				<tbody>
-					{members.map((m) => (
-						<tr key={m.id} className="border-border border-b">
-							<td className="py-2">{m.userName}</td>
+					{members.map((member) => (
+						<tr key={member.id} className="border-border border-b">
+							<td className="py-2">{member.userName}</td>
 							<td className="py-2">
-								{desktop ? (m.username ?? "—") : (m.userEmail ?? "—")}
+								{desktop ? (member.username ?? "—") : (member.userEmail ?? "—")}
 							</td>
 							<td className="py-2">
-								{canManage && (actorRole === "owner" || m.role === "member") ? (
+								{canManage &&
+								(actorRole === "owner" || member.role === "member") ? (
 									<select
-										value={m.role}
-										onChange={(e) => handleRoleChange(m.id, e.target.value)}
-										disabled={pendingRoleChanges.has(m.id)}
+										value={member.role}
+										onChange={(e) =>
+											handleRoleChange(member.id, e.target.value)
+										}
+										disabled={pendingRoleChanges.has(member.id)}
 										className="border-border bg-background h-7 rounded-none border px-2 text-sm disabled:opacity-50"
 									>
-										<option value="member">Member</option>
+										<option value="member">{m.role_member()}</option>
 										{actorRole === "owner" && (
 											<>
-												<option value="admin">Admin</option>
-												<option value="owner">Owner</option>
+												<option value="admin">{m.role_admin()}</option>
+												<option value="owner">{m.role_owner()}</option>
 											</>
 										)}
 									</select>
 								) : (
-									m.role
+									member.role
 								)}
 							</td>
 							{canManage && (
 								<td className="flex gap-1 py-2">
-									{actorRole === "owner" && m.role !== "owner" && (
+									{actorRole === "owner" && member.role !== "owner" && (
 										<Button
 											variant="ghost"
 											size="sm"
-											onClick={() => setTransferTarget(m)}
+											onClick={() => setTransferTarget(member)}
 											className="h-7 text-xs"
 										>
-											Transfer
+											{m.users_transfer()}
 										</Button>
 									)}
 									<Button
 										variant="ghost"
 										size="sm"
-										onClick={() => handleRemove(m.id)}
-										disabled={pendingRemovals.has(m.id)}
+										onClick={() => handleRemove(member.id)}
+										disabled={pendingRemovals.has(member.id)}
 										className="text-destructive h-7 text-xs"
 									>
-										{pendingRemovals.has(m.id) ? "Removing…" : "Remove"}
+										{pendingRemovals.has(member.id)
+											? m.users_removing()
+											: m.users_remove()}
 									</Button>
 								</td>
 							)}
