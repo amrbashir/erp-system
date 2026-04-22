@@ -230,53 +230,65 @@ function MemberList({
 	onError: (msg: string) => void;
 }) {
 	const canManage = actorRole === "owner" || actorRole === "admin";
+	const [pendingRoleChanges, setPendingRoleChanges] = useState<Set<string>>(() => new Set());
+	const [pendingRemovals, setPendingRemovals] = useState<Set<string>>(() => new Set());
 
 	async function handleRoleChange(memberId: string, newRole: string) {
 		onError("");
-		if (desktop && orgId) {
-			try {
+		setPendingRoleChanges((prev) => new Set(prev).add(memberId));
+		try {
+			if (desktop && orgId) {
 				await updateDesktopMemberRole(orgId, memberId, newRole);
-				onUpdate();
-			} catch (err: any) {
-				onError(err.message ?? "Failed to update role");
+			} else {
+				const res = await fetch(`/api/orgs/members/${memberId}`, {
+					method: "PATCH",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ role: newRole }),
+				});
+				if (!res.ok) {
+					const data = await res.json().catch(() => null);
+					onError(data?.message ?? "Failed to update role");
+					return;
+				}
 			}
-			return;
+			onUpdate();
+		} catch (err: any) {
+			onError(err.message ?? "Failed to update role");
+		} finally {
+			setPendingRoleChanges((prev) => {
+				const next = new Set(prev);
+				next.delete(memberId);
+				return next;
+			});
 		}
-
-		const res = await fetch(`/api/orgs/members/${memberId}`, {
-			method: "PATCH",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ role: newRole }),
-		});
-		if (!res.ok) {
-			const data = await res.json().catch(() => null);
-			onError(data?.message ?? "Failed to update role");
-			return;
-		}
-		onUpdate();
 	}
 
 	async function handleRemove(memberId: string) {
 		onError("");
-		if (desktop && orgId) {
-			try {
+		setPendingRemovals((prev) => new Set(prev).add(memberId));
+		try {
+			if (desktop && orgId) {
 				await removeDesktopMember(orgId, memberId);
-				onUpdate();
-			} catch (err: any) {
-				onError(err.message ?? "Failed to remove user");
+			} else {
+				const res = await fetch(`/api/orgs/members/${memberId}`, {
+					method: "DELETE",
+				});
+				if (!res.ok) {
+					const data = await res.json().catch(() => null);
+					onError(data?.message ?? "Failed to remove user");
+					return;
+				}
 			}
-			return;
+			onUpdate();
+		} catch (err: any) {
+			onError(err.message ?? "Failed to remove user");
+		} finally {
+			setPendingRemovals((prev) => {
+				const next = new Set(prev);
+				next.delete(memberId);
+				return next;
+			});
 		}
-
-		const res = await fetch(`/api/orgs/members/${memberId}`, {
-			method: "DELETE",
-		});
-		if (!res.ok) {
-			const data = await res.json().catch(() => null);
-			onError(data?.message ?? "Failed to remove user");
-			return;
-		}
-		onUpdate();
 	}
 
 	if (members.length === 0) {
@@ -305,7 +317,8 @@ function MemberList({
 								<select
 									value={m.role}
 									onChange={(e) => handleRoleChange(m.id, e.target.value)}
-									className="border-border bg-background h-7 rounded-none border px-2 text-sm"
+									disabled={pendingRoleChanges.has(m.id)}
+									className="border-border bg-background h-7 rounded-none border px-2 text-sm disabled:opacity-50"
 								>
 									<option value="member">Member</option>
 									{actorRole === "owner" && (
@@ -325,9 +338,10 @@ function MemberList({
 									variant="ghost"
 									size="sm"
 									onClick={() => handleRemove(m.id)}
+									disabled={pendingRemovals.has(m.id)}
 									className="text-destructive h-7 text-xs"
 								>
-									Remove
+									{pendingRemovals.has(m.id) ? "Removing…" : "Remove"}
 								</Button>
 							</td>
 						)}

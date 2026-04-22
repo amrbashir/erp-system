@@ -1,11 +1,4 @@
-import {
-	defineEventHandler,
-	readBody,
-	toRequest,
-	HTTPError,
-	getCookie,
-	getRouterParam,
-} from "h3";
+import { defineEventHandler, readBody, toRequest, HTTPError, getCookie, getRouterParam } from "h3";
 
 import { useDatabase } from "#db";
 import { auth } from "~/lib/auth";
