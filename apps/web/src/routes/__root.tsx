@@ -1,3 +1,4 @@
+import { CircleNotch } from "@phosphor-icons/react";
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 import { getLocale, getTextDirection } from "@workspace/i18n";
 import { useEffect, useState } from "react";
@@ -106,7 +107,13 @@ function RootLayout() {
 		);
 	}
 
-	if (state.step === "loading") return null;
+	if (state.step === "loading") {
+		return (
+			<div className="flex min-h-svh items-center justify-center">
+				<CircleNotch className="text-muted-foreground size-6 animate-spin" />
+			</div>
+		);
+	}
 
 	if (state.step === "activation") {
 		return (
