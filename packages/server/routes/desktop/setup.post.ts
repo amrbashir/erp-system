@@ -4,13 +4,7 @@ import { defineEventHandler, readBody, HTTPError } from "h3";
 import { useDatabase } from "#db";
 import { auth } from "~/lib/auth";
 import { createOrg } from "~/lib/org";
-
-function toSlug(name: string) {
-	return name
-		.toLowerCase()
-		.replace(/[^a-z0-9]+/g, "-")
-		.replace(/^-|-$/g, "");
-}
+import { toSlug } from "~/lib/slug";
 
 export default defineEventHandler(async (event) => {
 	const db = useDatabase();
