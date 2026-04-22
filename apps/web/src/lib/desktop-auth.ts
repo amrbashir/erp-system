@@ -1,4 +1,4 @@
-const SIDECAR_URL = "http://localhost:11435";
+const SIDECAR_URL = import.meta.env.VITE_SIDECAR_URL || "http://localhost:11435";
 const TOKEN_KEY = "desktop_session_token";
 
 export function getStoredToken(): string | null {
