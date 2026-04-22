@@ -58,14 +58,45 @@ describe("createOrg", () => {
 		expect(membership!.role).toBe("owner");
 	});
 
-	it("rejects duplicate slug", async () => {
+	it("rejects duplicate slug with 'Slug already taken'", async () => {
 		await expect(
 			createOrg(db as any, {
 				name: "Acme Duplicate",
 				slug: "acme-corp",
 				userId: userA,
 			}),
+		).rejects.toThrow("Slug already taken");
+	});
+
+	it("rejects invalid slug format", async () => {
+		await expect(
+			createOrg(db as any, {
+				name: "Bad Slug",
+				slug: "-bad-slug-",
+				userId: userA,
+			}),
 		).rejects.toThrow();
+	});
+
+	it("rejects invalid currency", async () => {
+		await expect(
+			createOrg(db as any, {
+				name: "Bad Currency",
+				slug: "bad-currency",
+				userId: userA,
+				currency: "XYZ",
+			}),
+		).rejects.toThrow("Unsupported currency");
+	});
+
+	it("accepts valid currency", async () => {
+		const org = await createOrg(db as any, {
+			name: "EUR Org",
+			slug: "eur-org",
+			userId: userA,
+			currency: "EUR",
+		});
+		expect(org.defaultCurrency).toBe("EUR");
 	});
 });
 

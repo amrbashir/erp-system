@@ -41,8 +41,16 @@ export default defineEventHandler(async (event) => {
 			createAuth,
 		);
 	} catch (err) {
-		if (err instanceof Error && /setup already complete/i.test(err.message)) {
-			throw new HTTPError("Setup already complete", { status: 409 });
+		if (err instanceof Error) {
+			if (/setup already complete/i.test(err.message)) {
+				throw new HTTPError("Setup already complete", { status: 409 });
+			}
+			if (/slug already taken/i.test(err.message)) {
+				throw new HTTPError("Slug already taken", { status: 409 });
+			}
+			if (/slug must|unsupported currency/i.test(err.message)) {
+				throw new HTTPError(err.message, { status: 400 });
+			}
 		}
 		throw err;
 	}

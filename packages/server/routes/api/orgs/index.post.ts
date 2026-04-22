@@ -16,12 +16,23 @@ export default defineEventHandler(async (event) => {
 	}
 
 	const db = useDatabase();
-	const org = await createOrg(db, {
-		name: body.name,
-		slug: body.slug,
-		userId: session.user.id,
-		currency: body.currency,
-	});
 
-	return org;
+	try {
+		return await createOrg(db, {
+			name: body.name,
+			slug: body.slug,
+			userId: session.user.id,
+			currency: body.currency,
+		});
+	} catch (err) {
+		if (err instanceof Error) {
+			if (/slug already taken/i.test(err.message)) {
+				throw new HTTPError("Slug already taken", { status: 409 });
+			}
+			if (/slug must|unsupported currency/i.test(err.message)) {
+				throw new HTTPError(err.message, { status: 400 });
+			}
+		}
+		throw err;
+	}
 });
