@@ -265,3 +265,105 @@ describe("removeMember", () => {
 		).rejects.toThrow(/permission/i);
 	});
 });
+
+describe("last-owner protection", () => {
+	it("rejects removing the last owner", async () => {
+		const membership = await getOrgMembership(db as any, owner, orgId);
+		await expect(
+			removeMember(db as any, {
+				memberId: membership!.id,
+				orgId,
+				actorRole: "owner",
+			}),
+		).rejects.toThrow(/last owner/i);
+	});
+
+	it("rejects demoting the last owner", async () => {
+		const membership = await getOrgMembership(db as any, owner, orgId);
+		await expect(
+			updateMemberRole(db as any, {
+				memberId: membership!.id,
+				orgId,
+				actorRole: "owner",
+				newRole: "admin",
+			}),
+		).rejects.toThrow(/last owner/i);
+	});
+
+	it("allows removing a non-last owner", async () => {
+		// promote admin to owner so there are 2 owners
+		const adminMembership = await getOrgMembership(db as any, admin, orgId);
+		await updateMemberRole(db as any, {
+			memberId: adminMembership!.id,
+			orgId,
+			actorRole: "owner",
+			newRole: "owner",
+		});
+
+		// now removing original owner should succeed
+		const ownerMembership = await getOrgMembership(db as any, owner, orgId);
+		const deleted = await removeMember(db as any, {
+			memberId: ownerMembership!.id,
+			orgId,
+			actorRole: "owner",
+		});
+		expect(deleted).toBeDefined();
+
+		// restore: re-add owner and demote admin back
+		await addMemberToOrg(db as any, { orgId, userId: owner, role: "owner" });
+		await updateMemberRole(db as any, {
+			memberId: adminMembership!.id,
+			orgId,
+			actorRole: "owner",
+			newRole: "admin",
+		});
+	});
+
+	it("allows demoting a non-last owner", async () => {
+		// promote admin to owner so there are 2 owners
+		const adminMembership = await getOrgMembership(db as any, admin, orgId);
+		await updateMemberRole(db as any, {
+			memberId: adminMembership!.id,
+			orgId,
+			actorRole: "owner",
+			newRole: "owner",
+		});
+
+		// now demoting original owner should succeed
+		const ownerMembership = await getOrgMembership(db as any, owner, orgId);
+		const updated = await updateMemberRole(db as any, {
+			memberId: ownerMembership!.id,
+			orgId,
+			actorRole: "owner",
+			newRole: "admin",
+		});
+		expect(updated.role).toBe("admin");
+
+		// restore
+		await updateMemberRole(db as any, {
+			memberId: ownerMembership!.id,
+			orgId,
+			actorRole: "owner",
+			newRole: "owner",
+		});
+		await updateMemberRole(db as any, {
+			memberId: adminMembership!.id,
+			orgId,
+			actorRole: "owner",
+			newRole: "admin",
+		});
+	});
+
+	it("blocks owner self-demotion via updateMemberRole", async () => {
+		const ownerMembership = await getOrgMembership(db as any, owner, orgId);
+		await expect(
+			updateMemberRole(db as any, {
+				memberId: ownerMembership!.id,
+				orgId,
+				actorRole: "owner",
+				newRole: "admin",
+				actorMemberId: ownerMembership!.id,
+			}),
+		).rejects.toThrow(/cannot change your own role/i);
+	});
+});

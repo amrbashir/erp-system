@@ -24,6 +24,7 @@
 		"nitro": "catalog:"
 	},
 	"devDependencies": {
+		"@electric-sql/pglite": "catalog:",
 		"typescript": "catalog:"
 	}
 }

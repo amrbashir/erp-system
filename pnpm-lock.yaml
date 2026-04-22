@@ -308,6 +308,9 @@ importers:
         specifier: 'catalog:'
         version: 3.0.260415-beta(@electric-sql/pglite@0.2.17)(dotenv@17.3.1)(drizzle-orm@0.44.7(@electric-sql/pglite@0.2.17)(@neondatabase/serverless@1.0.2)(@opentelemetry/api@1.9.1)(@types/pg@8.18.0)(kysely@0.28.15)(pg@8.20.0)(postgres@3.4.9))(jiti@2.6.1)(lru-cache@11.2.6)(vite@7.3.1(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0))
     devDependencies:
+      '@electric-sql/pglite':
+        specifier: 'catalog:'
+        version: 0.2.17
       typescript:
         specifier: 'catalog:'
         version: 5.9.3

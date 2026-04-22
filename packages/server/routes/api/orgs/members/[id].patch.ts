@@ -35,10 +35,14 @@ export default defineEventHandler(async (event) => {
 			orgId,
 			actorRole: membership.role as "owner" | "admin" | "member",
 			newRole: body.role,
+			actorMemberId: membership.id,
 		});
 		return updated;
 	} catch (e: any) {
 		if (e.message?.includes("permission")) {
+			throw new HTTPError(e.message, { status: 403 });
+		}
+		if (e.message?.includes("Cannot")) {
 			throw new HTTPError(e.message, { status: 403 });
 		}
 		if (e.message === "Member not found") {
