@@ -7,7 +7,13 @@ import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 
-import { getOrgMembers, addMemberToOrg, updateMemberRole, removeMember } from "./org-members.js";
+import {
+	getOrgMembers,
+	addMemberToOrg,
+	updateMemberRole,
+	removeMember,
+	transferOwnership,
+} from "./org-members.js";
 import { createOrg, getOrgMembership } from "./org.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -365,5 +371,107 @@ describe("last-owner protection", () => {
 				actorMemberId: ownerMembership!.id,
 			}),
 		).rejects.toThrow(/cannot change your own role/i);
+	});
+});
+
+describe("transferOwnership", () => {
+	it("promotes target to owner and demotes actor to chosen role", async () => {
+		const ownerMembership = await getOrgMembership(db as any, owner, orgId);
+		const adminMembership = await getOrgMembership(db as any, admin, orgId);
+
+		const result = await transferOwnership(db as any, {
+			orgId,
+			actorMemberId: ownerMembership!.id,
+			targetMemberId: adminMembership!.id,
+			newActorRole: "admin",
+		});
+
+		expect(result.target.role).toBe("owner");
+		expect(result.actor.role).toBe("admin");
+
+		// restore: transfer back
+		await transferOwnership(db as any, {
+			orgId,
+			actorMemberId: adminMembership!.id,
+			targetMemberId: ownerMembership!.id,
+			newActorRole: "admin",
+		});
+		// restore admin back to admin role
+		await updateMemberRole(db as any, {
+			memberId: adminMembership!.id,
+			orgId,
+			actorRole: "owner",
+			newRole: "admin",
+		});
+	});
+
+	it("allows demoting to member role", async () => {
+		const ownerMembership = await getOrgMembership(db as any, owner, orgId);
+		const adminMembership = await getOrgMembership(db as any, admin, orgId);
+
+		const result = await transferOwnership(db as any, {
+			orgId,
+			actorMemberId: ownerMembership!.id,
+			targetMemberId: adminMembership!.id,
+			newActorRole: "member",
+		});
+
+		expect(result.target.role).toBe("owner");
+		expect(result.actor.role).toBe("member");
+
+		// restore
+		await transferOwnership(db as any, {
+			orgId,
+			actorMemberId: adminMembership!.id,
+			targetMemberId: ownerMembership!.id,
+			newActorRole: "admin",
+		});
+		await updateMemberRole(db as any, {
+			memberId: adminMembership!.id,
+			orgId,
+			actorRole: "owner",
+			newRole: "admin",
+		});
+	});
+
+	it("rejects if actor is not an owner", async () => {
+		const adminMembership = await getOrgMembership(db as any, admin, orgId);
+		const memberMembership = await getOrgMembership(db as any, member, orgId);
+
+		await expect(
+			transferOwnership(db as any, {
+				orgId,
+				actorMemberId: adminMembership!.id,
+				targetMemberId: memberMembership!.id,
+				newActorRole: "admin",
+			}),
+		).rejects.toThrow(/only owners can transfer/i);
+	});
+
+	it("rejects if target is not a member of the org", async () => {
+		const ownerMembership = await getOrgMembership(db as any, owner, orgId);
+		const fakeId = "00000000-0000-0000-0000-000000000000";
+
+		await expect(
+			transferOwnership(db as any, {
+				orgId,
+				actorMemberId: ownerMembership!.id,
+				targetMemberId: fakeId,
+				newActorRole: "admin",
+			}),
+		).rejects.toThrow(/target member not found/i);
+	});
+
+	it("rejects transferring to self", async () => {
+		const ownerMembership = await getOrgMembership(db as any, owner, orgId);
+
+		await expect(
+			transferOwnership(db as any, {
+				orgId,
+				actorMemberId: ownerMembership!.id,
+				targetMemberId: ownerMembership!.id,
+				newActorRole: "admin",
+			}),
+		).rejects.toThrow(/cannot transfer ownership to yourself/i);
 	});
 });

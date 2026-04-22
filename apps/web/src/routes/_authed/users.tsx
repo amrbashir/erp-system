@@ -8,6 +8,7 @@ import {
 	addDesktopMember,
 	updateDesktopMemberRole,
 	removeDesktopMember,
+	transferDesktopOwnership,
 } from "@/lib/desktop-auth";
 
 type Member = {
@@ -232,6 +233,9 @@ function MemberList({
 	const canManage = actorRole === "owner" || actorRole === "admin";
 	const [pendingRoleChanges, setPendingRoleChanges] = useState<Set<string>>(() => new Set());
 	const [pendingRemovals, setPendingRemovals] = useState<Set<string>>(() => new Set());
+	const [transferTarget, setTransferTarget] = useState<Member | null>(null);
+	const [transferRole, setTransferRole] = useState<"admin" | "member">("admin");
+	const [transferring, setTransferring] = useState(false);
 
 	async function handleRoleChange(memberId: string, newRole: string) {
 		onError("");
@@ -291,63 +295,137 @@ function MemberList({
 		}
 	}
 
+	async function handleTransfer() {
+		if (!transferTarget) return;
+		onError("");
+		setTransferring(true);
+		try {
+			if (desktop && orgId) {
+				await transferDesktopOwnership(orgId, transferTarget.id, transferRole);
+			} else {
+				const res = await fetch("/api/orgs/members/transfer", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						targetMemberId: transferTarget.id,
+						newActorRole: transferRole,
+					}),
+				});
+				if (!res.ok) {
+					const data = await res.json().catch(() => null);
+					onError(data?.message ?? "Failed to transfer ownership");
+					return;
+				}
+			}
+			setTransferTarget(null);
+			onUpdate();
+		} catch (err: any) {
+			onError(err.message ?? "Failed to transfer ownership");
+		} finally {
+			setTransferring(false);
+		}
+	}
+
 	if (members.length === 0) {
 		return <p className="text-muted-foreground text-sm">No members found.</p>;
 	}
 
 	return (
-		<table className="w-full text-sm">
-			<thead>
-				<tr className="border-border border-b text-left">
-					<th className="py-2 font-medium">Name</th>
-					<th className="py-2 font-medium">{desktop ? "Username" : "Email"}</th>
-					<th className="py-2 font-medium">Role</th>
-					{canManage && <th className="py-2 font-medium">Actions</th>}
-				</tr>
-			</thead>
-			<tbody>
-				{members.map((m) => (
-					<tr key={m.id} className="border-border border-b">
-						<td className="py-2">{m.userName}</td>
-						<td className="py-2">
-							{desktop ? (m.username ?? "—") : (m.userEmail ?? "—")}
-						</td>
-						<td className="py-2">
-							{canManage && (actorRole === "owner" || m.role === "member") ? (
-								<select
-									value={m.role}
-									onChange={(e) => handleRoleChange(m.id, e.target.value)}
-									disabled={pendingRoleChanges.has(m.id)}
-									className="border-border bg-background h-7 rounded-none border px-2 text-sm disabled:opacity-50"
-								>
-									<option value="member">Member</option>
-									{actorRole === "owner" && (
-										<>
-											<option value="admin">Admin</option>
-											<option value="owner">Owner</option>
-										</>
-									)}
-								</select>
-							) : (
-								m.role
-							)}
-						</td>
-						{canManage && (
-							<td className="py-2">
-								<Button
-									variant="ghost"
-									size="sm"
-									onClick={() => handleRemove(m.id)}
-									disabled={pendingRemovals.has(m.id)}
-									className="text-destructive h-7 text-xs"
-								>
-									{pendingRemovals.has(m.id) ? "Removing…" : "Remove"}
-								</Button>
-							</td>
-						)}
+		<>
+			{transferTarget && (
+				<div className="bg-background border-border mb-4 rounded border p-4">
+					<p className="mb-3 text-sm">
+						Transfer ownership to <strong>{transferTarget.userName}</strong>? You will
+						be demoted to:
+					</p>
+					<div className="mb-3 flex gap-3">
+						<select
+							value={transferRole}
+							onChange={(e) => setTransferRole(e.target.value as "admin" | "member")}
+							className="border-border bg-background h-8 rounded-none border px-2 text-sm"
+						>
+							<option value="admin">Admin</option>
+							<option value="member">Member</option>
+						</select>
+					</div>
+					<div className="flex gap-2">
+						<Button size="sm" onClick={handleTransfer} disabled={transferring}>
+							{transferring ? "Transferring…" : "Confirm transfer"}
+						</Button>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => setTransferTarget(null)}
+							disabled={transferring}
+						>
+							Cancel
+						</Button>
+					</div>
+				</div>
+			)}
+			<table className="w-full text-sm">
+				<thead>
+					<tr className="border-border border-b text-left">
+						<th className="py-2 font-medium">Name</th>
+						<th className="py-2 font-medium">{desktop ? "Username" : "Email"}</th>
+						<th className="py-2 font-medium">Role</th>
+						{canManage && <th className="py-2 font-medium">Actions</th>}
 					</tr>
-				))}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					{members.map((m) => (
+						<tr key={m.id} className="border-border border-b">
+							<td className="py-2">{m.userName}</td>
+							<td className="py-2">
+								{desktop ? (m.username ?? "—") : (m.userEmail ?? "—")}
+							</td>
+							<td className="py-2">
+								{canManage && (actorRole === "owner" || m.role === "member") ? (
+									<select
+										value={m.role}
+										onChange={(e) => handleRoleChange(m.id, e.target.value)}
+										disabled={pendingRoleChanges.has(m.id)}
+										className="border-border bg-background h-7 rounded-none border px-2 text-sm disabled:opacity-50"
+									>
+										<option value="member">Member</option>
+										{actorRole === "owner" && (
+											<>
+												<option value="admin">Admin</option>
+												<option value="owner">Owner</option>
+											</>
+										)}
+									</select>
+								) : (
+									m.role
+								)}
+							</td>
+							{canManage && (
+								<td className="flex gap-1 py-2">
+									{actorRole === "owner" && m.role !== "owner" && (
+										<Button
+											variant="ghost"
+											size="sm"
+											onClick={() => setTransferTarget(m)}
+											className="h-7 text-xs"
+										>
+											Transfer
+										</Button>
+									)}
+									<Button
+										variant="ghost"
+										size="sm"
+										onClick={() => handleRemove(m.id)}
+										disabled={pendingRemovals.has(m.id)}
+										className="text-destructive h-7 text-xs"
+									>
+										{pendingRemovals.has(m.id) ? "Removing…" : "Remove"}
+									</Button>
+								</td>
+							)}
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</>
 	);
 }

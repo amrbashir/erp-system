@@ -136,3 +136,53 @@ export async function removeMember(
 	if (!deleted) throw new Error("Member not found");
 	return deleted;
 }
+
+export async function transferOwnership(
+	db: DB,
+	input: {
+		orgId: string;
+		actorMemberId: string;
+		targetMemberId: string;
+		newActorRole: "admin" | "member";
+	},
+) {
+	if (input.actorMemberId === input.targetMemberId) {
+		throw new Error("Cannot transfer ownership to yourself");
+	}
+
+	const [actor] = await db
+		.select({ role: orgMembers.role })
+		.from(orgMembers)
+		.where(and(eq(orgMembers.id, input.actorMemberId), eq(orgMembers.orgId, input.orgId)))
+		.limit(1);
+
+	if (!actor || actor.role !== "owner") {
+		throw new Error("Only owners can transfer ownership");
+	}
+
+	const [target] = await db
+		.select({ role: orgMembers.role })
+		.from(orgMembers)
+		.where(and(eq(orgMembers.id, input.targetMemberId), eq(orgMembers.orgId, input.orgId)))
+		.limit(1);
+
+	if (!target) {
+		throw new Error("Target member not found");
+	}
+
+	return db.transaction(async (tx) => {
+		const [updatedTarget] = await tx
+			.update(orgMembers)
+			.set({ role: "owner" })
+			.where(and(eq(orgMembers.id, input.targetMemberId), eq(orgMembers.orgId, input.orgId)))
+			.returning();
+
+		const [updatedActor] = await tx
+			.update(orgMembers)
+			.set({ role: input.newActorRole })
+			.where(and(eq(orgMembers.id, input.actorMemberId), eq(orgMembers.orgId, input.orgId)))
+			.returning();
+
+		return { target: updatedTarget, actor: updatedActor };
+	});
+}

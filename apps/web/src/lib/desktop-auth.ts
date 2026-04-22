@@ -151,3 +151,19 @@ export async function removeDesktopMember(orgId: string, memberId: string) {
 	}
 	return res.json();
 }
+
+export async function transferDesktopOwnership(
+	orgId: string,
+	targetMemberId: string,
+	newActorRole: string,
+) {
+	const res = await sidecarFetch(`/api/orgs/members/transfer?orgId=${orgId}`, {
+		method: "POST",
+		body: JSON.stringify({ targetMemberId, newActorRole }),
+	});
+	if (!res.ok) {
+		const data = await res.json().catch(() => null);
+		throw new Error(data?.message ?? "Failed to transfer ownership");
+	}
+	return res.json();
+}
