@@ -19,8 +19,8 @@ describe("toSlug", () => {
 		expect(toSlug("Acme Corp. & Sons!")).toBe("acme-corp-sons");
 	});
 
-	it("returns empty string for non-alphanumeric input", () => {
-		expect(toSlug("!!!")).toBe("");
+	it("returns null for non-alphanumeric input", () => {
+		expect(toSlug("!!!")).toBeNull();
 	});
 
 	it("handles single word", () => {

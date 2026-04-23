@@ -1,8 +1,9 @@
-export function toSlug(name: string) {
-	return name
+export function toSlug(name: string): string | null {
+	const slug = name
 		.toLowerCase()
 		.replace(/[^a-z0-9]+/g, "-")
 		.replace(/^-|-$/g, "");
+	return slug || null;
 }
 
 const SLUG_RE = /^[a-z0-9][a-z0-9-]*[a-z0-9]$/;
