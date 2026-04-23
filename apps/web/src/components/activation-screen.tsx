@@ -1,3 +1,4 @@
+import { Check, X } from "@phosphor-icons/react";
 import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
@@ -13,12 +14,16 @@ export function ActivationScreen({
 }) {
 	const [status, setStatus] = useState<"idle" | "checking" | "error">("idle");
 	const [error, setError] = useState("");
-	const [copied, setCopied] = useState(false);
+	const [copyState, setCopyState] = useState<"idle" | "success" | "error">("idle");
 
 	async function handleCopy() {
-		await navigator.clipboard.writeText(hardwareId);
-		setCopied(true);
-		setTimeout(() => setCopied(false), 2000);
+		try {
+			await navigator.clipboard.writeText(hardwareId);
+			setCopyState("success");
+		} catch {
+			setCopyState("error");
+		}
+		setTimeout(() => setCopyState("idle"), 2000);
 	}
 
 	async function handleCheck() {
@@ -63,7 +68,13 @@ export function ActivationScreen({
 							{hardwareId}
 						</code>
 						<Button variant="outline" size="sm" onClick={handleCopy}>
-							{copied ? m.activation_copied() : m.activation_copy()}
+							{copyState === "success" ? (
+								<Check />
+							) : copyState === "error" ? (
+								<X />
+							) : (
+								m.activation_copy()
+							)}
 						</Button>
 					</div>
 				</div>
