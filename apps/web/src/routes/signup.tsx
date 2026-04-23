@@ -90,7 +90,7 @@ function SignupPage() {
 						type="password"
 						placeholder={m.label_password()}
 						required
-						minLength={8}
+						minLength={6}
 						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
 					/>
 				</div>
