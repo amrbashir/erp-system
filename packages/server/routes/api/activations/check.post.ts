@@ -2,8 +2,15 @@ import { defineEventHandler, readBody, HTTPError } from "h3";
 
 import { useDatabase } from "#db";
 import { checkActivation, signActivationToken } from "~/lib/activation";
+import { createRateLimiter } from "~/lib/rate-limit";
+
+const limiter = createRateLimiter({ window: 60_000, max: 10 });
 
 export default defineEventHandler(async (event) => {
+	if (!limiter(event)) {
+		throw new HTTPError("Too many requests", { status: 429 });
+	}
+
 	const body = await readBody<{ hardwareId?: string }>(event);
 
 	if (!body?.hardwareId || typeof body.hardwareId !== "string") {
