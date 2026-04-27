@@ -4,7 +4,10 @@ import postgres from "postgres";
 import * as schema from "../schema/index.js";
 
 export function useDatabase() {
-	const sql = postgres(process.env.DATABASE_URL!);
+	if (!process.env.DATABASE_URL) {
+		throw new Error("DATABASE_URL environment variable is required");
+	}
+	const sql = postgres(process.env.DATABASE_URL);
 	return drizzle(sql, { schema });
 }
 
