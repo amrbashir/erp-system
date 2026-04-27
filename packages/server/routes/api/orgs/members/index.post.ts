@@ -6,7 +6,7 @@ import { useDatabase } from "#db";
 import { auth } from "~/lib/auth";
 import { getOrgMembership } from "~/lib/org";
 import { addMemberToOrg } from "~/lib/org-members";
-import { isValidEmail } from "~/lib/validate-email";
+import emailValidator from "email-validator";
 
 export default defineEventHandler(async (event) => {
 	const session = await auth.api.getSession({
@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
 		});
 	}
 
-	if (!isValidEmail(body.email)) {
+	if (!emailValidator.validate(body.email)) {
 		throw new HTTPError("Invalid email format", { status: 400 });
 	}
 
