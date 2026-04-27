@@ -1,12 +1,13 @@
+import { lower } from "@workspace/db";
 import { users } from "@workspace/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
+import emailValidator from "email-validator";
 import { defineEventHandler, readBody, toRequest, HTTPError, getCookie } from "h3";
 
 import { useDatabase } from "#db";
 import { auth } from "~/lib/auth";
 import { getOrgMembership } from "~/lib/org";
 import { addMemberToOrg } from "~/lib/org-members";
-import emailValidator from "email-validator";
 
 export default defineEventHandler(async (event) => {
 	const session = await auth.api.getSession({
@@ -58,7 +59,7 @@ export default defineEventHandler(async (event) => {
 	let [user] = await db
 		.select()
 		.from(users)
-		.where(eq(sql`lower(${users.email})`, sql`lower(${body.email})`))
+		.where(eq(lower(users.email), body.email.toLowerCase()))
 		.limit(1);
 
 	if (!user) {
