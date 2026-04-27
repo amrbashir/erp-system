@@ -1,4 +1,4 @@
-import { defineEventHandler, readBody, setResponseStatus } from "h3";
+import { defineEventHandler, readBody, HTTPError } from "h3";
 
 import { useDatabase } from "#db";
 import { checkActivation, signActivationToken } from "~/lib/activation";
@@ -7,22 +7,19 @@ export default defineEventHandler(async (event) => {
 	const body = await readBody<{ hardwareId?: string }>(event);
 
 	if (!body?.hardwareId || typeof body.hardwareId !== "string") {
-		setResponseStatus(event, 400);
-		return { error: "hardwareId is required" };
+		throw new HTTPError("hardwareId is required", { status: 400 });
 	}
 
 	const db = useDatabase();
 	const result = await checkActivation(db, body.hardwareId);
 
 	if (result.status !== "active") {
-		setResponseStatus(event, 403);
-		return { error: "not_activated", status: result.status };
+		throw new HTTPError("not_activated", { status: 403, data: { status: result.status } });
 	}
 
 	const privateKey = process.env.ACTIVATION_PRIVATE_KEY;
 	if (!privateKey) {
-		setResponseStatus(event, 500);
-		return { error: "server_misconfigured" };
+		throw new HTTPError("server_misconfigured", { status: 500 });
 	}
 
 	const token = await signActivationToken(body.hardwareId, privateKey);
