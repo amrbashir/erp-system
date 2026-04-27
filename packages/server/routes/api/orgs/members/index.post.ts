@@ -2,34 +2,17 @@ import { lower } from "@workspace/db";
 import { users } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import emailValidator from "email-validator";
-import { defineEventHandler, readBody, toRequest, HTTPError, getCookie } from "h3";
+import { defineEventHandler, readBody, HTTPError } from "h3";
 
-import { useDatabase } from "#db";
-import { auth } from "~/lib/auth";
-import { getOrgMembership } from "~/lib/org";
+import { requireOrg } from "~/lib/require-org";
 import { addMemberToOrg } from "~/lib/org-members";
 
 export default defineEventHandler(async (event) => {
-	const session = await auth.api.getSession({
-		headers: toRequest(event as any).headers,
-	});
-	if (!session) throw new HTTPError("Unauthorized", { status: 401 });
-
-	const orgId = getCookie(event, "current_org_id");
-	if (!orgId) throw new HTTPError("No org selected", { status: 400 });
-
-	const db = useDatabase();
-	const membership = await getOrgMembership(db, session.user.id, orgId);
-	if (!membership)
-		throw new HTTPError("Not a member of this org", {
-			status: 403,
-		});
+	const { orgId, db, membership } = await requireOrg(event);
 
 	const actorRole = membership.role as "owner" | "admin" | "member";
 	if (actorRole === "member") {
-		throw new HTTPError("No permission to add members", {
-			status: 403,
-		});
+		throw new HTTPError("No permission to add members", { status: 403 });
 	}
 
 	const body = await readBody<{
@@ -39,9 +22,7 @@ export default defineEventHandler(async (event) => {
 	}>(event);
 
 	if (!body?.name || !body?.email || !body?.role) {
-		throw new HTTPError("name, email, and role required", {
-			status: 400,
-		});
+		throw new HTTPError("name, email, and role required", { status: 400 });
 	}
 
 	if (!emailValidator.validate(body.email)) {
@@ -50,9 +31,7 @@ export default defineEventHandler(async (event) => {
 
 	// admin can only create members
 	if (actorRole === "admin" && body.role !== "member") {
-		throw new HTTPError("Admins can only create members", {
-			status: 403,
-		});
+		throw new HTTPError("Admins can only create members", { status: 403 });
 	}
 
 	// find or create user by email (case-insensitive)
@@ -75,9 +54,7 @@ export default defineEventHandler(async (event) => {
 		return member;
 	} catch (e: any) {
 		if (e.message?.includes("unique") || e.code === "23505") {
-			throw new HTTPError("User is already a member of this org", {
-				status: 409,
-			});
+			throw new HTTPError("User is already a member of this org", { status: 409 });
 		}
 		throw e;
 	}
