@@ -56,6 +56,16 @@ beforeAll(async () => {
 	member = u3.id;
 	outsider = u4.id;
 
+	// seed accounts so users are considered "claimed"
+	for (const uid of [owner, admin, member, outsider]) {
+		await db.insert(schema.accounts).values({
+			userId: uid,
+			accountId: uid,
+			providerId: "credential",
+			password: "hashed",
+		});
+	}
+
 	// create org with owner
 	const org = await createOrg(db as any, {
 		name: "Test Org",

@@ -1,4 +1,4 @@
-import { orgMembers, users } from "@workspace/db/schema";
+import { accounts, orgMembers, users } from "@workspace/db/schema";
 import { eq, and, count } from "drizzle-orm";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 
@@ -137,6 +137,26 @@ export async function removeMember(
 			.returning();
 
 		if (!deleted) throw new Error("Member not found");
+
+		// clean up orphaned unclaimed users
+		const [otherMembership] = await tx
+			.select({ id: orgMembers.id })
+			.from(orgMembers)
+			.where(eq(orgMembers.userId, deleted.userId))
+			.limit(1);
+
+		if (!otherMembership) {
+			const [account] = await tx
+				.select({ id: accounts.id })
+				.from(accounts)
+				.where(eq(accounts.userId, deleted.userId))
+				.limit(1);
+
+			if (!account) {
+				await tx.delete(users).where(eq(users.id, deleted.userId));
+			}
+		}
+
 		return deleted;
 	});
 }

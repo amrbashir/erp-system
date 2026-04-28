@@ -37,13 +37,30 @@ function SignupPage() {
 			password,
 		});
 
-		setLoading(false);
-
 		if (err) {
+			// if user was added by an admin, claim the account
+			if (err.code === "USER_ALREADY_EXISTS" || err.code === "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL") {
+				const res = await fetch("/api/auth/claim", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ email, password }),
+				});
+				if (res.ok) {
+					setLoading(false);
+					navigate({ to: "/dashboard", reloadDocument: true });
+					return;
+				}
+				const data = await res.json().catch(() => null);
+				setLoading(false);
+				setError(data?.message ?? m.signup_failed());
+				return;
+			}
+			setLoading(false);
 			setError(err.message ?? m.signup_failed());
 			return;
 		}
 
+		setLoading(false);
 		navigate({ to: "/onboarding" });
 	}
 
