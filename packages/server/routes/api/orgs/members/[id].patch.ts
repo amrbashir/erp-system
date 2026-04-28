@@ -2,9 +2,10 @@ import { defineEventHandler, readBody, HTTPError, getRouterParam } from "h3";
 
 import { requireOrg } from "~/lib/require-org";
 import { updateMemberRole } from "~/lib/org-members";
+import { logAudit } from "~/lib/audit";
 
 export default defineEventHandler(async (event) => {
-	const { orgId, db, membership } = await requireOrg(event);
+	const { orgId, db, membership, session } = await requireOrg(event);
 
 	const memberId = getRouterParam(event, "id");
 	if (!memberId) throw new HTTPError("Member ID required", { status: 400 });
@@ -21,6 +22,14 @@ export default defineEventHandler(async (event) => {
 			actorRole: membership.role as "owner" | "admin" | "member",
 			newRole: body.role,
 			actorMemberId: membership.id,
+		});
+		await logAudit(db, {
+			orgId,
+			actorId: session.user.id,
+			action: "member.role_update",
+			targetType: "member",
+			targetId: memberId,
+			metadata: { newRole: body.role },
 		});
 		return updated;
 	} catch (e: any) {

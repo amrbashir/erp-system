@@ -2,9 +2,10 @@ import { defineEventHandler, readBody, HTTPError } from "h3";
 
 import { requireOrg } from "~/lib/require-org";
 import { transferOwnership } from "~/lib/org-members";
+import { logAudit } from "~/lib/audit";
 
 export default defineEventHandler(async (event) => {
-	const { orgId, db, membership } = await requireOrg(event);
+	const { orgId, db, membership, session } = await requireOrg(event);
 
 	if (membership.role !== "owner") {
 		throw new HTTPError("Only owners can transfer ownership", { status: 403 });
@@ -29,6 +30,14 @@ export default defineEventHandler(async (event) => {
 			actorMemberId: membership.id,
 			targetMemberId: body.targetMemberId,
 			newActorRole: body.newActorRole,
+		});
+		await logAudit(db, {
+			orgId,
+			actorId: session.user.id,
+			action: "member.transfer_ownership",
+			targetType: "member",
+			targetId: body.targetMemberId,
+			metadata: { newActorRole: body.newActorRole },
 		});
 		return result;
 	} catch (e: any) {

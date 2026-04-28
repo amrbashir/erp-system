@@ -2,9 +2,10 @@ import { defineEventHandler, HTTPError, getRouterParam } from "h3";
 
 import { requireOrg } from "~/lib/require-org";
 import { removeMember } from "~/lib/org-members";
+import { logAudit } from "~/lib/audit";
 
 export default defineEventHandler(async (event) => {
-	const { orgId, db, membership } = await requireOrg(event);
+	const { orgId, db, membership, session } = await requireOrg(event);
 
 	const memberId = getRouterParam(event, "id");
 	if (!memberId) throw new HTTPError("Member ID required", { status: 400 });
@@ -19,6 +20,13 @@ export default defineEventHandler(async (event) => {
 			memberId,
 			orgId,
 			actorRole: membership.role as "owner" | "admin" | "member",
+		});
+		await logAudit(db, {
+			orgId,
+			actorId: session.user.id,
+			action: "member.remove",
+			targetType: "member",
+			targetId: memberId,
 		});
 		return { ok: true };
 	} catch (e: any) {

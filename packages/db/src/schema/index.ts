@@ -5,3 +5,4 @@ export { accounts } from "./accounts.js";
 export { verifications } from "./verifications.js";
 export { roleEnum, orgMembers } from "./org-members.js";
 export { activationStatusEnum, activations } from "./activations.js";
+export { auditLogs } from "./audit-logs.js";

@@ -6,9 +6,10 @@ import { defineEventHandler, readBody, HTTPError } from "h3";
 
 import { requireOrg } from "~/lib/require-org";
 import { addMemberToOrg } from "~/lib/org-members";
+import { logAudit } from "~/lib/audit";
 
 export default defineEventHandler(async (event) => {
-	const { orgId, db, membership } = await requireOrg(event);
+	const { orgId, db, membership, session } = await requireOrg(event);
 
 	const actorRole = membership.role as "owner" | "admin" | "member";
 	if (actorRole === "member") {
@@ -50,6 +51,14 @@ export default defineEventHandler(async (event) => {
 			orgId,
 			userId: user.id,
 			role: body.role,
+		});
+		await logAudit(db, {
+			orgId,
+			actorId: session.user.id,
+			action: "member.add",
+			targetType: "member",
+			targetId: member.id,
+			metadata: { role: body.role, email: body.email },
 		});
 		return member;
 	} catch (e: any) {
