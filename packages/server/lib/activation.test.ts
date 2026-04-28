@@ -10,6 +10,7 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 
 import {
 	checkActivation,
+	registerHardware,
 	listActivations,
 	toggleActivationStatus,
 	signActivationToken,
@@ -73,10 +74,27 @@ describe("checkActivation", () => {
 	});
 });
 
+describe("registerHardware", () => {
+	it("creates a pending activation for new hardware", async () => {
+		const row = await registerHardware(db as any, "hw-new-001");
+		expect(row).toBeDefined();
+		expect(row!.hardwareId).toBe("hw-new-001");
+		expect(row!.status).toBe("pending");
+
+		const check = await checkActivation(db as any, "hw-new-001");
+		expect(check.status).toBe("pending");
+	});
+
+	it("does nothing for already-registered hardware", async () => {
+		const row = await registerHardware(db as any, "hw-active-001");
+		expect(row).toBeUndefined();
+	});
+});
+
 describe("listActivations", () => {
 	it("returns all activations", async () => {
 		const result = await listActivations(db as any);
-		expect(result.length).toBe(3);
+		expect(result.length).toBeGreaterThanOrEqual(3);
 	});
 
 	it("each activation has expected fields", async () => {

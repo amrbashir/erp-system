@@ -40,6 +40,15 @@ export async function toggleActivationStatus(
 	return updated;
 }
 
+export async function registerHardware(db: DB, hardwareId: string) {
+	const [row] = await db
+		.insert(activations)
+		.values({ hardwareId })
+		.onConflictDoNothing()
+		.returning();
+	return row;
+}
+
 export async function checkActivation(db: DB, hardwareId: string): Promise<CheckResult> {
 	const rows = await db
 		.select()

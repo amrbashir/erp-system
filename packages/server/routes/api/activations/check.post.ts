@@ -1,7 +1,7 @@
 import { defineEventHandler, readBody, HTTPError } from "h3";
 
 import { useDatabase } from "#db";
-import { checkActivation, signActivationToken } from "~/lib/activation";
+import { checkActivation, registerHardware, signActivationToken } from "~/lib/activation";
 import { createRateLimiter } from "~/lib/rate-limit";
 
 const limiter = createRateLimiter({ window: 60_000, max: 10 });
@@ -18,10 +18,17 @@ export default defineEventHandler(async (event) => {
 	}
 
 	const db = useDatabase();
-	const result = await checkActivation(db, body.hardwareId);
+	let result = await checkActivation(db, body.hardwareId);
+
+	// auto-register unknown hardware as pending
+	if (result.status === "unknown") {
+		await registerHardware(db, body.hardwareId);
+		result = { status: "pending" };
+	}
 
 	if (result.status !== "active") {
-		throw new HTTPError("not_activated", { status: 403, data: { status: result.status } });
+		event.res.statusCode = 403;
+		return { error: "not_activated", status: result.status };
 	}
 
 	const privateKey = process.env.ACTIVATION_PRIVATE_KEY;
