@@ -88,5 +88,7 @@
 	"onboarding_title": "أنشئ منظمتك",
 	"onboarding_description": "أنشئ منظمتك الأولى للبدء.",
 
-	"new_org_title": "منظمة جديدة"
+	"new_org_title": "منظمة جديدة",
+
+	"theme_switcher_label": "المظهر"
 }

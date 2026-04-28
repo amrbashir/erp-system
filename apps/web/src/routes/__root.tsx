@@ -7,6 +7,7 @@ import { ActivationScreen } from "@/components/activation-screen";
 import { DesktopLogin } from "@/components/desktop-login";
 import { DesktopOnboarding } from "@/components/desktop-onboarding";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { isDesktop, checkActivationState } from "@/lib/activation";
 import { getDesktopAuthStatus, getStoredToken } from "@/lib/desktop-auth";
 
@@ -37,11 +38,14 @@ export const Route = createRootRoute({
 	component: RootLayout,
 });
 
+const themeScript = `(function(){var t=localStorage.getItem("theme")||"system";var d=t==="system"?window.matchMedia("(prefers-color-scheme:dark)").matches:t==="dark";if(d)document.documentElement.classList.add("dark")})()`;
+
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang={getLocale()} dir={getTextDirection()}>
 			<head>
 				<HeadContent />
+				<script dangerouslySetInnerHTML={{ __html: themeScript }} />
 			</head>
 			<body>
 				{children}
@@ -100,6 +104,7 @@ function RootLayout() {
 		return (
 			<>
 				<header className="flex items-center justify-end gap-2 border-b px-4 py-2">
+					<ThemeSwitcher />
 					<LanguageSwitcher />
 				</header>
 				<Outlet />
@@ -147,6 +152,7 @@ function RootLayout() {
 	return (
 		<>
 			<header className="flex items-center justify-end gap-2 border-b px-4 py-2">
+				<ThemeSwitcher />
 				<LanguageSwitcher />
 			</header>
 			<Outlet />

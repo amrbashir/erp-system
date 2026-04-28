@@ -42,6 +42,7 @@ describe("applyMigrations", () => {
 		expect(tables).toContain("sessions");
 		expect(tables).toContain("org_members");
 		expect(tables).toContain("activations");
+		expect(tables).toContain("audit_logs");
 	});
 
 	it("tracks applied migrations", async () => {
@@ -49,7 +50,7 @@ describe("applyMigrations", () => {
 			sql`SELECT hash FROM "__drizzle_migrations"`,
 		);
 		expect(result.rows.length).toBeGreaterThan(0);
-		expect(result.rows[0].hash).toBe("0000_robust_cable");
+		expect(result.rows[0].hash).toBe("0000_lame_scream");
 	});
 
 	it("is idempotent", async () => {

@@ -88,5 +88,7 @@
 	"onboarding_title": "Create your organization",
 	"onboarding_description": "Create your first organization to get started.",
 
-	"new_org_title": "New organization"
+	"new_org_title": "New organization",
+
+	"theme_switcher_label": "Theme"
 }

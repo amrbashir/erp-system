@@ -120,6 +120,9 @@ importers:
 
   apps/admin:
     dependencies:
+      '@phosphor-icons/react':
+        specifier: 'catalog:'
+        version: 2.1.10(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@tailwindcss/vite':
         specifier: catalog:tailwind
         version: 4.2.1(vite@7.3.1(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0))
