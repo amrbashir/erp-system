@@ -3,6 +3,8 @@ import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
+import { readErrorMessage } from "@/lib/http";
+
 type Org = {
 	id: string;
 	name: string;
@@ -26,8 +28,7 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 		});
 
 		if (!res.ok) {
-			const data = await res.json().catch(() => null);
-			setError(data?.message ?? m.org_switcher_failed());
+			setError(await readErrorMessage(res, m.org_switcher_failed()));
 			return;
 		}
 

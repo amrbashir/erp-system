@@ -3,6 +3,8 @@ import { eq } from "drizzle-orm";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 import { SignJWT, jwtVerify, importPKCS8, importSPKI } from "jose";
 
+import { ActivationNotFoundError, InvalidTokenError } from "./errors.js";
+
 type DB = PgDatabase<any, any>;
 
 type CheckResult =
@@ -19,7 +21,7 @@ export async function toggleActivationStatus(
 	db: DB,
 	id: string,
 	status: "active" | "revoked",
-): Promise<Activation> {
+): Promise<ActivationNotFoundError | Activation> {
 	const now = new Date();
 	const values = {
 		status,
@@ -34,7 +36,7 @@ export async function toggleActivationStatus(
 		.returning();
 
 	if (!updated) {
-		throw new Error(`Activation ${id} not found`);
+		return new ActivationNotFoundError({ id });
 	}
 
 	return updated;
@@ -72,19 +74,33 @@ export async function checkActivation(db: DB, hardwareId: string): Promise<Check
 export async function signActivationToken(
 	hardwareId: string,
 	privateKeyPem: string,
-): Promise<string> {
-	const key = await importPKCS8(privateKeyPem, "ES256");
-	return new SignJWT({ hardwareId, activated: true })
+): Promise<InvalidTokenError | string> {
+	const key = await importPKCS8(privateKeyPem, "ES256").catch((e: Error) => e);
+	if (key instanceof Error) {
+		return new InvalidTokenError({ reason: key.message, cause: key });
+	}
+	const signed = await new SignJWT({ hardwareId, activated: true })
 		.setProtectedHeader({ alg: "ES256" })
 		.setIssuedAt()
-		.sign(key);
+		.sign(key)
+		.catch((e: Error) => e);
+	if (signed instanceof Error) {
+		return new InvalidTokenError({ reason: signed.message, cause: signed });
+	}
+	return signed;
 }
 
 export async function verifyActivationToken(
 	token: string,
 	publicKeyPem: string,
-): Promise<{ hardwareId: string; activated: boolean; iat: number }> {
-	const key = await importSPKI(publicKeyPem, "ES256");
-	const { payload } = await jwtVerify(token, key);
-	return payload as { hardwareId: string; activated: boolean; iat: number };
+): Promise<InvalidTokenError | { hardwareId: string; activated: boolean; iat: number }> {
+	const key = await importSPKI(publicKeyPem, "ES256").catch((e: Error) => e);
+	if (key instanceof Error) {
+		return new InvalidTokenError({ reason: key.message, cause: key });
+	}
+	const verified = await jwtVerify(token, key).catch((e: Error) => e);
+	if (verified instanceof Error) {
+		return new InvalidTokenError({ reason: verified.message, cause: verified });
+	}
+	return verified.payload as { hardwareId: string; activated: boolean; iat: number };
 }

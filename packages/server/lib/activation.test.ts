@@ -16,6 +16,7 @@ import {
 	signActivationToken,
 	verifyActivationToken,
 } from "./activation.js";
+import { ActivationNotFoundError, InvalidTokenError } from "./errors.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const migrationsFolder = path.resolve(__dirname, "../../db/drizzle");
@@ -113,6 +114,7 @@ describe("toggleActivationStatus", () => {
 		const all = await listActivations(db as any);
 		const pending = all.find((a) => a.hardwareId === "hw-pending-001")!;
 		const updated = await toggleActivationStatus(db as any, pending.id, "active");
+		if (updated instanceof Error) throw updated;
 		expect(updated.status).toBe("active");
 		expect(updated.activatedAt).toBeInstanceOf(Date);
 	});
@@ -121,13 +123,17 @@ describe("toggleActivationStatus", () => {
 		const all = await listActivations(db as any);
 		const active = all.find((a) => a.hardwareId === "hw-active-001")!;
 		const updated = await toggleActivationStatus(db as any, active.id, "revoked");
+		if (updated instanceof Error) throw updated;
 		expect(updated.status).toBe("revoked");
 	});
 
-	it("throws for non-existent ID", async () => {
-		await expect(
-			toggleActivationStatus(db as any, "00000000-0000-0000-0000-000000000000", "active"),
-		).rejects.toThrow();
+	it("returns ActivationNotFoundError for non-existent ID", async () => {
+		const result = await toggleActivationStatus(
+			db as any,
+			"00000000-0000-0000-0000-000000000000",
+			"active",
+		);
+		expect(result).toBeInstanceOf(ActivationNotFoundError);
 	});
 });
 
@@ -135,23 +141,29 @@ describe("JWT signing and verification (ES256)", () => {
 	it("signs with private key and verifies with public key", async () => {
 		const token = await signActivationToken("hw-active-001", TEST_PRIVATE_KEY);
 		expect(typeof token).toBe("string");
+		if (token instanceof Error) throw token;
 
 		const payload = await verifyActivationToken(token, TEST_PUBLIC_KEY);
+		if (payload instanceof Error) throw payload;
 		expect(payload.hardwareId).toBe("hw-active-001");
 		expect(payload.activated).toBe(true);
 		expect(payload.iat).toBeDefined();
 	});
 
-	it("rejects token verified with wrong public key", async () => {
+	it("returns InvalidTokenError when verified with wrong public key", async () => {
 		const token = await signActivationToken("hw-active-001", TEST_PRIVATE_KEY);
+		if (token instanceof Error) throw token;
 		const otherKp = await generateKeyPair("ES256", { extractable: true });
 		const otherPublic = await exportSPKI(otherKp.publicKey);
-		await expect(verifyActivationToken(token, otherPublic)).rejects.toThrow();
+		const result = await verifyActivationToken(token, otherPublic);
+		expect(result).toBeInstanceOf(InvalidTokenError);
 	});
 
 	it("produces different tokens for different hardware IDs", async () => {
 		const token1 = await signActivationToken("hw-001", TEST_PRIVATE_KEY);
 		const token2 = await signActivationToken("hw-002", TEST_PRIVATE_KEY);
+		if (token1 instanceof Error) throw token1;
+		if (token2 instanceof Error) throw token2;
 		expect(token1).not.toBe(token2);
 	});
 });

@@ -3,6 +3,7 @@ import { useRuntimeConfig } from "nitro/runtime-config";
 import { useStorage } from "nitro/storage";
 
 import { initDatabase } from "#db";
+import { InvalidInputError } from "~/lib/errors";
 import { applyMigrations } from "~/lib/migrate";
 
 export default definePlugin(async () => {
@@ -15,7 +16,7 @@ export default definePlugin(async () => {
 		const key = path.replace(/[\\/]/g, ":");
 		const item = await storage.getItem(key);
 		if (item === null || item === undefined) {
-			throw new Error(`Migration file not found: ${path}`);
+			throw new InvalidInputError({ reason: `Migration file not found: ${path}` });
 		}
 		return typeof item === "object" ? JSON.stringify(item) : String(item);
 	});

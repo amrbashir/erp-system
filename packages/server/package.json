@@ -5,6 +5,7 @@
 	"type": "module",
 	"exports": {
 		"./lib/auth": "./lib/auth.ts",
+		"./lib/errors": "./lib/errors.ts",
 		"./lib/org": "./lib/org.ts",
 		"./lib/org-members": "./lib/org-members.ts",
 		"./lib/activation": "./lib/activation.ts",
@@ -20,6 +21,7 @@
 		"better-auth": "catalog:",
 		"drizzle-orm": "catalog:drizzle",
 		"email-validator": "^2.0.4",
+		"errore": "^0.14.1",
 		"h3": "latest",
 		"jose": "catalog:",
 		"nitro": "catalog:"

@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 
+import { InvalidSlugError } from "./errors.js";
 import { toSlug, validateSlug } from "./slug.js";
 
 describe("toSlug", () => {
@@ -41,11 +42,11 @@ describe("validateSlug", () => {
 	});
 
 	it("rejects single-char slug (min 2)", () => {
-		expect(validateSlug("a")).toBeTruthy();
+		expect(validateSlug("a")).toBeInstanceOf(InvalidSlugError);
 	});
 
 	it("rejects slug longer than 48 chars", () => {
-		expect(validateSlug("a".repeat(49))).toBeTruthy();
+		expect(validateSlug("a".repeat(49))).toBeInstanceOf(InvalidSlugError);
 	});
 
 	it("accepts slug of exactly 48 chars", () => {
@@ -53,24 +54,24 @@ describe("validateSlug", () => {
 	});
 
 	it("rejects slug starting with hyphen", () => {
-		expect(validateSlug("-abc")).toBeTruthy();
+		expect(validateSlug("-abc")).toBeInstanceOf(InvalidSlugError);
 	});
 
 	it("rejects slug ending with hyphen", () => {
-		expect(validateSlug("abc-")).toBeTruthy();
+		expect(validateSlug("abc-")).toBeInstanceOf(InvalidSlugError);
 	});
 
 	it("rejects slug with uppercase", () => {
-		expect(validateSlug("Abc")).toBeTruthy();
+		expect(validateSlug("Abc")).toBeInstanceOf(InvalidSlugError);
 	});
 
 	it("rejects slug with special characters", () => {
-		expect(validateSlug("my_org")).toBeTruthy();
-		expect(validateSlug("my org")).toBeTruthy();
-		expect(validateSlug("my.org")).toBeTruthy();
+		expect(validateSlug("my_org")).toBeInstanceOf(InvalidSlugError);
+		expect(validateSlug("my org")).toBeInstanceOf(InvalidSlugError);
+		expect(validateSlug("my.org")).toBeInstanceOf(InvalidSlugError);
 	});
 
 	it("rejects empty string", () => {
-		expect(validateSlug("")).toBeTruthy();
+		expect(validateSlug("")).toBeInstanceOf(InvalidSlugError);
 	});
 });

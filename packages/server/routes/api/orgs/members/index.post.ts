@@ -2,18 +2,22 @@ import { lower } from "@workspace/db";
 import { users } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 import emailValidator from "email-validator";
-import { defineEventHandler, readBody, HTTPError } from "h3";
+import { defineEventHandler, readBody } from "h3";
 
-import { requireOrg } from "~/lib/require-org";
-import { addMemberToOrg } from "~/lib/org-members";
 import { logAudit } from "~/lib/audit";
+import { InvalidEmailError, InvalidInputError, NoPermissionError } from "~/lib/errors";
+import { toHTTPError } from "~/lib/http-errors";
+import { addMemberToOrg } from "~/lib/org-members";
+import { requireOrg } from "~/lib/require-org";
 
 export default defineEventHandler(async (event) => {
-	const { orgId, db, membership, session } = await requireOrg(event);
+	const guard = await requireOrg(event);
+	if (guard instanceof Error) throw toHTTPError(guard);
+	const { orgId, db, membership, session } = guard;
 
 	const actorRole = membership.role as "owner" | "admin" | "member";
 	if (actorRole === "member") {
-		throw new HTTPError("No permission to add members", { status: 403 });
+		throw toHTTPError(new NoPermissionError({ reason: "No permission to add members" }));
 	}
 
 	const body = await readBody<{
@@ -23,16 +27,16 @@ export default defineEventHandler(async (event) => {
 	}>(event);
 
 	if (!body?.name || !body?.email || !body?.role) {
-		throw new HTTPError("name, email, and role required", { status: 400 });
+		throw toHTTPError(new InvalidInputError({ reason: "name, email, and role required" }));
 	}
 
 	if (!emailValidator.validate(body.email)) {
-		throw new HTTPError("Invalid email format", { status: 400 });
+		throw toHTTPError(new InvalidEmailError());
 	}
 
 	// admin can only create members
 	if (actorRole === "admin" && body.role !== "member") {
-		throw new HTTPError("Admins can only create members", { status: 403 });
+		throw toHTTPError(new NoPermissionError({ reason: "Admins can only create members" }));
 	}
 
 	// find or create user by email (case-insensitive)
@@ -46,25 +50,20 @@ export default defineEventHandler(async (event) => {
 		[user] = await db.insert(users).values({ name: body.name, email: body.email }).returning();
 	}
 
-	try {
-		const member = await addMemberToOrg(db, {
-			orgId,
-			userId: user.id,
-			role: body.role,
-		});
-		await logAudit(db, {
-			orgId,
-			actorId: session.user.id,
-			action: "member.add",
-			targetType: "member",
-			targetId: member.id,
-			metadata: { role: body.role, email: body.email },
-		});
-		return member;
-	} catch (e: any) {
-		if (e.message?.includes("unique") || e.code === "23505") {
-			throw new HTTPError("User is already a member of this org", { status: 409 });
-		}
-		throw e;
-	}
+	const member = await addMemberToOrg(db, {
+		orgId,
+		userId: user.id,
+		role: body.role,
+	});
+	if (member instanceof Error) throw toHTTPError(member);
+
+	await logAudit(db, {
+		orgId,
+		actorId: session.user.id,
+		action: "member.add",
+		targetType: "member",
+		targetId: member.id,
+		metadata: { role: body.role, email: body.email },
+	});
+	return member;
 });

@@ -3,20 +3,26 @@ import { eq, and } from "drizzle-orm";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 
 import { validateCurrency } from "./currency.js";
+import {
+	InvalidSlugError,
+	SlugTakenError,
+	type UnsupportedCurrencyError,
+} from "./errors.js";
 import { validateSlug } from "./slug.js";
 
 type DB = PgDatabase<any, any>;
+type Org = typeof orgs.$inferSelect;
 
 export async function createOrg(
 	db: DB,
 	input: { name: string; slug: string; userId: string; currency?: string },
-) {
-	const slugError = validateSlug(input.slug);
-	if (slugError) throw new Error(slugError);
+): Promise<InvalidSlugError | UnsupportedCurrencyError | SlugTakenError | Error | Org> {
+	const slugErr = validateSlug(input.slug);
+	if (slugErr) return slugErr;
 
 	if (input.currency) {
-		const currencyError = validateCurrency(input.currency);
-		if (currencyError) throw new Error(currencyError);
+		const curErr = validateCurrency(input.currency);
+		if (curErr) return curErr;
 	}
 
 	try {
@@ -41,8 +47,9 @@ export async function createOrg(
 	} catch (err: any) {
 		const cause = err?.cause ?? err;
 		if (cause?.code === "23505" && cause?.constraint?.includes("slug")) {
-			throw new Error("Slug already taken");
+			return new SlugTakenError();
 		}
+		if (err instanceof Error) return err;
 		throw err;
 	}
 }

@@ -1,3 +1,6 @@
+import { ApiError } from "./errors";
+import { readErrorMessage } from "./http";
+
 const SIDECAR_URL = import.meta.env.VITE_SIDECAR_URL || "http://localhost:11435";
 const TOKEN_KEY = "desktop_session_token";
 
@@ -37,6 +40,9 @@ export type DesktopAuthStatus = {
 
 export async function getDesktopAuthStatus(): Promise<DesktopAuthStatus> {
 	const res = await sidecarFetch("/api/auth/status");
+	if (!res.ok) {
+		throw new ApiError({ message: await readErrorMessage(res, "Status check failed") });
+	}
 	return res.json();
 }
 
@@ -55,8 +61,7 @@ export async function desktopSetup(input: {
 		body: JSON.stringify(input),
 	});
 	if (!res.ok) {
-		const data = await res.json().catch(() => null);
-		throw new Error(data?.message ?? "Setup failed");
+		throw new ApiError({ message: await readErrorMessage(res, "Setup failed") });
 	}
 	const data = await res.json();
 	storeToken(data.token);
@@ -72,8 +77,7 @@ export async function desktopLogin(input: { username: string; password: string }
 		body: JSON.stringify(input),
 	});
 	if (!res.ok) {
-		const data = await res.json().catch(() => null);
-		throw new Error(data?.message ?? "Login failed");
+		throw new ApiError({ message: await readErrorMessage(res, "Login failed") });
 	}
 	const data = await res.json();
 	storeToken(data.token);
@@ -110,7 +114,7 @@ export async function getDesktopSession(): Promise<DesktopSession | null> {
 
 export async function getDesktopMembers(orgId: string) {
 	const res = await sidecarFetch(`/api/orgs/members?orgId=${orgId}`);
-	if (!res.ok) throw new Error("Failed to fetch members");
+	if (!res.ok) throw new ApiError({ message: "Failed to fetch members" });
 	return res.json();
 }
 
@@ -123,8 +127,7 @@ export async function addDesktopMember(
 		body: JSON.stringify(input),
 	});
 	if (!res.ok) {
-		const data = await res.json().catch(() => null);
-		throw new Error(data?.message ?? "Failed to add user");
+		throw new ApiError({ message: await readErrorMessage(res, "Failed to add user") });
 	}
 	return res.json();
 }
@@ -135,8 +138,7 @@ export async function updateDesktopMemberRole(orgId: string, memberId: string, r
 		body: JSON.stringify({ role }),
 	});
 	if (!res.ok) {
-		const data = await res.json().catch(() => null);
-		throw new Error(data?.message ?? "Failed to update role");
+		throw new ApiError({ message: await readErrorMessage(res, "Failed to update role") });
 	}
 	return res.json();
 }
@@ -146,8 +148,7 @@ export async function removeDesktopMember(orgId: string, memberId: string) {
 		method: "DELETE",
 	});
 	if (!res.ok) {
-		const data = await res.json().catch(() => null);
-		throw new Error(data?.message ?? "Failed to remove user");
+		throw new ApiError({ message: await readErrorMessage(res, "Failed to remove user") });
 	}
 	return res.json();
 }
@@ -162,8 +163,9 @@ export async function transferDesktopOwnership(
 		body: JSON.stringify({ targetMemberId, newActorRole }),
 	});
 	if (!res.ok) {
-		const data = await res.json().catch(() => null);
-		throw new Error(data?.message ?? "Failed to transfer ownership");
+		throw new ApiError({
+			message: await readErrorMessage(res, "Failed to transfer ownership"),
+		});
 	}
 	return res.json();
 }

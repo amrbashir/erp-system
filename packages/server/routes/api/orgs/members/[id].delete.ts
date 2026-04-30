@@ -1,44 +1,37 @@
-import { defineEventHandler, HTTPError, getRouterParam } from "h3";
+import { defineEventHandler, getRouterParam } from "h3";
 
-import { requireOrg } from "~/lib/require-org";
-import { removeMember } from "~/lib/org-members";
 import { logAudit } from "~/lib/audit";
+import { InvalidInputError, SelfRemovalError } from "~/lib/errors";
+import { toHTTPError } from "~/lib/http-errors";
+import { removeMember } from "~/lib/org-members";
+import { requireOrg } from "~/lib/require-org";
 
 export default defineEventHandler(async (event) => {
-	const { orgId, db, membership, session } = await requireOrg(event);
+	const guard = await requireOrg(event);
+	if (guard instanceof Error) throw toHTTPError(guard);
+	const { orgId, db, membership, session } = guard;
 
 	const memberId = getRouterParam(event, "id");
-	if (!memberId) throw new HTTPError("Member ID required", { status: 400 });
+	if (!memberId) throw toHTTPError(new InvalidInputError({ reason: "Member ID required" }));
 
 	// prevent self-removal
 	if (memberId === membership.id) {
-		throw new HTTPError("Cannot remove yourself", { status: 400 });
+		throw toHTTPError(new SelfRemovalError());
 	}
 
-	try {
-		await removeMember(db, {
-			memberId,
-			orgId,
-			actorRole: membership.role as "owner" | "admin" | "member",
-		});
-		await logAudit(db, {
-			orgId,
-			actorId: session.user.id,
-			action: "member.remove",
-			targetType: "member",
-			targetId: memberId,
-		});
-		return { ok: true };
-	} catch (e: any) {
-		if (e.message?.includes("permission")) {
-			throw new HTTPError(e.message, { status: 403 });
-		}
-		if (e.message?.includes("Cannot")) {
-			throw new HTTPError(e.message, { status: 403 });
-		}
-		if (e.message === "Member not found") {
-			throw new HTTPError(e.message, { status: 404 });
-		}
-		throw e;
-	}
+	const result = await removeMember(db, {
+		memberId,
+		orgId,
+		actorRole: membership.role as "owner" | "admin" | "member",
+	});
+	if (result instanceof Error) throw toHTTPError(result);
+
+	await logAudit(db, {
+		orgId,
+		actorId: session.user.id,
+		action: "member.remove",
+		targetType: "member",
+		targetId: memberId,
+	});
+	return { ok: true };
 });

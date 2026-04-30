@@ -10,6 +10,7 @@ import { migrate } from "drizzle-orm/pglite/migrator";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 
 import { desktopSetup } from "./desktop-setup.js";
+import { SetupAlreadyCompleteError, SlugTakenError } from "./errors.js";
 import { createOrg } from "./org.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -57,6 +58,7 @@ describe("desktopSetup – atomic success", () => {
 			createAuth,
 			authOptions,
 		);
+		if (result instanceof Error) throw result;
 
 		expect(result.token).toBeDefined();
 		expect(result.user.id).toBeDefined();
@@ -89,11 +91,12 @@ describe("desktopSetup – rollback on org failure", () => {
 			.insert(schema.users)
 			.values({ name: "Seed", email: "seed@test.com" })
 			.returning();
-		await createOrg(db as any, {
+		const seedOrg = await createOrg(db as any, {
 			name: "Taken Corp",
 			slug: "taken-slug",
 			userId: seedUser.id,
 		});
+		if (seedOrg instanceof Error) throw seedOrg;
 		// remove seed user so the "setup already complete" check passes,
 		// but keep the org so the slug conflicts
 		await db.delete(schema.users).where(eq(schema.users.id, seedUser.id));
@@ -104,20 +107,19 @@ describe("desktopSetup – rollback on org failure", () => {
 	});
 
 	it("rolls back user creation if org creation fails", async () => {
-		await expect(
-			desktopSetup(
-				db as any,
-				{
-					email: "rollback@test.com",
-					password: "Password1",
-					name: "Rollback User",
-					orgName: "Taken Corp 2",
-					slug: "taken-slug",
-				},
-				createAuth,
-				authOptions,
-			),
-		).rejects.toThrow();
+		const result = await desktopSetup(
+			db as any,
+			{
+				email: "rollback@test.com",
+				password: "Password1",
+				name: "Rollback User",
+				orgName: "Taken Corp 2",
+				slug: "taken-slug",
+			},
+			createAuth,
+			authOptions,
+		);
+		expect(result).toBeInstanceOf(SlugTakenError);
 
 		// user should NOT exist — transaction rolled back
 		const [user] = await db
@@ -156,20 +158,19 @@ describe("desktopSetup – existing user guard", () => {
 		await client.close();
 	});
 
-	it("second setup call returns error when user already exists", async () => {
-		await expect(
-			desktopSetup(
-				db as any,
-				{
-					email: "second@test.com",
-					password: "Password1",
-					name: "Second User",
-					orgName: "Second Corp",
-					slug: "second-corp",
-				},
-				createAuth,
-				authOptions,
-			),
-		).rejects.toThrow(/setup already complete/i);
+	it("second setup call returns SetupAlreadyCompleteError when user already exists", async () => {
+		const result = await desktopSetup(
+			db as any,
+			{
+				email: "second@test.com",
+				password: "Password1",
+				name: "Second User",
+				orgName: "Second Corp",
+				slug: "second-corp",
+			},
+			createAuth,
+			authOptions,
+		);
+		expect(result).toBeInstanceOf(SetupAlreadyCompleteError);
 	});
 });

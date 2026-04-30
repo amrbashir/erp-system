@@ -1,20 +1,26 @@
-import { defineEventHandler, readBody, HTTPError } from "h3";
+import { defineEventHandler, readBody } from "h3";
 
 import { useDatabase } from "#db";
 import { checkActivation, registerHardware, signActivationToken } from "~/lib/activation";
+import {
+	InvalidInputError,
+	RateLimitedError,
+	ServerMisconfiguredError,
+} from "~/lib/errors";
+import { toHTTPError } from "~/lib/http-errors";
 import { createRateLimiter } from "~/lib/rate-limit";
 
 const limiter = createRateLimiter({ window: 60_000, max: 10 });
 
 export default defineEventHandler(async (event) => {
 	if (!limiter(event)) {
-		throw new HTTPError("Too many requests", { status: 429 });
+		throw toHTTPError(new RateLimitedError());
 	}
 
 	const body = await readBody<{ hardwareId?: string }>(event);
 
 	if (!body?.hardwareId || typeof body.hardwareId !== "string") {
-		throw new HTTPError("hardwareId is required", { status: 400 });
+		throw toHTTPError(new InvalidInputError({ reason: "hardwareId is required" }));
 	}
 
 	const db = useDatabase();
@@ -27,15 +33,18 @@ export default defineEventHandler(async (event) => {
 	}
 
 	if (result.status !== "active") {
-		event.res.statusCode = 403;
-		return { error: "not_activated", status: result.status };
+		event.res.status = 403;
+		return { status: result.status };
 	}
 
 	const privateKey = process.env.ACTIVATION_PRIVATE_KEY;
 	if (!privateKey) {
-		throw new HTTPError("server_misconfigured", { status: 500 });
+		throw toHTTPError(
+			new ServerMisconfiguredError({ reason: "ACTIVATION_PRIVATE_KEY missing" }),
+		);
 	}
 
 	const token = await signActivationToken(body.hardwareId, privateKey);
+	if (token instanceof Error) throw toHTTPError(token);
 	return { token };
 });

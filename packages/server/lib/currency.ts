@@ -1,3 +1,5 @@
+import { UnsupportedCurrencyError } from "./errors.js";
+
 export const SUPPORTED_CURRENCIES = new Set([
 	"USD",
 	"EUR",
@@ -35,9 +37,9 @@ export const SUPPORTED_CURRENCIES = new Set([
 	"JOD",
 ]);
 
-export function validateCurrency(code: string): string | null {
+export function validateCurrency(code: string): UnsupportedCurrencyError | null {
 	if (!SUPPORTED_CURRENCIES.has(code)) {
-		return "Unsupported currency code";
+		return new UnsupportedCurrencyError({ code });
 	}
 	return null;
 }

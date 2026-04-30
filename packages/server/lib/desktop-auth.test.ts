@@ -56,6 +56,7 @@ describe("desktop setup flow", () => {
 			slug: "local-corp",
 			userId,
 		});
+		if (org instanceof Error) throw org;
 
 		expect(org.id).toBeDefined();
 		expect(org.name).toBe("Local Corp");

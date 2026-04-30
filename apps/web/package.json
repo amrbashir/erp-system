@@ -20,6 +20,7 @@
 		"@workspace/server": "workspace:*",
 		"@workspace/ui": "workspace:*",
 		"better-auth": "catalog:",
+		"errore": "^0.14.1",
 		"jose": "catalog:",
 		"nitro": "catalog:",
 		"react": "catalog:react",

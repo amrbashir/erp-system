@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 
 import { SUPPORTED_CURRENCIES, validateCurrency } from "./currency.js";
+import { UnsupportedCurrencyError } from "./errors.js";
 
 describe("SUPPORTED_CURRENCIES", () => {
 	it("contains common ISO 4217 codes", () => {
@@ -18,8 +19,8 @@ describe("validateCurrency", () => {
 	});
 
 	it("rejects invalid currency", () => {
-		expect(validateCurrency("XYZ")).toBeTruthy();
-		expect(validateCurrency("")).toBeTruthy();
-		expect(validateCurrency("usd")).toBeTruthy();
+		expect(validateCurrency("XYZ")).toBeInstanceOf(UnsupportedCurrencyError);
+		expect(validateCurrency("")).toBeInstanceOf(UnsupportedCurrencyError);
+		expect(validateCurrency("usd")).toBeInstanceOf(UnsupportedCurrencyError);
 	});
 });

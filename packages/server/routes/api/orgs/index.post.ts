@@ -1,38 +1,31 @@
-import { defineEventHandler, readBody, toRequest, HTTPError } from "h3";
+import { defineEventHandler, readBody, toRequest } from "h3";
 
 import { useDatabase } from "#db";
 import { auth } from "~/lib/auth";
+import { InvalidInputError, UnauthorizedError } from "~/lib/errors";
+import { toHTTPError } from "~/lib/http-errors";
 import { createOrg } from "~/lib/org";
 
 export default defineEventHandler(async (event) => {
-	const session = await auth.api.getSession({
-		headers: toRequest(event as any).headers,
-	});
-	if (!session) throw new HTTPError("Unauthorized", { status: 401 });
+	const session = await auth.api
+		.getSession({ headers: toRequest(event as any).headers })
+		.catch((e: Error) => e);
+	if (session instanceof Error) throw toHTTPError(session);
+	if (!session) throw toHTTPError(new UnauthorizedError());
 
 	const body = await readBody<{ name: string; slug: string; currency?: string }>(event);
 	if (!body?.name || !body?.slug) {
-		throw new HTTPError("name and slug required", { status: 400 });
+		throw toHTTPError(new InvalidInputError({ reason: "name and slug required" }));
 	}
 
 	const db = useDatabase();
 
-	try {
-		return await createOrg(db, {
-			name: body.name,
-			slug: body.slug,
-			userId: session.user.id,
-			currency: body.currency,
-		});
-	} catch (err) {
-		if (err instanceof Error) {
-			if (/slug already taken/i.test(err.message)) {
-				throw new HTTPError("Slug already taken", { status: 409 });
-			}
-			if (/slug must|unsupported currency/i.test(err.message)) {
-				throw new HTTPError(err.message, { status: 400 });
-			}
-		}
-		throw err;
-	}
+	const result = await createOrg(db, {
+		name: body.name,
+		slug: body.slug,
+		userId: session.user.id,
+		currency: body.currency,
+	});
+	if (result instanceof Error) throw toHTTPError(result);
+	return result;
 });

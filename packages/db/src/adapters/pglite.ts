@@ -1,6 +1,7 @@
 import { PGlite } from "@electric-sql/pglite";
 import { drizzle, type PgliteDatabase } from "drizzle-orm/pglite";
 
+import { DatabaseNotInitializedError } from "../errors.js";
 import * as schema from "../schema/index.js";
 
 let _db: PgliteDatabase<typeof schema> | null = null;
@@ -16,6 +17,6 @@ export async function initDatabase(dataDir?: string): Promise<Database> {
 }
 
 export function useDatabase(): Database {
-	if (!_db) throw new Error("Database not initialized");
+	if (!_db) throw new DatabaseNotInitializedError();
 	return _db;
 }

@@ -1,25 +1,28 @@
-import { defineEventHandler, readBody, setCookie, toRequest, HTTPError } from "h3";
+import { defineEventHandler, readBody, setCookie, toRequest } from "h3";
 
 import { useDatabase } from "#db";
 import { auth } from "~/lib/auth";
 import { orgSwitchCookieOptions } from "~/lib/cookie";
+import { InvalidInputError, NotOrgMemberError, UnauthorizedError } from "~/lib/errors";
+import { toHTTPError } from "~/lib/http-errors";
 import { getOrgMembership } from "~/lib/org";
 
 export default defineEventHandler(async (event) => {
-	const session = await auth.api.getSession({
-		headers: toRequest(event as any).headers,
-	});
-	if (!session) throw new HTTPError("Unauthorized", { status: 401 });
+	const session = await auth.api
+		.getSession({ headers: toRequest(event as any).headers })
+		.catch((e: Error) => e);
+	if (session instanceof Error) throw toHTTPError(session);
+	if (!session) throw toHTTPError(new UnauthorizedError());
 
 	const body = await readBody<{ orgId: string }>(event);
 	if (!body?.orgId) {
-		throw new HTTPError("orgId required", { status: 400 });
+		throw toHTTPError(new InvalidInputError({ reason: "orgId required" }));
 	}
 
 	const db = useDatabase();
 	const membership = await getOrgMembership(db, session.user.id, body.orgId);
 	if (!membership) {
-		throw new HTTPError("Not a member of this org", { status: 403 });
+		throw toHTTPError(new NotOrgMemberError());
 	}
 
 	setCookie(event, "current_org_id", body.orgId, orgSwitchCookieOptions());

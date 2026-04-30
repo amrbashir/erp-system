@@ -8,6 +8,7 @@ import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 
+import { InvalidSlugError, SlugTakenError, UnsupportedCurrencyError } from "./errors.js";
 import { createOrg, getUserOrgs, getOrgMembership } from "./org.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -48,6 +49,7 @@ describe("createOrg", () => {
 			slug: "acme-corp",
 			userId: userA,
 		});
+		if (org instanceof Error) throw org;
 
 		expect(org.name).toBe("Acme Corp");
 		expect(org.slug).toBe("acme-corp");
@@ -58,35 +60,32 @@ describe("createOrg", () => {
 		expect(membership!.role).toBe("owner");
 	});
 
-	it("rejects duplicate slug with 'Slug already taken'", async () => {
-		await expect(
-			createOrg(db as any, {
-				name: "Acme Duplicate",
-				slug: "acme-corp",
-				userId: userA,
-			}),
-		).rejects.toThrow("Slug already taken");
+	it("returns SlugTakenError on duplicate slug", async () => {
+		const result = await createOrg(db as any, {
+			name: "Acme Duplicate",
+			slug: "acme-corp",
+			userId: userA,
+		});
+		expect(result).toBeInstanceOf(SlugTakenError);
 	});
 
-	it("rejects invalid slug format", async () => {
-		await expect(
-			createOrg(db as any, {
-				name: "Bad Slug",
-				slug: "-bad-slug-",
-				userId: userA,
-			}),
-		).rejects.toThrow();
+	it("returns InvalidSlugError on bad slug format", async () => {
+		const result = await createOrg(db as any, {
+			name: "Bad Slug",
+			slug: "-bad-slug-",
+			userId: userA,
+		});
+		expect(result).toBeInstanceOf(InvalidSlugError);
 	});
 
-	it("rejects invalid currency", async () => {
-		await expect(
-			createOrg(db as any, {
-				name: "Bad Currency",
-				slug: "bad-currency",
-				userId: userA,
-				currency: "XYZ",
-			}),
-		).rejects.toThrow("Unsupported currency");
+	it("returns UnsupportedCurrencyError on bad currency", async () => {
+		const result = await createOrg(db as any, {
+			name: "Bad Currency",
+			slug: "bad-currency",
+			userId: userA,
+			currency: "XYZ",
+		});
+		expect(result).toBeInstanceOf(UnsupportedCurrencyError);
 	});
 
 	it("accepts valid currency", async () => {
@@ -96,6 +95,7 @@ describe("createOrg", () => {
 			userId: userA,
 			currency: "EUR",
 		});
+		if (org instanceof Error) throw org;
 		expect(org.defaultCurrency).toBe("EUR");
 	});
 });
@@ -121,6 +121,7 @@ describe("org data isolation", () => {
 			slug: "bob-inc",
 			userId: userB,
 		});
+		if (orgB instanceof Error) throw orgB;
 
 		const aliceOrgs = await getUserOrgs(db as any, userA);
 		const bobOrgs = await getUserOrgs(db as any, userB);

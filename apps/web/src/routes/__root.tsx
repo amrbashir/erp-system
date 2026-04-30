@@ -1,6 +1,7 @@
 import { CircleNotch } from "@phosphor-icons/react";
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 import { getLocale, getTextDirection } from "@workspace/i18n";
+import { Button } from "@workspace/ui/components/button";
 import { useEffect, useState } from "react";
 
 import { ActivationScreen } from "@/components/activation-screen";
@@ -60,7 +61,8 @@ type DesktopState =
 	| { step: "activation"; hardwareId: string }
 	| { step: "onboarding" }
 	| { step: "login" }
-	| { step: "ready" };
+	| { step: "ready" }
+	| { step: "error"; message: string };
 
 function RootLayout() {
 	const [state, setState] = useState<DesktopState | null>(
@@ -73,29 +75,25 @@ function RootLayout() {
 		(async () => {
 			// check activation first
 			const activation = await checkActivationState();
+			if (activation.status === "error") {
+				setState({ step: "error", message: activation.error.message });
+				return;
+			}
 			if (activation.status === "not_activated") {
 				setState({ step: "activation", hardwareId: activation.hardwareId });
 				return;
 			}
 
 			// check auth status
-			try {
-				const auth = await getDesktopAuthStatus();
-				if (!auth.setupComplete) {
-					setState({ step: "onboarding" });
-				} else if (!auth.loggedIn) {
-					setState({ step: "login" });
-				} else {
-					setState({ step: "ready" });
-				}
-			} catch {
-				// sidecar not ready yet, show login
-				if (getStoredToken()) {
-					setState({ step: "ready" });
-				} else {
-					setState({ step: "login" });
-				}
+			const auth = await getDesktopAuthStatus().catch((e: Error) => e);
+			if (auth instanceof Error) {
+				// sidecar not ready yet, fall back on cached token
+				setState(getStoredToken() ? { step: "ready" } : { step: "login" });
+				return;
 			}
+			if (!auth.setupComplete) setState({ step: "onboarding" });
+			else if (!auth.loggedIn) setState({ step: "login" });
+			else setState({ step: "ready" });
 		})();
 	}, []);
 
@@ -120,21 +118,25 @@ function RootLayout() {
 		);
 	}
 
+	if (state.step === "error") {
+		return (
+			<div className="flex min-h-svh flex-col items-center justify-center gap-4 p-6">
+				<p className="text-destructive text-sm">{state.message}</p>
+				<Button variant="outline" size="sm" onClick={() => window.location.reload()}>
+					Retry
+				</Button>
+			</div>
+		);
+	}
+
 	if (state.step === "activation") {
 		return (
 			<ActivationScreen
 				hardwareId={state.hardwareId}
 				onActivated={async () => {
-					try {
-						const auth = await getDesktopAuthStatus();
-						if (!auth.setupComplete) {
-							setState({ step: "onboarding" });
-						} else {
-							setState({ step: "login" });
-						}
-					} catch {
-						setState({ step: "onboarding" });
-					}
+					const auth = await getDesktopAuthStatus().catch((e: Error) => e);
+					if (auth instanceof Error) setState({ step: "onboarding" });
+					else setState({ step: auth.setupComplete ? "login" : "onboarding" });
 				}}
 			/>
 		);

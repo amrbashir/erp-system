@@ -3,6 +3,7 @@ import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
+import { readErrorMessage } from "@/lib/http";
 import { toSlug } from "@/lib/slug";
 
 interface CreateOrgFormProps {
@@ -38,8 +39,7 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 		});
 
 		if (!res.ok) {
-			const data = await res.json().catch(() => null);
-			setError(data?.message ?? m.create_org_failed());
+			setError(await readErrorMessage(res, m.create_org_failed()));
 			setLoading(false);
 			return;
 		}
@@ -53,8 +53,7 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 		});
 
 		if (!switchRes.ok) {
-			const data = await switchRes.json().catch(() => null);
-			setError(data?.message ?? m.switch_org_failed());
+			setError(await readErrorMessage(switchRes, m.switch_org_failed()));
 			setLoading(false);
 			return;
 		}

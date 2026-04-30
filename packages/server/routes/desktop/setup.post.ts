@@ -1,8 +1,10 @@
-import { defineEventHandler, readBody, HTTPError } from "h3";
+import { defineEventHandler, readBody } from "h3";
 
 import { useDatabase } from "#db";
 import { createAuth } from "~/lib/auth";
 import { desktopSetup } from "~/lib/desktop-setup";
+import { InvalidInputError, InvalidSlugError } from "~/lib/errors";
+import { toHTTPError } from "~/lib/http-errors";
 import { toSlug } from "~/lib/slug";
 
 export default defineEventHandler(async (event) => {
@@ -17,41 +19,29 @@ export default defineEventHandler(async (event) => {
 	}>(event);
 
 	if (!body?.email || !body?.password || !body?.name || !body?.orgName) {
-		throw new HTTPError("email, password, name, and orgName required", {
-			status: 400,
-		});
+		throw toHTTPError(
+			new InvalidInputError({ reason: "email, password, name, and orgName required" }),
+		);
 	}
 
 	const slug = toSlug(body.orgName);
 	if (!slug) {
-		throw new HTTPError("Invalid org name", { status: 400 });
+		throw toHTTPError(new InvalidSlugError({ reason: "Invalid org name" }));
 	}
 
-	try {
-		return await desktopSetup(
-			db,
-			{
-				email: body.email,
-				password: body.password,
-				name: body.name,
-				orgName: body.orgName,
-				slug,
-				username: body.username,
-			},
-			createAuth,
-		);
-	} catch (err) {
-		if (err instanceof Error) {
-			if (/setup already complete/i.test(err.message)) {
-				throw new HTTPError("Setup already complete", { status: 409 });
-			}
-			if (/slug already taken/i.test(err.message)) {
-				throw new HTTPError("Slug already taken", { status: 409 });
-			}
-			if (/slug must|unsupported currency/i.test(err.message)) {
-				throw new HTTPError(err.message, { status: 400 });
-			}
-		}
-		throw err;
-	}
+	// desktopSetup catches internally and returns Error (incl. better-auth APIError).
+	const result = await desktopSetup(
+		db,
+		{
+			email: body.email,
+			password: body.password,
+			name: body.name,
+			orgName: body.orgName,
+			slug,
+			username: body.username,
+		},
+		createAuth,
+	);
+	if (result instanceof Error) throw toHTTPError(result);
+	return result;
 });

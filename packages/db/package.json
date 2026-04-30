@@ -17,7 +17,8 @@
 		"migrate": "drizzle-kit migrate"
 	},
 	"dependencies": {
-		"drizzle-orm": "catalog:drizzle"
+		"drizzle-orm": "catalog:drizzle",
+		"errore": "^0.14.1"
 	},
 	"devDependencies": {
 		"@electric-sql/pglite": "catalog:",

@@ -2,8 +2,19 @@ import { accounts, orgMembers, users } from "@workspace/db/schema";
 import { eq, and, count } from "drizzle-orm";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 
+import {
+	DuplicateMemberError,
+	LastOwnerError,
+	MemberNotFoundError,
+	NoPermissionError,
+	SelfRoleChangeError,
+	SelfTransferError,
+	TargetMemberNotFoundError,
+} from "./errors.js";
+
 type DB = PgDatabase<any, any>;
 type Role = "owner" | "admin" | "member";
+type OrgMember = typeof orgMembers.$inferSelect;
 
 export async function getOrgMembers(db: DB, orgId: string) {
 	return db
@@ -21,16 +32,27 @@ export async function getOrgMembers(db: DB, orgId: string) {
 		.where(eq(orgMembers.orgId, orgId));
 }
 
-export async function addMemberToOrg(db: DB, input: { orgId: string; userId: string; role: Role }) {
-	const [row] = await db
-		.insert(orgMembers)
-		.values({
-			orgId: input.orgId,
-			userId: input.userId,
-			role: input.role,
-		})
-		.returning();
-	return row;
+export async function addMemberToOrg(
+	db: DB,
+	input: { orgId: string; userId: string; role: Role },
+): Promise<DuplicateMemberError | Error | OrgMember> {
+	try {
+		const [row] = await db
+			.insert(orgMembers)
+			.values({
+				orgId: input.orgId,
+				userId: input.userId,
+				role: input.role,
+			})
+			.returning();
+		return row;
+	} catch (e: any) {
+		if (e?.code === "23505" || e?.cause?.code === "23505" || /unique/i.test(e?.message ?? "")) {
+			return new DuplicateMemberError();
+		}
+		if (e instanceof Error) return e;
+		throw e;
+	}
 }
 
 async function countOwners(db: DB, orgId: string): Promise<number> {
@@ -50,50 +72,71 @@ export async function updateMemberRole(
 		newRole: Role;
 		actorMemberId?: string;
 	},
-) {
+): Promise<
+	| NoPermissionError
+	| SelfRoleChangeError
+	| MemberNotFoundError
+	| LastOwnerError
+	| Error
+	| OrgMember
+> {
 	if (input.actorRole === "member") {
-		throw new Error("No permission to change roles");
+		return new NoPermissionError({ reason: "No permission to change roles" });
 	}
 	if (input.actorRole === "admin" && input.newRole !== "member") {
-		throw new Error("No permission to assign this role");
+		return new NoPermissionError({ reason: "No permission to assign this role" });
 	}
 
 	// block owner self-demotion (must use transfer flow)
 	if (input.actorMemberId && input.actorMemberId === input.memberId) {
-		throw new Error("Cannot change your own role");
+		return new SelfRoleChangeError();
 	}
 
-	return db.transaction(async (tx) => {
-		const [target] = await tx
-			.select({ role: orgMembers.role })
-			.from(orgMembers)
-			.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
-			.limit(1);
+	try {
+		return await db.transaction(async (tx) => {
+			const [target] = await tx
+				.select({ role: orgMembers.role })
+				.from(orgMembers)
+				.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
+				.limit(1);
 
-		if (input.actorRole === "admin") {
-			if (!target) throw new Error("Member not found");
-			if (target.role !== "member") {
-				throw new Error("No permission to change this member's role");
+			if (input.actorRole === "admin") {
+				if (!target) throw new MemberNotFoundError();
+				if (target.role !== "member") {
+					throw new NoPermissionError({
+						reason: "No permission to change this member's role",
+					});
+				}
 			}
-		}
 
-		// prevent demoting last owner
-		if (input.newRole !== "owner" && target?.role === "owner") {
-			const ownerCount = await countOwners(tx, input.orgId);
-			if (ownerCount <= 1) {
-				throw new Error("Cannot demote the last owner of the organization");
+			// prevent demoting last owner
+			if (input.newRole !== "owner" && target?.role === "owner") {
+				const ownerCount = await countOwners(tx, input.orgId);
+				if (ownerCount <= 1) {
+					throw new LastOwnerError({ action: "demote" });
+				}
 			}
+
+			const [updated] = await tx
+				.update(orgMembers)
+				.set({ role: input.newRole })
+				.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
+				.returning();
+
+			if (!updated) throw new MemberNotFoundError();
+			return updated;
+		});
+	} catch (e) {
+		if (
+			e instanceof NoPermissionError ||
+			e instanceof MemberNotFoundError ||
+			e instanceof LastOwnerError
+		) {
+			return e;
 		}
-
-		const [updated] = await tx
-			.update(orgMembers)
-			.set({ role: input.newRole })
-			.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
-			.returning();
-
-		if (!updated) throw new Error("Member not found");
-		return updated;
-	});
+		if (e instanceof Error) return e;
+		throw e;
+	}
 }
 
 export async function removeMember(
@@ -103,62 +146,74 @@ export async function removeMember(
 		orgId: string;
 		actorRole: Role;
 	},
-) {
+): Promise<NoPermissionError | MemberNotFoundError | LastOwnerError | Error | OrgMember> {
 	if (input.actorRole === "member") {
-		throw new Error("No permission to remove members");
+		return new NoPermissionError({ reason: "No permission to remove members" });
 	}
 
-	return db.transaction(async (tx) => {
-		const [target] = await tx
-			.select({ role: orgMembers.role })
-			.from(orgMembers)
-			.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
-			.limit(1);
-
-		// admin can only remove members, not owners/admins
-		if (input.actorRole === "admin") {
-			if (!target) throw new Error("Member not found");
-			if (target.role !== "member") {
-				throw new Error("No permission to remove this member");
-			}
-		}
-
-		// prevent removing last owner
-		if (target?.role === "owner") {
-			const ownerCount = await countOwners(tx, input.orgId);
-			if (ownerCount <= 1) {
-				throw new Error("Cannot remove the last owner of the organization");
-			}
-		}
-
-		const [deleted] = await tx
-			.delete(orgMembers)
-			.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
-			.returning();
-
-		if (!deleted) throw new Error("Member not found");
-
-		// clean up orphaned unclaimed users
-		const [otherMembership] = await tx
-			.select({ id: orgMembers.id })
-			.from(orgMembers)
-			.where(eq(orgMembers.userId, deleted.userId))
-			.limit(1);
-
-		if (!otherMembership) {
-			const [account] = await tx
-				.select({ id: accounts.id })
-				.from(accounts)
-				.where(eq(accounts.userId, deleted.userId))
+	try {
+		return await db.transaction(async (tx) => {
+			const [target] = await tx
+				.select({ role: orgMembers.role })
+				.from(orgMembers)
+				.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
 				.limit(1);
 
-			if (!account) {
-				await tx.delete(users).where(eq(users.id, deleted.userId));
+			// admin can only remove members, not owners/admins
+			if (input.actorRole === "admin") {
+				if (!target) throw new MemberNotFoundError();
+				if (target.role !== "member") {
+					throw new NoPermissionError({ reason: "No permission to remove this member" });
+				}
 			}
-		}
 
-		return deleted;
-	});
+			// prevent removing last owner
+			if (target?.role === "owner") {
+				const ownerCount = await countOwners(tx, input.orgId);
+				if (ownerCount <= 1) {
+					throw new LastOwnerError({ action: "remove" });
+				}
+			}
+
+			const [deleted] = await tx
+				.delete(orgMembers)
+				.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
+				.returning();
+
+			if (!deleted) throw new MemberNotFoundError();
+
+			// clean up orphaned unclaimed users
+			const [otherMembership] = await tx
+				.select({ id: orgMembers.id })
+				.from(orgMembers)
+				.where(eq(orgMembers.userId, deleted.userId))
+				.limit(1);
+
+			if (!otherMembership) {
+				const [account] = await tx
+					.select({ id: accounts.id })
+					.from(accounts)
+					.where(eq(accounts.userId, deleted.userId))
+					.limit(1);
+
+				if (!account) {
+					await tx.delete(users).where(eq(users.id, deleted.userId));
+				}
+			}
+
+			return deleted;
+		});
+	} catch (e) {
+		if (
+			e instanceof NoPermissionError ||
+			e instanceof MemberNotFoundError ||
+			e instanceof LastOwnerError
+		) {
+			return e;
+		}
+		if (e instanceof Error) return e;
+		throw e;
+	}
 }
 
 export async function transferOwnership(
@@ -169,44 +224,58 @@ export async function transferOwnership(
 		targetMemberId: string;
 		newActorRole: "admin" | "member";
 	},
-) {
+): Promise<
+	| SelfTransferError
+	| NoPermissionError
+	| TargetMemberNotFoundError
+	| Error
+	| { target: OrgMember; actor: OrgMember }
+> {
 	if (input.actorMemberId === input.targetMemberId) {
-		throw new Error("Cannot transfer ownership to yourself");
+		return new SelfTransferError();
 	}
 
-	return db.transaction(async (tx) => {
-		const [actor] = await tx
-			.select({ role: orgMembers.role })
-			.from(orgMembers)
-			.where(and(eq(orgMembers.id, input.actorMemberId), eq(orgMembers.orgId, input.orgId)))
-			.limit(1);
+	try {
+		return await db.transaction(async (tx) => {
+			const [actor] = await tx
+				.select({ role: orgMembers.role })
+				.from(orgMembers)
+				.where(and(eq(orgMembers.id, input.actorMemberId), eq(orgMembers.orgId, input.orgId)))
+				.limit(1);
 
-		if (!actor || actor.role !== "owner") {
-			throw new Error("Only owners can transfer ownership");
+			if (!actor || actor.role !== "owner") {
+				throw new NoPermissionError({ reason: "Only owners can transfer ownership" });
+			}
+
+			const [target] = await tx
+				.select({ role: orgMembers.role })
+				.from(orgMembers)
+				.where(and(eq(orgMembers.id, input.targetMemberId), eq(orgMembers.orgId, input.orgId)))
+				.limit(1);
+
+			if (!target) {
+				throw new TargetMemberNotFoundError();
+			}
+
+			const [updatedTarget] = await tx
+				.update(orgMembers)
+				.set({ role: "owner" })
+				.where(and(eq(orgMembers.id, input.targetMemberId), eq(orgMembers.orgId, input.orgId)))
+				.returning();
+
+			const [updatedActor] = await tx
+				.update(orgMembers)
+				.set({ role: input.newActorRole })
+				.where(and(eq(orgMembers.id, input.actorMemberId), eq(orgMembers.orgId, input.orgId)))
+				.returning();
+
+			return { target: updatedTarget, actor: updatedActor };
+		});
+	} catch (e) {
+		if (e instanceof NoPermissionError || e instanceof TargetMemberNotFoundError) {
+			return e;
 		}
-
-		const [target] = await tx
-			.select({ role: orgMembers.role })
-			.from(orgMembers)
-			.where(and(eq(orgMembers.id, input.targetMemberId), eq(orgMembers.orgId, input.orgId)))
-			.limit(1);
-
-		if (!target) {
-			throw new Error("Target member not found");
-		}
-
-		const [updatedTarget] = await tx
-			.update(orgMembers)
-			.set({ role: "owner" })
-			.where(and(eq(orgMembers.id, input.targetMemberId), eq(orgMembers.orgId, input.orgId)))
-			.returning();
-
-		const [updatedActor] = await tx
-			.update(orgMembers)
-			.set({ role: input.newActorRole })
-			.where(and(eq(orgMembers.id, input.actorMemberId), eq(orgMembers.orgId, input.orgId)))
-			.returning();
-
-		return { target: updatedTarget, actor: updatedActor };
-	});
+		if (e instanceof Error) return e;
+		throw e;
+	}
 }

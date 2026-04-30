@@ -11,6 +11,7 @@ import {
 	removeDesktopMember,
 	transferDesktopOwnership,
 } from "@/lib/desktop-auth";
+import { readErrorMessage } from "@/lib/http";
 
 type Member = {
 	id: string;
@@ -148,8 +149,7 @@ function AddUserForm({
 		setSubmitting(false);
 
 		if (!res.ok) {
-			const data = await res.json().catch(() => null);
-			onError(data?.message ?? m.users_add_failed());
+			onError(await readErrorMessage(res, m.users_add_failed()));
 			return;
 		}
 
@@ -281,8 +281,7 @@ function MemberList({
 					body: JSON.stringify({ role: newRole }),
 				});
 				if (!res.ok) {
-					const data = await res.json().catch(() => null);
-					onError(data?.message ?? m.users_role_update_failed());
+					onError(await readErrorMessage(res, m.users_role_update_failed()));
 					return;
 				}
 			}
@@ -309,8 +308,7 @@ function MemberList({
 					method: "DELETE",
 				});
 				if (!res.ok) {
-					const data = await res.json().catch(() => null);
-					onError(data?.message ?? m.users_remove_failed());
+					onError(await readErrorMessage(res, m.users_remove_failed()));
 					return;
 				}
 			}
@@ -343,8 +341,7 @@ function MemberList({
 					}),
 				});
 				if (!res.ok) {
-					const data = await res.json().catch(() => null);
-					onError(data?.message ?? m.users_transfer_failed());
+					onError(await readErrorMessage(res, m.users_transfer_failed()));
 					return;
 				}
 			}

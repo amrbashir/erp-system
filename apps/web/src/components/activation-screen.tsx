@@ -4,6 +4,7 @@ import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
 import { checkActivationApi, writeCachedToken } from "@/lib/activation";
+import { ActivationMisconfiguredError } from "@/lib/errors";
 
 export function ActivationScreen({
 	hardwareId,
@@ -17,12 +18,8 @@ export function ActivationScreen({
 	const [copyState, setCopyState] = useState<"idle" | "success" | "error">("idle");
 
 	async function handleCopy() {
-		try {
-			await navigator.clipboard.writeText(hardwareId);
-			setCopyState("success");
-		} catch {
-			setCopyState("error");
-		}
+		const r = await navigator.clipboard.writeText(hardwareId).catch((e: Error) => e);
+		setCopyState(r instanceof Error ? "error" : "success");
 		setTimeout(() => setCopyState("idle"), 2000);
 	}
 
@@ -30,27 +27,29 @@ export function ActivationScreen({
 		setStatus("checking");
 		setError("");
 
-		try {
-			const result = await checkActivationApi(hardwareId);
-			if ("token" in result) {
-				await writeCachedToken(result.token);
-				onActivated();
-			} else {
-				setStatus("error");
-				if (result.status === "pending") {
-					setError(m.activation_pending());
-				} else if (result.status === "revoked") {
-					setError(m.activation_revoked());
-				} else if (result.status === "unknown") {
-					setError(m.activation_unknown());
-				} else {
-					setError(result.error);
-				}
-			}
-		} catch {
+		const result = await checkActivationApi(hardwareId);
+		if (result instanceof Error) {
 			setStatus("error");
-			setError(m.activation_network_error());
+			if (result instanceof ActivationMisconfiguredError) setError(result.message);
+			else setError(m.activation_network_error());
+			return;
 		}
+
+		if ("token" in result) {
+			const writeRes = await writeCachedToken(result.token).catch((e: Error) => e);
+			if (writeRes instanceof Error) {
+				setStatus("error");
+				setError(writeRes.message);
+				return;
+			}
+			onActivated();
+			return;
+		}
+
+		setStatus("error");
+		if (result.status === "pending") setError(m.activation_pending());
+		else if (result.status === "revoked") setError(m.activation_revoked());
+		else setError(m.activation_unknown());
 	}
 
 	return (

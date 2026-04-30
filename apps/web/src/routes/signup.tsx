@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { signUp } from "@/lib/auth-client";
 import { getSession } from "@/lib/auth-session";
+import { readErrorMessage } from "@/lib/http";
 
 export const Route = createFileRoute("/signup")({
 	beforeLoad: async () => {
@@ -50,9 +51,8 @@ function SignupPage() {
 					navigate({ to: "/dashboard", reloadDocument: true });
 					return;
 				}
-				const data = await res.json().catch(() => null);
 				setLoading(false);
-				setError(data?.message ?? m.signup_failed());
+				setError(await readErrorMessage(res, m.signup_failed()));
 				return;
 			}
 			setLoading(false);
