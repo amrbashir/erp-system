@@ -23,7 +23,7 @@
 		"allowJs": true, // for paraglide generated code
 		"paths": {
 			"@/*": ["./src/*"],
-			"#db": ["../../packages/server/adapters/neon.ts"]
+			"#db": ["../../packages/db/src/adapters/neon.ts"]
 		}
 	}
 }

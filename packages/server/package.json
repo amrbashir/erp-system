@@ -19,6 +19,7 @@
 	"dependencies": {
 		"@workspace/db": "workspace:*",
 		"better-auth": "catalog:",
+		"cookie-es": "^2.0.0",
 		"drizzle-orm": "catalog:drizzle",
 		"email-validator": "^2.0.4",
 		"errore": "^0.14.1",

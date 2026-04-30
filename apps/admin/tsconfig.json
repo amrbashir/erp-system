@@ -21,7 +21,8 @@
 		"allowJs": true,
 		"paths": {
 			"@/*": ["./src/*"],
-			"@workspace/ui/*": ["../../packages/ui/src/*"]
+			"@workspace/ui/*": ["../../packages/ui/src/*"],
+			"#db": ["../../packages/db/src/adapters/pglite.ts"]
 		}
 	}
 }

@@ -8,7 +8,7 @@
 		"noEmit": true,
 		"paths": {
 			"~/*": ["./*"],
-			"#db": ["./adapters/pglite.ts"]
+			"#db": ["../db/src/adapters/pglite.ts"]
 		}
 	}
 }
