@@ -11,16 +11,15 @@ export default defineEventHandler(async (event) => {
 	const db = useDatabase();
 
 	const body = await readBody<{
-		email: string;
+		username: string;
 		password: string;
 		name: string;
 		orgName: string;
-		username?: string;
 	}>(event);
 
-	if (!body?.email || !body?.password || !body?.name || !body?.orgName) {
+	if (!body?.username || !body?.password || !body?.name || !body?.orgName) {
 		throw toHTTPError(
-			new InvalidInputError({ reason: "email, password, name, and orgName required" }),
+			new InvalidInputError({ reason: "username, password, name, and orgName required" }),
 		);
 	}
 
@@ -29,16 +28,14 @@ export default defineEventHandler(async (event) => {
 		throw toHTTPError(new InvalidSlugError({ reason: "Invalid org name" }));
 	}
 
-	// desktopSetup catches internally and returns Error (incl. better-auth APIError).
 	const result = await desktopSetup(
 		db,
 		{
-			email: body.email,
+			username: body.username,
 			password: body.password,
 			name: body.name,
 			orgName: body.orgName,
 			slug,
-			username: body.username,
 		},
 		createAuth,
 	);

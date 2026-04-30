@@ -49,7 +49,7 @@ describe("desktopSetup – atomic success", () => {
 		const result = await desktopSetup(
 			db as any,
 			{
-				email: "setup@test.com",
+				username: "setupuser",
 				password: "Password1",
 				name: "Setup User",
 				orgName: "Setup Corp",
@@ -62,7 +62,7 @@ describe("desktopSetup – atomic success", () => {
 
 		expect(result.token).toBeDefined();
 		expect(result.user.id).toBeDefined();
-		expect(result.user.email).toBe("setup@test.com");
+		expect(result.user.username).toBe("setupuser");
 		expect(result.org.name).toBe("Setup Corp");
 		expect(result.org.slug).toBe("setup-corp");
 
@@ -110,7 +110,7 @@ describe("desktopSetup – rollback on org failure", () => {
 		const result = await desktopSetup(
 			db as any,
 			{
-				email: "rollback@test.com",
+				username: "rollback",
 				password: "Password1",
 				name: "Rollback User",
 				orgName: "Taken Corp 2",
@@ -125,7 +125,7 @@ describe("desktopSetup – rollback on org failure", () => {
 		const [user] = await db
 			.select()
 			.from(schema.users)
-			.where(eq(schema.users.email, "rollback@test.com"));
+			.where(eq(schema.users.email, "rollback@desktop.local"));
 		expect(user).toBeUndefined();
 	});
 });
@@ -143,7 +143,7 @@ describe("desktopSetup – existing user guard", () => {
 		await desktopSetup(
 			db as any,
 			{
-				email: "first@test.com",
+				username: "firstuser",
 				password: "Password1",
 				name: "First User",
 				orgName: "First Corp",
@@ -162,7 +162,7 @@ describe("desktopSetup – existing user guard", () => {
 		const result = await desktopSetup(
 			db as any,
 			{
-				email: "second@test.com",
+				username: "seconduser",
 				password: "Password1",
 				name: "Second User",
 				orgName: "Second Corp",

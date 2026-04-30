@@ -13,12 +13,11 @@ import { createOrg } from "./org.js";
 type DB = PgDatabase<any, any>;
 
 interface DesktopSetupInput {
-	email: string;
+	username: string;
 	password: string;
 	name: string;
 	orgName: string;
 	slug: string;
-	username?: string;
 }
 
 type CreateAuthFn = (
@@ -27,9 +26,14 @@ type CreateAuthFn = (
 
 type DesktopSetupOk = {
 	token: string | null;
-	user: { id: string; name: string; email: string };
+	user: { id: string; name: string; username: string };
 	org: { id: string; name: string; slug: string };
 };
+
+/** Desktop is offline, no real email — synthesize a deterministic local one. */
+export function synthesizeDesktopEmail(username: string): string {
+	return `${username}@desktop.local`;
+}
 
 export async function desktopSetup(
 	db: DB,
@@ -61,7 +65,7 @@ export async function desktopSetup(
 
 			const signup = await txAuth.api.signUpEmail({
 				body: {
-					email: input.email,
+					email: synthesizeDesktopEmail(input.username),
 					password: input.password,
 					name: input.name,
 					username: input.username,
@@ -77,7 +81,7 @@ export async function desktopSetup(
 
 			return {
 				token: signup.token,
-				user: { id: signup.user.id, name: signup.user.name, email: signup.user.email },
+				user: { id: signup.user.id, name: signup.user.name, username: input.username },
 				org: { id: org.id, name: org.name, slug: org.slug },
 			};
 		});

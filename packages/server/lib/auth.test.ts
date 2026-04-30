@@ -110,6 +110,25 @@ describe("desktop mode", () => {
 		expect(desktopAuth).toBeDefined();
 		expect(desktopAuth.api.signUpEmail).toBeInstanceOf(Function);
 	});
+
+	it("authenticates via Authorization: Bearer token (bearer plugin enabled)", async () => {
+		const desktopAuth = createAuth({
+			desktop: true,
+			baseURL: "http://localhost:3000",
+			secret: "test-secret-long-enough-for-validation",
+		});
+		const signup = await desktopAuth.api.signUpEmail({
+			body: { email: "bearer@desktop.local", password: "Password1", name: "Bearer" },
+		});
+		expect(signup.token).toBeTruthy();
+
+		// session lookup using bearer token
+		const session = await desktopAuth.api.getSession({
+			headers: new Headers({ Authorization: `Bearer ${signup.token}` }),
+		});
+		expect(session).toBeDefined();
+		expect(session?.user.id).toBe(signup.user.id);
+	});
 });
 
 describe("password validation", () => {

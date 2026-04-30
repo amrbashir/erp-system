@@ -2,6 +2,7 @@ import * as schema from "@workspace/db/schema";
 import { APIError, betterAuth } from "better-auth";
 import type { BetterAuthOptions } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { bearer } from "better-auth/plugins/bearer";
 
 import { useDatabase } from "#db";
 
@@ -59,7 +60,7 @@ export function createAuth(options: CreateAuthOptions = {}) {
 				}
 			},
 		},
-		plugins: options.plugins ?? [],
+		plugins: [...(options.desktop ? [bearer()] : []), ...(options.plugins ?? [])],
 	});
 }
 
