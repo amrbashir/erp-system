@@ -22,5 +22,5 @@ export default defineNitroConfig({
 	},
 	runtimeConfig: isDesktop ? { pgdataDir: "" } : {},
 	serverAssets: isDesktop ? [{ baseName: "migrations", dir: resolve(dir, "../db/drizzle") }] : [],
-	ignore: isDesktop ? [] : ["routes/desktop/**", "plugins/desktop-startup.ts"],
+	ignore: isDesktop ? [] : ["plugins/desktop-startup.ts"],
 });
