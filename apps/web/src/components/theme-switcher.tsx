@@ -1,7 +1,7 @@
 import { Moon, Sun, Monitor } from "@phosphor-icons/react";
 import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
-import { useTheme, type Theme } from "@workspace/ui/hooks/use-theme";
+import { useTheme, type Theme } from "@workspace/ui/components/theme-provider";
 
 const order: Theme[] = ["light", "dark", "system"];
 const icons: Record<Theme, React.ReactNode> = {

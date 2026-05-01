@@ -1,7 +1,7 @@
 import { Moon, Sun, Monitor } from "@phosphor-icons/react";
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/button";
-import { useTheme, type Theme } from "@workspace/ui/hooks/use-theme";
+import { ThemeProvider, useTheme, type Theme } from "@workspace/ui/components/theme-provider";
 
 import appCss from "@workspace/ui/globals.css?url";
 
@@ -28,7 +28,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<script dangerouslySetInnerHTML={{ __html: themeScript }} />
 			</head>
 			<body>
-				{children}
+				<ThemeProvider>{children}</ThemeProvider>
 				<Scripts />
 			</body>
 		</html>

@@ -2,6 +2,7 @@ import { CircleNotch } from "@phosphor-icons/react";
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 import { getLocale, getTextDirection } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
+import { ThemeProvider } from "@workspace/ui/components/theme-provider";
 import { useEffect, useState } from "react";
 
 import { ActivationScreen } from "@/components/activation-screen";
@@ -48,7 +49,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<script dangerouslySetInnerHTML={{ __html: themeScript }} />
 			</head>
 			<body>
-				{children}
+				<ThemeProvider>{children}</ThemeProvider>
 				<Scripts />
 			</body>
 		</html>
