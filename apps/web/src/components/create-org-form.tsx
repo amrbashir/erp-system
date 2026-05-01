@@ -3,8 +3,12 @@ import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
+import { isDesktop } from "@/lib/activation";
+import { apiFetch } from "@/lib/api-fetch";
 import { readErrorMessage } from "@/lib/http";
 import { toSlug } from "@/lib/slug";
+
+const CURRENT_ORG_KEY = "current_org_id";
 
 interface CreateOrgFormProps {
 	title: string;
@@ -32,9 +36,8 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 			return;
 		}
 
-		const res = await fetch("/api/orgs", {
+		const res = await apiFetch("/api/orgs", {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ name, slug }),
 		});
 
@@ -46,16 +49,19 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 
 		const org = await res.json();
 
-		const switchRes = await fetch("/api/orgs/switch", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ orgId: org.id }),
-		});
+		if (isDesktop()) {
+			localStorage.setItem(CURRENT_ORG_KEY, org.id);
+		} else {
+			const switchRes = await apiFetch("/api/orgs/switch", {
+				method: "POST",
+				body: JSON.stringify({ orgId: org.id }),
+			});
 
-		if (!switchRes.ok) {
-			setError(await readErrorMessage(switchRes, m.switch_org_failed()));
-			setLoading(false);
-			return;
+			if (!switchRes.ok) {
+				setError(await readErrorMessage(switchRes, m.switch_org_failed()));
+				setLoading(false);
+				return;
+			}
 		}
 
 		setLoading(false);

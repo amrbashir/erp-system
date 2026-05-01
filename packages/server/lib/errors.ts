@@ -58,14 +58,14 @@ export class DuplicateMemberError extends errore.createTaggedError({
 	message: "User is already a member of this org",
 }) {}
 
-export class AccountAlreadyClaimedError extends errore.createTaggedError({
-	name: "AccountAlreadyClaimedError",
-	message: "Account already claimed",
-}) {}
-
 export class SetupAlreadyCompleteError extends errore.createTaggedError({
 	name: "SetupAlreadyCompleteError",
 	message: "Setup already complete",
+}) {}
+
+export class InvitationNotFoundError extends errore.createTaggedError({
+	name: "InvitationNotFoundError",
+	message: "Invitation not found",
 }) {}
 
 // Not found
@@ -82,11 +82,6 @@ export class TargetMemberNotFoundError extends errore.createTaggedError({
 export class ActivationNotFoundError extends errore.createTaggedError({
 	name: "ActivationNotFoundError",
 	message: "Activation $id not found",
-}) {}
-
-export class UserNotFoundError extends errore.createTaggedError({
-	name: "UserNotFoundError",
-	message: "No account found for this email",
 }) {}
 
 // Org / member rules

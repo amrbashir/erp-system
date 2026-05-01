@@ -25,7 +25,9 @@ export async function requireOrg(
 	if (session instanceof Error) return session;
 	if (!session) return new UnauthorizedError();
 
-	const orgId = getCookie(event, "current_org_id");
+	// header takes precedence (desktop bearer flow); fall back to cookie (web).
+	const orgId =
+		event.req.headers.get("x-org-id") ?? getCookie(event, "current_org_id") ?? null;
 	if (!orgId) return new NoOrgSelectedError();
 
 	const db = useDatabase();

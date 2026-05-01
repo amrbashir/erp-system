@@ -6,7 +6,6 @@
 	"label_email": "البريد الإلكتروني",
 	"label_password": "كلمة المرور",
 	"label_name": "الاسم",
-	"label_username": "اسم المستخدم",
 	"label_role": "الدور",
 	"label_org_name": "اسم المنظمة",
 
@@ -55,6 +54,11 @@
 	"users_adding": "جارٍ الإضافة\u2026",
 	"users_add_submit": "إضافة",
 	"users_actions": "الإجراءات",
+	"users_status": "الحالة",
+	"users_status_active": "نشط",
+	"users_status_pending": "معلّق",
+	"users_revoke": "إلغاء الدعوة",
+	"users_sort_pending": "ترتيب المعلّقين أولاً",
 
 	"org_switcher_select": "اختر المنظمة",
 	"org_switcher_failed": "فشل تبديل المنظمة",

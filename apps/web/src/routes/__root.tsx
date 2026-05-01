@@ -5,12 +5,11 @@ import { Button } from "@workspace/ui/components/button";
 import { useEffect, useState } from "react";
 
 import { ActivationScreen } from "@/components/activation-screen";
-import { DesktopLogin } from "@/components/desktop-login";
 import { DesktopOnboarding } from "@/components/desktop-onboarding";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { isDesktop, checkActivationState } from "@/lib/activation";
-import { getDesktopAuthStatus, getStoredToken } from "@/lib/desktop-auth";
+import { getSetupComplete } from "@/lib/desktop-auth";
 
 import appCss from "@workspace/ui/globals.css?url";
 
@@ -56,16 +55,15 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 	);
 }
 
-type DesktopState =
+type DesktopBootstrap =
 	| { step: "loading" }
 	| { step: "activation"; hardwareId: string }
 	| { step: "onboarding" }
-	| { step: "login" }
 	| { step: "ready" }
 	| { step: "error"; message: string };
 
 function RootLayout() {
-	const [state, setState] = useState<DesktopState | null>(
+	const [state, setState] = useState<DesktopBootstrap | null>(
 		isDesktop() ? { step: "loading" } : null,
 	);
 
@@ -73,7 +71,6 @@ function RootLayout() {
 		if (!isDesktop()) return;
 
 		(async () => {
-			// check activation first
 			const activation = await checkActivationState();
 			if (activation.status === "error") {
 				setState({ step: "error", message: activation.error.message });
@@ -84,16 +81,15 @@ function RootLayout() {
 				return;
 			}
 
-			// check auth status
-			const auth = await getDesktopAuthStatus().catch((e: Error) => e);
-			if (auth instanceof Error) {
-				// sidecar not ready yet, fall back on cached token
-				setState(getStoredToken() ? { step: "ready" } : { step: "login" });
+			// only branch we still gate on the sidecar:
+			// no users yet → onboarding; otherwise hand off to normal routing
+			// (login/dashboard/redirects are all driven by better-auth + _authed).
+			const probe = await getSetupComplete().catch((e: Error) => e);
+			if (probe instanceof Error) {
+				setState({ step: "error", message: probe.message });
 				return;
 			}
-			if (!auth.setupComplete) setState({ step: "onboarding" });
-			else if (!auth.loggedIn) setState({ step: "login" });
-			else setState({ step: "ready" });
+			setState(probe.setupComplete ? { step: "ready" } : { step: "onboarding" });
 		})();
 	}, []);
 
@@ -134,9 +130,10 @@ function RootLayout() {
 			<ActivationScreen
 				hardwareId={state.hardwareId}
 				onActivated={async () => {
-					const auth = await getDesktopAuthStatus().catch((e: Error) => e);
-					if (auth instanceof Error) setState({ step: "onboarding" });
-					else setState({ step: auth.setupComplete ? "login" : "onboarding" });
+					const probe = await getSetupComplete().catch((e: Error) => e);
+					if (probe instanceof Error)
+						setState({ step: "error", message: probe.message });
+					else setState(probe.setupComplete ? { step: "ready" } : { step: "onboarding" });
 				}}
 			/>
 		);
@@ -146,11 +143,7 @@ function RootLayout() {
 		return <DesktopOnboarding onComplete={() => setState({ step: "ready" })} />;
 	}
 
-	if (state.step === "login") {
-		return <DesktopLogin onLoggedIn={() => setState({ step: "ready" })} />;
-	}
-
-	// ready
+	// ready — normal routes take over
 	return (
 		<>
 			<header className="flex items-center justify-end gap-2 border-b px-4 py-2">

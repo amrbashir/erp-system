@@ -3,7 +3,11 @@ import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
+import { isDesktop } from "@/lib/activation";
+import { apiFetch } from "@/lib/api-fetch";
 import { readErrorMessage } from "@/lib/http";
+
+const CURRENT_ORG_KEY = "current_org_id";
 
 type Org = {
 	id: string;
@@ -21,9 +25,15 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 	async function switchOrg(orgId: string) {
 		setError("");
 
-		const res = await fetch("/api/orgs/switch", {
+		if (isDesktop()) {
+			localStorage.setItem(CURRENT_ORG_KEY, orgId);
+			setOpen(false);
+			navigate({ to: "/dashboard", reloadDocument: true });
+			return;
+		}
+
+		const res = await apiFetch("/api/orgs/switch", {
 			method: "POST",
-			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ orgId }),
 		});
 

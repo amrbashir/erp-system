@@ -16,17 +16,17 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 		const form = new FormData(e.currentTarget);
 		const orgName = (form.get("orgName") as string).trim();
 		const name = (form.get("name") as string).trim();
-		const username = (form.get("username") as string).trim();
+		const email = (form.get("email") as string).trim();
 		const password = form.get("password") as string;
 
-		if (!orgName || !name || !username || !password) {
+		if (!orgName || !name || !email || !password) {
 			setError(m.desktop_onboarding_fields_required());
 			setLoading(false);
 			return;
 		}
 
 		try {
-			await desktopSetup({ orgName, username, password, name });
+			await desktopSetup({ orgName, email, password, name });
 			onComplete();
 		} catch (err: any) {
 			setError(err.message ?? m.desktop_onboarding_failed());
@@ -72,14 +72,14 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 					/>
 				</div>
 				<div className="flex flex-col gap-1">
-					<label htmlFor="username" className="text-sm font-medium">
-						{m.label_username()}
+					<label htmlFor="email" className="text-sm font-medium">
+						{m.label_email()}
 					</label>
 					<input
-						id="username"
-						name="username"
-						type="text"
-						placeholder={m.label_username()}
+						id="email"
+						name="email"
+						type="email"
+						placeholder={m.label_email()}
 						required
 						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
 					/>

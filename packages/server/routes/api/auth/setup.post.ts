@@ -1,9 +1,10 @@
+import emailValidator from "email-validator";
 import { defineEventHandler, readBody } from "h3";
 
 import { useDatabase } from "#db";
 import { createAuth } from "~/lib/auth";
 import { desktopSetup } from "~/lib/desktop-setup";
-import { InvalidInputError, InvalidSlugError } from "~/lib/errors";
+import { InvalidEmailError, InvalidInputError, InvalidSlugError } from "~/lib/errors";
 import { toHTTPError } from "~/lib/http-errors";
 import { toSlug } from "~/lib/slug";
 
@@ -11,16 +12,20 @@ export default defineEventHandler(async (event) => {
 	const db = useDatabase();
 
 	const body = await readBody<{
-		username: string;
+		email: string;
 		password: string;
 		name: string;
 		orgName: string;
 	}>(event);
 
-	if (!body?.username || !body?.password || !body?.name || !body?.orgName) {
+	if (!body?.email || !body?.password || !body?.name || !body?.orgName) {
 		throw toHTTPError(
-			new InvalidInputError({ reason: "username, password, name, and orgName required" }),
+			new InvalidInputError({ reason: "email, password, name, and orgName required" }),
 		);
+	}
+
+	if (!emailValidator.validate(body.email)) {
+		throw toHTTPError(new InvalidEmailError());
 	}
 
 	const slug = toSlug(body.orgName);
@@ -31,7 +36,7 @@ export default defineEventHandler(async (event) => {
 	const result = await desktopSetup(
 		db,
 		{
-			username: body.username,
+			email: body.email,
 			password: body.password,
 			name: body.name,
 			orgName: body.orgName,

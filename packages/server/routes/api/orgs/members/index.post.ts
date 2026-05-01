@@ -1,15 +1,26 @@
-import { lower } from "@workspace/db";
-import { users } from "@workspace/db/schema";
-import { eq } from "drizzle-orm";
 import emailValidator from "email-validator";
 import { defineEventHandler, readBody } from "h3";
 
 import { logAudit } from "~/lib/audit";
-import { InvalidEmailError, InvalidInputError, NoPermissionError } from "~/lib/errors";
+import {
+	InvalidEmailError,
+	InvalidInputError,
+	NoPermissionError,
+} from "~/lib/errors";
 import { toHTTPError } from "~/lib/http-errors";
+import {
+	clearInvitationsForEmail,
+	findUserByEmail,
+	sendInvitation,
+} from "~/lib/invitations";
 import { addMemberToOrg } from "~/lib/org-members";
 import { requireOrg } from "~/lib/require-org";
 
+/**
+ * "Add a user by email" — branches on whether the email is already registered:
+ *  - existing user → add to org as member, clear any stale invitations
+ *  - new email → create a pending invitation, consumed on signup
+ */
 export default defineEventHandler(async (event) => {
 	const guard = await requireOrg(event);
 	if (guard instanceof Error) throw toHTTPError(guard);
@@ -21,49 +32,59 @@ export default defineEventHandler(async (event) => {
 	}
 
 	const body = await readBody<{
-		name: string;
 		email: string;
 		role: "owner" | "admin" | "member";
 	}>(event);
 
-	if (!body?.name || !body?.email || !body?.role) {
-		throw toHTTPError(new InvalidInputError({ reason: "name, email, and role required" }));
+	if (!body?.email || !body?.role) {
+		throw toHTTPError(new InvalidInputError({ reason: "email and role required" }));
 	}
 
 	if (!emailValidator.validate(body.email)) {
 		throw toHTTPError(new InvalidEmailError());
 	}
 
-	// admin can only create members
 	if (actorRole === "admin" && body.role !== "member") {
-		throw toHTTPError(new NoPermissionError({ reason: "Admins can only create members" }));
+		throw toHTTPError(new NoPermissionError({ reason: "Admins can only add members" }));
 	}
 
-	// find or create user by email (case-insensitive)
-	let [user] = await db
-		.select()
-		.from(users)
-		.where(eq(lower(users.email), body.email.toLowerCase()))
-		.limit(1);
+	const existing = await findUserByEmail(db, body.email);
+	if (existing) {
+		const member = await addMemberToOrg(db, {
+			orgId,
+			userId: existing.id,
+			role: body.role,
+		});
+		if (member instanceof Error) throw toHTTPError(member);
 
-	if (!user) {
-		[user] = await db.insert(users).values({ name: body.name, email: body.email }).returning();
+		await clearInvitationsForEmail(db, { orgId, email: body.email });
+
+		await logAudit(db, {
+			orgId,
+			actorId: session.user.id,
+			action: "member.add",
+			targetType: "member",
+			targetId: member.id,
+			metadata: { role: body.role, email: body.email },
+		});
+		return { kind: "member" as const, member };
 	}
 
-	const member = await addMemberToOrg(db, {
+	const invitation = await sendInvitation(db, {
 		orgId,
-		userId: user.id,
+		email: body.email,
 		role: body.role,
+		invitedBy: session.user.id,
 	});
-	if (member instanceof Error) throw toHTTPError(member);
+	if (invitation instanceof Error) throw toHTTPError(invitation);
 
 	await logAudit(db, {
 		orgId,
 		actorId: session.user.id,
-		action: "member.add",
-		targetType: "member",
-		targetId: member.id,
+		action: "invitation.send",
+		targetType: "invitation",
+		targetId: invitation.id,
 		metadata: { role: body.role, email: body.email },
 	});
-	return member;
+	return { kind: "invitation" as const, invitation };
 });

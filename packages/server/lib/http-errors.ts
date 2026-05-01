@@ -3,7 +3,6 @@ import * as errore from "errore";
 import { HTTPError } from "h3";
 
 import {
-	AccountAlreadyClaimedError,
 	ActivationNotFoundError,
 	DuplicateMemberError,
 	ForbiddenError,
@@ -11,6 +10,7 @@ import {
 	InvalidInputError,
 	InvalidSlugError,
 	InvalidTokenError,
+	InvitationNotFoundError,
 	LastOwnerError,
 	MemberNotFoundError,
 	NoOrgSelectedError,
@@ -26,7 +26,6 @@ import {
 	TargetMemberNotFoundError,
 	UnauthorizedError,
 	UnsupportedCurrencyError,
-	UserNotFoundError,
 	WeakPasswordError,
 } from "./errors.js";
 
@@ -51,10 +50,9 @@ export type AppError =
 	| MemberNotFoundError
 	| TargetMemberNotFoundError
 	| ActivationNotFoundError
-	| UserNotFoundError
+	| InvitationNotFoundError
 	| SlugTakenError
 	| DuplicateMemberError
-	| AccountAlreadyClaimedError
 	| SetupAlreadyCompleteError
 	| RateLimitedError
 	| ServerMisconfiguredError
@@ -95,12 +93,10 @@ export function toHTTPError(err: unknown): HTTPError {
 		MemberNotFoundError: (e) => new HTTPError(e.message, { status: 404 }),
 		TargetMemberNotFoundError: (e) => new HTTPError(e.message, { status: 404 }),
 		ActivationNotFoundError: (e) => new HTTPError(e.message, { status: 404 }),
-		UserNotFoundError: (e) => new HTTPError(e.message, { status: 404 }),
+		InvitationNotFoundError: (e) => new HTTPError(e.message, { status: 404 }),
 		// 409
 		SlugTakenError: (e) => new HTTPError(e.message, { status: 409 }),
 		DuplicateMemberError: (e) => new HTTPError(e.message, { status: 409 }),
-		AccountAlreadyClaimedError: () =>
-			new HTTPError("Account already claimed, please login", { status: 409 }),
 		SetupAlreadyCompleteError: (e) => new HTTPError(e.message, { status: 409 }),
 		// 429
 		RateLimitedError: (e) => new HTTPError(e.message, { status: 429 }),

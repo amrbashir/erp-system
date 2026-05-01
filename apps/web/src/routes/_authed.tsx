@@ -4,28 +4,43 @@ import { Button } from "@workspace/ui/components/button";
 
 import { OrgSwitcher } from "@/components/org-switcher";
 import { isDesktop } from "@/lib/activation";
-import { signOut } from "@/lib/auth-client";
+import { apiFetch, clearToken } from "@/lib/api-fetch";
+import { authClient, signOut } from "@/lib/auth-client";
 import { getSession } from "@/lib/auth-session";
-import { getDesktopSession, desktopLogout } from "@/lib/desktop-auth";
 import { getOrgs, getCurrentOrgId } from "@/lib/org-fns";
+
+const CURRENT_ORG_KEY = "current_org_id";
+
+type OrgSummary = {
+	id: string;
+	name: string;
+	slug: string;
+	defaultCurrency: string;
+	role: string;
+};
 
 export const Route = createFileRoute("/_authed")({
 	beforeLoad: async ({ location }) => {
 		if (isDesktop()) {
-			const desktopSession = await getDesktopSession();
-			if (!desktopSession) {
-				// root layout will handle login
-				throw redirect({ to: "/" });
+			const sessionRes = await authClient.getSession();
+			if (!sessionRes.data) {
+				// __root will keep us on onboarding if no users; otherwise show login
+				throw redirect({ to: "/login", search: { redirect: location.pathname } });
 			}
 
-			const orgs = desktopSession.orgs;
-			const currentOrgId = orgs[0]?.id ?? null;
+			const orgsRes = await apiFetch("/api/orgs");
+			const orgs: OrgSummary[] = orgsRes.ok ? await orgsRes.json() : [];
 
-			return {
-				session: { user: desktopSession.user },
-				orgs,
-				currentOrgId,
-			};
+			const stored =
+				typeof localStorage !== "undefined" ? localStorage.getItem(CURRENT_ORG_KEY) : null;
+			const currentOrgId =
+				(stored && orgs.find((o) => o.id === stored)?.id) ?? orgs[0]?.id ?? null;
+
+			if (orgs.length === 0 && location.pathname !== "/onboarding") {
+				throw redirect({ to: "/onboarding" });
+			}
+
+			return { session: { user: sessionRes.data.user }, orgs, currentOrgId };
 		}
 
 		const session = await getSession();
@@ -39,7 +54,6 @@ export const Route = createFileRoute("/_authed")({
 		const orgs = await getOrgs();
 		const currentOrgId = await getCurrentOrgId();
 
-		// redirect to onboarding if no orgs (unless already there)
 		if (orgs.length === 0 && location.pathname !== "/onboarding") {
 			throw redirect({ to: "/onboarding" });
 		}
@@ -55,13 +69,12 @@ function AuthedLayout() {
 	const desktop = isDesktop();
 
 	async function handleLogout() {
+		await signOut();
 		if (desktop) {
-			await desktopLogout();
-			// force full reload to go back to login screen
+			clearToken();
 			window.location.href = "/";
 			return;
 		}
-		await signOut();
 		navigate({ to: "/login" });
 	}
 
@@ -69,10 +82,7 @@ function AuthedLayout() {
 		<>
 			<div className="flex items-center justify-between border-b px-4 py-2">
 				<div className="flex items-center gap-4">
-					{!desktop && <OrgSwitcher orgs={orgs} currentOrgId={currentOrgId} />}
-					{desktop && orgs[0] && (
-						<span className="text-sm font-medium">{orgs[0].name}</span>
-					)}
+					<OrgSwitcher orgs={orgs} currentOrgId={currentOrgId} />
 					<nav className="flex gap-2 text-sm">
 						<Link
 							to="/dashboard"

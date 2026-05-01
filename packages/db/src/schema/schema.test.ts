@@ -82,9 +82,17 @@ describe("users table", () => {
 		expect(user.updatedAt).toBeInstanceOf(Date);
 	});
 
-	it("should allow nullable email (desktop users)", async () => {
-		const [user] = await db.insert(schema.users).values({ name: "Desktop User" }).returning();
-		expect(user.email).toBeNull();
+	it("should require email", async () => {
+		await expect(
+			db.insert(schema.users).values({ name: "No Email" } as any),
+		).rejects.toThrow();
+	});
+
+	it("should enforce case-insensitive unique email", async () => {
+		await db.insert(schema.users).values({ name: "Lower", email: "case@test.com" });
+		await expect(
+			db.insert(schema.users).values({ name: "Upper", email: "CASE@test.com" }),
+		).rejects.toThrow();
 	});
 });
 
@@ -94,7 +102,10 @@ describe("org_members table", () => {
 			.insert(schema.orgs)
 			.values({ name: "Member Org", slug: "member-org" })
 			.returning();
-		const [user] = await db.insert(schema.users).values({ name: "Bob" }).returning();
+		const [user] = await db
+			.insert(schema.users)
+			.values({ name: "Bob", email: "bob@test.com" })
+			.returning();
 
 		await db
 			.insert(schema.orgMembers)
@@ -110,7 +121,10 @@ describe("org_members table", () => {
 			.insert(schema.orgs)
 			.values({ name: "Role Org", slug: "role-org" })
 			.returning();
-		const [user] = await db.insert(schema.users).values({ name: "Charlie" }).returning();
+		const [user] = await db
+			.insert(schema.users)
+			.values({ name: "Charlie", email: "charlie@test.com" })
+			.returning();
 
 		const [member] = await db
 			.insert(schema.orgMembers)

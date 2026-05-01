@@ -50,7 +50,7 @@ describe("applyMigrations", () => {
 			sql`SELECT hash FROM "__drizzle_migrations"`,
 		);
 		expect(result.rows.length).toBeGreaterThan(0);
-		expect(result.rows[0].hash).toBe("0000_lame_scream");
+		expect(result.rows[0].hash).toMatch(/^0000_/);
 	});
 
 	it("is idempotent", async () => {

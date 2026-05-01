@@ -5,7 +5,6 @@ import { useState } from "react";
 
 import { signUp } from "@/lib/auth-client";
 import { getSession } from "@/lib/auth-session";
-import { readErrorMessage } from "@/lib/http";
 
 export const Route = createFileRoute("/signup")({
 	beforeLoad: async () => {
@@ -32,36 +31,19 @@ function SignupPage() {
 		const email = form.get("email") as string;
 		const password = form.get("password") as string;
 
-		const { error: err } = await signUp.email({
-			name,
-			email,
-			password,
-		});
+		const { error: err } = await signUp.email({ name, email, password });
+
+		setLoading(false);
 
 		if (err) {
-			// if user was added by an admin, claim the account
-			if (err.code === "USER_ALREADY_EXISTS" || err.code === "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL") {
-				const res = await fetch("/api/auth/claim", {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ email, password }),
-				});
-				if (res.ok) {
-					setLoading(false);
-					navigate({ to: "/dashboard", reloadDocument: true });
-					return;
-				}
-				setLoading(false);
-				setError(await readErrorMessage(res, m.signup_failed()));
-				return;
-			}
-			setLoading(false);
 			setError(err.message ?? m.signup_failed());
 			return;
 		}
 
-		setLoading(false);
-		navigate({ to: "/onboarding" });
+		// invitations table is consumed in user.create.after; if the email had
+		// pending invites, the user already has org memberships. otherwise, route
+		// to onboarding to create one.
+		navigate({ to: "/dashboard", reloadDocument: true });
 	}
 
 	return (

@@ -1,3 +1,7 @@
+import { randomBytes } from "node:crypto";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+
 import { definePlugin } from "nitro";
 import { useRuntimeConfig } from "nitro/runtime-config";
 import { useStorage } from "nitro/storage";
@@ -6,9 +10,32 @@ import { initDatabase } from "#db";
 import { InvalidInputError } from "~/lib/errors";
 import { applyMigrations } from "~/lib/migrate";
 
+/** Read existing BETTER_AUTH_SECRET file, or generate + persist a new one. */
+function ensureAuthSecret(dataDir: string | undefined) {
+	if (process.env.BETTER_AUTH_SECRET) return;
+
+	// Co-locate secret with pgdata so user-controlled storage survives upgrades.
+	const baseDir = dataDir ? dirname(resolve(dataDir)) : ".";
+	const secretPath = resolve(baseDir, "auth-secret");
+
+	if (existsSync(secretPath)) {
+		process.env.BETTER_AUTH_SECRET = readFileSync(secretPath, "utf8").trim();
+		return;
+	}
+
+	mkdirSync(baseDir, { recursive: true });
+	const secret = randomBytes(48).toString("hex");
+	writeFileSync(secretPath, secret, { mode: 0o600 });
+	process.env.BETTER_AUTH_SECRET = secret;
+}
+
 export default definePlugin(async () => {
 	const config = useRuntimeConfig();
 	const dataDir = (config as any).pgdataDir || undefined;
+
+	// must run before any auth.ts module evaluation triggered by route imports
+	ensureAuthSecret(dataDir);
+
 	const db = await initDatabase(dataDir);
 
 	const storage = useStorage("assets:migrations");

@@ -6,7 +6,6 @@
 	"label_email": "Email",
 	"label_password": "Password",
 	"label_name": "Name",
-	"label_username": "Username",
 	"label_role": "Role",
 	"label_org_name": "Organization name",
 
@@ -55,6 +54,11 @@
 	"users_adding": "Adding\u2026",
 	"users_add_submit": "Add",
 	"users_actions": "Actions",
+	"users_status": "Status",
+	"users_status_active": "Active",
+	"users_status_pending": "Pending",
+	"users_revoke": "Revoke",
+	"users_sort_pending": "Sort pending first",
 
 	"org_switcher_select": "Select org",
 	"org_switcher_failed": "Failed to switch organization",
