@@ -1,5 +1,5 @@
 import { GlobeSimple } from "@phosphor-icons/react";
-import { getLocale, getNextLocale, localeNames, locales, m, setLocale } from "@workspace/i18n";
+import { getLocale, getNextLocale, locales, m, setLocale } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 
 export function LanguageSwitcher() {
@@ -18,7 +18,7 @@ export function LanguageSwitcher() {
 			title={m.language_switcher_label()}
 		>
 			<GlobeSimple data-icon="inline-start" />
-			{localeNames[current] ?? current}
+			{m.language_endonym()}
 		</Button>
 	);
 }

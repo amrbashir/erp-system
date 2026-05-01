@@ -1,13 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getNextLocale, localeNames } from "./locale-utils";
-
-describe("localeNames", () => {
-	it("has entries for en and ar", () => {
-		expect(localeNames.en).toBe("English");
-		expect(localeNames.ar).toBe("العربية");
-	});
-});
+import { getNextLocale } from "./locale-utils";
 
 describe("getNextLocale", () => {
 	const available = ["en", "ar"] as const;
