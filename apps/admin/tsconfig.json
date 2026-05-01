@@ -22,7 +22,7 @@
 		"paths": {
 			"@/*": ["./src/*"],
 			"@workspace/ui/*": ["../../packages/ui/src/*"],
-			"#db": ["../../packages/db/src/adapters/pglite.ts"]
+			"#db": ["../../packages/db/src/adapters/neon.ts"]
 		}
 	}
 }
