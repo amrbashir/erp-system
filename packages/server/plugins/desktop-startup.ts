@@ -14,8 +14,18 @@ import { applyMigrations } from "~/lib/migrate";
 function ensureAuthSecret(dataDir: string | undefined) {
 	if (process.env.BETTER_AUTH_SECRET) return;
 
+	// Refuse to fall back to CWD: it's launch-dir dependent → secret rotates on
+	// every relocation and invalidates every session. Tauri always sets
+	// NITRO_PGDATA_DIR; if it's missing the host is misconfigured.
+	if (!dataDir) {
+		throw new Error(
+			"[desktop-startup] pgdataDir is not configured; set NITRO_PGDATA_DIR " +
+				"(via the Tauri host) or BETTER_AUTH_SECRET directly.",
+		);
+	}
+
 	// Co-locate secret with pgdata so user-controlled storage survives upgrades.
-	const baseDir = dataDir ? dirname(resolve(dataDir)) : ".";
+	const baseDir = dirname(resolve(dataDir));
 	const secretPath = resolve(baseDir, "auth-secret");
 
 	if (existsSync(secretPath)) {
