@@ -34,6 +34,7 @@
 	"create_org_submitting": "Creating\u2026",
 	"create_org_submit": "Create organization",
 	"cancel": "Cancel",
+	"retry": "Retry",
 
 	"dashboard_welcome": "Welcome, {name}",
 	"dashboard_current_org": "Current organization:",

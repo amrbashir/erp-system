@@ -1,4 +1,5 @@
 import { CircleNotch } from "@phosphor-icons/react";
+import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { useEffect, useState } from "react";
 
@@ -65,7 +66,7 @@ export function DesktopBootstrap({ children }: { children: React.ReactNode }) {
 			<div className="flex min-h-svh flex-col items-center justify-center gap-4 p-6">
 				<p className="text-destructive text-sm">{state.message}</p>
 				<Button variant="outline" size="sm" onClick={() => window.location.reload()}>
-					Retry
+					{m.retry()}
 				</Button>
 			</div>
 		);

@@ -34,6 +34,7 @@
 	"create_org_submitting": "جارٍ الإنشاء\u2026",
 	"create_org_submit": "إنشاء المنظمة",
 	"cancel": "إلغاء",
+	"retry": "إعادة المحاولة",
 
 	"dashboard_welcome": "مرحباً،‏ {name}",
 	"dashboard_current_org": "المنظمة الحالية:",
