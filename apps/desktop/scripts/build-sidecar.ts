@@ -1,5 +1,5 @@
 import { execSync } from "node:child_process";
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import { builtinModules } from "node:module";
 import { resolve } from "node:path";
 
@@ -8,6 +8,9 @@ const serverDir = resolve(root, "packages/server");
 const binDir = resolve(import.meta.dirname, "../src-tauri/binaries");
 
 function buildNitro() {
+	// Clean .output first so deleted routes/files don't linger in the bundled
+	// sidecar. Nitro overwrites in place but never prunes stale artifacts.
+	rmSync(resolve(serverDir, ".output"), { recursive: true, force: true });
 	execSync("pnpm run build:desktop", { cwd: serverDir, stdio: "inherit" });
 }
 
