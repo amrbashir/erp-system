@@ -43,6 +43,10 @@ function SignupPage() {
 		// invitations table is consumed in user.create.after; if the email had
 		// pending invites, the user already has org memberships. otherwise, route
 		// to onboarding to create one.
+		// Flag for dashboard to surface a one-shot "joined via invite" banner.
+		if (typeof sessionStorage !== "undefined") {
+			sessionStorage.setItem("post_signup", "1");
+		}
 		navigate({ to: "/dashboard", reloadDocument: true });
 	}
 

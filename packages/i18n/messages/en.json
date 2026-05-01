@@ -37,6 +37,8 @@
 
 	"dashboard_welcome": "Welcome, {name}",
 	"dashboard_current_org": "Current organization:",
+	"dashboard_joined_via_invite": "You joined the following organization(s) via pending invitation(s):",
+	"dashboard_dismiss": "Dismiss",
 
 	"users_heading": "Users",
 	"users_add": "Add user",
