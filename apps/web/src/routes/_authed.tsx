@@ -29,7 +29,16 @@ export const Route = createFileRoute("/_authed")({
 			}
 
 			const orgsRes = await apiFetch("/api/orgs");
-			const orgs: OrgSummary[] = orgsRes.ok ? await orgsRes.json() : [];
+			// 401 = token expired/invalid → bounce to login. Other failures bubble
+			// up rather than silently treat as zero-orgs (which would misroute to
+			// /onboarding).
+			if (orgsRes.status === 401) {
+				throw redirect({ to: "/login", search: { redirect: location.pathname } });
+			}
+			if (!orgsRes.ok) {
+				throw new Error(`Failed to load orgs (HTTP ${orgsRes.status})`);
+			}
+			const orgs: OrgSummary[] = await orgsRes.json();
 
 			const stored =
 				typeof localStorage !== "undefined" ? localStorage.getItem(CURRENT_ORG_KEY) : null;
