@@ -38,6 +38,7 @@ describe("migrations", () => {
 		expect(tables).toContain("accounts");
 		expect(tables).toContain("verifications");
 		expect(tables).toContain("org_members");
+		expect(tables).toContain("invitations");
 		expect(tables).toContain("activations");
 	});
 
@@ -131,6 +132,92 @@ describe("org_members table", () => {
 			.values({ orgId: org.id, userId: user.id })
 			.returning();
 		expect(member.role).toBe("member");
+	});
+});
+
+describe("invitations table", () => {
+	it("should insert with default role member and timestamp", async () => {
+		const [org] = await db
+			.insert(schema.orgs)
+			.values({ name: "Inv Org", slug: "inv-org-1" })
+			.returning();
+		const [inv] = await db
+			.insert(schema.invitations)
+			.values({ orgId: org.id, email: "invitee@test.com" })
+			.returning();
+		expect(inv.id).toBeDefined();
+		expect(inv.role).toBe("member");
+		expect(inv.invitedBy).toBeNull();
+		expect(inv.createdAt).toBeInstanceOf(Date);
+	});
+
+	it("should enforce case-insensitive unique (org_id, email)", async () => {
+		const [org] = await db
+			.insert(schema.orgs)
+			.values({ name: "Inv Unique", slug: "inv-org-2" })
+			.returning();
+		await db
+			.insert(schema.invitations)
+			.values({ orgId: org.id, email: "Dup@Test.com", role: "member" });
+		await expect(
+			db
+				.insert(schema.invitations)
+				.values({ orgId: org.id, email: "dup@test.com", role: "admin" }),
+		).rejects.toThrow();
+	});
+
+	it("should allow same email across different orgs", async () => {
+		const [orgA] = await db
+			.insert(schema.orgs)
+			.values({ name: "A", slug: "inv-org-3a" })
+			.returning();
+		const [orgB] = await db
+			.insert(schema.orgs)
+			.values({ name: "B", slug: "inv-org-3b" })
+			.returning();
+		await db.insert(schema.invitations).values({ orgId: orgA.id, email: "shared@test.com" });
+		const [inv] = await db
+			.insert(schema.invitations)
+			.values({ orgId: orgB.id, email: "shared@test.com" })
+			.returning();
+		expect(inv.orgId).toBe(orgB.id);
+	});
+
+	it("should cascade-delete invitations when org is deleted", async () => {
+		const [org] = await db
+			.insert(schema.orgs)
+			.values({ name: "Doomed", slug: "inv-org-4" })
+			.returning();
+		await db.insert(schema.invitations).values({ orgId: org.id, email: "x@test.com" });
+		await db.delete(schema.orgs).where(sql`id = ${org.id}`);
+		const remaining = await db
+			.select()
+			.from(schema.invitations)
+			.where(sql`org_id = ${org.id}`);
+		expect(remaining).toHaveLength(0);
+	});
+
+	it("should null invitedBy when inviter user is deleted", async () => {
+		const [org] = await db
+			.insert(schema.orgs)
+			.values({ name: "Inviter Org", slug: "inv-org-5" })
+			.returning();
+		const [inviter] = await db
+			.insert(schema.users)
+			.values({ name: "Inviter", email: "inviter@test.com" })
+			.returning();
+		const [inv] = await db
+			.insert(schema.invitations)
+			.values({ orgId: org.id, email: "y@test.com", invitedBy: inviter.id })
+			.returning();
+		expect(inv.invitedBy).toBe(inviter.id);
+
+		await db.delete(schema.users).where(sql`id = ${inviter.id}`);
+		const [reloaded] = await db
+			.select()
+			.from(schema.invitations)
+			.where(sql`id = ${inv.id}`);
+		expect(reloaded.invitedBy).toBeNull();
 	});
 });
 
