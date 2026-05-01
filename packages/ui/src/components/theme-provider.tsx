@@ -2,6 +2,13 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 export type Theme = "light" | "dark" | "system";
 
+/**
+ * Inline <script> body to apply the dark class before paint and avoid FOUC.
+ * Reads the same storage key the provider uses (default "theme").
+ * Render via <script dangerouslySetInnerHTML={{ __html: themeScript }} />.
+ */
+export const themeScript = `(function(){var t=localStorage.getItem("theme")||"system";var d=t==="system"?window.matchMedia("(prefers-color-scheme:dark)").matches:t==="dark";if(d)document.documentElement.classList.add("dark")})()`;
+
 type ThemeProviderState = {
 	theme: Theme;
 	setTheme: (theme: Theme) => void;

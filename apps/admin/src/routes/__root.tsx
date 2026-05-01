@@ -1,7 +1,12 @@
 import { Moon, Sun, Monitor } from "@phosphor-icons/react";
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/button";
-import { ThemeProvider, useTheme, type Theme } from "@workspace/ui/components/theme-provider";
+import {
+	ThemeProvider,
+	themeScript,
+	useTheme,
+	type Theme,
+} from "@workspace/ui/components/theme-provider";
 
 import appCss from "@workspace/ui/globals.css?url";
 
@@ -17,8 +22,6 @@ export const Route = createRootRoute({
 	shellComponent: RootDocument,
 	component: RootLayout,
 });
-
-const themeScript = `(function(){var t=localStorage.getItem("theme")||"system";var d=t==="system"?window.matchMedia("(prefers-color-scheme:dark)").matches:t==="dark";if(d)document.documentElement.classList.add("dark")})()`;
 
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (

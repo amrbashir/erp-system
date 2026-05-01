@@ -1,6 +1,6 @@
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 import { getLocale, getTextDirection } from "@workspace/i18n";
-import { ThemeProvider } from "@workspace/ui/components/theme-provider";
+import { ThemeProvider, themeScript } from "@workspace/ui/components/theme-provider";
 
 import { DesktopBootstrap } from "@/components/desktop-bootstrap";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -33,8 +33,6 @@ export const Route = createRootRoute({
 	shellComponent: RootDocument,
 	component: RootLayout,
 });
-
-const themeScript = `(function(){var t=localStorage.getItem("theme")||"system";var d=t==="system"?window.matchMedia("(prefers-color-scheme:dark)").matches:t==="dark";if(d)document.documentElement.classList.add("dark")})()`;
 
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
