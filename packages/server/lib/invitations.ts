@@ -93,6 +93,10 @@ export async function clearInvitationsForEmail(
  * Called from auth hooks.after on user.create — looks up any pending
  * invitations for this user's email and converts each into an org membership.
  * Best-effort: errors don't roll back signup.
+ *
+ * Each invite is processed in its own transaction so:
+ *  - partial state per invite is impossible (member+audit+delete or none)
+ *  - one bad invite (e.g. cascade race) doesn't strand the rest
  */
 export async function consumeInvitations(
 	db: DB,
@@ -110,24 +114,30 @@ export async function consumeInvitations(
 	if (pending.length === 0) return;
 
 	for (const inv of pending) {
-		// onConflictDoNothing in case the user is somehow already a member
-		await db
-			.insert(orgMembers)
-			.values({ orgId: inv.orgId, userId: input.userId, role: inv.role })
-			.onConflictDoNothing();
-		await db.insert(auditLogs).values({
-			orgId: inv.orgId,
-			actorId: input.userId,
-			action: "invitation.consume",
-			targetType: "invitation",
-			targetId: inv.id,
-			metadata: { email: input.email, role: inv.role },
-		});
+		try {
+			await db.transaction(async (tx) => {
+				// onConflictDoNothing in case the user is somehow already a member
+				await tx
+					.insert(orgMembers)
+					.values({ orgId: inv.orgId, userId: input.userId, role: inv.role })
+					.onConflictDoNothing();
+				await tx.insert(auditLogs).values({
+					orgId: inv.orgId,
+					actorId: input.userId,
+					action: "invitation.consume",
+					targetType: "invitation",
+					targetId: inv.id,
+					metadata: { email: input.email, role: inv.role },
+				});
+				await tx.delete(invitations).where(eq(invitations.id, inv.id));
+			});
+		} catch (e) {
+			console.error(
+				`[consumeInvitations] failed for invitation ${inv.id} (org ${inv.orgId}):`,
+				e,
+			);
+		}
 	}
-
-	await db
-		.delete(invitations)
-		.where(eq(lower(invitations.email), input.email.toLowerCase()));
 }
 
 /**
