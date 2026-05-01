@@ -49,7 +49,7 @@ export function createAuth(options: CreateAuthOptions = {}) {
 		emailAndPassword: {
 			enabled: true,
 			minPasswordLength: 6,
-			requireEmailVerification: isDesktop ? false : undefined,
+			requireEmailVerification: false,
 		},
 		hooks: {
 			before: async (ctx) => {
