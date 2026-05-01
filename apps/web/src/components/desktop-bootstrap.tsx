@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { ActivationScreen } from "@/components/activation-screen";
 import { DesktopOnboarding } from "@/components/desktop-onboarding";
 import { checkActivationState } from "@/lib/activation";
-import { getSetupComplete } from "@/lib/desktop-auth";
+import { getSetupComplete, waitForSidecar } from "@/lib/desktop-auth";
 
 type State =
 	| { step: "loading" }
@@ -39,6 +39,18 @@ export function DesktopBootstrap({ children }: { children: React.ReactNode }) {
 			}
 			if (activation.status === "not_activated") {
 				setState({ step: "activation", hardwareId: activation.hardwareId });
+				return;
+			}
+
+			// Wait for the sidecar to bind its port + finish migrations before
+			// we hit any /api endpoint, otherwise first-launch races surface as
+			// "connection refused" errors.
+			const ready = await waitForSidecar();
+			if (!ready) {
+				setState({
+					step: "error",
+					message: "Sidecar didn't become ready in time.",
+				});
 				return;
 			}
 

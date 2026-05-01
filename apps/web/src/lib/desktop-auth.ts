@@ -36,3 +36,28 @@ export async function getSetupComplete(): Promise<{ setupComplete: boolean }> {
 	}
 	return res.json();
 }
+
+/**
+ * Poll /api/health until the sidecar reports ok (or timeout). Tauri spawns the
+ * sidecar in setup(), but the webview loads in parallel — without this,
+ * early calls race the port binding + PGlite init + migrations and surface
+ * confusing connection errors.
+ */
+export async function waitForSidecar(opts?: {
+	timeoutMs?: number;
+	intervalMs?: number;
+}): Promise<boolean> {
+	const timeoutMs = opts?.timeoutMs ?? 30_000;
+	const intervalMs = opts?.intervalMs ?? 250;
+	const deadline = Date.now() + timeoutMs;
+
+	while (Date.now() < deadline) {
+		const res = await apiFetch("/api/health").catch(() => null);
+		if (res?.ok) {
+			const body = await res.json().catch(() => null);
+			if (body?.db === "ok") return true;
+		}
+		await new Promise((r) => setTimeout(r, intervalMs));
+	}
+	return false;
+}
