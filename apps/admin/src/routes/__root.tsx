@@ -1,7 +1,9 @@
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
-import { m } from "@workspace/i18n";
+import { getLocale, getTextDirection, m } from "@workspace/i18n";
 import { ThemeProvider, themeScript } from "@workspace/ui/components/theme-provider";
 import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
+
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 import appCss from "@workspace/ui/globals.css?url";
 
@@ -20,7 +22,7 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="en">
+		<html lang={getLocale()} dir={getTextDirection()}>
 			<head>
 				<HeadContent />
 				<script dangerouslySetInnerHTML={{ __html: themeScript }} />
@@ -38,7 +40,10 @@ function RootLayout() {
 		<div className="bg-background text-foreground min-h-screen">
 			<header className="border-border flex items-center justify-between border-b px-6 py-3">
 				<h1 className="text-lg font-bold">Admin Dashboard</h1>
-				<ThemeSwitcher label={m.theme_switcher_label()} />
+				<div className="flex items-center gap-2">
+					<ThemeSwitcher label={m.theme_switcher_label()} />
+					<LanguageSwitcher />
+				</div>
 			</header>
 			<Outlet />
 		</div>

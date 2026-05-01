@@ -23,6 +23,7 @@
 		"vite-tsconfig-paths": "catalog:vite"
 	},
 	"devDependencies": {
+		"@inlang/paraglide-js": "catalog:",
 		"@tanstack/router-plugin": "catalog:tanstack",
 		"@types/node": "catalog:",
 		"@types/react": "catalog:react",
