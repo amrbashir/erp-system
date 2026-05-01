@@ -357,6 +357,68 @@ describe("consumeInvitations", () => {
 	});
 });
 
+describe("expiry", () => {
+	it("sets expiresAt ~7 days in the future by default", async () => {
+		const inv = unwrap(
+			await sendInvitation(db as any, {
+				orgId,
+				email: "exp@test.com",
+				role: "member",
+				invitedBy: owner,
+			}),
+		);
+		const delta = inv.expiresAt.getTime() - inv.createdAt.getTime();
+		const sevenDays = 7 * 24 * 60 * 60 * 1000;
+		expect(delta).toBeGreaterThan(sevenDays - 60_000);
+		expect(delta).toBeLessThan(sevenDays + 60_000);
+	});
+
+	it("listInvitations excludes expired rows", async () => {
+		await sendInvitation(db as any, {
+			orgId,
+			email: "fresh@test.com",
+			role: "member",
+			invitedBy: owner,
+		});
+		// backdate one row past expiry
+		await db
+			.insert(schema.invitations)
+			.values({
+				orgId,
+				email: "stale@test.com",
+				role: "member",
+				invitedBy: owner,
+				expiresAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+			});
+
+		const rows = await listInvitations(db as any, orgId);
+		expect(rows.map((r) => r.email)).toEqual(["fresh@test.com"]);
+	});
+
+	it("consumeInvitations skips expired rows (membership not created, row left for cleanup)", async () => {
+		await db.insert(schema.invitations).values({
+			orgId,
+			email: "old@test.com",
+			role: "admin",
+			invitedBy: owner,
+			expiresAt: new Date(Date.now() - 1000),
+		});
+
+		const [u] = await db
+			.insert(schema.users)
+			.values({ name: "Old", email: "old@test.com" })
+			.returning();
+
+		await consumeInvitations(db as any, { userId: u.id, email: "old@test.com" });
+
+		const memberships = await db
+			.select()
+			.from(schema.orgMembers)
+			.where(eq(schema.orgMembers.userId, u.id));
+		expect(memberships).toHaveLength(0);
+	});
+});
+
 describe("findUserByEmail", () => {
 	it("returns the user when present (case-insensitive)", async () => {
 		const [u] = await db

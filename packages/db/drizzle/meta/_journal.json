@@ -8,6 +8,13 @@
       "when": 1777604356319,
       "tag": "0000_yellow_thing",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1777651112892,
+      "tag": "0001_noisy_shard",
+      "breakpoints": true
     }
   ]
 }

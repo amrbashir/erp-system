@@ -1,6 +1,6 @@
 import { lower } from "@workspace/db";
 import { auditLogs, invitations, orgMembers, users } from "@workspace/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, gt, sql } from "drizzle-orm";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 
 import { DuplicateMemberError } from "./errors.js";
@@ -47,9 +47,10 @@ export async function listInvitations(db: DB, orgId: string) {
 			role: invitations.role,
 			invitedBy: invitations.invitedBy,
 			createdAt: invitations.createdAt,
+			expiresAt: invitations.expiresAt,
 		})
 		.from(invitations)
-		.where(eq(invitations.orgId, orgId));
+		.where(and(eq(invitations.orgId, orgId), gt(invitations.expiresAt, sql`now()`)));
 }
 
 export async function revokeInvitation(
@@ -109,7 +110,12 @@ export async function consumeInvitations(
 			role: invitations.role,
 		})
 		.from(invitations)
-		.where(eq(lower(invitations.email), input.email.toLowerCase()));
+		.where(
+			and(
+				eq(lower(invitations.email), input.email.toLowerCase()),
+				gt(invitations.expiresAt, sql`now()`),
+			),
+		);
 
 	if (pending.length === 0) return;
 
