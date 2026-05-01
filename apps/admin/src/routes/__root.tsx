@@ -1,12 +1,7 @@
-import { Moon, Sun, Monitor } from "@phosphor-icons/react";
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
-import { Button } from "@workspace/ui/components/button";
-import {
-	ThemeProvider,
-	themeScript,
-	useTheme,
-	type Theme,
-} from "@workspace/ui/components/theme-provider";
+import { m } from "@workspace/i18n";
+import { ThemeProvider, themeScript } from "@workspace/ui/components/theme-provider";
+import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
 
 import appCss from "@workspace/ui/globals.css?url";
 
@@ -38,28 +33,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 	);
 }
 
-const themeOrder: Theme[] = ["light", "dark", "system"];
-const themeIcons: Record<Theme, React.ReactNode> = {
-	light: <Sun />,
-	dark: <Moon />,
-	system: <Monitor />,
-};
-
 function RootLayout() {
-	const { theme, setTheme } = useTheme();
-
 	return (
 		<div className="bg-background text-foreground min-h-screen">
 			<header className="border-border flex items-center justify-between border-b px-6 py-3">
 				<h1 className="text-lg font-bold">Admin Dashboard</h1>
-				<Button
-					variant="ghost"
-					size="sm"
-					onClick={() => setTheme(themeOrder[(themeOrder.indexOf(theme) + 1) % themeOrder.length])}
-					aria-label="Theme"
-				>
-					{themeIcons[theme]}
-				</Button>
+				<ThemeSwitcher label={m.theme_switcher_label()} />
 			</header>
 			<Outlet />
 		</div>
