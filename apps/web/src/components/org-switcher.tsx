@@ -60,14 +60,14 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 			</Button>
 
 			{open && (
-				<div className="border-border bg-background absolute top-full right-0 z-50 mt-1 min-w-48 rounded border shadow-md">
+				<div className="border-border bg-background absolute top-full end-0 z-50 mt-1 min-w-48 rounded border shadow-md">
 					{error && <p className="text-destructive px-3 py-2 text-sm">{error}</p>}
 					{orgs.map((org) => (
 						<button
 							key={org.id}
 							type="button"
 							onClick={() => switchOrg(org.id)}
-							className={`hover:bg-muted flex w-full items-center gap-2 px-3 py-2 text-left text-sm ${
+							className={`hover:bg-muted flex w-full items-center gap-2 px-3 py-2 text-start text-sm ${
 								org.id === currentOrgId ? "bg-muted" : ""
 							}`}
 						>
@@ -82,7 +82,7 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 								setOpen(false);
 								navigate({ to: "/new-org" });
 							}}
-							className="hover:bg-muted w-full px-3 py-2 text-left text-sm"
+							className="hover:bg-muted w-full px-3 py-2 text-start text-sm"
 						>
 							{m.org_switcher_new()}
 						</button>

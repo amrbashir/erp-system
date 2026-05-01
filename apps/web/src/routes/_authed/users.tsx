@@ -332,7 +332,7 @@ function MemberList({
 			)}
 			<table className="w-full text-sm">
 				<thead>
-					<tr className="border-border border-b text-left">
+					<tr className="border-border border-b text-start">
 						<th className="py-2 font-medium">{m.label_name()}</th>
 						<th className="py-2 font-medium">{m.label_email()}</th>
 						<th className="py-2 font-medium">{m.label_role()}</th>
