@@ -11,7 +11,7 @@ export function safeRedirect(to: string | undefined, fallback = "/"): string {
 
 	// block paths that could be interpreted as external URLs
 	// e.g. /\evil.com on some browsers
-	if (/^\/\\/.test(to)) return fallback;
+	if (to.startsWith("/\\")) return fallback;
 
 	return to;
 }

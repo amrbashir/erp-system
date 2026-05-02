@@ -53,7 +53,7 @@ function UsersPage() {
 	}, []);
 
 	useEffect(() => {
-		fetchMembers();
+		void fetchMembers();
 	}, [fetchMembers]);
 
 	const canManage = actorRole === "owner" || actorRole === "admin";
@@ -83,7 +83,7 @@ function UsersPage() {
 					actorRole={actorRole}
 					onDone={() => {
 						setShowForm(false);
-						fetchMembers();
+						void fetchMembers();
 					}}
 					onError={setError}
 				/>
@@ -116,7 +116,7 @@ function AddUserForm({
 }) {
 	const [submitting, setSubmitting] = useState(false);
 
-	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+	async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
 		e.preventDefault();
 		onError("");
 		setSubmitting(true);

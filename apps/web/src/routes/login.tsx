@@ -26,7 +26,7 @@ function LoginPage() {
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
 
-	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+	async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
 		e.preventDefault();
 		setError("");
 		setLoading(true);
@@ -48,7 +48,7 @@ function LoginPage() {
 		}
 
 		const dest = safeRedirect(redirectTo);
-		navigate({ to: dest });
+		void navigate({ to: dest });
 	}
 
 	return (

@@ -23,12 +23,15 @@ function getCurrentOrgId(): string | null {
 	return localStorage.getItem("current_org_id");
 }
 
+type HeaderRecord = Record<string, string>;
+
 /**
  * Unified fetch helper:
  *  - web: same-origin, cookies travel automatically (incl. current_org_id)
  *  - desktop: prepends sidecar URL, attaches Authorization: Bearer + X-Org-Id headers
  */
 export async function apiFetch(path: string, init?: RequestInit) {
+	const extra = init?.headers as HeaderRecord | undefined;
 	if (isDesktop()) {
 		const token = getStoredToken();
 		const orgId = getCurrentOrgId();
@@ -38,7 +41,7 @@ export async function apiFetch(path: string, init?: RequestInit) {
 				"Content-Type": "application/json",
 				...(token ? { Authorization: `Bearer ${token}` } : {}),
 				...(orgId ? { "X-Org-Id": orgId } : {}),
-				...init?.headers,
+				...extra,
 			},
 		});
 	}
@@ -46,7 +49,7 @@ export async function apiFetch(path: string, init?: RequestInit) {
 		...init,
 		headers: {
 			"Content-Type": "application/json",
-			...init?.headers,
+			...extra,
 		},
 	});
 }

@@ -8,7 +8,7 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
 
-	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+	async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
 		e.preventDefault();
 		setError("");
 		setLoading(true);

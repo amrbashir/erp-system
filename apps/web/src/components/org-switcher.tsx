@@ -28,7 +28,7 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 		if (isDesktop()) {
 			localStorage.setItem(CURRENT_ORG_KEY, orgId);
 			setOpen(false);
-			navigate({ to: "/dashboard", reloadDocument: true });
+			void navigate({ to: "/dashboard", reloadDocument: true });
 			return;
 		}
 
@@ -43,7 +43,7 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 		}
 
 		setOpen(false);
-		navigate({ to: "/dashboard", reloadDocument: true });
+		void navigate({ to: "/dashboard", reloadDocument: true });
 	}
 
 	if (orgs.length === 0) return null;
@@ -80,7 +80,7 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 							type="button"
 							onClick={() => {
 								setOpen(false);
-								navigate({ to: "/new-org" });
+								void navigate({ to: "/new-org" });
 							}}
 							className="hover:bg-muted w-full px-3 py-2 text-start text-sm"
 						>

@@ -16,6 +16,8 @@ pnpm build:desktop        # Build desktop app (all platforms)
 # Testing & Quality
 pnpm test                 # Run Vitest tests
 pnpm typecheck            # TypeScript type checking across all packages
+pnpm lint                 # Lint with oxlint
+pnpm lint:fix             # Auto-fix lint issues
 pnpm fmt                  # Format code with oxfmt
 pnpm fmt:check            # Check formatting without writing
 ```

@@ -1,4 +1,4 @@
-import { Check, X } from "@phosphor-icons/react";
+import { CheckIcon, XIcon } from "@phosphor-icons/react";
 import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
@@ -68,9 +68,9 @@ export function ActivationScreen({
 						</code>
 						<Button variant="outline" size="sm" onClick={handleCopy}>
 							{copyState === "success" ? (
-								<Check />
+								<CheckIcon />
 							) : copyState === "error" ? (
-								<X />
+								<XIcon />
 							) : (
 								m.activation_copy()
 							)}

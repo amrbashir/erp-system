@@ -84,7 +84,7 @@ function AuthedLayout() {
 			window.location.href = "/";
 			return;
 		}
-		navigate({ to: "/login" });
+		void navigate({ to: "/login" });
 	}
 
 	return (

@@ -1,4 +1,4 @@
-import { CircleNotch } from "@phosphor-icons/react";
+import { CircleNotchIcon } from "@phosphor-icons/react";
 import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { useEffect, useState } from "react";
@@ -31,7 +31,7 @@ export function DesktopBootstrap({ children }: { children: React.ReactNode }) {
 	const [state, setState] = useState<State>({ step: "loading" });
 
 	useEffect(() => {
-		(async () => {
+		void (async () => {
 			const activation = await checkActivationState();
 			if (activation.status === "error") {
 				setState({ step: "error", message: activation.error.message });
@@ -68,7 +68,7 @@ export function DesktopBootstrap({ children }: { children: React.ReactNode }) {
 	if (state.step === "loading") {
 		return (
 			<div className="flex min-h-svh items-center justify-center">
-				<CircleNotch className="text-muted-foreground size-6 animate-spin" />
+				<CircleNotchIcon className="text-muted-foreground size-6 animate-spin" />
 			</div>
 		);
 	}

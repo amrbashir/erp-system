@@ -21,7 +21,7 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
 
-	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+	async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
 		e.preventDefault();
 		setError("");
 		setLoading(true);
@@ -65,7 +65,7 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 		}
 
 		setLoading(false);
-		navigate({ to: "/dashboard", reloadDocument: true });
+		void navigate({ to: "/dashboard", reloadDocument: true });
 	}
 
 	return (

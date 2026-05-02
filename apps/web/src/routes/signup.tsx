@@ -26,7 +26,7 @@ function SignupPage() {
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
 
-	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+	async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
 		e.preventDefault();
 		setError("");
 		setLoading(true);
@@ -53,7 +53,7 @@ function SignupPage() {
 			sessionStorage.setItem("post_signup", "1");
 		}
 		const dest = safeRedirect(redirectTo, "/dashboard");
-		navigate({ to: dest, reloadDocument: true });
+		void navigate({ to: dest, reloadDocument: true });
 	}
 
 	return (

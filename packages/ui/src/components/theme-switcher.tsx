@@ -1,13 +1,13 @@
-import { Moon, Sun, Monitor } from "@phosphor-icons/react";
+import { MoonIcon, SunIcon, MonitorIcon } from "@phosphor-icons/react";
 
 import { Button } from "./button";
 import { useTheme, type Theme } from "./theme-provider";
 
 const order: Theme[] = ["light", "dark", "system"];
 const icons: Record<Theme, React.ReactNode> = {
-	light: <Sun data-icon="inline-start" />,
-	dark: <Moon data-icon="inline-start" />,
-	system: <Monitor data-icon="inline-start" />,
+	light: <SunIcon data-icon="inline-start" />,
+	dark: <MoonIcon data-icon="inline-start" />,
+	system: <MonitorIcon data-icon="inline-start" />,
 };
 
 /**
