@@ -1,0 +1,20 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"categories": {
+		"correctness": "error"
+	},
+	"rules": {
+		"typescript/no-deprecated": "error"
+	},
+	"ignorePatterns": [
+		"**/node_modules/**",
+		"**/dist/**",
+		"**/.output/**",
+		"**/target/**",
+		"**/drizzle/**",
+		"**/src-tauri/target/**",
+		"**/.ralph/**",
+		"**/messages/**",
+		"**/project.inlang/**"
+	]
+}

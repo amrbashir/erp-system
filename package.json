@@ -13,12 +13,16 @@
 		"typecheck": "pnpm -r typecheck",
 		"fmt": "oxfmt",
 		"fmt:check": "oxfmt --check",
+		"lint": "oxlint --type-aware",
+		"lint:fix": "oxlint --type-aware --fix",
 		"ralph": "pnpm exec ralph"
 	},
 	"devDependencies": {
 		"@workspace/ralph": "workspace:*",
 		"happy-dom": "^20.8.9",
 		"oxfmt": "^0.36.0",
+		"oxlint": "^1.62.0",
+		"oxlint-tsgolint": "^0.22.1",
 		"typescript": "catalog:",
 		"vite-tsconfig-paths": "catalog:vite",
 		"vitest": "^2.1.0"
