@@ -2,11 +2,11 @@ import emailValidator from "email-validator";
 import { defineEventHandler, readBody } from "h3";
 
 import { useDatabase } from "#db";
-import { createAuth } from "~/lib/auth";
-import { desktopSetup } from "~/lib/desktop-setup";
-import { InvalidEmailError, InvalidInputError, InvalidSlugError } from "~/lib/errors";
-import { toHTTPError } from "~/lib/http-errors";
-import { toSlug } from "~/lib/slug";
+import { createAuth } from "@workspace/server/lib/auth";
+import { desktopSetup } from "@workspace/server/lib/desktop-setup";
+import { InvalidEmailError, InvalidInputError, InvalidSlugError } from "@workspace/server/lib/errors";
+import { toHTTPError } from "@workspace/server/lib/http-errors";
+import { toSlug } from "@workspace/server/lib/slug";
 
 export default defineEventHandler(async (event) => {
 	const db = useDatabase();

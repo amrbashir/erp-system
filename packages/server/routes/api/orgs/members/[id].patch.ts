@@ -1,10 +1,10 @@
 import { defineEventHandler, readBody, getRouterParam } from "h3";
 
-import { logAudit } from "~/lib/audit";
-import { InvalidInputError } from "~/lib/errors";
-import { toHTTPError } from "~/lib/http-errors";
-import { updateMemberRole } from "~/lib/org-members";
-import { requireOrg } from "~/lib/require-org";
+import { logAudit } from "@workspace/server/lib/audit";
+import { InvalidInputError } from "@workspace/server/lib/errors";
+import { toHTTPError } from "@workspace/server/lib/http-errors";
+import { updateMemberRole } from "@workspace/server/lib/org-members";
+import { requireOrg } from "@workspace/server/lib/require-org";
 
 export default defineEventHandler(async (event) => {
 	const guard = await requireOrg(event);

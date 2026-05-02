@@ -1,11 +1,11 @@
 import { defineEventHandler, readBody, setCookie, toRequest } from "h3";
 
 import { useDatabase } from "#db";
-import { auth } from "~/lib/auth";
-import { orgSwitchCookieOptions } from "~/lib/cookie";
-import { InvalidInputError, NotOrgMemberError, UnauthorizedError } from "~/lib/errors";
-import { toHTTPError } from "~/lib/http-errors";
-import { getOrgMembership } from "~/lib/org";
+import { auth } from "@workspace/server/lib/auth";
+import { orgSwitchCookieOptions } from "@workspace/server/lib/cookie";
+import { InvalidInputError, NotOrgMemberError, UnauthorizedError } from "@workspace/server/lib/errors";
+import { toHTTPError } from "@workspace/server/lib/http-errors";
+import { getOrgMembership } from "@workspace/server/lib/org";
 
 export default defineEventHandler(async (event) => {
 	const session = await auth.api

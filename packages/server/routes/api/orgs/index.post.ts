@@ -1,10 +1,10 @@
 import { defineEventHandler, readBody, toRequest } from "h3";
 
 import { useDatabase } from "#db";
-import { auth } from "~/lib/auth";
-import { InvalidInputError, UnauthorizedError } from "~/lib/errors";
-import { toHTTPError } from "~/lib/http-errors";
-import { createOrg } from "~/lib/org";
+import { auth } from "@workspace/server/lib/auth";
+import { InvalidInputError, UnauthorizedError } from "@workspace/server/lib/errors";
+import { toHTTPError } from "@workspace/server/lib/http-errors";
+import { createOrg } from "@workspace/server/lib/org";
 
 export default defineEventHandler(async (event) => {
 	const session = await auth.api

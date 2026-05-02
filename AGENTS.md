@@ -24,8 +24,6 @@ pnpm fmt:check            # Check formatting without writing
 
 ## Import Conventions
 
-- **`@/`** — intra-package alias, maps to the package's own source root (e.g. `@/lib/auth` instead of `../../lib/auth`)
-- **`#db`** — build-time adapter switch, resolves to `adapters/pglite.ts` or `adapters/neon.ts` based on `DEPLOY_TARGET` env var in `nitro.config.ts`.
-- **`@workspace/*`** — cross-package imports resolved via `workspace:*` deps in package.json + the package's `exports` field.
-- **`./` relative imports** are allowed for same-directory imports only. Any `../` or deeper must use `@/` alias instead.
-- Do not create new tsconfig path aliases for workspace packages — add the package as a `workspace:*` dependency and use its `exports` field.
+- **`@/*`** — app-local src, **apps only**. Packages must not define path aliases: TS `paths` is program-wide, so a package alias breaks when its source is pulled into a consuming app.
+- **`@workspace/<pkg>/...`** — cross-package and package self-references (e.g. `packages/ui` imports `@workspace/ui/lib/utils`). Use relative only for same-dir.
+- **`#db`** — per-env DB adapter swap (pglite/neon/postgres), not a general alias.

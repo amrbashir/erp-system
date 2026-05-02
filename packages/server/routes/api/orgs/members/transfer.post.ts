@@ -1,10 +1,10 @@
 import { defineEventHandler, readBody } from "h3";
 
-import { logAudit } from "~/lib/audit";
-import { InvalidInputError, NoPermissionError } from "~/lib/errors";
-import { toHTTPError } from "~/lib/http-errors";
-import { transferOwnership } from "~/lib/org-members";
-import { requireOrg } from "~/lib/require-org";
+import { logAudit } from "@workspace/server/lib/audit";
+import { InvalidInputError, NoPermissionError } from "@workspace/server/lib/errors";
+import { toHTTPError } from "@workspace/server/lib/http-errors";
+import { transferOwnership } from "@workspace/server/lib/org-members";
+import { requireOrg } from "@workspace/server/lib/require-org";
 
 export default defineEventHandler(async (event) => {
 	const guard = await requireOrg(event);

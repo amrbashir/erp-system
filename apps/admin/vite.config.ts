@@ -19,7 +19,7 @@ export default defineConfig({
 			strategy: ["localStorage", "preferredLanguage", "baseLocale"],
 			emitTsDeclarations: true,
 		}) as any,
-		viteTsConfigPaths({ projects: ["./tsconfig.json", "../../packages/ui/tsconfig.json"] }),
+		viteTsConfigPaths(),
 		tailwindcss(),
 		tanstackStart(),
 		viteReact(),

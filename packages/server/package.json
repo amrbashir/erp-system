@@ -4,13 +4,7 @@
 	"private": true,
 	"type": "module",
 	"exports": {
-		"./lib/auth": "./lib/auth.ts",
-		"./lib/errors": "./lib/errors.ts",
-		"./lib/org": "./lib/org.ts",
-		"./lib/org-members": "./lib/org-members.ts",
-		"./lib/activation": "./lib/activation.ts",
-		"./lib/migrate": "./lib/migrate.ts",
-		"./lib/slug": "./lib/slug.ts"
+		"./lib/*": "./lib/*.ts"
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",

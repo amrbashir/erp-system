@@ -1,10 +1,10 @@
 import { defineEventHandler, getRouterParam } from "h3";
 
-import { logAudit } from "~/lib/audit";
-import { InvalidInputError, InvitationNotFoundError, NoPermissionError } from "~/lib/errors";
-import { toHTTPError } from "~/lib/http-errors";
-import { revokeInvitation } from "~/lib/invitations";
-import { requireOrg } from "~/lib/require-org";
+import { logAudit } from "@workspace/server/lib/audit";
+import { InvalidInputError, InvitationNotFoundError, NoPermissionError } from "@workspace/server/lib/errors";
+import { toHTTPError } from "@workspace/server/lib/http-errors";
+import { revokeInvitation } from "@workspace/server/lib/invitations";
+import { requireOrg } from "@workspace/server/lib/require-org";
 
 export default defineEventHandler(async (event) => {
 	const guard = await requireOrg(event);

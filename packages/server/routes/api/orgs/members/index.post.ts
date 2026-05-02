@@ -1,12 +1,12 @@
 import emailValidator from "email-validator";
 import { defineEventHandler, readBody } from "h3";
 
-import { logAudit } from "~/lib/audit";
-import { InvalidEmailError, InvalidInputError, NoPermissionError } from "~/lib/errors";
-import { toHTTPError } from "~/lib/http-errors";
-import { clearInvitationsForEmail, findUserByEmail, sendInvitation } from "~/lib/invitations";
-import { addMemberToOrg } from "~/lib/org-members";
-import { requireOrg } from "~/lib/require-org";
+import { logAudit } from "@workspace/server/lib/audit";
+import { InvalidEmailError, InvalidInputError, NoPermissionError } from "@workspace/server/lib/errors";
+import { toHTTPError } from "@workspace/server/lib/http-errors";
+import { clearInvitationsForEmail, findUserByEmail, sendInvitation } from "@workspace/server/lib/invitations";
+import { addMemberToOrg } from "@workspace/server/lib/org-members";
+import { requireOrg } from "@workspace/server/lib/require-org";
 
 /**
  * "Add a user by email" — branches on whether the email is already registered:

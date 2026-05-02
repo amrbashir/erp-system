@@ -17,7 +17,6 @@ export default defineNitroConfig({
 	serverDir: dir,
 	plugins: isDesktop ? ["plugins/desktop-startup.ts"] : [],
 	alias: {
-		"~/": dir + "/",
 		"#db": databaseAdapter,
 	},
 	runtimeConfig: isDesktop ? { pgdataDir: "" } : {},

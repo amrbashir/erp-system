@@ -7,9 +7,6 @@
 		"jsx": "react-jsx",
 		"skipLibCheck": true,
 		"strict": true,
-		"noEmit": true,
-		"paths": {
-			"@/*": ["./src/*"]
-		}
+		"noEmit": true
 	}
 }

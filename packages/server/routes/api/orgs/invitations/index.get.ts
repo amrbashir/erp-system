@@ -1,8 +1,8 @@
 import { defineEventHandler } from "h3";
 
-import { toHTTPError } from "~/lib/http-errors";
-import { listInvitations } from "~/lib/invitations";
-import { requireOrg } from "~/lib/require-org";
+import { toHTTPError } from "@workspace/server/lib/http-errors";
+import { listInvitations } from "@workspace/server/lib/invitations";
+import { requireOrg } from "@workspace/server/lib/require-org";
 
 export default defineEventHandler(async (event) => {
 	const guard = await requireOrg(event);
