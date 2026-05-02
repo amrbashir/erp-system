@@ -91,7 +91,11 @@ function LoginPage() {
 
 				<p className="text-muted-foreground text-sm">
 					{m.login_no_account()}{" "}
-					<Link to="/signup" className="text-primary underline">
+					<Link
+						to="/signup"
+						search={redirectTo ? { redirect: redirectTo } : undefined}
+						className="text-primary underline"
+					>
 						{m.login_signup_link()}
 					</Link>
 				</p>

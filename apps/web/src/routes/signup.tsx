@@ -5,8 +5,12 @@ import { useState } from "react";
 
 import { signUp } from "@/lib/auth-client";
 import { getSession } from "@/lib/auth-session";
+import { safeRedirect } from "@/lib/safe-redirect";
 
 export const Route = createFileRoute("/signup")({
+	validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
+		redirect: (search.redirect as string) || undefined,
+	}),
 	beforeLoad: async () => {
 		const session = await getSession();
 		if (session) {
@@ -18,6 +22,7 @@ export const Route = createFileRoute("/signup")({
 
 function SignupPage() {
 	const navigate = useNavigate();
+	const { redirect: redirectTo } = Route.useSearch();
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
 
@@ -41,13 +46,14 @@ function SignupPage() {
 		}
 
 		// invitations table is consumed in user.create.after; if the email had
-		// pending invites, the user already has org memberships. otherwise, route
-		// to onboarding to create one.
+		// pending invites, the user already has org memberships. otherwise,
+		// _authed will bounce to /onboarding.
 		// Flag for dashboard to surface a one-shot "joined via invite" banner.
 		if (typeof sessionStorage !== "undefined") {
 			sessionStorage.setItem("post_signup", "1");
 		}
-		navigate({ to: "/dashboard", reloadDocument: true });
+		const dest = safeRedirect(redirectTo, "/dashboard");
+		navigate({ to: dest, reloadDocument: true });
 	}
 
 	return (
@@ -104,7 +110,11 @@ function SignupPage() {
 
 				<p className="text-muted-foreground text-sm">
 					{m.signup_has_account()}{" "}
-					<Link to="/login" className="text-primary underline">
+					<Link
+						to="/login"
+						search={redirectTo ? { redirect: redirectTo } : undefined}
+						className="text-primary underline"
+					>
 						{m.signup_login_link()}
 					</Link>
 				</p>
