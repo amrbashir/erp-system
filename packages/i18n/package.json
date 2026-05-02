@@ -7,7 +7,11 @@
 		"./paraglide/messages": "./src/paraglide/messages.js",
 		"./paraglide/runtime": "./src/paraglide/runtime.js"
 	},
+	"scripts": {
+		"compile": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide --strategy localStorage preferredLanguage baseLocale --emit-ts-declarations"
+	},
 	"devDependencies": {
-		"@inlang/paraglide-js": "catalog:"
+		"@inlang/paraglide-js": "catalog:",
+		"typescript": "catalog:"
 	}
 }

@@ -307,6 +307,9 @@ importers:
       '@inlang/paraglide-js':
         specifier: 'catalog:'
         version: 2.13.2
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
 
   packages/server:
     dependencies:
