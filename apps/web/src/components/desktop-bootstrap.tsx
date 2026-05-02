@@ -90,8 +90,7 @@ export function DesktopBootstrap({ children }: { children: React.ReactNode }) {
 				hardwareId={state.hardwareId}
 				onActivated={async () => {
 					const probe = await getSetupComplete().catch((e: Error) => e);
-					if (probe instanceof Error)
-						setState({ step: "error", message: probe.message });
+					if (probe instanceof Error) setState({ step: "error", message: probe.message });
 					else setState(probe.setupComplete ? { step: "ready" } : { step: "onboarding" });
 				}}
 			/>

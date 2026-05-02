@@ -2,6 +2,7 @@ import { getCookie, toRequest } from "h3";
 import type { H3Event } from "h3";
 
 import { useDatabase } from "#db";
+
 import { auth } from "./auth.js";
 import { NoOrgSelectedError, NotOrgMemberError, UnauthorizedError } from "./errors.js";
 import { getOrgMembership } from "./org.js";
@@ -26,8 +27,7 @@ export async function requireOrg(
 	if (!session) return new UnauthorizedError();
 
 	// header takes precedence (desktop bearer flow); fall back to cookie (web).
-	const orgId =
-		event.req.headers.get("x-org-id") ?? getCookie(event, "current_org_id") ?? null;
+	const orgId = event.req.headers.get("x-org-id") ?? getCookie(event, "current_org_id") ?? null;
 	if (!orgId) return new NoOrgSelectedError();
 
 	const db = useDatabase();

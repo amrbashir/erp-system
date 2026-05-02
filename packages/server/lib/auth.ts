@@ -74,10 +74,7 @@ export function createAuth(options: CreateAuthOptions = {}) {
 								email: user.email,
 							});
 						} catch (e) {
-							console.error(
-								"[auth.user.create.after] consumeInvitations failed:",
-								e,
-							);
+							console.error("[auth.user.create.after] consumeInvitations failed:", e);
 						}
 					},
 				},

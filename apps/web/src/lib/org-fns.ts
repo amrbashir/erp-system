@@ -11,9 +11,7 @@ const CURRENT_ORG_COOKIE = "current_org_id";
 export const getOrgs = createServerFn({ method: "GET" }).handler(async () => {
 	const request = getRequest();
 	// auth.api.getSession throws better-auth APIError on failure; treat as unauthorized.
-	const session = await auth.api
-		.getSession({ headers: request.headers })
-		.catch((e: Error) => e);
+	const session = await auth.api.getSession({ headers: request.headers }).catch((e: Error) => e);
 	if (session instanceof Error || !session) throw new UnauthorizedError();
 	const db = useDatabase();
 	return getUserOrgs(db, session.user.id);

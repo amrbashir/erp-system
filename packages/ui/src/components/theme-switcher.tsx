@@ -22,13 +22,7 @@ export function ThemeSwitcher({ label }: { label: string }) {
 	}
 
 	return (
-		<Button
-			variant="ghost"
-			size="sm"
-			onClick={handleSwitch}
-			aria-label={label}
-			title={label}
-		>
+		<Button variant="ghost" size="sm" onClick={handleSwitch} aria-label={label} title={label}>
 			{icons[theme]}
 		</Button>
 	);

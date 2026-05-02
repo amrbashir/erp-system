@@ -426,7 +426,7 @@ function MemberRow({
 					}[member.role]
 				)}
 			</td>
-			<td className="py-2 text-muted-foreground text-xs">{m.users_status_active()}</td>
+			<td className="text-muted-foreground py-2 text-xs">{m.users_status_active()}</td>
 			{canManage && (
 				<td className="flex gap-1 py-2">
 					{actorRole === "owner" && member.role !== "owner" && (
@@ -467,7 +467,7 @@ function InvitationRow({
 }) {
 	return (
 		<tr className="border-border border-b opacity-70">
-			<td className="py-2 text-muted-foreground italic">{m.users_status_pending()}</td>
+			<td className="text-muted-foreground py-2 italic">{m.users_status_pending()}</td>
 			<td className="py-2">{invitation.email}</td>
 			<td className="py-2">
 				{

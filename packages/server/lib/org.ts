@@ -3,11 +3,7 @@ import { eq, and } from "drizzle-orm";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 
 import { validateCurrency } from "./currency.js";
-import {
-	InvalidSlugError,
-	SlugTakenError,
-	type UnsupportedCurrencyError,
-} from "./errors.js";
+import { InvalidSlugError, SlugTakenError, type UnsupportedCurrencyError } from "./errors.js";
 import { validateSlug } from "./slug.js";
 
 type DB = PgDatabase<any, any>;

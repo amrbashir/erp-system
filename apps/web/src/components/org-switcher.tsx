@@ -60,7 +60,7 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 			</Button>
 
 			{open && (
-				<div className="border-border bg-background absolute top-full end-0 z-50 mt-1 min-w-48 rounded border shadow-md">
+				<div className="border-border bg-background absolute end-0 top-full z-50 mt-1 min-w-48 rounded border shadow-md">
 					{error && <p className="text-destructive px-3 py-2 text-sm">{error}</p>}
 					{orgs.map((org) => (
 						<button

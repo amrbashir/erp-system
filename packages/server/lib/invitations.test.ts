@@ -381,15 +381,13 @@ describe("expiry", () => {
 			invitedBy: owner,
 		});
 		// backdate one row past expiry
-		await db
-			.insert(schema.invitations)
-			.values({
-				orgId,
-				email: "stale@test.com",
-				role: "member",
-				invitedBy: owner,
-				expiresAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
-			});
+		await db.insert(schema.invitations).values({
+			orgId,
+			email: "stale@test.com",
+			role: "member",
+			invitedBy: owner,
+			expiresAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+		});
 
 		const rows = await listInvitations(db as any, orgId);
 		expect(rows.map((r) => r.email)).toEqual(["fresh@test.com"]);

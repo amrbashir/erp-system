@@ -60,9 +60,7 @@ export async function revokeInvitation(
 	try {
 		const [deleted] = await db
 			.delete(invitations)
-			.where(
-				and(eq(invitations.id, input.invitationId), eq(invitations.orgId, input.orgId)),
-			)
+			.where(and(eq(invitations.id, input.invitationId), eq(invitations.orgId, input.orgId)))
 			.returning();
 		return deleted ?? null;
 	} catch (e) {
@@ -76,10 +74,7 @@ export async function revokeInvitation(
  * Called when adding an existing user directly to an org so we don't
  * leave orphan invitations for the same email.
  */
-export async function clearInvitationsForEmail(
-	db: DB,
-	input: { orgId: string; email: string },
-) {
+export async function clearInvitationsForEmail(db: DB, input: { orgId: string; email: string }) {
 	await db
 		.delete(invitations)
 		.where(
@@ -157,4 +152,3 @@ export async function findUserByEmail(db: DB, email: string) {
 		.limit(1);
 	return row ?? null;
 }
-

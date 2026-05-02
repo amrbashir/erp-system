@@ -220,7 +220,9 @@ export async function transferOwnership(
 			const [actor] = await tx
 				.select({ role: orgMembers.role })
 				.from(orgMembers)
-				.where(and(eq(orgMembers.id, input.actorMemberId), eq(orgMembers.orgId, input.orgId)))
+				.where(
+					and(eq(orgMembers.id, input.actorMemberId), eq(orgMembers.orgId, input.orgId)),
+				)
 				.limit(1);
 
 			if (!actor || actor.role !== "owner") {
@@ -230,7 +232,9 @@ export async function transferOwnership(
 			const [target] = await tx
 				.select({ role: orgMembers.role })
 				.from(orgMembers)
-				.where(and(eq(orgMembers.id, input.targetMemberId), eq(orgMembers.orgId, input.orgId)))
+				.where(
+					and(eq(orgMembers.id, input.targetMemberId), eq(orgMembers.orgId, input.orgId)),
+				)
 				.limit(1);
 
 			if (!target) {
@@ -240,13 +244,17 @@ export async function transferOwnership(
 			const [updatedTarget] = await tx
 				.update(orgMembers)
 				.set({ role: "owner" })
-				.where(and(eq(orgMembers.id, input.targetMemberId), eq(orgMembers.orgId, input.orgId)))
+				.where(
+					and(eq(orgMembers.id, input.targetMemberId), eq(orgMembers.orgId, input.orgId)),
+				)
 				.returning();
 
 			const [updatedActor] = await tx
 				.update(orgMembers)
 				.set({ role: input.newActorRole })
-				.where(and(eq(orgMembers.id, input.actorMemberId), eq(orgMembers.orgId, input.orgId)))
+				.where(
+					and(eq(orgMembers.id, input.actorMemberId), eq(orgMembers.orgId, input.orgId)),
+				)
 				.returning();
 
 			return { target: updatedTarget, actor: updatedActor };

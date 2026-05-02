@@ -2,17 +2,9 @@ import emailValidator from "email-validator";
 import { defineEventHandler, readBody } from "h3";
 
 import { logAudit } from "~/lib/audit";
-import {
-	InvalidEmailError,
-	InvalidInputError,
-	NoPermissionError,
-} from "~/lib/errors";
+import { InvalidEmailError, InvalidInputError, NoPermissionError } from "~/lib/errors";
 import { toHTTPError } from "~/lib/http-errors";
-import {
-	clearInvitationsForEmail,
-	findUserByEmail,
-	sendInvitation,
-} from "~/lib/invitations";
+import { clearInvitationsForEmail, findUserByEmail, sendInvitation } from "~/lib/invitations";
 import { addMemberToOrg } from "~/lib/org-members";
 import { requireOrg } from "~/lib/require-org";
 

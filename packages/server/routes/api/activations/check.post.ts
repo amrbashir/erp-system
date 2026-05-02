@@ -2,11 +2,7 @@ import { defineEventHandler, readBody } from "h3";
 
 import { useDatabase } from "#db";
 import { checkActivation, registerHardware, signActivationToken } from "~/lib/activation";
-import {
-	InvalidInputError,
-	RateLimitedError,
-	ServerMisconfiguredError,
-} from "~/lib/errors";
+import { InvalidInputError, RateLimitedError, ServerMisconfiguredError } from "~/lib/errors";
 import { toHTTPError } from "~/lib/http-errors";
 import { createRateLimiter } from "~/lib/rate-limit";
 
