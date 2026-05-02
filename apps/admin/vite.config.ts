@@ -18,7 +18,7 @@ export default defineConfig({
 			outdir: "../../packages/i18n/src/paraglide",
 			strategy: ["localStorage", "preferredLanguage", "baseLocale"],
 		}) as any,
-		viteTsConfigPaths({ projects: ["./tsconfig.json"] }),
+		viteTsConfigPaths({ projects: ["./tsconfig.json", "../../packages/ui/tsconfig.json"] }),
 		tailwindcss(),
 		tanstackStart(),
 		viteReact(),

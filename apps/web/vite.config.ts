@@ -22,7 +22,7 @@ export default defineConfig({
 		}) as any,
 		nitro(nitroConfig as any),
 		viteTsConfigPaths({
-			projects: ["./tsconfig.json"],
+			projects: ["./tsconfig.json", "../../packages/ui/tsconfig.json"],
 		}),
 		tailwindcss(),
 		tanstackStart(),
