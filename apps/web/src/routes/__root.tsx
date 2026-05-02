@@ -1,10 +1,10 @@
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 import { getLocale, getTextDirection } from "@workspace/i18n";
+import { LanguageSwitcher } from "@workspace/ui/components/language-switcher";
 import { ThemeProvider, themeScript } from "@workspace/ui/components/theme-provider";
+import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
 
 import { DesktopBootstrap } from "@/components/desktop-bootstrap";
-import { LanguageSwitcher } from "@/components/language-switcher";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { isDesktop } from "@/lib/activation";
 
 import appCss from "@workspace/ui/globals.css?url";

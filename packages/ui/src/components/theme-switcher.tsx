@@ -1,4 +1,5 @@
 import { MoonIcon, SunIcon, MonitorIcon } from "@phosphor-icons/react";
+import { m } from "@workspace/i18n";
 
 import { Button } from "./button";
 import { useTheme, type Theme } from "./theme-provider";
@@ -10,12 +11,9 @@ const icons: Record<Theme, React.ReactNode> = {
 	system: <MonitorIcon data-icon="inline-start" />,
 };
 
-/**
- * Cycles light → dark → system. Label is passed in so this component stays
- * i18n-agnostic; consumer apps localize at the call site.
- */
-export function ThemeSwitcher({ label }: { label: string }) {
+export function ThemeSwitcher() {
 	const { theme, setTheme } = useTheme();
+	const label = m.theme_switcher_label();
 
 	function handleSwitch() {
 		setTheme(order[(order.indexOf(theme) + 1) % order.length]);

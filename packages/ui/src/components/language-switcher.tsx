@@ -1,6 +1,7 @@
 import { GlobeSimpleIcon } from "@phosphor-icons/react";
 import { getLocale, getNextLocale, locales, m, setLocale } from "@workspace/i18n";
-import { Button } from "@workspace/ui/components/button";
+
+import { Button } from "./button";
 
 export function LanguageSwitcher() {
 	const current = getLocale();

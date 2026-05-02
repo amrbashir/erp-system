@@ -1,9 +1,8 @@
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
-import { getLocale, getTextDirection, m } from "@workspace/i18n";
+import { getLocale, getTextDirection } from "@workspace/i18n";
+import { LanguageSwitcher } from "@workspace/ui/components/language-switcher";
 import { ThemeProvider, themeScript } from "@workspace/ui/components/theme-provider";
 import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
-
-import { LanguageSwitcher } from "@/components/language-switcher";
 
 import appCss from "@workspace/ui/globals.css?url";
 
@@ -41,7 +40,7 @@ function RootLayout() {
 			<header className="border-border flex items-center justify-between border-b px-6 py-3">
 				<h1 className="text-lg font-bold">Admin Dashboard</h1>
 				<div className="flex items-center gap-2">
-					<ThemeSwitcher label={m.theme_switcher_label()} />
+					<ThemeSwitcher />
 					<LanguageSwitcher />
 				</div>
 			</header>
