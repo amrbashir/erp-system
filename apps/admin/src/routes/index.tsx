@@ -1,4 +1,5 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -9,26 +10,29 @@ import {
 	TableHeader,
 	TableRow,
 } from "@workspace/ui/components/table";
-import { useState } from "react";
 
-import { client } from "@/lib/orpc";
+import { orpc } from "@/lib/orpc";
 
 export const Route = createFileRoute("/")({
-	loader: () => client.activations.list(),
+	loader: ({ context }) =>
+		context.queryClient.ensureQueryData(orpc.activations.list.queryOptions()),
 	component: ActivationDashboard,
 });
 
 function ActivationDashboard() {
-	const activations = Route.useLoaderData();
-	const [toggling, setToggling] = useState<string | null>(null);
-	const router = useRouter();
+	const queryClient = useQueryClient();
+	const { data: activations = [] } = useQuery(orpc.activations.list.queryOptions());
+	const toggleMutation = useMutation(
+		orpc.activations.toggleStatus.mutationOptions({
+			onSuccess: () =>
+				queryClient.invalidateQueries({ queryKey: orpc.activations.list.queryKey() }),
+		}),
+	);
 
-	async function toggle(id: string, newStatus: "active" | "revoked") {
-		setToggling(id);
-		await client.activations.toggleStatus({ id, status: newStatus });
-		await router.invalidate();
-		setToggling(null);
-	}
+	const togglingId =
+		toggleMutation.isPending && toggleMutation.variables
+			? (toggleMutation.variables as { id: string }).id
+			: null;
 
 	const statusVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
 		active: "default",
@@ -73,16 +77,20 @@ function ActivationDashboard() {
 										<Button
 											variant="destructive"
 											size="sm"
-											disabled={toggling === a.id}
-											onClick={() => toggle(a.id, "revoked")}
+											disabled={togglingId === a.id}
+											onClick={() =>
+												toggleMutation.mutate({ id: a.id, status: "revoked" })
+											}
 										>
 											Revoke
 										</Button>
 									) : (
 										<Button
 											size="sm"
-											disabled={toggling === a.id}
-											onClick={() => toggle(a.id, "active")}
+											disabled={togglingId === a.id}
+											onClick={() =>
+												toggleMutation.mutate({ id: a.id, status: "active" })
+											}
 										>
 											Activate
 										</Button>

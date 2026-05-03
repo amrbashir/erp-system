@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useMemo, useState } from "react";
 
-import { client } from "@/lib/orpc";
+import { orpc } from "@/lib/orpc";
 
 type Member = {
 	kind: "member";
@@ -34,25 +35,13 @@ function UsersPage() {
 	const currentOrg = orgs.find((o) => o.id === currentOrgId) ?? orgs[0];
 	const actorRole = currentOrg?.role as "owner" | "admin" | "member";
 
-	const [members, setMembers] = useState<Member[]>([]);
-	const [invitations, setInvitations] = useState<Invitation[]>([]);
-	const [loading, setLoading] = useState(true);
+	const { data, isLoading } = useQuery(orpc.members.list.queryOptions());
+	const members = (data?.members ?? []) as Member[];
+	const invitations = (data?.invitations ?? []) as Invitation[];
+
 	const [error, setError] = useState("");
 	const [showForm, setShowForm] = useState(false);
 	const [pendingFirst, setPendingFirst] = useState(false);
-
-	const fetchMembers = useCallback(async () => {
-		const data = await client.members.list().catch((e: Error) => e);
-		if (!(data instanceof Error)) {
-			setMembers(data.members as Member[]);
-			setInvitations(data.invitations as Invitation[]);
-		}
-		setLoading(false);
-	}, []);
-
-	useEffect(() => {
-		void fetchMembers();
-	}, [fetchMembers]);
 
 	const canManage = actorRole === "owner" || actorRole === "admin";
 
@@ -78,15 +67,12 @@ function UsersPage() {
 			{showForm && canManage && (
 				<AddUserForm
 					actorRole={actorRole}
-					onDone={() => {
-						setShowForm(false);
-						void fetchMembers();
-					}}
+					onDone={() => setShowForm(false)}
 					onError={setError}
 				/>
 			)}
 
-			{loading ? (
+			{isLoading ? (
 				<p className="text-muted-foreground text-sm">{m.users_loading()}</p>
 			) : (
 				<MemberList
@@ -94,7 +80,6 @@ function UsersPage() {
 					actorRole={actorRole}
 					pendingFirst={pendingFirst}
 					onTogglePending={() => setPendingFirst((v) => !v)}
-					onUpdate={fetchMembers}
 					onError={setError}
 				/>
 			)}
@@ -111,26 +96,29 @@ function AddUserForm({
 	onDone: () => void;
 	onError: (msg: string) => void;
 }) {
-	const [submitting, setSubmitting] = useState(false);
+	const queryClient = useQueryClient();
+	const addMutation = useMutation(
+		orpc.members.add.mutationOptions({
+			onSuccess: () => {
+				void queryClient.invalidateQueries({ queryKey: orpc.members.list.queryKey() });
+			},
+		}),
+	);
 
 	async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
 		e.preventDefault();
 		onError("");
-		setSubmitting(true);
 
 		const form = new FormData(e.currentTarget);
 		const email = (form.get("email") as string).trim();
 		const role = form.get("role") as "owner" | "admin" | "member";
 
-		const result = await client.members.add({ email, role }).catch((e: Error) => e);
-		setSubmitting(false);
-
-		if (result instanceof Error) {
-			onError(result.message || m.users_add_failed());
-			return;
+		try {
+			await addMutation.mutateAsync({ email, role });
+			onDone();
+		} catch (err: any) {
+			onError(err?.message || m.users_add_failed());
 		}
-
-		onDone();
 	}
 
 	return (
@@ -170,8 +158,8 @@ function AddUserForm({
 				</div>
 			</div>
 			<div>
-				<Button type="submit" size="sm" disabled={submitting}>
-					{submitting ? m.users_adding() : m.users_add_submit()}
+				<Button type="submit" size="sm" disabled={addMutation.isPending}>
+					{addMutation.isPending ? m.users_adding() : m.users_add_submit()}
 				</Button>
 			</div>
 		</form>
@@ -183,81 +171,84 @@ function MemberList({
 	actorRole,
 	pendingFirst,
 	onTogglePending,
-	onUpdate,
 	onError,
 }: {
 	rows: Row[];
 	actorRole: "owner" | "admin" | "member";
 	pendingFirst: boolean;
 	onTogglePending: () => void;
-	onUpdate: () => void;
 	onError: (msg: string) => void;
 }) {
 	const canManage = actorRole === "owner" || actorRole === "admin";
+	const queryClient = useQueryClient();
 	const [pendingRoleChanges, setPendingRoleChanges] = useState<Set<string>>(() => new Set());
 	const [pendingRemovals, setPendingRemovals] = useState<Set<string>>(() => new Set());
 	const [transferTarget, setTransferTarget] = useState<Member | null>(null);
 	const [transferRole, setTransferRole] = useState<"admin" | "member">("admin");
-	const [transferring, setTransferring] = useState(false);
+
+	const invalidateMembers = () =>
+		queryClient.invalidateQueries({ queryKey: orpc.members.list.queryKey() });
+
+	const updateRoleMutation = useMutation(
+		orpc.members.updateRole.mutationOptions({ onSuccess: invalidateMembers }),
+	);
+	const removeMutation = useMutation(
+		orpc.members.remove.mutationOptions({ onSuccess: invalidateMembers }),
+	);
+	const revokeMutation = useMutation(
+		orpc.invitations.revoke.mutationOptions({ onSuccess: invalidateMembers }),
+	);
+	const transferMutation = useMutation(
+		orpc.members.transferOwnership.mutationOptions({ onSuccess: invalidateMembers }),
+	);
 
 	async function handleRoleChange(memberId: string, newRole: string) {
 		onError("");
-		setPendingRoleChanges((prev) => new Set(prev).add(memberId));
+		setPendingRoleChanges((p) => new Set(p).add(memberId));
 		try {
-			const res = await client.members
-				.updateRole({
-					memberId,
-					role: newRole as "owner" | "admin" | "member",
-				})
-				.catch((e: Error) => e);
-			if (res instanceof Error) {
-				onError(res.message || m.users_role_update_failed());
-				return;
-			}
-			onUpdate();
+			await updateRoleMutation.mutateAsync({
+				memberId,
+				role: newRole as "owner" | "admin" | "member",
+			});
+		} catch (err: any) {
+			onError(err?.message || m.users_role_update_failed());
 		} finally {
-			setPendingRoleChanges((prev) => {
-				const next = new Set(prev);
-				next.delete(memberId);
-				return next;
+			setPendingRoleChanges((p) => {
+				const n = new Set(p);
+				n.delete(memberId);
+				return n;
 			});
 		}
 	}
 
 	async function handleRemove(memberId: string) {
 		onError("");
-		setPendingRemovals((prev) => new Set(prev).add(memberId));
+		setPendingRemovals((p) => new Set(p).add(memberId));
 		try {
-			const res = await client.members.remove({ memberId }).catch((e: Error) => e);
-			if (res instanceof Error) {
-				onError(res.message || m.users_remove_failed());
-				return;
-			}
-			onUpdate();
+			await removeMutation.mutateAsync({ memberId });
+		} catch (err: any) {
+			onError(err?.message || m.users_remove_failed());
 		} finally {
-			setPendingRemovals((prev) => {
-				const next = new Set(prev);
-				next.delete(memberId);
-				return next;
+			setPendingRemovals((p) => {
+				const n = new Set(p);
+				n.delete(memberId);
+				return n;
 			});
 		}
 	}
 
 	async function handleRevokeInvitation(invitationId: string) {
 		onError("");
-		setPendingRemovals((prev) => new Set(prev).add(invitationId));
+		setPendingRemovals((p) => new Set(p).add(invitationId));
 		try {
-			const res = await client.invitations.revoke({ invitationId }).catch((e: Error) => e);
-			if (res instanceof Error) {
-				onError(res.message || m.users_remove_failed());
-				return;
-			}
-			onUpdate();
+			await revokeMutation.mutateAsync({ invitationId });
+		} catch (err: any) {
+			onError(err?.message || m.users_remove_failed());
 		} finally {
-			setPendingRemovals((prev) => {
-				const next = new Set(prev);
-				next.delete(invitationId);
-				return next;
+			setPendingRemovals((p) => {
+				const n = new Set(p);
+				n.delete(invitationId);
+				return n;
 			});
 		}
 	}
@@ -265,22 +256,14 @@ function MemberList({
 	async function handleTransfer() {
 		if (!transferTarget) return;
 		onError("");
-		setTransferring(true);
 		try {
-			const res = await client.members
-				.transferOwnership({
-					targetMemberId: transferTarget.id,
-					newActorRole: transferRole,
-				})
-				.catch((e: Error) => e);
-			if (res instanceof Error) {
-				onError(res.message || m.users_transfer_failed());
-				return;
-			}
+			await transferMutation.mutateAsync({
+				targetMemberId: transferTarget.id,
+				newActorRole: transferRole,
+			});
 			setTransferTarget(null);
-			onUpdate();
-		} finally {
-			setTransferring(false);
+		} catch (err: any) {
+			onError(err?.message || m.users_transfer_failed());
 		}
 	}
 
@@ -306,14 +289,16 @@ function MemberList({
 						</select>
 					</div>
 					<div className="flex gap-2">
-						<Button size="sm" onClick={handleTransfer} disabled={transferring}>
-							{transferring ? m.users_transferring() : m.users_confirm_transfer()}
+						<Button size="sm" onClick={handleTransfer} disabled={transferMutation.isPending}>
+							{transferMutation.isPending
+								? m.users_transferring()
+								: m.users_confirm_transfer()}
 						</Button>
 						<Button
 							variant="ghost"
 							size="sm"
 							onClick={() => setTransferTarget(null)}
-							disabled={transferring}
+							disabled={transferMutation.isPending}
 						>
 							{m.cancel()}
 						</Button>

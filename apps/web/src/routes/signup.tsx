@@ -4,15 +4,17 @@ import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
 import { signUp } from "@/lib/auth-client";
-import { client } from "@/lib/orpc";
+import { orpc } from "@/lib/orpc";
 import { safeRedirect } from "@/lib/safe-redirect";
 
 export const Route = createFileRoute("/signup")({
 	validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
 		redirect: (search.redirect as string) || undefined,
 	}),
-	beforeLoad: async () => {
-		const session = await client.session.get();
+	beforeLoad: async ({ context }) => {
+		const session = await context.queryClient.ensureQueryData(
+			orpc.session.get.queryOptions(),
+		);
 		if (session) throw redirect({ to: "/dashboard" });
 	},
 	component: SignupPage,

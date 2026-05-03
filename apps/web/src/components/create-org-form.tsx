@@ -1,10 +1,11 @@
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
 import { isDesktop } from "@/lib/activation";
-import { client } from "@/lib/orpc";
+import { orpc } from "@/lib/orpc";
 import { toSlug } from "@/lib/slug";
 
 const CURRENT_ORG_KEY = "current_org_id";
@@ -18,12 +19,13 @@ interface CreateOrgFormProps {
 export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormProps) {
 	const navigate = useNavigate();
 	const [error, setError] = useState("");
-	const [loading, setLoading] = useState(false);
+	const createMutation = useMutation(orpc.orgs.create.mutationOptions());
+	const switchMutation = useMutation(orpc.orgs.switch.mutationOptions());
+	const submitting = createMutation.isPending || switchMutation.isPending;
 
 	async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
 		e.preventDefault();
 		setError("");
-		setLoading(true);
 
 		const form = new FormData(e.currentTarget);
 		const name = (form.get("name") as string).trim();
@@ -31,29 +33,28 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 
 		if (!slug) {
 			setError(m.create_org_invalid_name());
-			setLoading(false);
 			return;
 		}
 
-		const org = await client.orgs.create({ name, slug }).catch((e: Error) => e);
-		if (org instanceof Error) {
-			setError(org.message || m.create_org_failed());
-			setLoading(false);
+		let org;
+		try {
+			org = await createMutation.mutateAsync({ name, slug });
+		} catch (err: any) {
+			setError(err?.message || m.create_org_failed());
 			return;
 		}
 
 		if (isDesktop()) {
 			localStorage.setItem(CURRENT_ORG_KEY, org.id);
 		} else {
-			const sw = await client.orgs.switch({ orgId: org.id }).catch((e: Error) => e);
-			if (sw instanceof Error) {
-				setError(sw.message || m.switch_org_failed());
-				setLoading(false);
+			try {
+				await switchMutation.mutateAsync({ orgId: org.id });
+			} catch (err: any) {
+				setError(err?.message || m.switch_org_failed());
 				return;
 			}
 		}
 
-		setLoading(false);
 		void navigate({ to: "/dashboard", reloadDocument: true });
 	}
 
@@ -79,8 +80,8 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 					/>
 				</div>
 
-				<Button type="submit" disabled={loading}>
-					{loading ? m.create_org_submitting() : m.create_org_submit()}
+				<Button type="submit" disabled={submitting}>
+					{submitting ? m.create_org_submitting() : m.create_org_submit()}
 				</Button>
 
 				{onCancel && (

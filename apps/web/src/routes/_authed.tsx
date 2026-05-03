@@ -7,25 +7,31 @@ import { OrgSwitcher } from "@/components/org-switcher";
 import { isDesktop } from "@/lib/activation";
 import { clearToken } from "@/lib/api-fetch";
 import { signOut } from "@/lib/auth-client";
-import { client } from "@/lib/orpc";
+import { orpc } from "@/lib/orpc";
 
 const CURRENT_ORG_KEY = "current_org_id";
 
 export const Route = createFileRoute("/_authed")({
-	beforeLoad: async ({ location }) => {
-		const session = await client.session.get();
+	beforeLoad: async ({ context, location }) => {
+		const session = await context.queryClient.ensureQueryData(
+			orpc.session.get.queryOptions(),
+		);
 		if (!session) {
 			throw redirect({ to: "/login", search: { redirect: location.pathname } });
 		}
 
-		const orgs = await client.orgs.list().catch((e: Error) => e);
-		// UNAUTHORIZED = token expired/invalid → bounce to login. Other failures
-		// bubble up rather than silently treat as zero-orgs (would misroute to
-		// /onboarding).
-		if (orgs instanceof ORPCError && orgs.code === "UNAUTHORIZED") {
-			throw redirect({ to: "/login", search: { redirect: location.pathname } });
+		let orgs;
+		try {
+			orgs = await context.queryClient.ensureQueryData(orpc.orgs.list.queryOptions());
+		} catch (e) {
+			// UNAUTHORIZED = token expired/invalid → bounce to login. Other failures
+			// bubble up rather than silently treat as zero-orgs (would misroute to
+			// /onboarding).
+			if (e instanceof ORPCError && e.code === "UNAUTHORIZED") {
+				throw redirect({ to: "/login", search: { redirect: location.pathname } });
+			}
+			throw e;
 		}
-		if (orgs instanceof Error) throw orgs;
 
 		// Desktop has no cookie; trust localStorage (with membership check)
 		// then fall back to first org. Web reads the httpOnly cookie via
@@ -36,7 +42,9 @@ export const Route = createFileRoute("/_authed")({
 				typeof localStorage !== "undefined" ? localStorage.getItem(CURRENT_ORG_KEY) : null;
 			currentOrgId = (stored && orgs.find((o) => o.id === stored)?.id) ?? orgs[0]?.id ?? null;
 		} else {
-			currentOrgId = (await client.orgs.current()).orgId;
+			currentOrgId = (
+				await context.queryClient.ensureQueryData(orpc.orgs.current.queryOptions())
+			).orgId;
 		}
 
 		if (orgs.length === 0 && location.pathname !== "/onboarding") {

@@ -14,6 +14,7 @@
 		"@orpc/tanstack-query": "catalog:orpc",
 		"@phosphor-icons/react": "catalog:",
 		"@tailwindcss/vite": "catalog:tailwind",
+		"@tanstack/react-query": "catalog:tanstack",
 		"@tanstack/react-router": "catalog:tanstack",
 		"@tanstack/react-start": "catalog:tanstack",
 		"@workspace/db": "workspace:*",

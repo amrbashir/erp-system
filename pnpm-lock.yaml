@@ -157,6 +157,9 @@ importers:
       '@tailwindcss/vite':
         specifier: catalog:tailwind
         version: 4.2.1(vite@7.3.1(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0))
+      '@tanstack/react-query':
+        specifier: catalog:tanstack
+        version: 5.100.8(react@19.2.4)
       '@tanstack/react-router':
         specifier: catalog:tanstack
         version: 1.166.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)

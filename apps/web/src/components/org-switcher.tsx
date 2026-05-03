@@ -1,10 +1,11 @@
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
 import { isDesktop } from "@/lib/activation";
-import { client } from "@/lib/orpc";
+import { orpc } from "@/lib/orpc";
 
 const CURRENT_ORG_KEY = "current_org_id";
 
@@ -19,6 +20,7 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 	const navigate = useNavigate();
 	const [open, setOpen] = useState(false);
 	const [error, setError] = useState("");
+	const switchMutation = useMutation(orpc.orgs.switch.mutationOptions());
 	const currentOrg = orgs.find((o) => o.id === currentOrgId) ?? orgs[0];
 
 	async function switchOrg(orgId: string) {
@@ -31,9 +33,10 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 			return;
 		}
 
-		const sw = await client.orgs.switch({ orgId }).catch((e: Error) => e);
-		if (sw instanceof Error) {
-			setError(sw.message || m.org_switcher_failed());
+		try {
+			await switchMutation.mutateAsync({ orgId });
+		} catch (e: any) {
+			setError(e?.message || m.org_switcher_failed());
 			return;
 		}
 
