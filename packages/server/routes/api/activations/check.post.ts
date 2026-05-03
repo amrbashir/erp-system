@@ -9,7 +9,7 @@ import { createRateLimiter } from "@workspace/server/shared/rate-limit";
 const limiter = createRateLimiter({ window: 60_000, max: 10 });
 
 export default defineEventHandler(async (event) => {
-	if (!limiter(event)) {
+	if (!limiter(event.req)) {
 		throw toHTTPError(new RateLimitedError());
 	}
 

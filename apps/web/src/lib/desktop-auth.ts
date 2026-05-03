@@ -1,6 +1,6 @@
 import { apiFetch, storeToken } from "./api-fetch";
 import { ApiError } from "./errors";
-import { readErrorMessage } from "./http";
+import { client } from "./orpc";
 
 /**
  * Desktop-only first-run setup: creates the initial owner + org atomically.
@@ -16,25 +16,21 @@ export async function desktopSetup(input: {
 	user: { id: string; name: string; email: string };
 	org: { id: string; name: string; slug: string };
 }> {
-	const res = await apiFetch("/api/auth/setup", {
-		method: "POST",
-		body: JSON.stringify(input),
-	});
-	if (!res.ok) {
-		throw new ApiError({ message: await readErrorMessage(res, "Setup failed") });
-	}
-	const data = await res.json();
+	const data = await client.setup.run(input).catch((e: Error) => e);
+	if (data instanceof Error) throw new ApiError({ message: data.message });
 	if (data.token) storeToken(data.token);
-	return data;
+	return data as {
+		token: string;
+		user: { id: string; name: string; email: string };
+		org: { id: string; name: string; slug: string };
+	};
 }
 
 /** Lightweight probe: does any user exist? Used by the desktop bootstrap. */
 export async function getSetupComplete(): Promise<{ setupComplete: boolean }> {
-	const res = await apiFetch("/api/auth/setup-complete");
-	if (!res.ok) {
-		throw new ApiError({ message: await readErrorMessage(res, "Status check failed") });
-	}
-	return res.json();
+	const data = await client.setup.isComplete().catch((e: Error) => e);
+	if (data instanceof Error) throw new ApiError({ message: data.message });
+	return data;
 }
 
 /**

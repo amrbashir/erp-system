@@ -1,11 +1,13 @@
-import { getRequestIP } from "h3";
-import type { H3Event } from "h3";
-
 interface RateLimitEntry {
 	count: number;
 	resetAt: number;
 }
 
+/**
+ * In-memory IP-based limiter. Accepts a `Request` so the same factory
+ * works for h3 event-based handlers and oRPC procedures (which only
+ * see the parsed `Request`).
+ */
 export function createRateLimiter(opts: { window: number; max: number }) {
 	const store = new Map<string, RateLimitEntry>();
 
@@ -17,8 +19,8 @@ export function createRateLimiter(opts: { window: number; max: number }) {
 		}
 	}, opts.window * 2).unref();
 
-	return function check(event: H3Event): boolean {
-		const ip = getRequestIP(event, { xForwardedFor: true }) ?? "unknown";
+	return function check(request: Request): boolean {
+		const ip = clientIp(request);
 		const now = Date.now();
 		const entry = store.get(ip);
 
@@ -33,4 +35,15 @@ export function createRateLimiter(opts: { window: number; max: number }) {
 		}
 		return true;
 	};
+}
+
+function clientIp(request: Request): string {
+	const xff = request.headers.get("x-forwarded-for");
+	if (xff) {
+		const first = xff.split(",")[0]?.trim();
+		if (first) return first;
+	}
+	const real = request.headers.get("x-real-ip");
+	if (real) return real;
+	return "unknown";
 }

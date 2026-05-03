@@ -1,14 +1,16 @@
+import { activationsRouter } from "../activations/activations.route.js";
 import { invitationsRouter } from "../invitations/invitations.route.js";
 import { membersRouter } from "../members/members.route.js";
 import { orgsRouter } from "../orgs/orgs.route.js";
+import { setupRouter } from "../setup/setup.route.js";
 
 import { pub } from "./base.js";
 
 /**
  * Root oRPC router. Domain sub-routers merged here as they migrate:
  *   Phase 2: orgs
- *   Phase 3: members, invitations    ← we are here
- *   Phase 4: auth, activations
+ *   Phase 3: members, invitations
+ *   Phase 4: setup, activations    ← we are here
  *
  * `ping` stays as a no-context smoke-test for the handler/client wiring.
  */
@@ -17,6 +19,8 @@ export const router = {
 	orgs: orgsRouter,
 	members: membersRouter,
 	invitations: invitationsRouter,
+	activations: activationsRouter,
+	setup: setupRouter,
 };
 
 export type AppRouter = typeof router;

@@ -1,9 +1,11 @@
 import type { H3Event } from "h3";
 
+import type { ActivationsService } from "../activations/activations.service.js";
 import type { AuditService } from "../audit/audit.service.js";
 import type { InvitationsService } from "../invitations/invitations.service.js";
 import type { MembersService } from "../members/members.service.js";
 import type { OrgsService } from "../orgs/orgs.service.js";
+import type { SetupService } from "../setup/setup.service.js";
 
 /**
  * Flat oRPC context: services are top-level fields (`orgsService`, NOT
@@ -26,4 +28,6 @@ export interface AppContext {
 	membersService: MembersService;
 	invitationsService: InvitationsService;
 	auditService: AuditService;
+	activationsService: ActivationsService;
+	setupService: SetupService;
 }

@@ -1,3 +1,8 @@
+import { createORPCClient } from "@orpc/client";
+import { RPCLink } from "@orpc/client/fetch";
+import type { RouterClient } from "@orpc/server";
+import type { AppRouter } from "@workspace/server/orpc/router";
+
 import { verifyTokenOffline as verifyToken } from "./activation-verify";
 import { ActivationMisconfiguredError, ApiError, InvalidTokenError } from "./errors";
 
@@ -6,6 +11,18 @@ const ACTIVATION_API_URL = import.meta.env.VITE_ACTIVATION_API_URL as string | u
 
 export function isDesktop(): boolean {
 	return import.meta.env.VITE_PLATFORM === "desktop";
+}
+
+/**
+ * Cross-origin oRPC client for the activation server (separate deployment
+ * from the sidecar). Built lazily so unconfigured envs don't crash on import.
+ */
+let _activationClient: RouterClient<AppRouter> | null | undefined;
+function getActivationClient(): RouterClient<AppRouter> | null {
+	if (_activationClient !== undefined) return _activationClient;
+	if (!ACTIVATION_API_URL) return (_activationClient = null);
+	const link = new RPCLink({ url: `${ACTIVATION_API_URL}/rpc` });
+	return (_activationClient = createORPCClient<RouterClient<AppRouter>>(link));
 }
 
 async function tauriInvoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
@@ -45,23 +62,12 @@ export type ActivationCheckResult =
 export async function checkActivationApi(
 	hardwareId: string,
 ): Promise<ActivationMisconfiguredError | ApiError | ActivationCheckResult> {
-	if (!ACTIVATION_API_URL) {
-		return new ActivationMisconfiguredError();
-	}
-	const res = await fetch(`${ACTIVATION_API_URL}/api/activations/check`, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ hardwareId }),
-	}).catch((e: Error) => e);
-	if (res instanceof Error) return new ApiError({ message: res.message });
+	const client = getActivationClient();
+	if (!client) return new ActivationMisconfiguredError();
 
-	const data = await res.json().catch((e: Error) => e);
-	if (data instanceof Error) return new ApiError({ message: "Failed to parse response" });
-
-	if (data && typeof data === "object" && ("token" in data || "status" in data)) {
-		return data as ActivationCheckResult;
-	}
-	return new ApiError({ message: `Unexpected activation response (HTTP ${res.status})` });
+	const result = await client.activations.check({ hardwareId }).catch((e: Error) => e);
+	if (result instanceof Error) return new ApiError({ message: result.message });
+	return result as ActivationCheckResult;
 }
 
 export type ActivationState =

@@ -5,18 +5,16 @@ import { PGlite } from "@electric-sql/pglite";
 import * as schema from "@workspace/db/schema";
 import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
-import { generateKeyPair, exportPKCS8, exportSPKI } from "jose";
+import { exportPKCS8, exportSPKI, generateKeyPair } from "jose";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 
+import { ActivationNotFoundError, InvalidTokenError } from "../shared/errors.js";
+
 import {
-	checkActivation,
-	registerHardware,
-	listActivations,
-	toggleActivationStatus,
+	ActivationsService,
 	signActivationToken,
 	verifyActivationToken,
-} from "./activation.js";
-import { ActivationNotFoundError, InvalidTokenError } from "../shared/errors.js";
+} from "./activations.service.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const migrationsFolder = path.resolve(__dirname, "../../db/drizzle");
@@ -26,6 +24,7 @@ let TEST_PUBLIC_KEY: string;
 
 let client: PGlite;
 let db: ReturnType<typeof drizzle<typeof schema>>;
+let svc: ActivationsService;
 
 beforeAll(async () => {
 	const kp = await generateKeyPair("ES256", { extractable: true });
@@ -35,8 +34,8 @@ beforeAll(async () => {
 	client = new PGlite();
 	db = drizzle(client, { schema });
 	await migrate(db, { migrationsFolder });
+	svc = new ActivationsService({ db: db as any, privateKey: TEST_PRIVATE_KEY });
 
-	// seed: one active, one pending, one revoked
 	await db.insert(schema.activations).values([
 		{ hardwareId: "hw-active-001", status: "active", activatedAt: new Date() },
 		{ hardwareId: "hw-pending-001", status: "pending" },
@@ -48,58 +47,54 @@ afterAll(async () => {
 	await client.close();
 });
 
-describe("checkActivation", () => {
+describe("ActivationsService.check", () => {
 	it("returns active + activation for activated hardware ID", async () => {
-		const result = await checkActivation(db as any, "hw-active-001");
+		const result = await svc.check("hw-active-001");
 		expect(result.status).toBe("active");
-		expect(result.activation).toBeDefined();
-		expect(result.activation!.hardwareId).toBe("hw-active-001");
+		expect(result.status === "active" && result.activation.hardwareId).toBe("hw-active-001");
 	});
 
 	it("returns pending for pending hardware ID", async () => {
-		const result = await checkActivation(db as any, "hw-pending-001");
+		const result = await svc.check("hw-pending-001");
 		expect(result.status).toBe("pending");
-		expect(result.activation).toBeUndefined();
 	});
 
 	it("returns revoked for revoked hardware ID", async () => {
-		const result = await checkActivation(db as any, "hw-revoked-001");
+		const result = await svc.check("hw-revoked-001");
 		expect(result.status).toBe("revoked");
-		expect(result.activation).toBeUndefined();
 	});
 
 	it("returns unknown for non-existent hardware ID", async () => {
-		const result = await checkActivation(db as any, "hw-nonexistent");
+		const result = await svc.check("hw-nonexistent");
 		expect(result.status).toBe("unknown");
-		expect(result.activation).toBeUndefined();
 	});
 });
 
-describe("registerHardware", () => {
+describe("ActivationsService.register", () => {
 	it("creates a pending activation for new hardware", async () => {
-		const row = await registerHardware(db as any, "hw-new-001");
+		const row = await svc.register("hw-new-001");
 		expect(row).toBeDefined();
 		expect(row!.hardwareId).toBe("hw-new-001");
 		expect(row!.status).toBe("pending");
 
-		const check = await checkActivation(db as any, "hw-new-001");
+		const check = await svc.check("hw-new-001");
 		expect(check.status).toBe("pending");
 	});
 
 	it("does nothing for already-registered hardware", async () => {
-		const row = await registerHardware(db as any, "hw-active-001");
+		const row = await svc.register("hw-active-001");
 		expect(row).toBeUndefined();
 	});
 });
 
-describe("listActivations", () => {
+describe("ActivationsService.list", () => {
 	it("returns all activations", async () => {
-		const result = await listActivations(db as any);
+		const result = await svc.list();
 		expect(result.length).toBeGreaterThanOrEqual(3);
 	});
 
 	it("each activation has expected fields", async () => {
-		const result = await listActivations(db as any);
+		const result = await svc.list();
 		for (const a of result) {
 			expect(a.id).toBeDefined();
 			expect(a.hardwareId).toBeDefined();
@@ -109,31 +104,57 @@ describe("listActivations", () => {
 	});
 });
 
-describe("toggleActivationStatus", () => {
+describe("ActivationsService.toggleStatus", () => {
 	it("activates a pending activation", async () => {
-		const all = await listActivations(db as any);
+		const all = await svc.list();
 		const pending = all.find((a) => a.hardwareId === "hw-pending-001")!;
-		const updated = await toggleActivationStatus(db as any, pending.id, "active");
+		const updated = await svc.toggleStatus(pending.id, "active");
 		if (updated instanceof Error) throw updated;
 		expect(updated.status).toBe("active");
 		expect(updated.activatedAt).toBeInstanceOf(Date);
 	});
 
 	it("revokes an active activation", async () => {
-		const all = await listActivations(db as any);
+		const all = await svc.list();
 		const active = all.find((a) => a.hardwareId === "hw-active-001")!;
-		const updated = await toggleActivationStatus(db as any, active.id, "revoked");
+		const updated = await svc.toggleStatus(active.id, "revoked");
 		if (updated instanceof Error) throw updated;
 		expect(updated.status).toBe("revoked");
 	});
 
 	it("returns ActivationNotFoundError for non-existent ID", async () => {
-		const result = await toggleActivationStatus(
-			db as any,
+		const result = await svc.toggleStatus(
 			"00000000-0000-0000-0000-000000000000",
 			"active",
 		);
 		expect(result).toBeInstanceOf(ActivationNotFoundError);
+	});
+});
+
+describe("ActivationsService.checkAndIssue", () => {
+	it("auto-registers unknown hardware as pending", async () => {
+		const result = await svc.checkAndIssue("hw-fresh-002");
+		expect(result).toEqual({ status: "pending" });
+
+		const check = await svc.check("hw-fresh-002");
+		expect(check.status).toBe("pending");
+	});
+
+	it("returns status for non-active activations", async () => {
+		const result = await svc.checkAndIssue("hw-revoked-001");
+		expect(result).toEqual({ status: "revoked" });
+	});
+
+	it("returns ServerMisconfiguredError when privateKey missing", async () => {
+		const noKeySvc = new ActivationsService({ db: db as any });
+		// seed an active row to avoid the not-active early return
+		await db.insert(schema.activations).values({
+			hardwareId: "hw-active-002",
+			status: "active",
+			activatedAt: new Date(),
+		});
+		const result = await noKeySvc.checkAndIssue("hw-active-002");
+		expect((result as Error).constructor.name).toBe("ServerMisconfiguredError");
 	});
 });
 

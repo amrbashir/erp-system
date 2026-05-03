@@ -9,10 +9,10 @@ import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 
+import { OrgsService } from "../orgs/orgs.service.js";
 import { SetupAlreadyCompleteError, SlugTakenError } from "../shared/errors.js";
 
-import { desktopSetup } from "./desktop-setup.js";
-import { createOrg } from "./org.js";
+import { SetupService } from "./setup.service.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const migrationsFolder = path.resolve(__dirname, "../../db/drizzle");
@@ -22,24 +22,26 @@ const authOptions = {
 	secret: "test-secret-long-enough-for-validation",
 };
 
-let createAuth: typeof import("./auth.js").createAuth;
+let createAuth: typeof import("../lib/auth.js").createAuth;
 
-// must init the DB singleton before importing auth.js,
-// because auth.ts has a module-level createAuth() that calls useDatabase()
+// must init the DB singleton before importing auth.js, because auth.ts
+// has a module-level createAuth() that calls useDatabase()
 beforeAll(async () => {
 	await initDatabase();
-	const mod = await import("./auth.js");
+	const mod = await import("../lib/auth.js");
 	createAuth = mod.createAuth;
 });
 
-describe("desktopSetup – atomic success", () => {
+describe("SetupService.run – atomic success", () => {
 	let client: PGlite;
 	let db: ReturnType<typeof drizzle<typeof schema>>;
+	let svc: SetupService;
 
 	beforeAll(async () => {
 		client = new PGlite();
 		db = drizzle(client, { schema });
 		await migrate(db, { migrationsFolder });
+		svc = new SetupService({ db: db as any, createAuth, authOptions });
 	});
 
 	afterAll(async () => {
@@ -47,18 +49,13 @@ describe("desktopSetup – atomic success", () => {
 	});
 
 	it("creates user + org + membership atomically", async () => {
-		const result = await desktopSetup(
-			db as any,
-			{
-				email: "setup@desktop.local",
-				password: "Password1",
-				name: "Setup User",
-				orgName: "Setup Corp",
-				slug: "setup-corp",
-			},
-			createAuth,
-			authOptions,
-		);
+		const result = await svc.run({
+			email: "setup@desktop.local",
+			password: "Password1",
+			name: "Setup User",
+			orgName: "Setup Corp",
+			slug: "setup-corp",
+		});
 		if (result instanceof Error) throw result;
 
 		expect(result.token).toBeDefined();
@@ -67,7 +64,6 @@ describe("desktopSetup – atomic success", () => {
 		expect(result.org.name).toBe("Setup Corp");
 		expect(result.org.slug).toBe("setup-corp");
 
-		// verify membership exists with owner role
 		const [membership] = await db
 			.select()
 			.from(schema.orgMembers)
@@ -78,28 +74,28 @@ describe("desktopSetup – atomic success", () => {
 	});
 });
 
-describe("desktopSetup – rollback on org failure", () => {
+describe("SetupService.run – rollback on org failure", () => {
 	let client: PGlite;
 	let db: ReturnType<typeof drizzle<typeof schema>>;
+	let svc: SetupService;
 
 	beforeAll(async () => {
 		client = new PGlite();
 		db = drizzle(client, { schema });
 		await migrate(db, { migrationsFolder });
+		svc = new SetupService({ db: db as any, createAuth, authOptions });
 
-		// pre-create a user + org with the slug we'll conflict with
+		// pre-create a user + org with the slug we'll conflict with, then drop user
 		const [seedUser] = await db
 			.insert(schema.users)
 			.values({ name: "Seed", email: "seed@test.com" })
 			.returning();
-		const seedOrg = await createOrg(db as any, {
+		const seedOrg = await new OrgsService({ db: db as any }).create({
 			name: "Taken Corp",
 			slug: "taken-slug",
 			userId: seedUser.id,
 		});
 		if (seedOrg instanceof Error) throw seedOrg;
-		// remove seed user so the "setup already complete" check passes,
-		// but keep the org so the slug conflicts
 		await db.delete(schema.users).where(eq(schema.users.id, seedUser.id));
 	});
 
@@ -108,21 +104,15 @@ describe("desktopSetup – rollback on org failure", () => {
 	});
 
 	it("rolls back user creation if org creation fails", async () => {
-		const result = await desktopSetup(
-			db as any,
-			{
-				email: "rollback@desktop.local",
-				password: "Password1",
-				name: "Rollback User",
-				orgName: "Taken Corp 2",
-				slug: "taken-slug",
-			},
-			createAuth,
-			authOptions,
-		);
+		const result = await svc.run({
+			email: "rollback@desktop.local",
+			password: "Password1",
+			name: "Rollback User",
+			orgName: "Taken Corp 2",
+			slug: "taken-slug",
+		});
 		expect(result).toBeInstanceOf(SlugTakenError);
 
-		// user should NOT exist — transaction rolled back
 		const [user] = await db
 			.select()
 			.from(schema.users)
@@ -131,47 +121,63 @@ describe("desktopSetup – rollback on org failure", () => {
 	});
 });
 
-describe("desktopSetup – existing user guard", () => {
+describe("SetupService.run – existing user guard", () => {
 	let client: PGlite;
 	let db: ReturnType<typeof drizzle<typeof schema>>;
+	let svc: SetupService;
 
 	beforeAll(async () => {
 		client = new PGlite();
 		db = drizzle(client, { schema });
 		await migrate(db, { migrationsFolder });
+		svc = new SetupService({ db: db as any, createAuth, authOptions });
 
-		// run setup once to create a user
-		await desktopSetup(
-			db as any,
-			{
-				email: "first@desktop.local",
-				password: "Password1",
-				name: "First User",
-				orgName: "First Corp",
-				slug: "first-corp",
-			},
-			createAuth,
-			authOptions,
-		);
+		await svc.run({
+			email: "first@desktop.local",
+			password: "Password1",
+			name: "First User",
+			orgName: "First Corp",
+			slug: "first-corp",
+		});
 	});
 
 	afterAll(async () => {
 		await client.close();
 	});
 
-	it("second setup call returns SetupAlreadyCompleteError when user already exists", async () => {
-		const result = await desktopSetup(
-			db as any,
-			{
-				email: "second@desktop.local",
-				password: "Password1",
-				name: "Second User",
-				orgName: "Second Corp",
-				slug: "second-corp",
-			},
-			createAuth,
-			authOptions,
-		);
+	it("isComplete returns true after first setup", async () => {
+		expect(await svc.isComplete()).toBe(true);
+	});
+
+	it("second setup call returns SetupAlreadyCompleteError", async () => {
+		const result = await svc.run({
+			email: "second@desktop.local",
+			password: "Password1",
+			name: "Second User",
+			orgName: "Second Corp",
+			slug: "second-corp",
+		});
 		expect(result).toBeInstanceOf(SetupAlreadyCompleteError);
+	});
+});
+
+describe("SetupService.isComplete – fresh db", () => {
+	let client: PGlite;
+	let db: ReturnType<typeof drizzle<typeof schema>>;
+	let svc: SetupService;
+
+	beforeAll(async () => {
+		client = new PGlite();
+		db = drizzle(client, { schema });
+		await migrate(db, { migrationsFolder });
+		svc = new SetupService({ db: db as any, createAuth, authOptions });
+	});
+
+	afterAll(async () => {
+		await client.close();
+	});
+
+	it("returns false when no users exist", async () => {
+		expect(await svc.isComplete()).toBe(false);
 	});
 });
