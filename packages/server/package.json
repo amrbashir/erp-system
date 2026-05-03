@@ -12,6 +12,7 @@
 		"./invitations/*": "./invitations/*.ts",
 		"./members/*": "./members/*.ts",
 		"./orgs/*": "./orgs/*.ts",
+		"./session/*": "./session/*.ts",
 		"./setup/*": "./setup/*.ts"
 	},
 	"scripts": {

@@ -1,6 +1,5 @@
-import { parse as parseCookies } from "cookie-es";
-
 import { auth } from "../lib/auth.js";
+import { readCookie } from "../shared/cookie.js";
 import { NoOrgSelectedError, NotOrgMemberError, UnauthorizedError } from "../shared/errors.js";
 
 import { pub } from "./base.js";
@@ -9,13 +8,6 @@ type Session = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>;
 type Membership = NonNullable<
 	Awaited<ReturnType<import("../orgs/orgs.service.js").OrgsService["getMembership"]>>
 >;
-
-function readCookie(req: Request, name: string): string | null {
-	const header = req.headers.get("cookie");
-	if (!header) return null;
-	const jar = parseCookies(header);
-	return jar[name] ?? null;
-}
 
 /**
  * Resolves the better-auth session from the request headers. Reads

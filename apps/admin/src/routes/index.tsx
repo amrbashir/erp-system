@@ -11,10 +11,10 @@ import {
 } from "@workspace/ui/components/table";
 import { useState } from "react";
 
-import { getActivations, toggleActivation } from "@/lib/activation-fns";
+import { client } from "@/lib/orpc";
 
 export const Route = createFileRoute("/")({
-	loader: () => getActivations(),
+	loader: () => client.activations.list(),
 	component: ActivationDashboard,
 });
 
@@ -25,7 +25,7 @@ function ActivationDashboard() {
 
 	async function toggle(id: string, newStatus: "active" | "revoked") {
 		setToggling(id);
-		await toggleActivation({ data: { id, status: newStatus } });
+		await client.activations.toggleStatus({ id, status: newStatus });
 		await router.invalidate();
 		setToggling(null);
 	}

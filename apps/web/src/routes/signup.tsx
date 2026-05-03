@@ -4,7 +4,7 @@ import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
 import { signUp } from "@/lib/auth-client";
-import { getSession } from "@/lib/auth-session";
+import { client } from "@/lib/orpc";
 import { safeRedirect } from "@/lib/safe-redirect";
 
 export const Route = createFileRoute("/signup")({
@@ -12,10 +12,8 @@ export const Route = createFileRoute("/signup")({
 		redirect: (search.redirect as string) || undefined,
 	}),
 	beforeLoad: async () => {
-		const session = await getSession();
-		if (session) {
-			throw redirect({ to: "/dashboard" });
-		}
+		const session = await client.session.get();
+		if (session) throw redirect({ to: "/dashboard" });
 	},
 	component: SignupPage,
 });

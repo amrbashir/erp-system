@@ -1,9 +1,10 @@
 import { setCookie } from "h3";
 import * as z from "zod";
 
+import { pub } from "../orpc/base.js";
 import { authed } from "../orpc/middleware.js";
 import { unwrap } from "../orpc/unwrap.js";
-import { orgSwitchCookieOptions } from "../shared/cookie.js";
+import { orgSwitchCookieOptions, readCookie } from "../shared/cookie.js";
 import { NotOrgMemberError, ServerMisconfiguredError } from "../shared/errors.js";
 
 const createInput = z.object({
@@ -17,6 +18,17 @@ const switchInput = z.object({
 });
 
 export const orgsRouter = {
+	/**
+	 * Resolve the active org id from `x-org-id` (desktop bearer flow) or
+	 * the `current_org_id` cookie (web). Returns null when neither set —
+	 * lets route loaders decide redirect vs. picker UI.
+	 */
+	current: pub.handler(({ context }) => {
+		const headerOrgId = context.request.headers.get("x-org-id");
+		if (headerOrgId) return { orgId: headerOrgId };
+		return { orgId: readCookie(context.request, "current_org_id") };
+	}),
+
 	/** All orgs the current user belongs to. */
 	list: authed.handler(({ context }) => {
 		return context.orgsService.listByUser(context.session.user.id);

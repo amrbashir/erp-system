@@ -6,53 +6,38 @@ import { Button } from "@workspace/ui/components/button";
 import { OrgSwitcher } from "@/components/org-switcher";
 import { isDesktop } from "@/lib/activation";
 import { clearToken } from "@/lib/api-fetch";
-import { authClient, signOut } from "@/lib/auth-client";
-import { getSession } from "@/lib/auth-session";
-import { getCurrentOrgId } from "@/lib/org-fns";
+import { signOut } from "@/lib/auth-client";
 import { client } from "@/lib/orpc";
 
 const CURRENT_ORG_KEY = "current_org_id";
 
 export const Route = createFileRoute("/_authed")({
 	beforeLoad: async ({ location }) => {
+		const session = await client.session.get();
+		if (!session) {
+			throw redirect({ to: "/login", search: { redirect: location.pathname } });
+		}
+
+		const orgs = await client.orgs.list().catch((e: Error) => e);
+		// UNAUTHORIZED = token expired/invalid → bounce to login. Other failures
+		// bubble up rather than silently treat as zero-orgs (would misroute to
+		// /onboarding).
+		if (orgs instanceof ORPCError && orgs.code === "UNAUTHORIZED") {
+			throw redirect({ to: "/login", search: { redirect: location.pathname } });
+		}
+		if (orgs instanceof Error) throw orgs;
+
+		// Desktop has no cookie; trust localStorage (with membership check)
+		// then fall back to first org. Web reads the httpOnly cookie via
+		// orgs.current.
+		let currentOrgId: string | null;
 		if (isDesktop()) {
-			const sessionRes = await authClient.getSession();
-			if (!sessionRes.data) {
-				// __root will keep us on onboarding if no users; otherwise show login
-				throw redirect({ to: "/login", search: { redirect: location.pathname } });
-			}
-
-			const orgs = await client.orgs.list().catch((e: Error) => e);
-			// UNAUTHORIZED = token expired/invalid → bounce to login. Other
-			// failures bubble up rather than silently treat as zero-orgs (which
-			// would misroute to /onboarding).
-			if (orgs instanceof ORPCError && orgs.code === "UNAUTHORIZED") {
-				throw redirect({ to: "/login", search: { redirect: location.pathname } });
-			}
-			if (orgs instanceof Error) throw orgs;
-
 			const stored =
 				typeof localStorage !== "undefined" ? localStorage.getItem(CURRENT_ORG_KEY) : null;
-			const currentOrgId =
-				(stored && orgs.find((o) => o.id === stored)?.id) ?? orgs[0]?.id ?? null;
-
-			if (orgs.length === 0 && location.pathname !== "/onboarding") {
-				throw redirect({ to: "/onboarding" });
-			}
-
-			return { session: { user: sessionRes.data.user }, orgs, currentOrgId };
+			currentOrgId = (stored && orgs.find((o) => o.id === stored)?.id) ?? orgs[0]?.id ?? null;
+		} else {
+			currentOrgId = (await client.orgs.current()).orgId;
 		}
-
-		const session = await getSession();
-		if (!session) {
-			throw redirect({
-				to: "/login",
-				search: { redirect: location.pathname },
-			});
-		}
-
-		const orgs = await client.orgs.list();
-		const currentOrgId = await getCurrentOrgId();
 
 		if (orgs.length === 0 && location.pathname !== "/onboarding") {
 			throw redirect({ to: "/onboarding" });
