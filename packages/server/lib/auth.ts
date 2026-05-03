@@ -6,9 +6,8 @@ import { bearer } from "better-auth/plugins/bearer";
 
 import { useDatabase } from "#db";
 
+import { InvitationsService } from "../invitations/invitations.service.js";
 import { validatePassword } from "../shared/validate-password.js";
-
-import { consumeInvitations } from "./invitations.js";
 
 export interface CreateAuthOptions {
 	plugins?: BetterAuthOptions["plugins"];
@@ -70,12 +69,12 @@ export function createAuth(options: CreateAuthOptions = {}) {
 						// best-effort: consume any pending invitations for this email.
 						// errors are logged but do not roll back signup.
 						try {
-							await consumeInvitations(db, {
+							await new InvitationsService({ db }).consume({
 								userId: user.id,
 								email: user.email,
 							});
 						} catch (e) {
-							console.error("[auth.user.create.after] consumeInvitations failed:", e);
+							console.error("[auth.user.create.after] consume failed:", e);
 						}
 					},
 				},
