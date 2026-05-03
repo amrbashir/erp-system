@@ -1,7 +1,7 @@
 import { createRouterClient } from "@orpc/server";
 import type { RouterClient } from "@orpc/server";
 
-import { orgsService } from "./handler.js";
+import { auditService, invitationsService, membersService, orgsService } from "./handler.js";
 import { router, type AppRouter } from "./router.js";
 
 /**
@@ -19,6 +19,9 @@ export function createSSRClient(request: Request): RouterClient<AppRouter> {
 			request,
 			event: null,
 			orgsService,
+			membersService,
+			invitationsService,
+			auditService,
 		},
 	});
 }

@@ -1,5 +1,8 @@
 import type { H3Event } from "h3";
 
+import type { AuditService } from "../audit/audit.service.js";
+import type { InvitationsService } from "../invitations/invitations.service.js";
+import type { MembersService } from "../members/members.service.js";
 import type { OrgsService } from "../orgs/orgs.service.js";
 
 /**
@@ -20,4 +23,7 @@ export interface AppContext {
 	request: Request;
 	event: H3Event | null;
 	orgsService: OrgsService;
+	membersService: MembersService;
+	invitationsService: InvitationsService;
+	auditService: AuditService;
 }

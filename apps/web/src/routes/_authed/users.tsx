@@ -3,8 +3,7 @@ import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { useState, useEffect, useCallback, useMemo } from "react";
 
-import { apiFetch } from "@/lib/api-fetch";
-import { readErrorMessage } from "@/lib/http";
+import { client } from "@/lib/orpc";
 
 type Member = {
 	kind: "member";
@@ -13,7 +12,7 @@ type Member = {
 	role: "owner" | "admin" | "member";
 	userName: string;
 	userEmail: string;
-	createdAt: string;
+	createdAt: string | Date;
 };
 
 type Invitation = {
@@ -21,7 +20,7 @@ type Invitation = {
 	id: string;
 	email: string;
 	role: "owner" | "admin" | "member";
-	createdAt: string;
+	createdAt: string | Date;
 };
 
 type Row = Member | Invitation;
@@ -43,11 +42,10 @@ function UsersPage() {
 	const [pendingFirst, setPendingFirst] = useState(false);
 
 	const fetchMembers = useCallback(async () => {
-		const res = await apiFetch("/api/orgs/members");
-		if (res.ok) {
-			const data: { members: Member[]; invitations: Invitation[] } = await res.json();
-			setMembers(data.members);
-			setInvitations(data.invitations);
+		const data = await client.members.list().catch((e: Error) => e);
+		if (!(data instanceof Error)) {
+			setMembers(data.members as Member[]);
+			setInvitations(data.invitations as Invitation[]);
 		}
 		setLoading(false);
 	}, []);
@@ -61,7 +59,6 @@ function UsersPage() {
 	const rows: Row[] = useMemo(() => {
 		const ms: Row[] = members;
 		const is: Row[] = invitations;
-		// pending sort: invitations first, then members
 		return pendingFirst ? [...is, ...ms] : [...ms, ...is];
 	}, [members, invitations, pendingFirst]);
 
@@ -123,17 +120,13 @@ function AddUserForm({
 
 		const form = new FormData(e.currentTarget);
 		const email = (form.get("email") as string).trim();
-		const role = form.get("role") as string;
+		const role = form.get("role") as "owner" | "admin" | "member";
 
-		const res = await apiFetch("/api/orgs/members", {
-			method: "POST",
-			body: JSON.stringify({ email, role }),
-		});
-
+		const result = await client.members.add({ email, role }).catch((e: Error) => e);
 		setSubmitting(false);
 
-		if (!res.ok) {
-			onError(await readErrorMessage(res, m.users_add_failed()));
+		if (result instanceof Error) {
+			onError(result.message || m.users_add_failed());
 			return;
 		}
 
@@ -211,12 +204,14 @@ function MemberList({
 		onError("");
 		setPendingRoleChanges((prev) => new Set(prev).add(memberId));
 		try {
-			const res = await apiFetch(`/api/orgs/members/${memberId}`, {
-				method: "PATCH",
-				body: JSON.stringify({ role: newRole }),
-			});
-			if (!res.ok) {
-				onError(await readErrorMessage(res, m.users_role_update_failed()));
+			const res = await client.members
+				.updateRole({
+					memberId,
+					role: newRole as "owner" | "admin" | "member",
+				})
+				.catch((e: Error) => e);
+			if (res instanceof Error) {
+				onError(res.message || m.users_role_update_failed());
 				return;
 			}
 			onUpdate();
@@ -233,11 +228,9 @@ function MemberList({
 		onError("");
 		setPendingRemovals((prev) => new Set(prev).add(memberId));
 		try {
-			const res = await apiFetch(`/api/orgs/members/${memberId}`, {
-				method: "DELETE",
-			});
-			if (!res.ok) {
-				onError(await readErrorMessage(res, m.users_remove_failed()));
+			const res = await client.members.remove({ memberId }).catch((e: Error) => e);
+			if (res instanceof Error) {
+				onError(res.message || m.users_remove_failed());
 				return;
 			}
 			onUpdate();
@@ -254,11 +247,9 @@ function MemberList({
 		onError("");
 		setPendingRemovals((prev) => new Set(prev).add(invitationId));
 		try {
-			const res = await apiFetch(`/api/orgs/invitations/${invitationId}`, {
-				method: "DELETE",
-			});
-			if (!res.ok) {
-				onError(await readErrorMessage(res, m.users_remove_failed()));
+			const res = await client.invitations.revoke({ invitationId }).catch((e: Error) => e);
+			if (res instanceof Error) {
+				onError(res.message || m.users_remove_failed());
 				return;
 			}
 			onUpdate();
@@ -276,15 +267,14 @@ function MemberList({
 		onError("");
 		setTransferring(true);
 		try {
-			const res = await apiFetch("/api/orgs/members/transfer", {
-				method: "POST",
-				body: JSON.stringify({
+			const res = await client.members
+				.transferOwnership({
 					targetMemberId: transferTarget.id,
 					newActorRole: transferRole,
-				}),
-			});
-			if (!res.ok) {
-				onError(await readErrorMessage(res, m.users_transfer_failed()));
+				})
+				.catch((e: Error) => e);
+			if (res instanceof Error) {
+				onError(res.message || m.users_transfer_failed());
 				return;
 			}
 			setTransferTarget(null);

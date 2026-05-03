@@ -8,23 +8,18 @@ import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 
+import { OrgsService } from "../orgs/orgs.service.js";
 import { DuplicateMemberError } from "../shared/errors.js";
 
-import {
-	sendInvitation,
-	listInvitations,
-	revokeInvitation,
-	clearInvitationsForEmail,
-	consumeInvitations,
-	findUserByEmail,
-} from "./invitations.js";
-import { createOrg } from "./org.js";
+import { InvitationsService } from "./invitations.service.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const migrationsFolder = path.resolve(__dirname, "../../db/drizzle");
 
 let client: PGlite;
 let db: ReturnType<typeof drizzle<typeof schema>>;
+let svc: InvitationsService;
+let orgsSvc: OrgsService;
 let owner: string;
 let orgId: string;
 
@@ -37,6 +32,8 @@ beforeAll(async () => {
 	client = new PGlite();
 	db = drizzle(client, { schema });
 	await migrate(db, { migrationsFolder });
+	svc = new InvitationsService({ db: db as any });
+	orgsSvc = new OrgsService({ db: db as any });
 
 	const [u] = await db
 		.insert(schema.users)
@@ -44,9 +41,7 @@ beforeAll(async () => {
 		.returning();
 	owner = u.id;
 
-	const org = unwrap(
-		await createOrg(db as any, { name: "Inv Org", slug: "inv-org", userId: owner }),
-	);
+	const org = unwrap(await orgsSvc.create({ name: "Inv Org", slug: "inv-org", userId: owner }));
 	orgId = org.id;
 });
 
@@ -55,19 +50,13 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-	// reset invitations between tests
 	await db.delete(schema.invitations);
 });
 
-describe("sendInvitation", () => {
+describe("InvitationsService.send", () => {
 	it("creates a pending invitation row", async () => {
 		const inv = unwrap(
-			await sendInvitation(db as any, {
-				orgId,
-				email: "new@test.com",
-				role: "member",
-				invitedBy: owner,
-			}),
+			await svc.send({ orgId, email: "new@test.com", role: "member", invitedBy: owner }),
 		);
 		expect(inv.id).toBeDefined();
 		expect(inv.orgId).toBe(orgId);
@@ -77,15 +66,8 @@ describe("sendInvitation", () => {
 	});
 
 	it("returns DuplicateMemberError on duplicate email (case-insensitive)", async () => {
-		unwrap(
-			await sendInvitation(db as any, {
-				orgId,
-				email: "dup@test.com",
-				role: "member",
-				invitedBy: owner,
-			}),
-		);
-		const second = await sendInvitation(db as any, {
+		unwrap(await svc.send({ orgId, email: "dup@test.com", role: "member", invitedBy: owner }));
+		const second = await svc.send({
 			orgId,
 			email: "DUP@test.com",
 			role: "admin",
@@ -96,22 +78,15 @@ describe("sendInvitation", () => {
 
 	it("allows the same email across different orgs", async () => {
 		const otherOrg = unwrap(
-			await createOrg(db as any, {
+			await orgsSvc.create({
 				name: "Other",
 				slug: `other-${Date.now()}`,
 				userId: owner,
 			}),
 		);
-		unwrap(
-			await sendInvitation(db as any, {
-				orgId,
-				email: "x@test.com",
-				role: "member",
-				invitedBy: owner,
-			}),
-		);
+		unwrap(await svc.send({ orgId, email: "x@test.com", role: "member", invitedBy: owner }));
 		const second = unwrap(
-			await sendInvitation(db as any, {
+			await svc.send({
 				orgId: otherOrg.id,
 				email: "x@test.com",
 				role: "member",
@@ -122,21 +97,11 @@ describe("sendInvitation", () => {
 	});
 });
 
-describe("listInvitations", () => {
+describe("InvitationsService.list", () => {
 	it("returns invitations for an org", async () => {
-		await sendInvitation(db as any, {
-			orgId,
-			email: "a@test.com",
-			role: "member",
-			invitedBy: owner,
-		});
-		await sendInvitation(db as any, {
-			orgId,
-			email: "b@test.com",
-			role: "admin",
-			invitedBy: owner,
-		});
-		const rows = await listInvitations(db as any, orgId);
+		await svc.send({ orgId, email: "a@test.com", role: "member", invitedBy: owner });
+		await svc.send({ orgId, email: "b@test.com", role: "admin", invitedBy: owner });
+		const rows = await svc.list(orgId);
 		expect(rows).toHaveLength(2);
 		const emails = rows.map((r) => r.email).sort();
 		expect(emails).toEqual(["a@test.com", "b@test.com"]);
@@ -144,70 +109,51 @@ describe("listInvitations", () => {
 
 	it("scopes results by orgId", async () => {
 		const otherOrg = unwrap(
-			await createOrg(db as any, {
+			await orgsSvc.create({
 				name: "Scope",
 				slug: `scope-${Date.now()}`,
 				userId: owner,
 			}),
 		);
-		await sendInvitation(db as any, {
-			orgId,
-			email: "a@test.com",
-			role: "member",
-			invitedBy: owner,
-		});
-		const rows = await listInvitations(db as any, otherOrg.id);
+		await svc.send({ orgId, email: "a@test.com", role: "member", invitedBy: owner });
+		const rows = await svc.list(otherOrg.id);
 		expect(rows).toHaveLength(0);
 	});
 });
 
-describe("revokeInvitation", () => {
+describe("InvitationsService.revoke", () => {
 	it("deletes the invitation", async () => {
 		const inv = unwrap(
-			await sendInvitation(db as any, {
-				orgId,
-				email: "revoke@test.com",
-				role: "member",
-				invitedBy: owner,
-			}),
+			await svc.send({ orgId, email: "revoke@test.com", role: "member", invitedBy: owner }),
 		);
-		const deleted = await revokeInvitation(db as any, { orgId, invitationId: inv.id });
+		const deleted = await svc.revoke({ orgId, invitationId: inv.id });
 		expect(deleted).not.toBeNull();
 		expect((deleted as any).id).toBe(inv.id);
 
-		const rows = await listInvitations(db as any, orgId);
+		const rows = await svc.list(orgId);
 		expect(rows).toHaveLength(0);
 	});
 
 	it("returns null when invitation belongs to a different org", async () => {
 		const otherOrg = unwrap(
-			await createOrg(db as any, {
+			await orgsSvc.create({
 				name: "Cross",
 				slug: `cross-${Date.now()}`,
 				userId: owner,
 			}),
 		);
 		const inv = unwrap(
-			await sendInvitation(db as any, {
-				orgId,
-				email: "wrong@test.com",
-				role: "member",
-				invitedBy: owner,
-			}),
+			await svc.send({ orgId, email: "wrong@test.com", role: "member", invitedBy: owner }),
 		);
-		const result = await revokeInvitation(db as any, {
-			orgId: otherOrg.id,
-			invitationId: inv.id,
-		});
+		const result = await svc.revoke({ orgId: otherOrg.id, invitationId: inv.id });
 		expect(result).toBeNull();
 
-		// invitation still exists
-		const rows = await listInvitations(db as any, orgId);
+		const rows = await svc.list(orgId);
 		expect(rows).toHaveLength(1);
 	});
 
 	it("returns null when invitation does not exist", async () => {
-		const result = await revokeInvitation(db as any, {
+		const result = await svc.revoke({
 			orgId,
 			invitationId: "00000000-0000-0000-0000-000000000000",
 		});
@@ -215,81 +161,60 @@ describe("revokeInvitation", () => {
 	});
 });
 
-describe("clearInvitationsForEmail", () => {
+describe("InvitationsService.clearForEmail", () => {
 	it("deletes all invitations for the email/org pair (case-insensitive)", async () => {
-		await sendInvitation(db as any, {
-			orgId,
-			email: "Mixed@Test.com",
-			role: "member",
-			invitedBy: owner,
-		});
-		await clearInvitationsForEmail(db as any, { orgId, email: "mixed@test.com" });
-		const rows = await listInvitations(db as any, orgId);
+		await svc.send({ orgId, email: "Mixed@Test.com", role: "member", invitedBy: owner });
+		await svc.clearForEmail({ orgId, email: "mixed@test.com" });
+		const rows = await svc.list(orgId);
 		expect(rows).toHaveLength(0);
 	});
 
 	it("does not affect invitations in other orgs", async () => {
 		const otherOrg = unwrap(
-			await createOrg(db as any, {
+			await orgsSvc.create({
 				name: "Keep",
 				slug: `keep-${Date.now()}`,
 				userId: owner,
 			}),
 		);
-		await sendInvitation(db as any, {
-			orgId,
-			email: "shared@test.com",
-			role: "member",
-			invitedBy: owner,
-		});
-		await sendInvitation(db as any, {
+		await svc.send({ orgId, email: "shared@test.com", role: "member", invitedBy: owner });
+		await svc.send({
 			orgId: otherOrg.id,
 			email: "shared@test.com",
 			role: "member",
 			invitedBy: owner,
 		});
-		await clearInvitationsForEmail(db as any, { orgId, email: "shared@test.com" });
+		await svc.clearForEmail({ orgId, email: "shared@test.com" });
 
-		const stillThere = await listInvitations(db as any, otherOrg.id);
+		const stillThere = await svc.list(otherOrg.id);
 		expect(stillThere).toHaveLength(1);
 	});
 });
 
-describe("consumeInvitations", () => {
+describe("InvitationsService.consume", () => {
 	it("creates memberships, writes audit logs, and deletes invitations", async () => {
-		// create a second org and invite the same email to both
 		const otherOrg = unwrap(
-			await createOrg(db as any, {
+			await orgsSvc.create({
 				name: "Two",
 				slug: `two-${Date.now()}`,
 				userId: owner,
 			}),
 		);
-		await sendInvitation(db as any, {
-			orgId,
-			email: "consume@test.com",
-			role: "member",
-			invitedBy: owner,
-		});
-		await sendInvitation(db as any, {
+		await svc.send({ orgId, email: "consume@test.com", role: "member", invitedBy: owner });
+		await svc.send({
 			orgId: otherOrg.id,
 			email: "consume@test.com",
 			role: "admin",
 			invitedBy: owner,
 		});
 
-		// simulate the user signing up
 		const [newUser] = await db
 			.insert(schema.users)
 			.values({ name: "Consume", email: "consume@test.com" })
 			.returning();
 
-		await consumeInvitations(db as any, {
-			userId: newUser.id,
-			email: "consume@test.com",
-		});
+		await svc.consume({ userId: newUser.id, email: "consume@test.com" });
 
-		// both memberships exist with correct roles
 		const memberships = await db
 			.select()
 			.from(schema.orgMembers)
@@ -299,7 +224,6 @@ describe("consumeInvitations", () => {
 		expect(byOrg[orgId]).toBe("member");
 		expect(byOrg[otherOrg.id]).toBe("admin");
 
-		// audit logs written
 		const logs = await db
 			.select()
 			.from(schema.auditLogs)
@@ -311,7 +235,6 @@ describe("consumeInvitations", () => {
 			);
 		expect(logs).toHaveLength(2);
 
-		// invitations deleted
 		const remaining = await db.select().from(schema.invitations);
 		expect(remaining).toHaveLength(0);
 	});
@@ -323,7 +246,7 @@ describe("consumeInvitations", () => {
 			.returning();
 
 		await expect(
-			consumeInvitations(db as any, { userId: u.id, email: "noinv@test.com" }),
+			svc.consume({ userId: u.id, email: "noinv@test.com" }),
 		).resolves.toBeUndefined();
 
 		const memberships = await db
@@ -334,21 +257,13 @@ describe("consumeInvitations", () => {
 	});
 
 	it("matches case-insensitively", async () => {
-		await sendInvitation(db as any, {
-			orgId,
-			email: "Case@Test.com",
-			role: "member",
-			invitedBy: owner,
-		});
+		await svc.send({ orgId, email: "Case@Test.com", role: "member", invitedBy: owner });
 		const [u] = await db
 			.insert(schema.users)
 			.values({ name: "Case", email: "case@test.com" })
 			.returning();
 
-		await consumeInvitations(db as any, {
-			userId: u.id,
-			email: "case@test.com",
-		});
+		await svc.consume({ userId: u.id, email: "case@test.com" });
 
 		const memberships = await db
 			.select()
@@ -361,12 +276,7 @@ describe("consumeInvitations", () => {
 describe("expiry", () => {
 	it("sets expiresAt ~7 days in the future by default", async () => {
 		const inv = unwrap(
-			await sendInvitation(db as any, {
-				orgId,
-				email: "exp@test.com",
-				role: "member",
-				invitedBy: owner,
-			}),
+			await svc.send({ orgId, email: "exp@test.com", role: "member", invitedBy: owner }),
 		);
 		const delta = inv.expiresAt.getTime() - inv.createdAt.getTime();
 		const sevenDays = 7 * 24 * 60 * 60 * 1000;
@@ -374,14 +284,8 @@ describe("expiry", () => {
 		expect(delta).toBeLessThan(sevenDays + 60_000);
 	});
 
-	it("listInvitations excludes expired rows", async () => {
-		await sendInvitation(db as any, {
-			orgId,
-			email: "fresh@test.com",
-			role: "member",
-			invitedBy: owner,
-		});
-		// backdate one row past expiry
+	it("list excludes expired rows", async () => {
+		await svc.send({ orgId, email: "fresh@test.com", role: "member", invitedBy: owner });
 		await db.insert(schema.invitations).values({
 			orgId,
 			email: "stale@test.com",
@@ -390,11 +294,11 @@ describe("expiry", () => {
 			expiresAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
 		});
 
-		const rows = await listInvitations(db as any, orgId);
+		const rows = await svc.list(orgId);
 		expect(rows.map((r) => r.email)).toEqual(["fresh@test.com"]);
 	});
 
-	it("consumeInvitations skips expired rows (membership not created, row left for cleanup)", async () => {
+	it("consume skips expired rows (membership not created, row left for cleanup)", async () => {
 		await db.insert(schema.invitations).values({
 			orgId,
 			email: "old@test.com",
@@ -408,7 +312,7 @@ describe("expiry", () => {
 			.values({ name: "Old", email: "old@test.com" })
 			.returning();
 
-		await consumeInvitations(db as any, { userId: u.id, email: "old@test.com" });
+		await svc.consume({ userId: u.id, email: "old@test.com" });
 
 		const memberships = await db
 			.select()
@@ -418,20 +322,20 @@ describe("expiry", () => {
 	});
 });
 
-describe("findUserByEmail", () => {
+describe("InvitationsService.findUserByEmail", () => {
 	it("returns the user when present (case-insensitive)", async () => {
 		const [u] = await db
 			.insert(schema.users)
 			.values({ name: "Find", email: "Find@Test.com" })
 			.returning();
 
-		const found = await findUserByEmail(db as any, "find@test.com");
+		const found = await svc.findUserByEmail("find@test.com");
 		expect(found).not.toBeNull();
 		expect(found!.id).toBe(u.id);
 	});
 
 	it("returns null when not found", async () => {
-		const found = await findUserByEmail(db as any, "nobody@test.com");
+		const found = await svc.findUserByEmail("nobody@test.com");
 		expect(found).toBeNull();
 	});
 });

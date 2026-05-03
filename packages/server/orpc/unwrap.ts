@@ -5,10 +5,14 @@
  *
  * Procedures call: `const org = unwrap(await orgsService.create(...));`
  *
+ * Return type uses `Exclude<T, Error>` so TS narrows to the success
+ * variant after the error subclasses (which all extend Error) are
+ * filtered out.
+ *
  * Errors that extend `ORPCError` carry their own status/data; non-ORPC
  * errors bubble up as 500 (handler converts via oRPC's default mapping).
  */
-export function unwrap<T>(result: T | Error): T {
+export function unwrap<T>(result: T): Exclude<T, Error> {
 	if (result instanceof Error) throw result;
-	return result;
+	return result as Exclude<T, Error>;
 }

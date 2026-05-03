@@ -1,8 +1,14 @@
-import { auditLogs } from "@workspace/db/schema";
 import type { PgDatabase } from "drizzle-orm/pg-core";
+
+import { AuditService } from "../audit/audit.service.js";
 
 type DB = PgDatabase<any, any>;
 
+/**
+ * Compat shim for legacy Nitro routes. The single source of truth is
+ * `AuditService`; this wrapper stays until the remaining Nitro routes
+ * are deleted (Phase 5 cleanup).
+ */
 export async function logAudit(
 	db: DB,
 	entry: {
@@ -14,5 +20,5 @@ export async function logAudit(
 		metadata?: Record<string, unknown>;
 	},
 ) {
-	await db.insert(auditLogs).values(entry);
+	return new AuditService({ db }).log(entry);
 }

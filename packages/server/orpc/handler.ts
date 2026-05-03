@@ -3,6 +3,9 @@ import type { H3Event } from "h3";
 
 import { useDatabase } from "#db";
 
+import { AuditService } from "../audit/audit.service.js";
+import { InvitationsService } from "../invitations/invitations.service.js";
+import { MembersService } from "../members/members.service.js";
 import { OrgsService } from "../orgs/orgs.service.js";
 
 import type { AppContext } from "./context.js";
@@ -18,6 +21,9 @@ import { router } from "./router.js";
  */
 const db = useDatabase();
 export const orgsService = new OrgsService({ db });
+export const membersService = new MembersService({ db });
+export const invitationsService = new InvitationsService({ db });
+export const auditService = new AuditService({ db });
 
 /** Per-request context factory used by the HTTP mount. */
 export function buildContext(event: H3Event): AppContext {
@@ -25,6 +31,9 @@ export function buildContext(event: H3Event): AppContext {
 		request: event.req,
 		event,
 		orgsService,
+		membersService,
+		invitationsService,
+		auditService,
 	};
 }
 
