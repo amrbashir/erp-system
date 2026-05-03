@@ -10,13 +10,14 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 
 import { InvalidSlugError, SlugTakenError, UnsupportedCurrencyError } from "../shared/errors.js";
 
-import { createOrg, getUserOrgs, getOrgMembership } from "./org.js";
+import { OrgsService } from "./orgs.service.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const migrationsFolder = path.resolve(__dirname, "../../db/drizzle");
 
 let client: PGlite;
 let db: ReturnType<typeof drizzle<typeof schema>>;
+let svc: OrgsService;
 
 let userA: string;
 let userB: string;
@@ -25,8 +26,8 @@ beforeAll(async () => {
 	client = new PGlite();
 	db = drizzle(client, { schema });
 	await migrate(db, { migrationsFolder });
+	svc = new OrgsService({ db: db as any });
 
-	// seed two users
 	const [a] = await db
 		.insert(schema.users)
 		.values({ name: "Alice", email: "alice@test.com" })
@@ -43,9 +44,9 @@ afterAll(async () => {
 	await client.close();
 });
 
-describe("createOrg", () => {
+describe("OrgsService.create", () => {
 	it("creates org and makes creator the owner", async () => {
-		const org = await createOrg(db as any, {
+		const org = await svc.create({
 			name: "Acme Corp",
 			slug: "acme-corp",
 			userId: userA,
@@ -56,13 +57,13 @@ describe("createOrg", () => {
 		expect(org.slug).toBe("acme-corp");
 		expect(org.defaultCurrency).toBe("USD");
 
-		const membership = await getOrgMembership(db as any, userA, org.id);
+		const membership = await svc.getMembership(userA, org.id);
 		expect(membership).not.toBeNull();
 		expect(membership!.role).toBe("owner");
 	});
 
 	it("returns SlugTakenError on duplicate slug", async () => {
-		const result = await createOrg(db as any, {
+		const result = await svc.create({
 			name: "Acme Duplicate",
 			slug: "acme-corp",
 			userId: userA,
@@ -71,7 +72,7 @@ describe("createOrg", () => {
 	});
 
 	it("returns InvalidSlugError on bad slug format", async () => {
-		const result = await createOrg(db as any, {
+		const result = await svc.create({
 			name: "Bad Slug",
 			slug: "-bad-slug-",
 			userId: userA,
@@ -80,7 +81,7 @@ describe("createOrg", () => {
 	});
 
 	it("returns UnsupportedCurrencyError on bad currency", async () => {
-		const result = await createOrg(db as any, {
+		const result = await svc.create({
 			name: "Bad Currency",
 			slug: "bad-currency",
 			userId: userA,
@@ -90,7 +91,7 @@ describe("createOrg", () => {
 	});
 
 	it("accepts valid currency", async () => {
-		const org = await createOrg(db as any, {
+		const org = await svc.create({
 			name: "EUR Org",
 			slug: "eur-org",
 			userId: userA,
@@ -101,44 +102,42 @@ describe("createOrg", () => {
 	});
 });
 
-describe("getUserOrgs", () => {
+describe("OrgsService.listByUser", () => {
 	it("returns orgs the user belongs to", async () => {
-		const orgs = await getUserOrgs(db as any, userA);
+		const orgs = await svc.listByUser(userA);
 		expect(orgs.length).toBeGreaterThanOrEqual(1);
 		expect(orgs[0].name).toBe("Acme Corp");
 		expect(orgs[0].role).toBe("owner");
 	});
 
 	it("returns empty for user with no orgs", async () => {
-		const orgs = await getUserOrgs(db as any, userB);
+		const orgs = await svc.listByUser(userB);
 		expect(orgs).toHaveLength(0);
 	});
 });
 
 describe("org data isolation", () => {
-	it("user in org A cannot see org B via getUserOrgs", async () => {
-		const orgB = await createOrg(db as any, {
+	it("user in org A cannot see org B via listByUser", async () => {
+		const orgB = await svc.create({
 			name: "Bob Inc",
 			slug: "bob-inc",
 			userId: userB,
 		});
 		if (orgB instanceof Error) throw orgB;
 
-		const aliceOrgs = await getUserOrgs(db as any, userA);
-		const bobOrgs = await getUserOrgs(db as any, userB);
+		const aliceOrgs = await svc.listByUser(userA);
+		const bobOrgs = await svc.listByUser(userB);
 
 		expect(aliceOrgs.every((o) => o.id !== orgB.id)).toBe(true);
 		expect(bobOrgs.some((o) => o.id === orgB.id)).toBe(true);
 	});
 
 	it("scoped query via set_config only returns matching org rows", async () => {
-		const aliceOrgs = await getUserOrgs(db as any, userA);
+		const aliceOrgs = await svc.listByUser(userA);
 		const aliceOrgId = aliceOrgs[0].id;
 
-		// set session var used by RLS policies
 		await db.execute(sql`SELECT set_config('app.current_org_id', ${aliceOrgId}, false)`);
 
-		// simulate what an RLS policy does: filter by current_setting
 		const rows = await db.execute(
 			sql`SELECT * FROM org_members WHERE org_id = current_setting('app.current_org_id')::uuid`,
 		);

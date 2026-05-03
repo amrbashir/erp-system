@@ -1,23 +1,17 @@
+import { ORPCError } from "@orpc/client";
 import { Outlet, Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 
 import { OrgSwitcher } from "@/components/org-switcher";
 import { isDesktop } from "@/lib/activation";
-import { apiFetch, clearToken } from "@/lib/api-fetch";
+import { clearToken } from "@/lib/api-fetch";
 import { authClient, signOut } from "@/lib/auth-client";
 import { getSession } from "@/lib/auth-session";
-import { getOrgs, getCurrentOrgId } from "@/lib/org-fns";
+import { getCurrentOrgId } from "@/lib/org-fns";
+import { client } from "@/lib/orpc";
 
 const CURRENT_ORG_KEY = "current_org_id";
-
-type OrgSummary = {
-	id: string;
-	name: string;
-	slug: string;
-	defaultCurrency: string;
-	role: string;
-};
 
 export const Route = createFileRoute("/_authed")({
 	beforeLoad: async ({ location }) => {
@@ -28,17 +22,14 @@ export const Route = createFileRoute("/_authed")({
 				throw redirect({ to: "/login", search: { redirect: location.pathname } });
 			}
 
-			const orgsRes = await apiFetch("/api/orgs");
-			// 401 = token expired/invalid → bounce to login. Other failures bubble
-			// up rather than silently treat as zero-orgs (which would misroute to
-			// /onboarding).
-			if (orgsRes.status === 401) {
+			const orgs = await client.orgs.list().catch((e: Error) => e);
+			// UNAUTHORIZED = token expired/invalid → bounce to login. Other
+			// failures bubble up rather than silently treat as zero-orgs (which
+			// would misroute to /onboarding).
+			if (orgs instanceof ORPCError && orgs.code === "UNAUTHORIZED") {
 				throw redirect({ to: "/login", search: { redirect: location.pathname } });
 			}
-			if (!orgsRes.ok) {
-				throw new Error(`Failed to load orgs (HTTP ${orgsRes.status})`);
-			}
-			const orgs: OrgSummary[] = await orgsRes.json();
+			if (orgs instanceof Error) throw orgs;
 
 			const stored =
 				typeof localStorage !== "undefined" ? localStorage.getItem(CURRENT_ORG_KEY) : null;
@@ -60,7 +51,7 @@ export const Route = createFileRoute("/_authed")({
 			});
 		}
 
-		const orgs = await getOrgs();
+		const orgs = await client.orgs.list();
 		const currentOrgId = await getCurrentOrgId();
 
 		if (orgs.length === 0 && location.pathname !== "/onboarding") {

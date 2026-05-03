@@ -4,8 +4,7 @@ import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
 import { isDesktop } from "@/lib/activation";
-import { apiFetch } from "@/lib/api-fetch";
-import { readErrorMessage } from "@/lib/http";
+import { client } from "@/lib/orpc";
 import { toSlug } from "@/lib/slug";
 
 const CURRENT_ORG_KEY = "current_org_id";
@@ -36,29 +35,19 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 			return;
 		}
 
-		const res = await apiFetch("/api/orgs", {
-			method: "POST",
-			body: JSON.stringify({ name, slug }),
-		});
-
-		if (!res.ok) {
-			setError(await readErrorMessage(res, m.create_org_failed()));
+		const org = await client.orgs.create({ name, slug }).catch((e: Error) => e);
+		if (org instanceof Error) {
+			setError(org.message || m.create_org_failed());
 			setLoading(false);
 			return;
 		}
 
-		const org = await res.json();
-
 		if (isDesktop()) {
 			localStorage.setItem(CURRENT_ORG_KEY, org.id);
 		} else {
-			const switchRes = await apiFetch("/api/orgs/switch", {
-				method: "POST",
-				body: JSON.stringify({ orgId: org.id }),
-			});
-
-			if (!switchRes.ok) {
-				setError(await readErrorMessage(switchRes, m.switch_org_failed()));
+			const sw = await client.orgs.switch({ orgId: org.id }).catch((e: Error) => e);
+			if (sw instanceof Error) {
+				setError(sw.message || m.switch_org_failed());
 				setLoading(false);
 				return;
 			}

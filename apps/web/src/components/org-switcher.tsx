@@ -4,8 +4,7 @@ import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
 import { isDesktop } from "@/lib/activation";
-import { apiFetch } from "@/lib/api-fetch";
-import { readErrorMessage } from "@/lib/http";
+import { client } from "@/lib/orpc";
 
 const CURRENT_ORG_KEY = "current_org_id";
 
@@ -32,13 +31,9 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 			return;
 		}
 
-		const res = await apiFetch("/api/orgs/switch", {
-			method: "POST",
-			body: JSON.stringify({ orgId }),
-		});
-
-		if (!res.ok) {
-			setError(await readErrorMessage(res, m.org_switcher_failed()));
+		const sw = await client.orgs.switch({ orgId }).catch((e: Error) => e);
+		if (sw instanceof Error) {
+			setError(sw.message || m.org_switcher_failed());
 			return;
 		}
 

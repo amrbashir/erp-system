@@ -1,13 +1,23 @@
 import type { H3Event } from "h3";
 
+import type { OrgsService } from "../orgs/orgs.service.js";
+
 /**
  * Flat oRPC context: services are top-level fields (`orgsService`, NOT
- * nested `services.orgs`). Instantiated once at server start in `handler.ts`,
- * passed to every procedure invocation.
+ * nested `services.orgs`). Service singletons live in `handler.ts`; the
+ * per-request shape is built fresh by `buildContext` (HTTP) or by the
+ * SSR router-client wrapper.
  *
- * Service classes are added here as domains migrate (Phase 2+).
+ * Why both `request` and `event`:
+ *  - `request` is the only thing that exists when callers go through
+ *    `createRouterClient` (e.g. SSR loaders) — middleware reads cookies
+ *    and auth headers from it.
+ *  - `event` is only set when called over HTTP via `rpcHandler`; cookie-
+ *    *writing* procedures (org switch) need it. Read-only procedures
+ *    work either way.
  */
 export interface AppContext {
-	/** Per-request h3 event. Middleware reads cookies/headers from this. */
-	event: H3Event;
+	request: Request;
+	event: H3Event | null;
+	orgsService: OrgsService;
 }
