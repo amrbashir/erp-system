@@ -2,7 +2,7 @@ import { defineEventHandler, readBody, toRequest } from "h3";
 
 import { useDatabase } from "#db";
 import { auth } from "@workspace/server/lib/auth";
-import { InvalidInputError, UnauthorizedError } from "@workspace/server/lib/errors";
+import { InvalidInputError, UnauthorizedError } from "@workspace/server/shared/errors";
 import { toHTTPError } from "@workspace/server/lib/http-errors";
 import { createOrg } from "@workspace/server/lib/org";
 

@@ -10,7 +10,7 @@ import {
 	SelfRoleChangeError,
 	SelfTransferError,
 	TargetMemberNotFoundError,
-} from "./errors.js";
+} from "../shared/errors.js";
 
 type DB = PgDatabase<any, any>;
 type Role = "owner" | "admin" | "member";

@@ -1,13 +1,14 @@
 import { users } from "@workspace/db/schema";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 
-import type { CreateAuthOptions } from "./auth.js";
 import {
 	InvalidSlugError,
 	SetupAlreadyCompleteError,
 	SlugTakenError,
 	UnsupportedCurrencyError,
-} from "./errors.js";
+} from "../shared/errors.js";
+
+import type { CreateAuthOptions } from "./auth.js";
 import { createOrg } from "./org.js";
 
 type DB = PgDatabase<any, any>;

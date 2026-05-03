@@ -2,9 +2,9 @@ import { defineEventHandler, readBody } from "h3";
 
 import { useDatabase } from "#db";
 import { checkActivation, registerHardware, signActivationToken } from "@workspace/server/lib/activation";
-import { InvalidInputError, RateLimitedError, ServerMisconfiguredError } from "@workspace/server/lib/errors";
+import { InvalidInputError, RateLimitedError, ServerMisconfiguredError } from "@workspace/server/shared/errors";
 import { toHTTPError } from "@workspace/server/lib/http-errors";
-import { createRateLimiter } from "@workspace/server/lib/rate-limit";
+import { createRateLimiter } from "@workspace/server/shared/rate-limit";
 
 const limiter = createRateLimiter({ window: 60_000, max: 10 });
 

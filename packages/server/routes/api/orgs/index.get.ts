@@ -2,7 +2,7 @@ import { defineEventHandler, toRequest } from "h3";
 
 import { useDatabase } from "#db";
 import { auth } from "@workspace/server/lib/auth";
-import { UnauthorizedError } from "@workspace/server/lib/errors";
+import { UnauthorizedError } from "@workspace/server/shared/errors";
 import { toHTTPError } from "@workspace/server/lib/http-errors";
 import { getUserOrgs } from "@workspace/server/lib/org";
 

@@ -16,7 +16,7 @@ import {
 	signActivationToken,
 	verifyActivationToken,
 } from "./activation.js";
-import { ActivationNotFoundError, InvalidTokenError } from "./errors.js";
+import { ActivationNotFoundError, InvalidTokenError } from "../shared/errors.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const migrationsFolder = path.resolve(__dirname, "../../db/drizzle");

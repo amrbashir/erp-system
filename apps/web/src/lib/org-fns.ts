@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { auth } from "@workspace/server/lib/auth";
-import { UnauthorizedError } from "@workspace/server/lib/errors";
+import { UnauthorizedError } from "@workspace/server/shared/errors";
 import { getUserOrgs } from "@workspace/server/lib/org";
 
 import { useDatabase } from "#db";

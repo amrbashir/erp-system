@@ -3,8 +3,9 @@ import type { H3Event } from "h3";
 
 import { useDatabase } from "#db";
 
+import { NoOrgSelectedError, NotOrgMemberError, UnauthorizedError } from "../shared/errors.js";
+
 import { auth } from "./auth.js";
-import { NoOrgSelectedError, NotOrgMemberError, UnauthorizedError } from "./errors.js";
 import { getOrgMembership } from "./org.js";
 
 type DB = ReturnType<typeof useDatabase>;

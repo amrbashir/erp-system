@@ -6,8 +6,9 @@ import { bearer } from "better-auth/plugins/bearer";
 
 import { useDatabase } from "#db";
 
+import { validatePassword } from "../shared/validate-password.js";
+
 import { consumeInvitations } from "./invitations.js";
-import { validatePassword } from "./validate-password.js";
 
 export interface CreateAuthOptions {
 	plugins?: BetterAuthOptions["plugins"];

@@ -15,6 +15,7 @@ catalog:
     jose: ^6.2.2
     nitro: latest
     typescript: ^5.9.3
+    zod: ^4.1.13
 catalogs:
     react:
         react: ^19.2.4
@@ -22,9 +23,14 @@ catalogs:
         "@types/react": ^19.2.10
         "@types/react-dom": ^19.2.3
     tanstack:
+        "@tanstack/react-query": ^5.90.5
         "@tanstack/react-router": ^1.132.0
         "@tanstack/react-start": ^1.132.0
         "@tanstack/router-plugin": ^1.132.0
+    orpc:
+        "@orpc/client": ^1.10.1
+        "@orpc/server": ^1.10.1
+        "@orpc/tanstack-query": ^1.10.1
     drizzle:
         drizzle-orm: ^0.44.7
         drizzle-kit: ^0.31.0

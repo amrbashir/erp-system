@@ -8,7 +8,8 @@ import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 
-import { InvalidSlugError, SlugTakenError, UnsupportedCurrencyError } from "./errors.js";
+import { InvalidSlugError, SlugTakenError, UnsupportedCurrencyError } from "../shared/errors.js";
+
 import { createOrg, getUserOrgs, getOrgMembership } from "./org.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

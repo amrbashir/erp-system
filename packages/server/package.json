@@ -4,13 +4,16 @@
 	"private": true,
 	"type": "module",
 	"exports": {
-		"./lib/*": "./lib/*.ts"
+		"./lib/*": "./lib/*.ts",
+		"./shared/*": "./shared/*.ts",
+		"./orpc/*": "./orpc/*.ts"
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
 		"build:desktop": "DEPLOY_TARGET=desktop nitro build"
 	},
 	"dependencies": {
+		"@orpc/server": "catalog:orpc",
 		"@workspace/db": "workspace:*",
 		"better-auth": "catalog:",
 		"cookie-es": "^2.0.0",
@@ -19,7 +22,8 @@
 		"errore": "^0.14.1",
 		"h3": "latest",
 		"jose": "catalog:",
-		"nitro": "catalog:"
+		"nitro": "catalog:",
+		"zod": "catalog:"
 	},
 	"devDependencies": {
 		"@electric-sql/pglite": "catalog:",

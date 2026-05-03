@@ -2,8 +2,8 @@ import { defineEventHandler, readBody, setCookie, toRequest } from "h3";
 
 import { useDatabase } from "#db";
 import { auth } from "@workspace/server/lib/auth";
-import { orgSwitchCookieOptions } from "@workspace/server/lib/cookie";
-import { InvalidInputError, NotOrgMemberError, UnauthorizedError } from "@workspace/server/lib/errors";
+import { orgSwitchCookieOptions } from "@workspace/server/shared/cookie";
+import { InvalidInputError, NotOrgMemberError, UnauthorizedError } from "@workspace/server/shared/errors";
 import { toHTTPError } from "@workspace/server/lib/http-errors";
 import { getOrgMembership } from "@workspace/server/lib/org";
 

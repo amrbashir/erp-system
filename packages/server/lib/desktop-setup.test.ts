@@ -9,8 +9,9 @@ import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 
+import { SetupAlreadyCompleteError, SlugTakenError } from "../shared/errors.js";
+
 import { desktopSetup } from "./desktop-setup.js";
-import { SetupAlreadyCompleteError, SlugTakenError } from "./errors.js";
 import { createOrg } from "./org.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

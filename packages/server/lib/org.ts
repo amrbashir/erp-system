@@ -2,9 +2,9 @@ import { orgs, orgMembers } from "@workspace/db/schema";
 import { eq, and } from "drizzle-orm";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 
-import { validateCurrency } from "./currency.js";
-import { InvalidSlugError, SlugTakenError, type UnsupportedCurrencyError } from "./errors.js";
-import { validateSlug } from "./slug.js";
+import { validateCurrency } from "../shared/currency.js";
+import { InvalidSlugError, SlugTakenError, type UnsupportedCurrencyError } from "../shared/errors.js";
+import { validateSlug } from "../shared/slug.js";
 
 type DB = PgDatabase<any, any>;
 type Org = typeof orgs.$inferSelect;

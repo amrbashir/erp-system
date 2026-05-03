@@ -1,7 +1,7 @@
 import { defineEventHandler, getRouterParam } from "h3";
 
 import { logAudit } from "@workspace/server/lib/audit";
-import { InvalidInputError, SelfRemovalError } from "@workspace/server/lib/errors";
+import { InvalidInputError, SelfRemovalError } from "@workspace/server/shared/errors";
 import { toHTTPError } from "@workspace/server/lib/http-errors";
 import { removeMember } from "@workspace/server/lib/org-members";
 import { requireOrg } from "@workspace/server/lib/require-org";

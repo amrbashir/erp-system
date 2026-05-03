@@ -1,4 +1,10 @@
-import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+	HeadContent,
+	Outlet,
+	Scripts,
+	createRootRouteWithContext,
+} from "@tanstack/react-router";
 import { getLocale, getTextDirection } from "@workspace/i18n";
 import { LanguageSwitcher } from "@workspace/ui/components/language-switcher";
 import { ThemeProvider, themeScript } from "@workspace/ui/components/theme-provider";
@@ -9,7 +15,11 @@ import { isDesktop } from "@/lib/activation";
 
 import appCss from "@workspace/ui/globals.css?url";
 
-export const Route = createRootRoute({
+export interface RouterContext {
+	queryClient: QueryClient;
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
 	head: () => ({
 		meta: [
 			{
@@ -35,6 +45,7 @@ export const Route = createRootRoute({
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+	const { queryClient } = Route.useRouteContext();
 	return (
 		<html lang={getLocale()} dir={getTextDirection()}>
 			<head>
@@ -42,7 +53,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<script dangerouslySetInnerHTML={{ __html: themeScript }} />
 			</head>
 			<body>
-				<ThemeProvider>{children}</ThemeProvider>
+				<QueryClientProvider client={queryClient}>
+					<ThemeProvider>{children}</ThemeProvider>
+				</QueryClientProvider>
 				<Scripts />
 			</body>
 		</html>

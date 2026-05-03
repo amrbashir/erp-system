@@ -4,9 +4,9 @@ import { defineEventHandler, readBody } from "h3";
 import { useDatabase } from "#db";
 import { createAuth } from "@workspace/server/lib/auth";
 import { desktopSetup } from "@workspace/server/lib/desktop-setup";
-import { InvalidEmailError, InvalidInputError, InvalidSlugError } from "@workspace/server/lib/errors";
+import { InvalidEmailError, InvalidInputError, InvalidSlugError } from "@workspace/server/shared/errors";
 import { toHTTPError } from "@workspace/server/lib/http-errors";
-import { toSlug } from "@workspace/server/lib/slug";
+import { toSlug } from "@workspace/server/shared/slug";
 
 export default defineEventHandler(async (event) => {
 	const db = useDatabase();

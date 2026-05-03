@@ -14,7 +14,8 @@ import {
 	SelfRoleChangeError,
 	SelfTransferError,
 	TargetMemberNotFoundError,
-} from "./errors.js";
+} from "../shared/errors.js";
+
 import {
 	getOrgMembers,
 	addMemberToOrg,

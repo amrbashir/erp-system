@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 import { SignJWT, jwtVerify, importPKCS8, importSPKI } from "jose";
 
-import { ActivationNotFoundError, InvalidTokenError } from "./errors.js";
+import { ActivationNotFoundError, InvalidTokenError } from "../shared/errors.js";
 
 type DB = PgDatabase<any, any>;
 

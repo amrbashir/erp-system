@@ -3,7 +3,7 @@ import { auditLogs, invitations, orgMembers, users } from "@workspace/db/schema"
 import { and, eq, gt, sql } from "drizzle-orm";
 import type { PgDatabase } from "drizzle-orm/pg-core";
 
-import { DuplicateMemberError } from "./errors.js";
+import { DuplicateMemberError } from "../shared/errors.js";
 
 type DB = PgDatabase<any, any>;
 type Role = "owner" | "admin" | "member";

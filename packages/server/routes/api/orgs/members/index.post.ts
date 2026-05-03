@@ -2,7 +2,7 @@ import emailValidator from "email-validator";
 import { defineEventHandler, readBody } from "h3";
 
 import { logAudit } from "@workspace/server/lib/audit";
-import { InvalidEmailError, InvalidInputError, NoPermissionError } from "@workspace/server/lib/errors";
+import { InvalidEmailError, InvalidInputError, NoPermissionError } from "@workspace/server/shared/errors";
 import { toHTTPError } from "@workspace/server/lib/http-errors";
 import { clearInvitationsForEmail, findUserByEmail, sendInvitation } from "@workspace/server/lib/invitations";
 import { addMemberToOrg } from "@workspace/server/lib/org-members";

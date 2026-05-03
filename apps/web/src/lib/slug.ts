@@ -1,1 +1,1 @@
-export { toSlug } from "@workspace/server/lib/slug";
+export { toSlug } from "@workspace/server/shared/slug";

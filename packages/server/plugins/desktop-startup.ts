@@ -7,7 +7,7 @@ import { useRuntimeConfig } from "nitro/runtime-config";
 import { useStorage } from "nitro/storage";
 
 import { initDatabase } from "#db";
-import { InvalidInputError } from "@workspace/server/lib/errors";
+import { InvalidInputError } from "@workspace/server/shared/errors";
 import { applyMigrations } from "@workspace/server/lib/migrate";
 
 /** Read existing BETTER_AUTH_SECRET file, or generate + persist a new one. */

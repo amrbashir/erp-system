@@ -8,7 +8,8 @@ import { drizzle } from "drizzle-orm/pglite";
 import { migrate } from "drizzle-orm/pglite/migrator";
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 
-import { DuplicateMemberError } from "./errors.js";
+import { DuplicateMemberError } from "../shared/errors.js";
+
 import {
 	sendInvitation,
 	listInvitations,
