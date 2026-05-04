@@ -63,6 +63,4 @@ export default definePlugin(async () => {
 		}
 		return typeof item === "object" ? JSON.stringify(item) : String(item);
 	});
-
-	console.log("[desktop] database ready");
 });

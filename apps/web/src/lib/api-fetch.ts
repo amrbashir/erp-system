@@ -1,6 +1,6 @@
 import { isDesktop } from "./activation";
+import { SIDECAR_URL } from "./sidecar";
 
-const SIDECAR_URL = import.meta.env.VITE_SIDECAR_URL || "http://localhost:11435";
 const TOKEN_KEY = "bearer_token";
 
 export function getStoredToken(): string | null {

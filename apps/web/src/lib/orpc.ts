@@ -6,8 +6,7 @@ import type { AppRouter } from "@workspace/server/orpc/router";
 
 import { isDesktop } from "./activation";
 import { getStoredToken } from "./api-fetch";
-
-const SIDECAR_URL = import.meta.env.VITE_SIDECAR_URL || "http://localhost:11435";
+import { SIDECAR_URL } from "./sidecar";
 
 /**
  * Browser-side link.

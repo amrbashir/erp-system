@@ -1,8 +1,8 @@
 import { createAuthClient } from "better-auth/react";
 
 import { isDesktop } from "./activation";
+import { SIDECAR_URL } from "./sidecar";
 
-const SIDECAR_URL = import.meta.env.VITE_SIDECAR_URL || "http://localhost:11435";
 const TOKEN_KEY = "bearer_token";
 
 const desktop = isDesktop();
