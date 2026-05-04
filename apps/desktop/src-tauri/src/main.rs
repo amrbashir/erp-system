@@ -14,7 +14,7 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .manage(sidecar::SidecarManager::new())
         .setup(|app| {
-            sidecar::start(&app.handle());
+            sidecar::start(&app.handle())?;
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
