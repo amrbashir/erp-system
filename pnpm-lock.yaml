@@ -228,6 +228,12 @@ importers:
       '@tauri-apps/cli':
         specifier: catalog:tauri
         version: 2.10.1
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.5.2
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
 
   apps/web:
     dependencies:

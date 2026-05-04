@@ -6,12 +6,15 @@
 	"scripts": {
 		"dev": "tauri dev",
 		"build:sidecar": "node scripts/build-sidecar.ts",
-		"build": "pnpm run build:sidecar && tauri build"
+		"build": "pnpm run build:sidecar && tauri build",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@tauri-apps/api": "catalog:tauri"
 	},
 	"devDependencies": {
-		"@tauri-apps/cli": "catalog:tauri"
+		"@tauri-apps/cli": "catalog:tauri",
+		"@types/node": "catalog:",
+		"typescript": "catalog:"
 	}
 }
