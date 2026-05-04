@@ -2,19 +2,26 @@ import * as schema from "@workspace/db/schema";
 import { APIError, betterAuth } from "better-auth";
 import type { BetterAuthOptions } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { createAuthMiddleware } from "better-auth/api";
 import { bearer } from "better-auth/plugins/bearer";
 
-import { useDatabase } from "#db";
+import { useDatabase, type Database } from "#db";
 
 import { InvitationsService } from "../invitations/invitations.service.js";
 import { validatePassword } from "../shared/validate-password.js";
+
+// The active drizzle adapter's DB *or* a tx from db.transaction(...).
+// Derived from #db so it's typed against the actually-bundled adapter
+// (pglite/neon/postgres) — no `any` generics.
+type Tx = Parameters<Parameters<Database["transaction"]>[0]>[0];
+type AuthDb = Database | Tx;
 
 export interface CreateAuthOptions {
 	plugins?: BetterAuthOptions["plugins"];
 	desktop?: boolean;
 	baseURL?: string;
 	secret?: string;
-	db?: any;
+	db?: AuthDb;
 }
 
 export function createAuth(options: CreateAuthOptions = {}) {
@@ -52,15 +59,17 @@ export function createAuth(options: CreateAuthOptions = {}) {
 			requireEmailVerification: false,
 		},
 		hooks: {
-			before: async (ctx) => {
-				if ((ctx as any).path !== "/sign-up/email") return;
+			// `createAuthMiddleware` is the better-auth pattern that gives
+			// the handler a fully-typed `ctx` (with `.path`, `.body`, etc.).
+			before: createAuthMiddleware(async (ctx) => {
+				if (ctx.path !== "/sign-up/email") return;
 				const body = ctx.body as { password?: string } | undefined;
 				if (!body?.password) return;
 				const err = validatePassword(body.password);
 				if (err) {
 					throw new APIError("BAD_REQUEST", { message: err.message });
 				}
-			},
+			}),
 		},
 		databaseHooks: {
 			user: {
@@ -100,5 +109,5 @@ function getInstance(): Auth {
 }
 
 export const auth: Auth = new Proxy({} as Auth, {
-	get: (_, prop) => Reflect.get(getInstance() as any, prop),
+	get: (_, prop) => Reflect.get(getInstance(), prop),
 });
