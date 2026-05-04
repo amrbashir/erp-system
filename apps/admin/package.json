@@ -4,8 +4,8 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
+		"dev": "DEPLOY_TARGET=admin vite dev",
+		"build": "DEPLOY_TARGET=admin vite build",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {

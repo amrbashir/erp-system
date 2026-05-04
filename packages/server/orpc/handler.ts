@@ -11,6 +11,7 @@ import { MembersService } from "../members/members.service.js";
 import { OrgsService } from "../orgs/orgs.service.js";
 import { SetupService } from "../setup/setup.service.js";
 
+import { adminRouter } from "./admin-router.js";
 import type { AppContext } from "./context.js";
 import { router } from "./router.js";
 
@@ -47,5 +48,8 @@ export function buildContext(event: H3Event): AppContext {
 	};
 }
 
-/** Single shared RPCHandler instance. */
+/** Public RPCHandler — mounted by web + desktop. */
 export const rpcHandler = new RPCHandler<AppContext>(router);
+
+/** Admin RPCHandler — mounted only by the admin deployment. */
+export const adminRpcHandler = new RPCHandler<AppContext>(adminRouter);

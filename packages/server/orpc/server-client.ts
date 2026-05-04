@@ -1,6 +1,7 @@
 import { createRouterClient } from "@orpc/server";
 import type { RouterClient } from "@orpc/server";
 
+import { adminRouter, type AdminRouter } from "./admin-router.js";
 import {
 	activationsService,
 	auditService,
@@ -22,6 +23,22 @@ import { router, type AppRouter } from "./router.js";
  */
 export function createSSRClient(request: Request): RouterClient<AppRouter> {
 	return createRouterClient(router, {
+		context: {
+			request,
+			event: null,
+			orgsService,
+			membersService,
+			invitationsService,
+			auditService,
+			activationsService,
+			setupService,
+		},
+	});
+}
+
+/** SSR client for the admin router (admin deployment only). */
+export function createAdminSSRClient(request: Request): RouterClient<AdminRouter> {
+	return createRouterClient(adminRouter, {
 		context: {
 			request,
 			event: null,
