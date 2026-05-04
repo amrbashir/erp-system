@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
+use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::Manager;
 use tauri_plugin_dialog::DialogExt;
 
@@ -58,10 +59,27 @@ pub fn validate_db_path(path: &str) -> Result<(), String> {
     let p = PathBuf::from(path);
     fs::create_dir_all(&p).map_err(|e| format!("cannot create directory: {e}"))?;
 
-    // Write a temp file to verify writability
-    let test_file = p.join(".erp-write-test");
-    fs::write(&test_file, "test").map_err(|e| format!("directory not writable: {e}"))?;
-    let _ = fs::remove_file(&test_file);
+    // Unique probe filename + RAII cleanup. Concurrent callers (and a panic
+    // mid-write) can't collide on a fixed path or leave stale junk behind.
+    let nanos = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_nanos())
+        .unwrap_or(0);
+    let probe = p.join(format!(".erp-write-test-{}-{nanos}", std::process::id()));
+
+    struct Cleanup(PathBuf);
+    impl Drop for Cleanup {
+        fn drop(&mut self) {
+            let _ = fs::remove_file(&self.0);
+        }
+    }
+    let _guard = Cleanup(probe.clone());
+
+    fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&probe)
+        .map_err(|e| format!("directory not writable: {e}"))?;
 
     Ok(())
 }
@@ -159,10 +177,12 @@ mod tests {
     #[test]
     fn validate_db_path_checks_writability() {
         let dir = std::env::temp_dir().join("erp-test-writable");
+        let _ = fs::remove_dir_all(&dir);
         let result = validate_db_path(dir.to_str().unwrap());
         assert!(result.is_ok());
-        // .erp-write-test should be cleaned up
-        assert!(!dir.join(".erp-write-test").exists());
+        // Probe file (unique name) should be cleaned up — directory must be empty.
+        let entries: Vec<_> = fs::read_dir(&dir).unwrap().collect();
+        assert!(entries.is_empty(), "stale probe files: {entries:?}");
         let _ = fs::remove_dir_all(&dir);
     }
 }
