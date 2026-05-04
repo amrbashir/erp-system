@@ -44,6 +44,9 @@ export async function applyMigrations(
 		for (const stmt of statements) {
 			const trimmed = stmt.trim();
 			if (trimmed) {
+				// sql.raw is required for DDL — drizzle's parameterized SQL can't
+				// represent it. Input is trusted: migration files are committed
+				// to the repo and bundled at build time. No user input flows here.
 				await db.execute(sql.raw(trimmed));
 			}
 		}
