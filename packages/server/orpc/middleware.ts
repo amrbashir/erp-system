@@ -1,6 +1,12 @@
 import { auth } from "../lib/auth.js";
 import { readCookie } from "../shared/cookie.js";
-import { NoOrgSelectedError, NotOrgMemberError, UnauthorizedError } from "../shared/errors.js";
+import {
+	NoOrgSelectedError,
+	NotOrgMemberError,
+	RateLimitedError,
+	UnauthorizedError,
+} from "../shared/errors.js";
+import { createRateLimiter } from "../shared/rate-limit.js";
 
 import { pub } from "./base.js";
 
@@ -8,6 +14,18 @@ type Session = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>;
 type Membership = NonNullable<
 	Awaited<ReturnType<import("../orgs/orgs.service.js").OrgsService["getMembership"]>>
 >;
+
+/**
+ * Per-IP token bucket. Call once at module scope (each call allocates its
+ * own bucket map) and chain `.input()/.handler()` like any pub builder.
+ */
+export function rateLimited(opts: { window: number; max: number }) {
+	const check = createRateLimiter(opts);
+	return pub.use(async ({ context, next }) => {
+		if (!check(context.request)) throw new RateLimitedError();
+		return next();
+	});
+}
 
 /**
  * Resolves the better-auth session from the request headers. Reads

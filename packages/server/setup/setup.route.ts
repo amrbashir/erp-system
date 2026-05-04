@@ -2,6 +2,7 @@ import emailValidator from "email-validator";
 import * as z from "zod";
 
 import { pub } from "../orpc/base.js";
+import { rateLimited } from "../orpc/middleware.js";
 import { unwrap } from "../orpc/unwrap.js";
 import { InvalidEmailError, InvalidSlugError } from "../shared/errors.js";
 import { toSlug, validateSlug } from "../shared/slug.js";
@@ -13,6 +14,10 @@ const runInput = z.object({
 	orgName: z.string().min(1),
 	slug: z.string().optional(),
 });
+
+// First-run-only: 5 per hour per IP is generous for legitimate use,
+// hostile to brute-force/spam.
+const runLimit = rateLimited({ window: 60 * 60_000, max: 5 });
 
 /**
  * Desktop first-run setup. Both procedures are public (`pub`) — the very
@@ -28,7 +33,7 @@ export const setupRouter = {
 		return { setupComplete };
 	}),
 
-	run: pub.input(runInput).handler(async ({ context, input }) => {
+	run: runLimit.input(runInput).handler(async ({ context, input }) => {
 		if (!emailValidator.validate(input.email)) throw new InvalidEmailError();
 
 		const slug = input.slug ?? toSlug(input.orgName);
