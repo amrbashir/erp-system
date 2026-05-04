@@ -12,16 +12,16 @@ const addInput = z.object({
 });
 
 const updateRoleInput = z.object({
-	memberId: z.string().uuid(),
+	memberId: z.uuid(),
 	role: roleEnum,
 });
 
 const removeInput = z.object({
-	memberId: z.string().uuid(),
+	memberId: z.uuid(),
 });
 
 const transferInput = z.object({
-	targetMemberId: z.string().uuid(),
+	targetMemberId: z.uuid(),
 	newActorRole: z.enum(["admin", "member"]),
 });
 

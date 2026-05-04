@@ -14,7 +14,7 @@ const createInput = z.object({
 });
 
 const switchInput = z.object({
-	orgId: z.string().uuid(),
+	orgId: z.uuid(),
 });
 
 export const orgsRouter = {

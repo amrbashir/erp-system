@@ -5,7 +5,7 @@ import { unwrap } from "../orpc/unwrap.js";
 import { InvitationNotFoundError, NoPermissionError } from "../shared/errors.js";
 
 const revokeInput = z.object({
-	invitationId: z.string().uuid(),
+	invitationId: z.uuid(),
 });
 
 /**
