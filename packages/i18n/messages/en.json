@@ -38,6 +38,9 @@
 	"create_org_submit": "Create organization",
 	"cancel": "Cancel",
 	"retry": "Retry",
+	"reload": "Reload",
+	"error_boundary_heading": "Something went wrong",
+	"error_boundary_description": "An unexpected error occurred. You can try again or reload the page.",
 
 	"dashboard_welcome": "Welcome, {name}",
 	"dashboard_current_org": "Current organization:",

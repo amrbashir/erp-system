@@ -38,6 +38,9 @@
 	"create_org_submit": "إنشاء المنظمة",
 	"cancel": "إلغاء",
 	"retry": "إعادة المحاولة",
+	"reload": "إعادة التحميل",
+	"error_boundary_heading": "حدث خطأ ما",
+	"error_boundary_description": "حدث خطأ غير متوقع. يمكنك المحاولة مرة أخرى أو إعادة تحميل الصفحة.",
 
 	"dashboard_welcome": "مرحباً،‏ {name}",
 	"dashboard_current_org": "المنظمة الحالية:",
