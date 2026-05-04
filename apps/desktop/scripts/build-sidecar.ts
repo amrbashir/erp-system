@@ -43,7 +43,21 @@ function denoCompile() {
 	const entry = resolve(serverDir, ".output/server/index.mjs");
 	const outPath = resolve(binDir, `erp-sidecar-${targetTriple}`);
 
-	execSync(`deno compile --no-check --allow-all --output "${outPath}" "${entry}"`, {
+	// Explicit permission set instead of --allow-all. Drops --allow-run
+	// (sidecar must never spawn subprocesses) and --allow-import (everything
+	// is bundled at compile time). The remaining grants stay broad because
+	// PGlite/Nitro/better-auth read many env/path/sys APIs we can't fully
+	// enumerate without runtime testing.
+	const perms = [
+		"--allow-env",
+		"--allow-net",
+		"--allow-read",
+		"--allow-write",
+		"--allow-sys",
+		"--allow-ffi",
+	].join(" ");
+
+	execSync(`deno compile --no-check ${perms} --output "${outPath}" "${entry}"`, {
 		stdio: "inherit",
 	});
 
