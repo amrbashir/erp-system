@@ -37,11 +37,11 @@ pub fn start(app: &tauri::AppHandle) -> Result<(), String> {
 }
 
 fn spawn_attempt(app: &tauri::AppHandle, attempt: u32) -> Result<(), String> {
-    let mut cfg = config::read_config(app);
+    let mut cfg = config::read_config(app)?;
 
     if let Err(e) = config::validate_db_path(&cfg.db_path) {
         eprintln!("[sidecar] db path inaccessible: {e}, falling back to default");
-        cfg.db_path = config::default_db_path(app);
+        cfg.db_path = config::default_db_path(app)?;
         config::validate_db_path(&cfg.db_path)
             .map_err(|e| format!("default pgdata dir inaccessible: {e}"))?;
         let _ = config::write_config(app, &cfg);

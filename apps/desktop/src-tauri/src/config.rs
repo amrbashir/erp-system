@@ -10,39 +10,40 @@ pub struct AppConfig {
     pub db_path: String,
 }
 
-fn config_path(app: &tauri::AppHandle) -> PathBuf {
-    app.path()
+fn config_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+    Ok(app
+        .path()
         .app_data_dir()
-        .expect("failed to resolve app data dir")
-        .join("config.json")
+        .map_err(|e| format!("failed to resolve app data dir: {e}"))?
+        .join("config.json"))
 }
 
-pub fn default_db_path(app: &tauri::AppHandle) -> String {
-    app.path()
+pub fn default_db_path(app: &tauri::AppHandle) -> Result<String, String> {
+    let path = app
+        .path()
         .app_data_dir()
-        .expect("failed to resolve app data dir")
-        .join("pgdata")
-        .to_str()
-        .unwrap()
-        .to_string()
+        .map_err(|e| format!("failed to resolve app data dir: {e}"))?
+        .join("pgdata");
+    path.to_str()
+        .map(str::to_string)
+        .ok_or_else(|| "app data dir contains non-UTF8 characters".to_string())
 }
 
-pub fn read_config(app: &tauri::AppHandle) -> AppConfig {
-    let path = config_path(app);
+pub fn read_config(app: &tauri::AppHandle) -> Result<AppConfig, String> {
+    let path = config_path(app)?;
     if path.exists() {
         let content = fs::read_to_string(&path).unwrap_or_default();
-        serde_json::from_str(&content).unwrap_or(AppConfig {
-            db_path: default_db_path(app),
-        })
-    } else {
-        AppConfig {
-            db_path: default_db_path(app),
+        if let Ok(config) = serde_json::from_str(&content) {
+            return Ok(config);
         }
     }
+    Ok(AppConfig {
+        db_path: default_db_path(app)?,
+    })
 }
 
 pub fn write_config(app: &tauri::AppHandle, config: &AppConfig) -> Result<(), String> {
-    let path = config_path(app);
+    let path = config_path(app)?;
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent).map_err(|e| format!("failed to create config dir: {e}"))?;
     }
@@ -66,12 +67,12 @@ pub fn validate_db_path(path: &str) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub fn get_config(app: tauri::AppHandle) -> AppConfig {
+pub fn get_config(app: tauri::AppHandle) -> Result<AppConfig, String> {
     read_config(&app)
 }
 
 #[tauri::command]
-pub fn get_default_db_path(app: tauri::AppHandle) -> String {
+pub fn get_default_db_path(app: tauri::AppHandle) -> Result<String, String> {
     default_db_path(&app)
 }
 
@@ -85,14 +86,14 @@ pub fn get_default_db_path(app: tauri::AppHandle) -> String {
 #[tauri::command]
 pub fn update_db_path(app: tauri::AppHandle, path: String) -> Result<(), String> {
     validate_db_path(&path)?;
-    let mut config = read_config(&app);
+    let mut config = read_config(&app)?;
     config.db_path = path;
     write_config(&app, &config)
 }
 
 #[tauri::command]
 pub async fn pick_db_directory(app: tauri::AppHandle) -> Result<Option<String>, String> {
-    let default = default_db_path(&app);
+    let default = default_db_path(&app)?;
     let picked = app
         .dialog()
         .file()
