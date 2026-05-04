@@ -25,7 +25,6 @@ fn main() {
             config::get_default_db_path,
             config::update_db_path,
             config::pick_db_directory,
-            config::migrate_db_path,
         ])
         .build(tauri::generate_context!())
         .expect("error while building tauri application");

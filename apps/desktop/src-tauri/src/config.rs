@@ -75,6 +75,13 @@ pub fn get_default_db_path(app: tauri::AppHandle) -> String {
     default_db_path(&app)
 }
 
+/// Persist a new DB path. Takes effect on next app launch — the running
+/// sidecar reads `db_path` once at startup. The frontend should warn the
+/// user a reboot is required after calling this.
+///
+/// Data is NOT migrated: the new path is used as-is. If pgdata already
+/// exists there it'll be reused; otherwise PGlite initializes a fresh
+/// cluster on first start.
 #[tauri::command]
 pub fn update_db_path(app: tauri::AppHandle, path: String) -> Result<(), String> {
     validate_db_path(&path)?;
@@ -99,47 +106,6 @@ pub async fn pick_db_directory(app: tauri::AppHandle) -> Result<Option<String>, 
         }
         None => Ok(None),
     }
-}
-
-/// Move DB data from current path to a new path, update config.
-/// Caller must stop/restart the sidecar around this call.
-#[tauri::command]
-pub fn migrate_db_path(app: tauri::AppHandle, new_path: String) -> Result<(), String> {
-    let config = read_config(&app);
-    let old_path = PathBuf::from(&config.db_path);
-    let new_path_buf = PathBuf::from(&new_path);
-
-    if old_path == new_path_buf {
-        return Ok(());
-    }
-
-    validate_db_path(&new_path)?;
-
-    // Copy contents from old to new
-    if old_path.exists() {
-        copy_dir_recursive(&old_path, &new_path_buf)
-            .map_err(|e| format!("failed to copy data: {e}"))?;
-    }
-
-    // Update config
-    let mut config = config;
-    config.db_path = new_path;
-    write_config(&app, &config)
-}
-
-fn copy_dir_recursive(src: &std::path::Path, dst: &std::path::Path) -> std::io::Result<()> {
-    fs::create_dir_all(dst)?;
-    for entry in fs::read_dir(src)? {
-        let entry = entry?;
-        let src_path = entry.path();
-        let dst_path = dst.join(entry.file_name());
-        if src_path.is_dir() {
-            copy_dir_recursive(&src_path, &dst_path)?;
-        } else {
-            fs::copy(&src_path, &dst_path)?;
-        }
-    }
-    Ok(())
 }
 
 #[cfg(test)]
