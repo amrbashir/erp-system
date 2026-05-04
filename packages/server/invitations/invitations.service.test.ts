@@ -32,8 +32,8 @@ beforeAll(async () => {
 	client = new PGlite();
 	db = drizzle(client, { schema });
 	await migrate(db, { migrationsFolder });
-	svc = new InvitationsService({ db: db as any });
-	orgsSvc = new OrgsService({ db: db as any });
+	svc = new InvitationsService({ db });
+	orgsSvc = new OrgsService({ db });
 
 	const [u] = await db
 		.insert(schema.users)
@@ -126,9 +126,9 @@ describe("InvitationsService.revoke", () => {
 		const inv = unwrap(
 			await svc.send({ orgId, email: "revoke@test.com", role: "member", invitedBy: owner }),
 		);
-		const deleted = await svc.revoke({ orgId, invitationId: inv.id });
+		const deleted = unwrap(await svc.revoke({ orgId, invitationId: inv.id }));
 		expect(deleted).not.toBeNull();
-		expect((deleted as any).id).toBe(inv.id);
+		expect(deleted?.id).toBe(inv.id);
 
 		const rows = await svc.list(orgId);
 		expect(rows).toHaveLength(0);

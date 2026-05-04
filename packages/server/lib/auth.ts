@@ -5,23 +5,18 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware } from "better-auth/api";
 import { bearer } from "better-auth/plugins/bearer";
 
-import { useDatabase, type Database } from "#db";
+import { useDatabase } from "#db";
 
 import { InvitationsService } from "../invitations/invitations.service.js";
+import type { DB } from "../shared/db.js";
 import { validatePassword } from "../shared/validate-password.js";
-
-// The active drizzle adapter's DB *or* a tx from db.transaction(...).
-// Derived from #db so it's typed against the actually-bundled adapter
-// (pglite/neon/postgres) — no `any` generics.
-type Tx = Parameters<Parameters<Database["transaction"]>[0]>[0];
-type AuthDb = Database | Tx;
 
 export interface CreateAuthOptions {
 	plugins?: BetterAuthOptions["plugins"];
 	desktop?: boolean;
 	baseURL?: string;
 	secret?: string;
-	db?: AuthDb;
+	db?: DB;
 }
 
 export function createAuth(options: CreateAuthOptions = {}) {

@@ -15,8 +15,12 @@ export default defineConfig({
 			outdir: "../../packages/i18n/src/paraglide",
 			strategy: ["localStorage", "preferredLanguage", "baseLocale"],
 			emitTsDeclarations: true,
-		}) as any,
-		nitro(nitroConfig as any),
+		}),
+		// nitroConfig comes from packages/server's nitro install; structurally
+		// identical to this app's nitro install but TS treats them as separate
+		// identities when the catalog's `nitro: latest` resolves to different
+		// betas. Cast to the local plugin's expected param type — not `any`.
+		nitro(nitroConfig as Parameters<typeof nitro>[0]),
 		viteTsConfigPaths(),
 		tailwindcss(),
 		tanstackStart(),

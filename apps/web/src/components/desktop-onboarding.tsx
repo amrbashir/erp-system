@@ -38,8 +38,8 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 		try {
 			await desktopSetup({ orgName: trimmedOrgName, slug: finalSlug, email, password, name });
 			onComplete();
-		} catch (err: any) {
-			setError(err.message ?? m.desktop_onboarding_failed());
+		} catch (err) {
+			setError(err instanceof Error ? err.message : m.desktop_onboarding_failed());
 		} finally {
 			setLoading(false);
 		}

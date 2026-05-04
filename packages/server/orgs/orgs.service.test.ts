@@ -26,7 +26,7 @@ beforeAll(async () => {
 	client = new PGlite();
 	db = drizzle(client, { schema });
 	await migrate(db, { migrationsFolder });
-	svc = new OrgsService({ db: db as any });
+	svc = new OrgsService({ db });
 
 	const [a] = await db
 		.insert(schema.users)
@@ -144,7 +144,7 @@ describe("org data isolation", () => {
 
 		expect(rows.rows.length).toBeGreaterThanOrEqual(1);
 		for (const row of rows.rows) {
-			expect((row as any).org_id).toBe(aliceOrgId);
+			expect((row as { org_id: string }).org_id).toBe(aliceOrgId);
 		}
 	});
 });

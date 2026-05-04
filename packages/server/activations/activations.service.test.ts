@@ -34,7 +34,7 @@ beforeAll(async () => {
 	client = new PGlite();
 	db = drizzle(client, { schema });
 	await migrate(db, { migrationsFolder });
-	svc = new ActivationsService({ db: db as any, privateKey: TEST_PRIVATE_KEY });
+	svc = new ActivationsService({ db, privateKey: TEST_PRIVATE_KEY });
 
 	await db.insert(schema.activations).values([
 		{ hardwareId: "hw-active-001", status: "active", activatedAt: new Date() },
@@ -146,7 +146,7 @@ describe("ActivationsService.checkAndIssue", () => {
 	});
 
 	it("returns ServerMisconfiguredError when privateKey missing", async () => {
-		const noKeySvc = new ActivationsService({ db: db as any });
+		const noKeySvc = new ActivationsService({ db });
 		// seed an active row to avoid the not-active early return
 		await db.insert(schema.activations).values({
 			hardwareId: "hw-active-002",

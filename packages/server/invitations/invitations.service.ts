@@ -1,11 +1,9 @@
 import { lower } from "@workspace/db";
 import { auditLogs, invitations, orgMembers, users } from "@workspace/db/schema";
 import { and, eq, gt, sql } from "drizzle-orm";
-import type { PgDatabase } from "drizzle-orm/pg-core";
 
-import { DuplicateMemberError } from "../shared/errors.js";
-
-type DB = PgDatabase<any, any>;
+import type { DB } from "../shared/db.js";
+import { DuplicateMemberError, type PgErrorShape } from "../shared/errors.js";
 type Role = "owner" | "admin" | "member";
 type Invitation = typeof invitations.$inferSelect;
 type UserSummary = { id: string; name: string; email: string };
@@ -53,11 +51,12 @@ export class InvitationsService {
 				})
 				.returning();
 			return row;
-		} catch (e: any) {
+		} catch (e) {
+			const err = e as PgErrorShape;
 			if (
-				e?.code === "23505" ||
-				e?.cause?.code === "23505" ||
-				/unique/i.test(e?.message ?? "")
+				err.code === "23505" ||
+				err.cause?.code === "23505" ||
+				/unique/i.test(err.message ?? "")
 			) {
 				return new DuplicateMemberError();
 			}

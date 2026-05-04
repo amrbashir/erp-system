@@ -46,8 +46,8 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 		let org;
 		try {
 			org = await createMutation.mutateAsync({ name: trimmedName, slug: finalSlug });
-		} catch (err: any) {
-			setError(err?.message || m.create_org_failed());
+		} catch (err) {
+			setError(err instanceof Error ? err.message : m.create_org_failed());
 			return;
 		}
 
@@ -56,8 +56,8 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 		} else {
 			try {
 				await switchMutation.mutateAsync({ orgId: org.id });
-			} catch (err: any) {
-				setError(err?.message || m.switch_org_failed());
+			} catch (err) {
+				setError(err instanceof Error ? err.message : m.switch_org_failed());
 				return;
 			}
 		}

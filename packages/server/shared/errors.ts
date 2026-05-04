@@ -170,3 +170,17 @@ export class InvalidTokenError extends ORPCError<"UNAUTHORIZED", undefined> {
 
 // Re-export errore for callers that build internal tagged errors elsewhere.
 export { errore };
+
+// ── Catch-block helpers ─────────────────────────────────────────────────────
+
+/**
+ * Structural shape of pg/drizzle errors thrown from a query. Postgres
+ * errors carry SQLSTATE codes (e.g. "23505" = unique_violation). drizzle
+ * sometimes wraps them so the original sits on `cause`.
+ */
+export type PgErrorShape = {
+	code?: string;
+	constraint?: string;
+	message?: string;
+	cause?: PgErrorShape;
+};

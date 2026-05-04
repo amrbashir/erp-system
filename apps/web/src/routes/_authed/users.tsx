@@ -116,8 +116,8 @@ function AddUserForm({
 		try {
 			await addMutation.mutateAsync({ email, role });
 			onDone();
-		} catch (err: any) {
-			onError(err?.message || m.users_add_failed());
+		} catch (err) {
+			onError(err instanceof Error ? err.message : m.users_add_failed());
 		}
 	}
 
@@ -210,8 +210,8 @@ function MemberList({
 				memberId,
 				role: newRole as "owner" | "admin" | "member",
 			});
-		} catch (err: any) {
-			onError(err?.message || m.users_role_update_failed());
+		} catch (err) {
+			onError(err instanceof Error ? err.message : m.users_role_update_failed());
 		} finally {
 			setPendingRoleChanges((p) => {
 				const n = new Set(p);
@@ -226,8 +226,8 @@ function MemberList({
 		setPendingRemovals((p) => new Set(p).add(memberId));
 		try {
 			await removeMutation.mutateAsync({ memberId });
-		} catch (err: any) {
-			onError(err?.message || m.users_remove_failed());
+		} catch (err) {
+			onError(err instanceof Error ? err.message : m.users_remove_failed());
 		} finally {
 			setPendingRemovals((p) => {
 				const n = new Set(p);
@@ -242,8 +242,8 @@ function MemberList({
 		setPendingRemovals((p) => new Set(p).add(invitationId));
 		try {
 			await revokeMutation.mutateAsync({ invitationId });
-		} catch (err: any) {
-			onError(err?.message || m.users_remove_failed());
+		} catch (err) {
+			onError(err instanceof Error ? err.message : m.users_remove_failed());
 		} finally {
 			setPendingRemovals((p) => {
 				const n = new Set(p);
@@ -262,8 +262,8 @@ function MemberList({
 				newActorRole: transferRole,
 			});
 			setTransferTarget(null);
-		} catch (err: any) {
-			onError(err?.message || m.users_transfer_failed());
+		} catch (err) {
+			onError(err instanceof Error ? err.message : m.users_transfer_failed());
 		}
 	}
 

@@ -42,8 +42,8 @@ beforeAll(async () => {
 	client = new PGlite();
 	db = drizzle(client, { schema });
 	await migrate(db, { migrationsFolder });
-	svc = new MembersService({ db: db as any });
-	orgsSvc = new OrgsService({ db: db as any });
+	svc = new MembersService({ db });
+	orgsSvc = new OrgsService({ db });
 
 	const [u1] = await db
 		.insert(schema.users)

@@ -84,7 +84,9 @@ describe("users table", () => {
 	});
 
 	it("should require email", async () => {
-		await expect(db.insert(schema.users).values({ name: "No Email" } as any)).rejects.toThrow();
+		// Intentionally bypass TS to verify runtime NOT NULL enforcement.
+		// @ts-expect-error missing required `email`
+		await expect(db.insert(schema.users).values({ name: "No Email" })).rejects.toThrow();
 	});
 
 	it("should enforce case-insensitive unique email", async () => {

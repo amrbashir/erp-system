@@ -35,8 +35,8 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 
 		try {
 			await switchMutation.mutateAsync({ orgId });
-		} catch (e: any) {
-			setError(e?.message || m.org_switcher_failed());
+		} catch (e) {
+			setError(e instanceof Error ? e.message : m.org_switcher_failed());
 			return;
 		}
 

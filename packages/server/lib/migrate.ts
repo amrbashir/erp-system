@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
-import type { PgDatabase } from "drizzle-orm/pg-core";
+
+import type { DB } from "../shared/db.js";
 
 interface JournalEntry {
 	idx: number;
@@ -15,7 +16,7 @@ interface Journal {
  * In tests, `readFile` reads from disk; in production, from Nitro's server assets.
  */
 export async function applyMigrations(
-	db: PgDatabase<any, any>,
+	db: DB,
 	readFile: (path: string) => Promise<string>,
 ) {
 	await db.execute(sql`

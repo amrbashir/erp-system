@@ -1,7 +1,6 @@
 import { auditLogs } from "@workspace/db/schema";
-import type { PgDatabase } from "drizzle-orm/pg-core";
 
-type DB = PgDatabase<any, any>;
+import type { DB } from "../shared/db.js";
 
 export interface AuditEntry {
 	orgId: string;

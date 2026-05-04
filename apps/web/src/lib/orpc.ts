@@ -7,7 +7,7 @@ import type { AppRouter } from "@workspace/server/orpc/router";
 import { isDesktop } from "./activation";
 import { getStoredToken } from "./api-fetch";
 
-const SIDECAR_URL = (import.meta as any).env?.VITE_SIDECAR_URL || "http://localhost:11435";
+const SIDECAR_URL = import.meta.env.VITE_SIDECAR_URL || "http://localhost:11435";
 
 /**
  * Browser-side link.
@@ -41,7 +41,10 @@ function createBrowserClient(): RouterClient<AppRouter> {
  * never reach the browser bundle.
  */
 function createServerClient(): RouterClient<AppRouter> {
-	function deepProxy(path: string[]): any {
+	type AnyFn = (...args: unknown[]) => unknown;
+	type Nested = { [k: string]: AnyFn | Nested };
+
+	function deepProxy(path: string[]): unknown {
 		const fn = () => {};
 		return new Proxy(fn, {
 			get(_t, p) {
@@ -54,9 +57,9 @@ function createServerClient(): RouterClient<AppRouter> {
 					import("@tanstack/react-start/server"),
 					import("@workspace/server/orpc/server-client"),
 				]);
-				let target: any = createSSRClient(getRequest());
-				for (const seg of path.slice(0, -1)) target = target[seg];
-				return target[path[path.length - 1]](...args);
+				let target: Nested = createSSRClient(getRequest()) as unknown as Nested;
+				for (const seg of path.slice(0, -1)) target = target[seg] as Nested;
+				return (target[path[path.length - 1]] as AnyFn)(...args);
 			},
 		});
 	}

@@ -1,16 +1,15 @@
 import { orgs, orgMembers } from "@workspace/db/schema";
 import { eq, and } from "drizzle-orm";
-import type { PgDatabase } from "drizzle-orm/pg-core";
 
+import { validateCurrency } from "../shared/currency.js";
+import type { DB } from "../shared/db.js";
 import {
 	InvalidSlugError,
 	SlugTakenError,
 	UnsupportedCurrencyError,
+	type PgErrorShape,
 } from "../shared/errors.js";
-import { validateCurrency } from "../shared/currency.js";
 import { validateSlug } from "../shared/slug.js";
-
-type DB = PgDatabase<any, any>;
 type Org = typeof orgs.$inferSelect;
 type OrgMember = typeof orgMembers.$inferSelect;
 
@@ -57,9 +56,10 @@ export class OrgsService {
 
 				return org;
 			});
-		} catch (err: any) {
-			const cause = err?.cause ?? err;
-			if (cause?.code === "23505" && cause?.constraint?.includes("slug")) {
+		} catch (err) {
+			const e = err as PgErrorShape;
+			const cause = e.cause ?? e;
+			if (cause.code === "23505" && cause.constraint?.includes("slug")) {
 				return new SlugTakenError();
 			}
 			if (err instanceof Error) return err;

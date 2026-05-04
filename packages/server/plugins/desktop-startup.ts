@@ -39,9 +39,15 @@ function ensureAuthSecret(dataDir: string | undefined) {
 	process.env.BETTER_AUTH_SECRET = secret;
 }
 
+declare module "nitro/types" {
+	interface NitroRuntimeConfig {
+		pgdataDir?: string;
+	}
+}
+
 export default definePlugin(async () => {
 	const config = useRuntimeConfig();
-	const dataDir = (config as any).pgdataDir || undefined;
+	const dataDir = config.pgdataDir || undefined;
 
 	// must run before any auth.ts module evaluation triggered by route imports
 	ensureAuthSecret(dataDir);

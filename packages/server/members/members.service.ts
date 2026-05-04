@@ -1,7 +1,7 @@
 import { orgMembers, users } from "@workspace/db/schema";
 import { and, count, eq } from "drizzle-orm";
-import type { PgDatabase } from "drizzle-orm/pg-core";
 
+import type { DB } from "../shared/db.js";
 import {
 	DuplicateMemberError,
 	LastOwnerError,
@@ -10,9 +10,8 @@ import {
 	SelfRoleChangeError,
 	SelfTransferError,
 	TargetMemberNotFoundError,
+	type PgErrorShape,
 } from "../shared/errors.js";
-
-type DB = PgDatabase<any, any>;
 type Role = "owner" | "admin" | "member";
 type OrgMember = typeof orgMembers.$inferSelect;
 
@@ -59,11 +58,12 @@ export class MembersService {
 				})
 				.returning();
 			return row;
-		} catch (e: any) {
+		} catch (e) {
+			const err = e as PgErrorShape;
 			if (
-				e?.code === "23505" ||
-				e?.cause?.code === "23505" ||
-				/unique/i.test(e?.message ?? "")
+				err.code === "23505" ||
+				err.cause?.code === "23505" ||
+				/unique/i.test(err.message ?? "")
 			) {
 				return new DuplicateMemberError();
 			}

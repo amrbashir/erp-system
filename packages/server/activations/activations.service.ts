@@ -1,15 +1,13 @@
 import { activations } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
-import type { PgDatabase } from "drizzle-orm/pg-core";
 import { SignJWT, importPKCS8, importSPKI, jwtVerify } from "jose";
 
+import type { DB } from "../shared/db.js";
 import {
 	ActivationNotFoundError,
 	InvalidTokenError,
 	ServerMisconfiguredError,
 } from "../shared/errors.js";
-
-type DB = PgDatabase<any, any>;
 type Activation = typeof activations.$inferSelect;
 
 /** Public-facing check result, mirroring the original HTTP route surface. */

@@ -1,16 +1,14 @@
 import { users } from "@workspace/db/schema";
-import type { PgDatabase } from "drizzle-orm/pg-core";
 
 import type { CreateAuthOptions, createAuth as CreateAuthFn } from "../lib/auth.js";
 import { OrgsService } from "../orgs/orgs.service.js";
+import type { DB } from "../shared/db.js";
 import {
 	InvalidSlugError,
 	SetupAlreadyCompleteError,
 	SlugTakenError,
 	UnsupportedCurrencyError,
 } from "../shared/errors.js";
-
-type DB = PgDatabase<any, any>;
 type CreateAuth = typeof CreateAuthFn;
 
 export interface DesktopSetupInput {
@@ -78,7 +76,7 @@ export class SetupService {
 					},
 				});
 
-				const org = await new OrgsService({ db: tx as unknown as DB }).create({
+				const org = await new OrgsService({ db: tx }).create({
 					name: input.orgName,
 					slug: input.slug,
 					userId: signup.user.id,

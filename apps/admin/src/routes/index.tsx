@@ -31,7 +31,7 @@ function ActivationDashboard() {
 
 	const togglingId =
 		toggleMutation.isPending && toggleMutation.variables
-			? (toggleMutation.variables as { id: string }).id
+			? toggleMutation.variables.id
 			: null;
 
 	const statusVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {

@@ -41,7 +41,7 @@ describe("SetupService.run – atomic success", () => {
 		client = new PGlite();
 		db = drizzle(client, { schema });
 		await migrate(db, { migrationsFolder });
-		svc = new SetupService({ db: db as any, createAuth, authOptions });
+		svc = new SetupService({ db, createAuth, authOptions });
 	});
 
 	afterAll(async () => {
@@ -83,14 +83,14 @@ describe("SetupService.run – rollback on org failure", () => {
 		client = new PGlite();
 		db = drizzle(client, { schema });
 		await migrate(db, { migrationsFolder });
-		svc = new SetupService({ db: db as any, createAuth, authOptions });
+		svc = new SetupService({ db, createAuth, authOptions });
 
 		// pre-create a user + org with the slug we'll conflict with, then drop user
 		const [seedUser] = await db
 			.insert(schema.users)
 			.values({ name: "Seed", email: "seed@test.com" })
 			.returning();
-		const seedOrg = await new OrgsService({ db: db as any }).create({
+		const seedOrg = await new OrgsService({ db }).create({
 			name: "Taken Corp",
 			slug: "taken-slug",
 			userId: seedUser.id,
@@ -130,7 +130,7 @@ describe("SetupService.run – existing user guard", () => {
 		client = new PGlite();
 		db = drizzle(client, { schema });
 		await migrate(db, { migrationsFolder });
-		svc = new SetupService({ db: db as any, createAuth, authOptions });
+		svc = new SetupService({ db, createAuth, authOptions });
 
 		await svc.run({
 			email: "first@desktop.local",
@@ -170,7 +170,7 @@ describe("SetupService.isComplete – fresh db", () => {
 		client = new PGlite();
 		db = drizzle(client, { schema });
 		await migrate(db, { migrationsFolder });
-		svc = new SetupService({ db: db as any, createAuth, authOptions });
+		svc = new SetupService({ db, createAuth, authOptions });
 	});
 
 	afterAll(async () => {
