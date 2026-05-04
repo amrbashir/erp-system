@@ -3,10 +3,19 @@ import { Button } from "@workspace/ui/components/button";
 import { useState } from "react";
 
 import { desktopSetup } from "@/lib/desktop-auth";
+import { toSlug } from "@/lib/slug";
 
 export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [orgName, setOrgName] = useState("");
+	const [slug, setSlug] = useState("");
+	const [slugEdited, setSlugEdited] = useState(false);
+
+	function handleOrgNameChange(value: string) {
+		setOrgName(value);
+		if (!slugEdited) setSlug(toSlug(value) ?? "");
+	}
 
 	async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
 		e.preventDefault();
@@ -14,19 +23,20 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 		setLoading(true);
 
 		const form = new FormData(e.currentTarget);
-		const orgName = (form.get("orgName") as string).trim();
+		const trimmedOrgName = orgName.trim();
+		const finalSlug = slug.trim() || toSlug(trimmedOrgName) || "";
 		const name = (form.get("name") as string).trim();
 		const email = (form.get("email") as string).trim();
 		const password = form.get("password") as string;
 
-		if (!orgName || !name || !email || !password) {
+		if (!trimmedOrgName || !finalSlug || !name || !email || !password) {
 			setError(m.desktop_onboarding_fields_required());
 			setLoading(false);
 			return;
 		}
 
 		try {
-			await desktopSetup({ orgName, email, password, name });
+			await desktopSetup({ orgName: trimmedOrgName, slug: finalSlug, email, password, name });
 			onComplete();
 		} catch (err: any) {
 			setError(err.message ?? m.desktop_onboarding_failed());
@@ -53,10 +63,38 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 						id="org-name"
 						name="orgName"
 						type="text"
+						value={orgName}
+						onChange={(e) => handleOrgNameChange(e.currentTarget.value)}
 						placeholder={m.label_org_name()}
 						required
 						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
 					/>
+				</div>
+				<div className="flex flex-col gap-1">
+					<label htmlFor="org-slug" className="text-sm font-medium">
+						{m.label_org_slug()}
+					</label>
+					<input
+						id="org-slug"
+						name="slug"
+						type="text"
+						value={slug}
+						onChange={(e) => {
+							setSlug(e.currentTarget.value);
+							setSlugEdited(true);
+						}}
+						placeholder="acme"
+						pattern="[a-z0-9][a-z0-9-]*[a-z0-9]"
+						minLength={2}
+						maxLength={48}
+						required
+						className="border-border bg-background h-9 rounded-none border px-3 font-mono text-sm"
+					/>
+					{slug && (
+						<p className="text-muted-foreground text-xs">
+							{m.org_slug_url_preview({ slug })}
+						</p>
+					)}
 				</div>
 				<div className="flex flex-col gap-1">
 					<label htmlFor="name" className="text-sm font-medium">

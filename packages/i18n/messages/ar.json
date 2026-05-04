@@ -9,6 +9,9 @@
 	"label_name": "الاسم",
 	"label_role": "الدور",
 	"label_org_name": "اسم المنظمة",
+	"label_org_slug": "معرف الرابط",
+	"org_slug_url_preview": "سيكون رابطك /{slug}",
+	"org_slug_invalid": "يجب أن يكون المعرف من 2 إلى 48 حرفاً صغيراً أو رقماً أو شرطة",
 
 	"role_member": "عضو",
 	"role_admin": "مسؤول",

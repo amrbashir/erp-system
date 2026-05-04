@@ -8,6 +8,7 @@ import { client } from "./orpc";
  */
 export async function desktopSetup(input: {
 	orgName: string;
+	slug?: string;
 	email: string;
 	password: string;
 	name: string;

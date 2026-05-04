@@ -9,6 +9,9 @@
 	"label_name": "Name",
 	"label_role": "Role",
 	"label_org_name": "Organization name",
+	"label_org_slug": "URL slug",
+	"org_slug_url_preview": "Your URL will be /{slug}",
+	"org_slug_invalid": "Slug must be 2–48 lowercase letters, numbers, or hyphens",
 
 	"role_member": "Member",
 	"role_admin": "Admin",

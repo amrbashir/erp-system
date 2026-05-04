@@ -73,18 +73,20 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 							<span className="text-muted-foreground text-xs">{org.role}</span>
 						</button>
 					))}
-					<div className="border-border border-t">
-						<button
-							type="button"
-							onClick={() => {
-								setOpen(false);
-								void navigate({ to: "/new-org" });
-							}}
-							className="hover:bg-muted w-full px-3 py-2 text-start text-sm"
-						>
-							{m.org_switcher_new()}
-						</button>
-					</div>
+					{!isDesktop() && (
+						<div className="border-border border-t">
+							<button
+								type="button"
+								onClick={() => {
+									setOpen(false);
+									void navigate({ to: "/new-org" });
+								}}
+								className="hover:bg-muted w-full px-3 py-2 text-start text-sm"
+							>
+								{m.org_switcher_new()}
+							</button>
+						</div>
+					)}
 				</div>
 			)}
 		</div>

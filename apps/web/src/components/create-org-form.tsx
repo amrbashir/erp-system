@@ -19,26 +19,33 @@ interface CreateOrgFormProps {
 export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormProps) {
 	const navigate = useNavigate();
 	const [error, setError] = useState("");
+	const [name, setName] = useState("");
+	const [slug, setSlug] = useState("");
+	const [slugEdited, setSlugEdited] = useState(false);
 	const createMutation = useMutation(orpc.orgs.create.mutationOptions());
 	const switchMutation = useMutation(orpc.orgs.switch.mutationOptions());
 	const submitting = createMutation.isPending || switchMutation.isPending;
+
+	function handleNameChange(value: string) {
+		setName(value);
+		if (!slugEdited) setSlug(toSlug(value) ?? "");
+	}
 
 	async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
 		e.preventDefault();
 		setError("");
 
-		const form = new FormData(e.currentTarget);
-		const name = (form.get("name") as string).trim();
-		const slug = toSlug(name);
+		const trimmedName = name.trim();
+		const finalSlug = slug.trim() || toSlug(trimmedName) || "";
 
-		if (!slug) {
+		if (!finalSlug) {
 			setError(m.create_org_invalid_name());
 			return;
 		}
 
 		let org;
 		try {
-			org = await createMutation.mutateAsync({ name, slug });
+			org = await createMutation.mutateAsync({ name: trimmedName, slug: finalSlug });
 		} catch (err: any) {
 			setError(err?.message || m.create_org_failed());
 			return;
@@ -74,10 +81,39 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 						id="org-name"
 						name="name"
 						type="text"
+						value={name}
+						onChange={(e) => handleNameChange(e.currentTarget.value)}
 						placeholder={m.label_org_name()}
 						required
 						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
 					/>
+				</div>
+
+				<div className="flex flex-col gap-1">
+					<label htmlFor="org-slug" className="text-sm font-medium">
+						{m.label_org_slug()}
+					</label>
+					<input
+						id="org-slug"
+						name="slug"
+						type="text"
+						value={slug}
+						onChange={(e) => {
+							setSlug(e.currentTarget.value);
+							setSlugEdited(true);
+						}}
+						placeholder="acme"
+						pattern="[a-z0-9][a-z0-9-]*[a-z0-9]"
+						minLength={2}
+						maxLength={48}
+						required
+						className="border-border bg-background h-9 rounded-none border px-3 font-mono text-sm"
+					/>
+					{slug && (
+						<p className="text-muted-foreground text-xs">
+							{m.org_slug_url_preview({ slug })}
+						</p>
+					)}
 				</div>
 
 				<Button type="submit" disabled={submitting}>
