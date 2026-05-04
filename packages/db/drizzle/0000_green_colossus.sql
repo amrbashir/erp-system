@@ -42,7 +42,8 @@ CREATE TABLE "invitations" (
 	"email" varchar(255) NOT NULL,
 	"role" "member_role" DEFAULT 'member' NOT NULL,
 	"invited_by" uuid,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"expires_at" timestamp with time zone DEFAULT now() + interval '7 days' NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "org_members" (
@@ -105,5 +106,7 @@ ALTER TABLE "invitations" ADD CONSTRAINT "invitations_invited_by_users_id_fk" FO
 ALTER TABLE "org_members" ADD CONSTRAINT "org_members_org_id_orgs_id_fk" FOREIGN KEY ("org_id") REFERENCES "public"."orgs"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "org_members" ADD CONSTRAINT "org_members_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "audit_logs_actor_id_idx" ON "audit_logs" USING btree ("actor_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "invitations_org_email_unique" ON "invitations" USING btree ("org_id",lower("email"));--> statement-breakpoint
+CREATE INDEX "invitations_expires_at_idx" ON "invitations" USING btree ("expires_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "emailUniqueIndex" ON "users" USING btree (lower("email"));

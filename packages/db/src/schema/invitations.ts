@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, uniqueIndex, uuid, varchar, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, index, uniqueIndex, uuid, varchar, timestamp } from "drizzle-orm/pg-core";
 
 import { lower } from "../utils.js";
 import { roleEnum } from "./org-members.js";
@@ -21,5 +21,8 @@ export const invitations = pgTable(
 			.notNull()
 			.default(sql`now() + interval '7 days'`),
 	},
-	(t) => [uniqueIndex("invitations_org_email_unique").on(t.orgId, lower(t.email))],
+	(t) => [
+		uniqueIndex("invitations_org_email_unique").on(t.orgId, lower(t.email)),
+		index("invitations_expires_at_idx").on(t.expiresAt),
+	],
 );
