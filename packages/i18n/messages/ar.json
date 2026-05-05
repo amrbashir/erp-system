@@ -44,8 +44,6 @@
 
 	"dashboard_welcome": "مرحباً،‏ {name}",
 	"dashboard_current_org": "المنظمة الحالية:",
-	"dashboard_joined_via_invite": "انضممت إلى المنظمات التالية عبر دعوات معلّقة:",
-	"dashboard_dismiss": "إغلاق",
 
 	"users_heading": "المستخدمون",
 	"users_add": "إضافة مستخدم",
