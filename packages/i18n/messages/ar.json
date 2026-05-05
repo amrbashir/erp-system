@@ -2,7 +2,6 @@
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 
 	"language_switcher_label": "اللغة",
-	"language_endonym": "العربية",
 
 	"label_email": "البريد الإلكتروني",
 	"label_password": "كلمة المرور",

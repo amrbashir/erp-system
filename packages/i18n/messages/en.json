@@ -2,7 +2,6 @@
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 
 	"language_switcher_label": "Language",
-	"language_endonym": "English",
 
 	"label_email": "Email",
 	"label_password": "Password",
