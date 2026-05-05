@@ -2,13 +2,13 @@ import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
+import { applyMigrations } from "@workspace/server/lib/migrate";
+import { InvalidInputError } from "@workspace/server/shared/errors";
 import { definePlugin } from "nitro";
 import { useRuntimeConfig } from "nitro/runtime-config";
 import { useStorage } from "nitro/storage";
 
 import { initDatabase } from "#db";
-import { InvalidInputError } from "@workspace/server/shared/errors";
-import { applyMigrations } from "@workspace/server/lib/migrate";
 
 /** Read existing BETTER_AUTH_SECRET file, or generate + persist a new one. */
 function ensureAuthSecret(dataDir: string | undefined) {

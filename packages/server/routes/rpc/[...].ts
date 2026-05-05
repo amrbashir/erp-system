@@ -1,6 +1,5 @@
-import { defineEventHandler } from "h3";
-
 import { adminRpcHandler, buildContext, rpcHandler } from "@workspace/server/orpc/handler";
+import { defineEventHandler } from "h3";
 
 /**
  * Catch-all oRPC mount at /rpc/*. Picks AdminRouter when this build is

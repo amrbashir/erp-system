@@ -1,5 +1,8 @@
 import { m } from "@workspace/i18n";
+import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
+import { Field, FieldDescription, FieldGroup, FieldLabel } from "@workspace/ui/components/field";
+import { Input } from "@workspace/ui/components/input";
 import { useState } from "react";
 
 import { desktopSetup } from "@/lib/desktop-auth";
@@ -53,89 +56,79 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 					{m.desktop_onboarding_description()}
 				</p>
 
-				{error && <p className="text-destructive text-sm">{error}</p>}
+				{error && (
+					<Alert variant="destructive">
+						<AlertDescription>{error}</AlertDescription>
+					</Alert>
+				)}
 
-				<div className="flex flex-col gap-1">
-					<label htmlFor="org-name" className="text-sm font-medium">
-						{m.label_org_name()}
-					</label>
-					<input
-						id="org-name"
-						name="orgName"
-						type="text"
-						value={orgName}
-						onChange={(e) => handleOrgNameChange(e.currentTarget.value)}
-						placeholder={m.label_org_name()}
-						required
-						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
-					/>
-				</div>
-				<div className="flex flex-col gap-1">
-					<label htmlFor="org-slug" className="text-sm font-medium">
-						{m.label_org_slug()}
-					</label>
-					<input
-						id="org-slug"
-						name="slug"
-						type="text"
-						value={slug}
-						onChange={(e) => {
-							setSlug(e.currentTarget.value);
-							setSlugEdited(true);
-						}}
-						placeholder="acme"
-						pattern="[a-z0-9][a-z0-9-]*[a-z0-9]"
-						minLength={2}
-						maxLength={48}
-						required
-						className="border-border bg-background h-9 rounded-none border px-3 font-mono text-sm"
-					/>
-					{slug && (
-						<p className="text-muted-foreground text-xs">
-							{m.org_slug_url_preview({ slug })}
-						</p>
-					)}
-				</div>
-				<div className="flex flex-col gap-1">
-					<label htmlFor="name" className="text-sm font-medium">
-						{m.desktop_onboarding_your_name()}
-					</label>
-					<input
-						id="name"
-						name="name"
-						type="text"
-						placeholder={m.desktop_onboarding_your_name()}
-						required
-						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
-					/>
-				</div>
-				<div className="flex flex-col gap-1">
-					<label htmlFor="email" className="text-sm font-medium">
-						{m.label_email()}
-					</label>
-					<input
-						id="email"
-						name="email"
-						type="email"
-						placeholder={m.label_email()}
-						required
-						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
-					/>
-				</div>
-				<div className="flex flex-col gap-1">
-					<label htmlFor="password" className="text-sm font-medium">
-						{m.label_password()}
-					</label>
-					<input
-						id="password"
-						name="password"
-						type="password"
-						placeholder={m.label_password()}
-						required
-						minLength={6}
-						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
-					/>
-				</div>
+				<FieldGroup>
+					<Field>
+						<FieldLabel htmlFor="org-name">{m.label_org_name()}</FieldLabel>
+						<Input
+							id="org-name"
+							name="orgName"
+							type="text"
+							value={orgName}
+							onChange={(e) => handleOrgNameChange(e.currentTarget.value)}
+							placeholder={m.label_org_name()}
+							required
+						/>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor="org-slug">{m.label_org_slug()}</FieldLabel>
+						<Input
+							id="org-slug"
+							name="slug"
+							type="text"
+							value={slug}
+							onChange={(e) => {
+								setSlug(e.currentTarget.value);
+								setSlugEdited(true);
+							}}
+							placeholder="acme"
+							pattern="[a-z0-9][a-z0-9-]*[a-z0-9]"
+							minLength={2}
+							maxLength={48}
+							required
+							className="font-mono"
+						/>
+						{slug && (
+							<FieldDescription>{m.org_slug_url_preview({ slug })}</FieldDescription>
+						)}
+					</Field>
+					<Field>
+						<FieldLabel htmlFor="name">{m.desktop_onboarding_your_name()}</FieldLabel>
+						<Input
+							id="name"
+							name="name"
+							type="text"
+							placeholder={m.desktop_onboarding_your_name()}
+							required
+						/>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor="email">{m.label_email()}</FieldLabel>
+						<Input
+							id="email"
+							name="email"
+							type="email"
+							placeholder={m.label_email()}
+							required
+						/>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor="password">{m.label_password()}</FieldLabel>
+						<Input
+							id="password"
+							name="password"
+							type="password"
+							placeholder={m.label_password()}
+							required
+							minLength={6}
+						/>
+					</Field>
+				</FieldGroup>
 
 				<Button type="submit" disabled={loading}>
 					{loading ? m.desktop_onboarding_submitting() : m.desktop_onboarding_submit()}

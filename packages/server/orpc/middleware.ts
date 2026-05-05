@@ -7,7 +7,6 @@ import {
 	UnauthorizedError,
 } from "../shared/errors.js";
 import { createRateLimiter } from "../shared/rate-limit.js";
-
 import { pub } from "./base.js";
 
 type Session = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>;

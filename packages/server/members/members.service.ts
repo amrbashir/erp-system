@@ -103,7 +103,9 @@ export class MembersService {
 				const [target] = await tx
 					.select({ role: orgMembers.role })
 					.from(orgMembers)
-					.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
+					.where(
+						and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)),
+					)
 					.limit(1);
 
 				if (input.actorRole === "admin") {
@@ -126,7 +128,9 @@ export class MembersService {
 				const [updated] = await tx
 					.update(orgMembers)
 					.set({ role: input.newRole })
-					.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
+					.where(
+						and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)),
+					)
 					.returning();
 
 				if (!updated) throw new MemberNotFoundError();
@@ -159,14 +163,18 @@ export class MembersService {
 				const [target] = await tx
 					.select({ role: orgMembers.role })
 					.from(orgMembers)
-					.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
+					.where(
+						and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)),
+					)
 					.limit(1);
 
 				// admin can only remove members, not owners/admins
 				if (input.actorRole === "admin") {
 					if (!target) throw new MemberNotFoundError();
 					if (target.role !== "member") {
-						throw new NoPermissionError({ reason: "No permission to remove this member" });
+						throw new NoPermissionError({
+							reason: "No permission to remove this member",
+						});
 					}
 				}
 
@@ -180,7 +188,9 @@ export class MembersService {
 
 				const [deleted] = await tx
 					.delete(orgMembers)
-					.where(and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)))
+					.where(
+						and(eq(orgMembers.id, input.memberId), eq(orgMembers.orgId, input.orgId)),
+					)
 					.returning();
 
 				if (!deleted) throw new MemberNotFoundError();
@@ -221,7 +231,10 @@ export class MembersService {
 					.select({ role: orgMembers.role })
 					.from(orgMembers)
 					.where(
-						and(eq(orgMembers.id, input.actorMemberId), eq(orgMembers.orgId, input.orgId)),
+						and(
+							eq(orgMembers.id, input.actorMemberId),
+							eq(orgMembers.orgId, input.orgId),
+						),
 					)
 					.limit(1);
 
@@ -233,7 +246,10 @@ export class MembersService {
 					.select({ role: orgMembers.role })
 					.from(orgMembers)
 					.where(
-						and(eq(orgMembers.id, input.targetMemberId), eq(orgMembers.orgId, input.orgId)),
+						and(
+							eq(orgMembers.id, input.targetMemberId),
+							eq(orgMembers.orgId, input.orgId),
+						),
 					)
 					.limit(1);
 
@@ -245,7 +261,10 @@ export class MembersService {
 					.update(orgMembers)
 					.set({ role: "owner" })
 					.where(
-						and(eq(orgMembers.id, input.targetMemberId), eq(orgMembers.orgId, input.orgId)),
+						and(
+							eq(orgMembers.id, input.targetMemberId),
+							eq(orgMembers.orgId, input.orgId),
+						),
 					)
 					.returning();
 
@@ -253,7 +272,10 @@ export class MembersService {
 					.update(orgMembers)
 					.set({ role: input.newActorRole })
 					.where(
-						and(eq(orgMembers.id, input.actorMemberId), eq(orgMembers.orgId, input.orgId)),
+						and(
+							eq(orgMembers.id, input.actorMemberId),
+							eq(orgMembers.orgId, input.orgId),
+						),
 					)
 					.returning();
 

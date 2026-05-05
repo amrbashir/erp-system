@@ -1,7 +1,17 @@
+import { CaretDownIcon, CheckIcon } from "@phosphor-icons/react";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
+import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuGroup,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu";
 import { useState } from "react";
 
 import { isDesktop } from "@/lib/activation";
@@ -18,7 +28,6 @@ type Org = {
 
 export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId: string | null }) {
 	const navigate = useNavigate();
-	const [open, setOpen] = useState(false);
 	const [error, setError] = useState("");
 	const switchMutation = useMutation(orpc.orgs.switch.mutationOptions());
 	const currentOrg = orgs.find((o) => o.id === currentOrgId) ?? orgs[0];
@@ -28,7 +37,6 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 
 		if (isDesktop()) {
 			localStorage.setItem(CURRENT_ORG_KEY, orgId);
-			setOpen(false);
 			void navigate({ to: "/dashboard", reloadDocument: true });
 			return;
 		}
@@ -40,55 +48,49 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 			return;
 		}
 
-		setOpen(false);
 		void navigate({ to: "/dashboard", reloadDocument: true });
 	}
 
 	if (orgs.length === 0) return null;
 
 	return (
-		<div className="relative">
-			<Button
-				variant="ghost"
-				size="sm"
-				onClick={() => setOpen(!open)}
-				className="max-w-48 truncate"
-			>
-				{currentOrg?.name ?? m.org_switcher_select()}
-			</Button>
-
-			{open && (
-				<div className="border-border bg-background absolute end-0 top-full z-50 mt-1 min-w-48 rounded border shadow-md">
-					{error && <p className="text-destructive px-3 py-2 text-sm">{error}</p>}
+		<DropdownMenu>
+			<DropdownMenuTrigger
+				render={
+					<Button variant="ghost" size="sm" className="max-w-48">
+						<span className="truncate">
+							{currentOrg?.name ?? m.org_switcher_select()}
+						</span>
+						<CaretDownIcon data-icon="inline-end" />
+					</Button>
+				}
+			/>
+			<DropdownMenuContent align="start" className="min-w-48">
+				{error && (
+					<Alert variant="destructive" className="m-1">
+						<AlertDescription>{error}</AlertDescription>
+					</Alert>
+				)}
+				<DropdownMenuGroup>
 					{orgs.map((org) => (
-						<button
-							key={org.id}
-							type="button"
-							onClick={() => switchOrg(org.id)}
-							className={`hover:bg-muted flex w-full items-center gap-2 px-3 py-2 text-start text-sm ${
-								org.id === currentOrgId ? "bg-muted" : ""
-							}`}
-						>
-							<span className="truncate">{org.name}</span>
-							<span className="text-muted-foreground text-xs">{org.role}</span>
-						</button>
+						<DropdownMenuItem key={org.id} onClick={() => switchOrg(org.id)}>
+							<span className="flex-1 truncate">{org.name}</span>
+							<span className="text-muted-foreground">{org.role}</span>
+							{org.id === currentOrgId && <CheckIcon className="ms-1" />}
+						</DropdownMenuItem>
 					))}
-					{!isDesktop() && (
-						<div className="border-border border-t">
-							<button
-								type="button"
-								onClick={() => {
-									setOpen(false);
-									void navigate({ to: "/new-org" });
-								}}
-								className="hover:bg-muted w-full px-3 py-2 text-start text-sm"
-							>
+				</DropdownMenuGroup>
+				{!isDesktop() && (
+					<>
+						<DropdownMenuSeparator />
+						<DropdownMenuGroup>
+							<DropdownMenuItem onClick={() => navigate({ to: "/new-org" })}>
 								{m.org_switcher_new()}
-							</button>
-						</div>
-					)}
-				</div>
-			)}
-		</div>
+							</DropdownMenuItem>
+						</DropdownMenuGroup>
+					</>
+				)}
+			</DropdownMenuContent>
+		</DropdownMenu>
 	);
 }

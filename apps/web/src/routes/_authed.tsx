@@ -13,9 +13,7 @@ const CURRENT_ORG_KEY = "current_org_id";
 
 export const Route = createFileRoute("/_authed")({
 	beforeLoad: async ({ context, location }) => {
-		const session = await context.queryClient.ensureQueryData(
-			orpc.session.get.queryOptions(),
-		);
+		const session = await context.queryClient.ensureQueryData(orpc.session.get.queryOptions());
 		if (!session) {
 			throw redirect({ to: "/login", search: { redirect: location.pathname } });
 		}

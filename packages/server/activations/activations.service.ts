@@ -77,8 +77,7 @@ export class ActivationsService {
 	async check(
 		hardwareId: string,
 	): Promise<
-		| { status: "active"; activation: Activation }
-		| { status: "pending" | "revoked" | "unknown" }
+		{ status: "active"; activation: Activation } | { status: "pending" | "revoked" | "unknown" }
 	> {
 		const [row] = await this.deps.db
 			.select()

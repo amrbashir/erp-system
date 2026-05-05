@@ -9,7 +9,9 @@ import { HTTPError } from "h3";
  */
 export function toHTTPError(err: unknown): HTTPError {
 	if (!(err instanceof Error)) {
-		return new HTTPError(typeof err === "string" ? err : "Internal Server Error", { status: 500 });
+		return new HTTPError(typeof err === "string" ? err : "Internal Server Error", {
+			status: 500,
+		});
 	}
 	if (err instanceof ORPCError) {
 		return new HTTPError(err.message, { status: err.status });

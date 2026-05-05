@@ -72,7 +72,9 @@ export class InvitationsService {
 		try {
 			const [deleted] = await this.deps.db
 				.delete(invitations)
-				.where(and(eq(invitations.id, input.invitationId), eq(invitations.orgId, input.orgId)))
+				.where(
+					and(eq(invitations.id, input.invitationId), eq(invitations.orgId, input.orgId)),
+				)
 				.returning();
 			return deleted ?? null;
 		} catch (e) {

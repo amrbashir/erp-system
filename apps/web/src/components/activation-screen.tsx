@@ -1,6 +1,14 @@
 import { CheckIcon, XIcon } from "@phosphor-icons/react";
 import { m } from "@workspace/i18n";
+import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
+import { Field, FieldLabel } from "@workspace/ui/components/field";
+import {
+	InputGroup,
+	InputGroupAddon,
+	InputGroupButton,
+	InputGroupInput,
+} from "@workspace/ui/components/input-group";
 import { useState } from "react";
 
 import { checkActivationApi, writeCachedToken } from "@/lib/activation";
@@ -58,27 +66,35 @@ export function ActivationScreen({
 				<h1 className="text-lg font-medium">{m.activation_heading()}</h1>
 				<p className="text-muted-foreground text-sm">{m.activation_description()}</p>
 
-				<div className="w-full">
-					<label className="text-muted-foreground mb-1 block text-xs">
+				<Field className="w-full">
+					<FieldLabel className="text-muted-foreground">
 						{m.activation_hardware_id()}
-					</label>
-					<div className="flex items-center gap-2">
-						<code className="bg-muted flex-1 truncate rounded-none border px-3 py-2 font-mono text-xs select-all">
-							{hardwareId}
-						</code>
-						<Button variant="outline" size="sm" onClick={handleCopy}>
-							{copyState === "success" ? (
-								<CheckIcon />
-							) : copyState === "error" ? (
-								<XIcon />
-							) : (
-								m.activation_copy()
-							)}
-						</Button>
-					</div>
-				</div>
+					</FieldLabel>
+					<InputGroup>
+						<InputGroupInput
+							readOnly
+							value={hardwareId}
+							className="font-mono select-all"
+						/>
+						<InputGroupAddon align="inline-end">
+							<InputGroupButton size="sm" onClick={handleCopy}>
+								{copyState === "success" ? (
+									<CheckIcon />
+								) : copyState === "error" ? (
+									<XIcon />
+								) : (
+									m.activation_copy()
+								)}
+							</InputGroupButton>
+						</InputGroupAddon>
+					</InputGroup>
+				</Field>
 
-				{error && <p className="text-destructive text-sm">{error}</p>}
+				{error && (
+					<Alert variant="destructive">
+						<AlertDescription>{error}</AlertDescription>
+					</Alert>
+				)}
 
 				<Button onClick={handleCheck} disabled={status === "checking"} className="w-full">
 					{status === "checking" ? m.activation_checking() : m.activation_check()}

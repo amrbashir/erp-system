@@ -7,6 +7,7 @@ import {
 	createRootRouteWithContext,
 } from "@tanstack/react-router";
 import { getLocale, getTextDirection, m } from "@workspace/i18n";
+import { Alert, AlertDescription, AlertTitle } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
 import { LanguageSwitcher } from "@workspace/ui/components/language-switcher";
 import { ThemeProvider, themeScript } from "@workspace/ui/components/theme-provider";
@@ -49,14 +50,18 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function ErrorBoundary({ error, reset }: ErrorComponentProps) {
 	return (
-		<div className="flex min-h-screen flex-col items-center justify-center gap-4 p-6 text-center">
-			<h1 className="text-2xl font-semibold">{m.error_boundary_heading()}</h1>
-			<p className="text-muted-foreground max-w-md">{m.error_boundary_description()}</p>
-			{error.message ? (
-				<pre className="bg-muted text-muted-foreground max-w-full overflow-auto rounded p-3 text-left text-xs">
-					{error.message}
-				</pre>
-			) : null}
+		<div className="flex min-h-screen flex-col items-center justify-center gap-4 p-6">
+			<Alert variant="destructive" className="max-w-md">
+				<AlertTitle>{m.error_boundary_heading()}</AlertTitle>
+				<AlertDescription>
+					<p>{m.error_boundary_description()}</p>
+					{error.message ? (
+						<pre className="bg-muted mt-2 max-w-full overflow-auto p-3 text-left text-xs">
+							{error.message}
+						</pre>
+					) : null}
+				</AlertDescription>
+			</Alert>
 			<div className="flex gap-2">
 				<Button onClick={reset}>{m.retry()}</Button>
 				<Button variant="outline" onClick={() => window.location.reload()}>

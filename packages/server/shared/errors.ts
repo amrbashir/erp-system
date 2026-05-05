@@ -19,7 +19,10 @@ export class NoOrgSelectedError extends ORPCError<"BAD_REQUEST", { reason: "no_o
 
 export class NotOrgMemberError extends ORPCError<"FORBIDDEN", { reason: "not_org_member" }> {
 	constructor() {
-		super("FORBIDDEN", { message: "Not a member of this org", data: { reason: "not_org_member" } });
+		super("FORBIDDEN", {
+			message: "Not a member of this org",
+			data: { reason: "not_org_member" },
+		});
 	}
 }
 
@@ -44,7 +47,10 @@ export class InvalidSlugError extends ORPCError<"BAD_REQUEST", undefined> {
 
 export class UnsupportedCurrencyError extends ORPCError<"BAD_REQUEST", { code: string }> {
 	constructor(opts: { code: string }) {
-		super("BAD_REQUEST", { message: `Unsupported currency code: ${opts.code}`, data: { code: opts.code } });
+		super("BAD_REQUEST", {
+			message: `Unsupported currency code: ${opts.code}`,
+			data: { code: opts.code },
+		});
 	}
 }
 

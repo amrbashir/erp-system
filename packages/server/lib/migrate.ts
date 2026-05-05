@@ -15,10 +15,7 @@ interface Journal {
  * Apply Drizzle migrations using a `readFile` callback.
  * In tests, `readFile` reads from disk; in production, from Nitro's server assets.
  */
-export async function applyMigrations(
-	db: DB,
-	readFile: (path: string) => Promise<string>,
-) {
+export async function applyMigrations(db: DB, readFile: (path: string) => Promise<string>) {
 	await db.execute(sql`
 		CREATE TABLE IF NOT EXISTS "__drizzle_migrations" (
 			id SERIAL PRIMARY KEY,

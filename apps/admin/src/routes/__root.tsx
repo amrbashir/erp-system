@@ -1,10 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-	HeadContent,
-	Outlet,
-	Scripts,
-	createRootRouteWithContext,
-} from "@tanstack/react-router";
+import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { getLocale, getTextDirection } from "@workspace/i18n";
 import { LanguageSwitcher } from "@workspace/ui/components/language-switcher";
 import { ThemeProvider, themeScript } from "@workspace/ui/components/theme-provider";
@@ -49,8 +44,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
 function RootLayout() {
 	return (
-		<div className="bg-background text-foreground min-h-screen">
-			<header className="border-border flex items-center justify-between border-b px-6 py-3">
+		<div className="min-h-screen">
+			<header className="flex items-center justify-between border-b px-6 py-3">
 				<h1 className="text-lg font-bold">Admin Dashboard</h1>
 				<div className="flex items-center gap-2">
 					<ThemeSwitcher />

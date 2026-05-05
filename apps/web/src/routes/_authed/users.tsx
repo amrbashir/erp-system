@@ -1,7 +1,29 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { ArrowDownIcon, ArrowUpIcon } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
+import { Alert, AlertDescription } from "@workspace/ui/components/alert";
+import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
+import { Empty, EmptyDescription, EmptyHeader } from "@workspace/ui/components/empty";
+import { Field, FieldGroup, FieldLabel } from "@workspace/ui/components/field";
+import { Input } from "@workspace/ui/components/input";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@workspace/ui/components/select";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@workspace/ui/components/table";
 import { useMemo, useState } from "react";
 
 import { orpc } from "@/lib/orpc";
@@ -62,7 +84,11 @@ function UsersPage() {
 				)}
 			</div>
 
-			{error && <p className="text-destructive mb-4 text-sm">{error}</p>}
+			{error && (
+				<Alert variant="destructive" className="mb-4">
+					<AlertDescription>{error}</AlertDescription>
+				</Alert>
+			)}
 
 			{showForm && canManage && (
 				<AddUserForm
@@ -97,6 +123,7 @@ function AddUserForm({
 	onError: (msg: string) => void;
 }) {
 	const queryClient = useQueryClient();
+	const [role, setRole] = useState<"owner" | "admin" | "member">("member");
 	const addMutation = useMutation(
 		orpc.members.add.mutationOptions({
 			onSuccess: () => {
@@ -111,7 +138,6 @@ function AddUserForm({
 
 		const form = new FormData(e.currentTarget);
 		const email = (form.get("email") as string).trim();
-		const role = form.get("role") as "owner" | "admin" | "member";
 
 		try {
 			await addMutation.mutateAsync({ email, role });
@@ -123,40 +149,42 @@ function AddUserForm({
 
 	return (
 		<form onSubmit={handleSubmit} className="mb-6 flex flex-col gap-3">
-			<div className="flex gap-3">
-				<div className="flex flex-1 flex-col gap-1">
-					<label htmlFor="add-user-email" className="text-sm font-medium">
-						{m.label_email()}
-					</label>
-					<input
-						id="add-user-email"
-						name="email"
-						type="email"
-						placeholder={m.label_email()}
-						required
-						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
-					/>
+			<FieldGroup>
+				<div className="flex gap-3">
+					<Field className="flex-1">
+						<FieldLabel htmlFor="add-user-email">{m.label_email()}</FieldLabel>
+						<Input
+							id="add-user-email"
+							name="email"
+							type="email"
+							placeholder={m.label_email()}
+							required
+						/>
+					</Field>
+					<Field className="w-40">
+						<FieldLabel htmlFor="add-user-role">{m.label_role()}</FieldLabel>
+						<Select
+							value={role}
+							onValueChange={(v) => v && setRole(v as "owner" | "admin" | "member")}
+						>
+							<SelectTrigger id="add-user-role" className="w-full">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectGroup>
+									<SelectItem value="member">{m.role_member()}</SelectItem>
+									{actorRole === "owner" && (
+										<>
+											<SelectItem value="admin">{m.role_admin()}</SelectItem>
+											<SelectItem value="owner">{m.role_owner()}</SelectItem>
+										</>
+									)}
+								</SelectGroup>
+							</SelectContent>
+						</Select>
+					</Field>
 				</div>
-				<div className="flex flex-col gap-1">
-					<label htmlFor="add-user-role" className="text-sm font-medium">
-						{m.label_role()}
-					</label>
-					<select
-						id="add-user-role"
-						name="role"
-						defaultValue="member"
-						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
-					>
-						<option value="member">{m.role_member()}</option>
-						{actorRole === "owner" && (
-							<>
-								<option value="admin">{m.role_admin()}</option>
-								<option value="owner">{m.role_owner()}</option>
-							</>
-						)}
-					</select>
-				</div>
-			</div>
+			</FieldGroup>
 			<div>
 				<Button type="submit" size="sm" disabled={addMutation.isPending}>
 					{addMutation.isPending ? m.users_adding() : m.users_add_submit()}
@@ -268,63 +296,86 @@ function MemberList({
 	}
 
 	if (rows.length === 0) {
-		return <p className="text-muted-foreground text-sm">{m.users_no_members()}</p>;
+		return (
+			<Empty>
+				<EmptyHeader>
+					<EmptyDescription>{m.users_no_members()}</EmptyDescription>
+				</EmptyHeader>
+			</Empty>
+		);
 	}
 
 	return (
 		<>
 			{transferTarget && (
-				<div className="bg-background border-border mb-4 rounded border p-4">
-					<p className="mb-3 text-sm">
-						{m.users_transfer_confirm({ name: transferTarget.userName })}
-					</p>
-					<div className="mb-3 flex gap-3">
-						<select
-							value={transferRole}
-							onChange={(e) => setTransferRole(e.target.value as "admin" | "member")}
-							className="border-border bg-background h-8 rounded-none border px-2 text-sm"
-						>
-							<option value="admin">{m.role_admin()}</option>
-							<option value="member">{m.role_member()}</option>
-						</select>
-					</div>
-					<div className="flex gap-2">
-						<Button size="sm" onClick={handleTransfer} disabled={transferMutation.isPending}>
-							{transferMutation.isPending
-								? m.users_transferring()
-								: m.users_confirm_transfer()}
-						</Button>
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={() => setTransferTarget(null)}
-							disabled={transferMutation.isPending}
-						>
-							{m.cancel()}
-						</Button>
-					</div>
-				</div>
+				<Alert className="mb-4">
+					<AlertDescription>
+						<p className="mb-3">
+							{m.users_transfer_confirm({ name: transferTarget.userName })}
+						</p>
+						<div className="mb-3 w-40">
+							<Select
+								value={transferRole}
+								onValueChange={(v) => v && setTransferRole(v as "admin" | "member")}
+							>
+								<SelectTrigger size="sm" className="w-full">
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectGroup>
+										<SelectItem value="admin">{m.role_admin()}</SelectItem>
+										<SelectItem value="member">{m.role_member()}</SelectItem>
+									</SelectGroup>
+								</SelectContent>
+							</Select>
+						</div>
+						<div className="flex gap-2">
+							<Button
+								size="sm"
+								onClick={handleTransfer}
+								disabled={transferMutation.isPending}
+							>
+								{transferMutation.isPending
+									? m.users_transferring()
+									: m.users_confirm_transfer()}
+							</Button>
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={() => setTransferTarget(null)}
+								disabled={transferMutation.isPending}
+							>
+								{m.cancel()}
+							</Button>
+						</div>
+					</AlertDescription>
+				</Alert>
 			)}
-			<table className="w-full text-sm">
-				<thead>
-					<tr className="border-border border-b text-start">
-						<th className="py-2 font-medium">{m.label_name()}</th>
-						<th className="py-2 font-medium">{m.label_email()}</th>
-						<th className="py-2 font-medium">{m.label_role()}</th>
-						<th className="py-2 font-medium">
-							<button
-								type="button"
+			<Table>
+				<TableHeader>
+					<TableRow>
+						<TableHead>{m.label_name()}</TableHead>
+						<TableHead>{m.label_email()}</TableHead>
+						<TableHead>{m.label_role()}</TableHead>
+						<TableHead>
+							<Button
+								variant="ghost"
+								size="sm"
 								onClick={onTogglePending}
-								className="hover:text-foreground text-muted-foreground"
 								title={m.users_sort_pending()}
 							>
-								{m.users_status()} {pendingFirst ? "↑" : "↓"}
-							</button>
-						</th>
-						{canManage && <th className="py-2 font-medium">{m.users_actions()}</th>}
-					</tr>
-				</thead>
-				<tbody>
+								{m.users_status()}
+								{pendingFirst ? (
+									<ArrowUpIcon data-icon="inline-end" />
+								) : (
+									<ArrowDownIcon data-icon="inline-end" />
+								)}
+							</Button>
+						</TableHead>
+						{canManage && <TableHead>{m.users_actions()}</TableHead>}
+					</TableRow>
+				</TableHeader>
+				<TableBody>
 					{rows.map((row) =>
 						row.kind === "member" ? (
 							<MemberRow
@@ -348,8 +399,8 @@ function MemberList({
 							/>
 						),
 					)}
-				</tbody>
-			</table>
+				</TableBody>
+			</Table>
 		</>
 	);
 }
@@ -374,25 +425,31 @@ function MemberRow({
 	onTransfer: () => void;
 }) {
 	return (
-		<tr className="border-border border-b">
-			<td className="py-2">{member.userName}</td>
-			<td className="py-2">{member.userEmail}</td>
-			<td className="py-2">
+		<TableRow>
+			<TableCell>{member.userName}</TableCell>
+			<TableCell>{member.userEmail}</TableCell>
+			<TableCell>
 				{canManage && (actorRole === "owner" || member.role === "member") ? (
-					<select
+					<Select
 						value={member.role}
-						onChange={(e) => onRoleChange(member.id, e.target.value)}
+						onValueChange={(v) => v && onRoleChange(member.id, v)}
 						disabled={roleSubmitting}
-						className="border-border bg-background h-7 rounded-none border px-2 text-sm disabled:opacity-50"
 					>
-						<option value="member">{m.role_member()}</option>
-						{actorRole === "owner" && (
-							<>
-								<option value="admin">{m.role_admin()}</option>
-								<option value="owner">{m.role_owner()}</option>
-							</>
-						)}
-					</select>
+						<SelectTrigger size="sm" className="w-32">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectGroup>
+								<SelectItem value="member">{m.role_member()}</SelectItem>
+								{actorRole === "owner" && (
+									<>
+										<SelectItem value="admin">{m.role_admin()}</SelectItem>
+										<SelectItem value="owner">{m.role_owner()}</SelectItem>
+									</>
+								)}
+							</SelectGroup>
+						</SelectContent>
+					</Select>
 				) : (
 					{
 						owner: m.role_owner(),
@@ -400,32 +457,30 @@ function MemberRow({
 						member: m.role_member(),
 					}[member.role]
 				)}
-			</td>
-			<td className="text-muted-foreground py-2 text-xs">{m.users_status_active()}</td>
+			</TableCell>
+			<TableCell>
+				<Badge variant="secondary">{m.users_status_active()}</Badge>
+			</TableCell>
 			{canManage && (
-				<td className="flex gap-1 py-2">
-					{actorRole === "owner" && member.role !== "owner" && (
+				<TableCell>
+					<div className="flex gap-1">
+						{actorRole === "owner" && member.role !== "owner" && (
+							<Button variant="ghost" size="sm" onClick={onTransfer}>
+								{m.users_transfer()}
+							</Button>
+						)}
 						<Button
-							variant="ghost"
+							variant="destructive"
 							size="sm"
-							onClick={onTransfer}
-							className="h-7 text-xs"
+							onClick={() => onRemove(member.id)}
+							disabled={removeSubmitting}
 						>
-							{m.users_transfer()}
+							{removeSubmitting ? m.users_removing() : m.users_remove()}
 						</Button>
-					)}
-					<Button
-						variant="ghost"
-						size="sm"
-						onClick={() => onRemove(member.id)}
-						disabled={removeSubmitting}
-						className="text-destructive h-7 text-xs"
-					>
-						{removeSubmitting ? m.users_removing() : m.users_remove()}
-					</Button>
-				</td>
+					</div>
+				</TableCell>
 			)}
-		</tr>
+		</TableRow>
 	);
 }
 
@@ -441,10 +496,12 @@ function InvitationRow({
 	onRevoke: (id: string) => void;
 }) {
 	return (
-		<tr className="border-border border-b opacity-70">
-			<td className="text-muted-foreground py-2 italic">{m.users_status_pending()}</td>
-			<td className="py-2">{invitation.email}</td>
-			<td className="py-2">
+		<TableRow className="opacity-70">
+			<TableCell className="text-muted-foreground italic">
+				{m.users_status_pending()}
+			</TableCell>
+			<TableCell>{invitation.email}</TableCell>
+			<TableCell>
 				{
 					{
 						owner: m.role_owner(),
@@ -452,25 +509,22 @@ function InvitationRow({
 						member: m.role_member(),
 					}[invitation.role]
 				}
-			</td>
-			<td className="py-2">
-				<span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
-					{m.users_status_pending()}
-				</span>
-			</td>
+			</TableCell>
+			<TableCell>
+				<Badge variant="outline">{m.users_status_pending()}</Badge>
+			</TableCell>
 			{canManage && (
-				<td className="flex gap-1 py-2">
+				<TableCell>
 					<Button
-						variant="ghost"
+						variant="destructive"
 						size="sm"
 						onClick={() => onRevoke(invitation.id)}
 						disabled={removeSubmitting}
-						className="text-destructive h-7 text-xs"
 					>
 						{removeSubmitting ? m.users_removing() : m.users_revoke()}
 					</Button>
-				</td>
+				</TableCell>
 			)}
-		</tr>
+		</TableRow>
 	);
 }

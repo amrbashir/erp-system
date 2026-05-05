@@ -1,6 +1,9 @@
 import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
+import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
+import { Field, FieldGroup, FieldLabel } from "@workspace/ui/components/field";
+import { Input } from "@workspace/ui/components/input";
 import { useState } from "react";
 
 import { signUp } from "@/lib/auth-client";
@@ -12,9 +15,7 @@ export const Route = createFileRoute("/signup")({
 		redirect: (search.redirect as string) || undefined,
 	}),
 	beforeLoad: async ({ context }) => {
-		const session = await context.queryClient.ensureQueryData(
-			orpc.session.get.queryOptions(),
-		);
+		const session = await context.queryClient.ensureQueryData(orpc.session.get.queryOptions());
 		if (session) throw redirect({ to: "/dashboard" });
 	},
 	component: SignupPage,
@@ -57,48 +58,45 @@ function SignupPage() {
 			<form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
 				<h1 className="text-lg font-medium">{m.signup_heading()}</h1>
 
-				{error && <p className="text-destructive text-sm">{error}</p>}
+				{error && (
+					<Alert variant="destructive">
+						<AlertDescription>{error}</AlertDescription>
+					</Alert>
+				)}
 
-				<div className="flex flex-col gap-1">
-					<label htmlFor="name" className="text-sm font-medium">
-						{m.label_name()}
-					</label>
-					<input
-						id="name"
-						name="name"
-						type="text"
-						placeholder={m.label_name()}
-						required
-						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
-					/>
-				</div>
-				<div className="flex flex-col gap-1">
-					<label htmlFor="email" className="text-sm font-medium">
-						{m.label_email()}
-					</label>
-					<input
-						id="email"
-						name="email"
-						type="email"
-						placeholder={m.label_email()}
-						required
-						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
-					/>
-				</div>
-				<div className="flex flex-col gap-1">
-					<label htmlFor="password" className="text-sm font-medium">
-						{m.label_password()}
-					</label>
-					<input
-						id="password"
-						name="password"
-						type="password"
-						placeholder={m.label_password()}
-						required
-						minLength={6}
-						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
-					/>
-				</div>
+				<FieldGroup>
+					<Field>
+						<FieldLabel htmlFor="name">{m.label_name()}</FieldLabel>
+						<Input
+							id="name"
+							name="name"
+							type="text"
+							placeholder={m.label_name()}
+							required
+						/>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor="email">{m.label_email()}</FieldLabel>
+						<Input
+							id="email"
+							name="email"
+							type="email"
+							placeholder={m.label_email()}
+							required
+						/>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor="password">{m.label_password()}</FieldLabel>
+						<Input
+							id="password"
+							name="password"
+							type="password"
+							placeholder={m.label_password()}
+							required
+							minLength={6}
+						/>
+					</Field>
+				</FieldGroup>
 
 				<Button type="submit" disabled={loading}>
 					{loading ? m.signup_submitting() : m.signup_submit()}

@@ -15,8 +15,6 @@ const getLimit = rateLimited({ window: 60_000, max: 120 });
  */
 export const sessionRouter = {
 	get: getLimit.handler(async ({ context }) => {
-		return auth.api
-			.getSession({ headers: context.request.headers })
-			.catch(() => null);
+		return auth.api.getSession({ headers: context.request.headers }).catch(() => null);
 	}),
 };

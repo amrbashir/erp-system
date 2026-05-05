@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
+import { Empty, EmptyDescription, EmptyHeader } from "@workspace/ui/components/empty";
 import {
 	Table,
 	TableBody,
@@ -30,9 +31,7 @@ function ActivationDashboard() {
 	);
 
 	const togglingId =
-		toggleMutation.isPending && toggleMutation.variables
-			? toggleMutation.variables.id
-			: null;
+		toggleMutation.isPending && toggleMutation.variables ? toggleMutation.variables.id : null;
 
 	const statusVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
 		active: "default",
@@ -45,7 +44,11 @@ function ActivationDashboard() {
 			<h2 className="mb-6 text-2xl font-bold">Activations</h2>
 
 			{activations.length === 0 ? (
-				<p className="text-muted-foreground">No activations found.</p>
+				<Empty>
+					<EmptyHeader>
+						<EmptyDescription>No activations found.</EmptyDescription>
+					</EmptyHeader>
+				</Empty>
 			) : (
 				<Table>
 					<TableHeader>
@@ -79,7 +82,10 @@ function ActivationDashboard() {
 											size="sm"
 											disabled={togglingId === a.id}
 											onClick={() =>
-												toggleMutation.mutate({ id: a.id, status: "revoked" })
+												toggleMutation.mutate({
+													id: a.id,
+													status: "revoked",
+												})
 											}
 										>
 											Revoke
@@ -89,7 +95,10 @@ function ActivationDashboard() {
 											size="sm"
 											disabled={togglingId === a.id}
 											onClick={() =>
-												toggleMutation.mutate({ id: a.id, status: "active" })
+												toggleMutation.mutate({
+													id: a.id,
+													status: "active",
+												})
 											}
 										>
 											Activate

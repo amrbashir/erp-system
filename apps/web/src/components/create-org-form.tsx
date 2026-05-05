@@ -1,7 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
+import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
+import { Field, FieldDescription, FieldGroup, FieldLabel } from "@workspace/ui/components/field";
+import { Input } from "@workspace/ui/components/input";
 import { useState } from "react";
 
 import { isDesktop } from "@/lib/activation";
@@ -71,63 +74,58 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 				<h1 className="text-lg font-medium">{title}</h1>
 				{description && <p className="text-muted-foreground text-sm">{description}</p>}
 
-				{error && <p className="text-destructive text-sm">{error}</p>}
+				{error && (
+					<Alert variant="destructive">
+						<AlertDescription>{error}</AlertDescription>
+					</Alert>
+				)}
 
-				<div className="flex flex-col gap-1">
-					<label htmlFor="org-name" className="text-sm font-medium">
-						{m.label_org_name()}
-					</label>
-					<input
-						id="org-name"
-						name="name"
-						type="text"
-						value={name}
-						onChange={(e) => handleNameChange(e.currentTarget.value)}
-						placeholder={m.label_org_name()}
-						required
-						className="border-border bg-background h-9 rounded-none border px-3 text-sm"
-					/>
-				</div>
+				<FieldGroup>
+					<Field>
+						<FieldLabel htmlFor="org-name">{m.label_org_name()}</FieldLabel>
+						<Input
+							id="org-name"
+							name="name"
+							type="text"
+							value={name}
+							onChange={(e) => handleNameChange(e.currentTarget.value)}
+							placeholder={m.label_org_name()}
+							required
+						/>
+					</Field>
 
-				<div className="flex flex-col gap-1">
-					<label htmlFor="org-slug" className="text-sm font-medium">
-						{m.label_org_slug()}
-					</label>
-					<input
-						id="org-slug"
-						name="slug"
-						type="text"
-						value={slug}
-						onChange={(e) => {
-							setSlug(e.currentTarget.value);
-							setSlugEdited(true);
-						}}
-						placeholder="acme"
-						pattern="[a-z0-9][a-z0-9-]*[a-z0-9]"
-						minLength={2}
-						maxLength={48}
-						required
-						className="border-border bg-background h-9 rounded-none border px-3 font-mono text-sm"
-					/>
-					{slug && (
-						<p className="text-muted-foreground text-xs">
-							{m.org_slug_url_preview({ slug })}
-						</p>
-					)}
-				</div>
+					<Field>
+						<FieldLabel htmlFor="org-slug">{m.label_org_slug()}</FieldLabel>
+						<Input
+							id="org-slug"
+							name="slug"
+							type="text"
+							value={slug}
+							onChange={(e) => {
+								setSlug(e.currentTarget.value);
+								setSlugEdited(true);
+							}}
+							placeholder="acme"
+							pattern="[a-z0-9][a-z0-9-]*[a-z0-9]"
+							minLength={2}
+							maxLength={48}
+							required
+							className="font-mono"
+						/>
+						{slug && (
+							<FieldDescription>{m.org_slug_url_preview({ slug })}</FieldDescription>
+						)}
+					</Field>
+				</FieldGroup>
 
 				<Button type="submit" disabled={submitting}>
 					{submitting ? m.create_org_submitting() : m.create_org_submit()}
 				</Button>
 
 				{onCancel && (
-					<button
-						type="button"
-						onClick={onCancel}
-						className="text-muted-foreground text-sm underline"
-					>
+					<Button type="button" variant="link" size="sm" onClick={onCancel}>
 						{m.cancel()}
-					</button>
+					</Button>
 				)}
 			</form>
 		</div>

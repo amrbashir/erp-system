@@ -1,6 +1,7 @@
-import { CircleNotchIcon } from "@phosphor-icons/react";
 import { m } from "@workspace/i18n";
+import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
+import { Spinner } from "@workspace/ui/components/spinner";
 import { useEffect, useState } from "react";
 
 import { ActivationScreen } from "@/components/activation-screen";
@@ -68,7 +69,7 @@ export function DesktopBootstrap({ children }: { children: React.ReactNode }) {
 	if (state.step === "loading") {
 		return (
 			<div className="flex min-h-svh items-center justify-center">
-				<CircleNotchIcon className="text-muted-foreground size-6 animate-spin" />
+				<Spinner className="text-muted-foreground size-6" />
 			</div>
 		);
 	}
@@ -76,7 +77,9 @@ export function DesktopBootstrap({ children }: { children: React.ReactNode }) {
 	if (state.step === "error") {
 		return (
 			<div className="flex min-h-svh flex-col items-center justify-center gap-4 p-6">
-				<p className="text-destructive text-sm">{state.message}</p>
+				<Alert variant="destructive" className="max-w-md">
+					<AlertDescription>{state.message}</AlertDescription>
+				</Alert>
 				<Button variant="outline" size="sm" onClick={() => window.location.reload()}>
 					{m.retry()}
 				</Button>
