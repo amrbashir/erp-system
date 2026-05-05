@@ -15,7 +15,7 @@ import {
 } from "@workspace/ui/components/alert-dialog";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
-import { Empty, EmptyDescription, EmptyHeader } from "@workspace/ui/components/empty";
+import { Empty, EmptyHeader, EmptyTitle } from "@workspace/ui/components/empty";
 import { Field, FieldGroup, FieldLabel } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
 import {
@@ -338,7 +338,7 @@ function MemberList({
 		return (
 			<Empty>
 				<EmptyHeader>
-					<EmptyDescription>{m.users_no_members()}</EmptyDescription>
+					<EmptyTitle>{m.users_no_members()}</EmptyTitle>
 				</EmptyHeader>
 			</Empty>
 		);
@@ -360,23 +360,25 @@ function MemberList({
 								m.users_transfer_confirm({ name: transferTarget.userName })}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
-					<Field>
-						<FieldLabel htmlFor="transfer-role">{m.label_role()}</FieldLabel>
-						<Select
-							value={transferRole}
-							onValueChange={(v) => v && setTransferRole(v as "admin" | "member")}
-						>
-							<SelectTrigger id="transfer-role" className="w-full">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectGroup>
-									<SelectItem value="admin">{m.role_admin()}</SelectItem>
-									<SelectItem value="member">{m.role_member()}</SelectItem>
-								</SelectGroup>
-							</SelectContent>
-						</Select>
-					</Field>
+					<FieldGroup>
+						<Field>
+							<FieldLabel htmlFor="transfer-role">{m.label_role()}</FieldLabel>
+							<Select
+								value={transferRole}
+								onValueChange={(v) => v && setTransferRole(v as "admin" | "member")}
+							>
+								<SelectTrigger id="transfer-role" className="w-full">
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectGroup>
+										<SelectItem value="admin">{m.role_admin()}</SelectItem>
+										<SelectItem value="member">{m.role_member()}</SelectItem>
+									</SelectGroup>
+								</SelectContent>
+							</Select>
+						</Field>
+					</FieldGroup>
 					<AlertDialogFooter>
 						<AlertDialogCancel disabled={transferMutation.isPending}>
 							{m.cancel()}

@@ -68,7 +68,11 @@ function AuthedLayout() {
 	const { orgs, currentOrgId } = Route.useRouteContext();
 	const desktop = isDesktop();
 
-	const navValue = pathname.startsWith("/users") ? "users" : "dashboard";
+	const navValue = pathname.startsWith("/users")
+		? "users"
+		: pathname.startsWith("/dashboard")
+			? "dashboard"
+			: undefined;
 
 	async function handleLogout() {
 		await signOut();

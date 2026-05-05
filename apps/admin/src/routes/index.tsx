@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
-import { Empty, EmptyDescription, EmptyHeader } from "@workspace/ui/components/empty";
+import { Empty, EmptyHeader, EmptyTitle } from "@workspace/ui/components/empty";
 import {
 	Table,
 	TableBody,
@@ -50,7 +50,7 @@ function ActivationDashboard() {
 					{activations.length === 0 ? (
 						<Empty>
 							<EmptyHeader>
-								<EmptyDescription>No activations found.</EmptyDescription>
+								<EmptyTitle>No activations found.</EmptyTitle>
 							</EmptyHeader>
 						</Empty>
 					) : (
