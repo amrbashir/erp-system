@@ -15,7 +15,7 @@ import { SIDECAR_URL } from "./sidecar";
  */
 function createBrowserClient(): RouterClient<AppRouter> {
 	const link = new RPCLink({
-		url: () => (isDesktop() ? `${SIDECAR_URL}/rpc` : "/rpc"),
+		url: () => (isDesktop() ? `${SIDECAR_URL}/rpc` : `${window.location.origin}/rpc`),
 		headers: () => {
 			if (!isDesktop()) return {};
 			const token = getStoredToken();

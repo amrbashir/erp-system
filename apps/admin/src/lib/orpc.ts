@@ -10,7 +10,7 @@ import type { AdminRouter } from "@workspace/server/orpc/admin-router";
  * DEPLOY_TARGET=admin), so the same path serves admin procedures here.
  */
 function createBrowserClient(): RouterClient<AdminRouter> {
-	const link = new RPCLink({ url: "/rpc" });
+	const link = new RPCLink({ url: `${window.location.origin}/rpc` });
 	return createORPCClient(link);
 }
 
