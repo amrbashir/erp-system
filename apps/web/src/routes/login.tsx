@@ -2,6 +2,13 @@ import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-ro
 import { m } from "@workspace/i18n";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
+import {
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@workspace/ui/components/card";
 import { Field, FieldGroup, FieldLabel } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
 import { useState } from "react";
@@ -54,53 +61,63 @@ function LoginPage() {
 
 	return (
 		<div className="flex min-h-svh items-center justify-center p-6">
-			<form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
-				<h1 className="text-lg font-medium">{m.login_heading()}</h1>
+			<Card className="w-full max-w-sm">
+				<CardHeader>
+					<CardTitle>{m.login_heading()}</CardTitle>
+				</CardHeader>
+				<form onSubmit={handleSubmit}>
+					<CardContent className="flex flex-col gap-4">
+						{error && (
+							<Alert variant="destructive">
+								<AlertDescription>{error}</AlertDescription>
+							</Alert>
+						)}
 
-				{error && (
-					<Alert variant="destructive">
-						<AlertDescription>{error}</AlertDescription>
-					</Alert>
-				)}
+						<FieldGroup>
+							<Field>
+								<FieldLabel htmlFor="email">{m.label_email()}</FieldLabel>
+								<Input
+									id="email"
+									name="email"
+									type="email"
+									placeholder={m.label_email()}
+									required
+								/>
+							</Field>
+							<Field>
+								<FieldLabel htmlFor="password">{m.label_password()}</FieldLabel>
+								<Input
+									id="password"
+									name="password"
+									type="password"
+									placeholder={m.label_password()}
+									required
+								/>
+							</Field>
+						</FieldGroup>
 
-				<FieldGroup>
-					<Field>
-						<FieldLabel htmlFor="email">{m.label_email()}</FieldLabel>
-						<Input
-							id="email"
-							name="email"
-							type="email"
-							placeholder={m.label_email()}
-							required
-						/>
-					</Field>
-					<Field>
-						<FieldLabel htmlFor="password">{m.label_password()}</FieldLabel>
-						<Input
-							id="password"
-							name="password"
-							type="password"
-							placeholder={m.label_password()}
-							required
-						/>
-					</Field>
-				</FieldGroup>
-
-				<Button type="submit" disabled={loading}>
-					{loading ? m.login_submitting() : m.login_submit()}
-				</Button>
-
-				<p className="text-muted-foreground text-sm">
-					{m.login_no_account()}{" "}
-					<Link
-						to="/signup"
-						search={redirectTo ? { redirect: redirectTo } : undefined}
-						className="text-primary underline"
+						<Button type="submit" disabled={loading}>
+							{loading ? m.login_submitting() : m.login_submit()}
+						</Button>
+					</CardContent>
+				</form>
+				<CardFooter className="justify-center">
+					<span className="text-muted-foreground">{m.login_no_account()}</span>
+					<Button
+						variant="link"
+						size="sm"
+						render={
+							<Link
+								to="/signup"
+								search={redirectTo ? { redirect: redirectTo } : undefined}
+							/>
+						}
+						nativeButton={false}
 					>
 						{m.login_signup_link()}
-					</Link>
-				</p>
-			</form>
+					</Button>
+				</CardFooter>
+			</Card>
 		</div>
 	);
 }

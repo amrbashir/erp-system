@@ -3,6 +3,14 @@ import { useNavigate } from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@workspace/ui/components/card";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
 import { useState } from "react";
@@ -70,64 +78,72 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 
 	return (
 		<div className="flex min-h-svh items-center justify-center p-6">
-			<form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
-				<h1 className="text-lg font-medium">{title}</h1>
-				{description && <p className="text-muted-foreground text-sm">{description}</p>}
-
-				{error && (
-					<Alert variant="destructive">
-						<AlertDescription>{error}</AlertDescription>
-					</Alert>
-				)}
-
-				<FieldGroup>
-					<Field>
-						<FieldLabel htmlFor="org-name">{m.label_org_name()}</FieldLabel>
-						<Input
-							id="org-name"
-							name="name"
-							type="text"
-							value={name}
-							onChange={(e) => handleNameChange(e.currentTarget.value)}
-							placeholder={m.label_org_name()}
-							required
-						/>
-					</Field>
-
-					<Field>
-						<FieldLabel htmlFor="org-slug">{m.label_org_slug()}</FieldLabel>
-						<Input
-							id="org-slug"
-							name="slug"
-							type="text"
-							value={slug}
-							onChange={(e) => {
-								setSlug(e.currentTarget.value);
-								setSlugEdited(true);
-							}}
-							placeholder="acme"
-							pattern="[a-z0-9][a-z0-9-]*[a-z0-9]"
-							minLength={2}
-							maxLength={48}
-							required
-							className="font-mono"
-						/>
-						{slug && (
-							<FieldDescription>{m.org_slug_url_preview({ slug })}</FieldDescription>
+			<Card className="w-full max-w-sm">
+				<CardHeader>
+					<CardTitle>{title}</CardTitle>
+					{description && <CardDescription>{description}</CardDescription>}
+				</CardHeader>
+				<form onSubmit={handleSubmit}>
+					<CardContent className="flex flex-col gap-4">
+						{error && (
+							<Alert variant="destructive">
+								<AlertDescription>{error}</AlertDescription>
+							</Alert>
 						)}
-					</Field>
-				</FieldGroup>
 
-				<Button type="submit" disabled={submitting}>
-					{submitting ? m.create_org_submitting() : m.create_org_submit()}
-				</Button>
+						<FieldGroup>
+							<Field>
+								<FieldLabel htmlFor="org-name">{m.label_org_name()}</FieldLabel>
+								<Input
+									id="org-name"
+									name="name"
+									type="text"
+									value={name}
+									onChange={(e) => handleNameChange(e.currentTarget.value)}
+									placeholder={m.label_org_name()}
+									required
+								/>
+							</Field>
 
-				{onCancel && (
-					<Button type="button" variant="link" size="sm" onClick={onCancel}>
-						{m.cancel()}
-					</Button>
-				)}
-			</form>
+							<Field>
+								<FieldLabel htmlFor="org-slug">{m.label_org_slug()}</FieldLabel>
+								<Input
+									id="org-slug"
+									name="slug"
+									type="text"
+									value={slug}
+									onChange={(e) => {
+										setSlug(e.currentTarget.value);
+										setSlugEdited(true);
+									}}
+									placeholder="acme"
+									pattern="[a-z0-9][a-z0-9-]*[a-z0-9]"
+									minLength={2}
+									maxLength={48}
+									required
+									className="font-mono"
+								/>
+								{slug && (
+									<FieldDescription>
+										{m.org_slug_url_preview({ slug })}
+									</FieldDescription>
+								)}
+							</Field>
+						</FieldGroup>
+
+						<Button type="submit" disabled={submitting}>
+							{submitting ? m.create_org_submitting() : m.create_org_submit()}
+						</Button>
+					</CardContent>
+					{onCancel && (
+						<CardFooter className="justify-center">
+							<Button type="button" variant="link" size="sm" onClick={onCancel}>
+								{m.cancel()}
+							</Button>
+						</CardFooter>
+					)}
+				</form>
+			</Card>
 		</div>
 	);
 }

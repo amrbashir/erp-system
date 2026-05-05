@@ -69,7 +69,7 @@ export function DesktopBootstrap({ children }: { children: React.ReactNode }) {
 	if (state.step === "loading") {
 		return (
 			<div className="flex min-h-svh items-center justify-center">
-				<Spinner className="text-muted-foreground size-6" />
+				<Spinner className="size-6" />
 			</div>
 		);
 	}

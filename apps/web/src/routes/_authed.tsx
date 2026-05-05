@@ -1,7 +1,15 @@
 import { ORPCError } from "@orpc/client";
-import { Outlet, Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import {
+	Outlet,
+	Link,
+	createFileRoute,
+	redirect,
+	useLocation,
+	useNavigate,
+} from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
+import { Tabs, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
 
 import { OrgSwitcher } from "@/components/org-switcher";
 import { isDesktop } from "@/lib/activation";
@@ -56,8 +64,11 @@ export const Route = createFileRoute("/_authed")({
 
 function AuthedLayout() {
 	const navigate = useNavigate();
+	const { pathname } = useLocation();
 	const { orgs, currentOrgId } = Route.useRouteContext();
 	const desktop = isDesktop();
+
+	const navValue = pathname.startsWith("/users") ? "users" : "dashboard";
 
 	async function handleLogout() {
 		await signOut();
@@ -74,20 +85,24 @@ function AuthedLayout() {
 			<div className="flex items-center justify-between border-b px-4 py-2">
 				<div className="flex items-center gap-4">
 					<OrgSwitcher orgs={orgs} currentOrgId={currentOrgId} />
-					<nav className="flex gap-2 text-sm">
-						<Link
-							to="/dashboard"
-							className="text-muted-foreground hover:text-foreground [&.active]:text-foreground"
-						>
-							{m.nav_dashboard()}
-						</Link>
-						<Link
-							to="/users"
-							className="text-muted-foreground hover:text-foreground [&.active]:text-foreground"
-						>
-							{m.nav_users()}
-						</Link>
-					</nav>
+					<Tabs value={navValue}>
+						<TabsList variant="line">
+							<TabsTrigger
+								value="dashboard"
+								render={<Link to="/dashboard" />}
+								nativeButton={false}
+							>
+								{m.nav_dashboard()}
+							</TabsTrigger>
+							<TabsTrigger
+								value="users"
+								render={<Link to="/users" />}
+								nativeButton={false}
+							>
+								{m.nav_users()}
+							</TabsTrigger>
+						</TabsList>
+					</Tabs>
 				</div>
 				<Button variant="ghost" size="sm" onClick={handleLogout}>
 					{m.nav_logout()}

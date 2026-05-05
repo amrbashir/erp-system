@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
+import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
 
 export const Route = createFileRoute("/_authed/dashboard")({
 	component: Dashboard,
@@ -10,15 +11,17 @@ function Dashboard() {
 	const currentOrg = orgs.find((o) => o.id === currentOrgId) ?? orgs[0];
 
 	return (
-		<div className="flex min-h-svh flex-col p-6">
-			<div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-				<h1 className="font-medium">{m.dashboard_welcome({ name: session.user.name })}</h1>
+		<div className="p-6">
+			<Card className="max-w-md">
+				<CardHeader>
+					<CardTitle>{m.dashboard_welcome({ name: session.user.name })}</CardTitle>
+				</CardHeader>
 				{currentOrg && (
-					<p>
+					<CardContent>
 						{m.dashboard_current_org()} <strong>{currentOrg.name}</strong>
-					</p>
+					</CardContent>
 				)}
-			</div>
+			</Card>
 		</div>
 	);
 }

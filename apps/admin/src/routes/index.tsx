@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Empty, EmptyDescription, EmptyHeader } from "@workspace/ui/components/empty";
 import {
 	Table,
@@ -41,75 +42,82 @@ function ActivationDashboard() {
 
 	return (
 		<div className="p-8">
-			<h2 className="mb-6 text-2xl font-bold">Activations</h2>
-
-			{activations.length === 0 ? (
-				<Empty>
-					<EmptyHeader>
-						<EmptyDescription>No activations found.</EmptyDescription>
-					</EmptyHeader>
-				</Empty>
-			) : (
-				<Table>
-					<TableHeader>
-						<TableRow>
-							<TableHead>Hardware ID</TableHead>
-							<TableHead>Status</TableHead>
-							<TableHead>Activated At</TableHead>
-							<TableHead>Created At</TableHead>
-							<TableHead>Actions</TableHead>
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{activations.map((a) => (
-							<TableRow key={a.id}>
-								<TableCell className="font-mono">{a.hardwareId}</TableCell>
-								<TableCell>
-									<Badge variant={statusVariant[a.status]}>{a.status}</Badge>
-								</TableCell>
-								<TableCell className="text-muted-foreground">
-									{a.activatedAt
-										? new Date(a.activatedAt).toLocaleDateString()
-										: "-"}
-								</TableCell>
-								<TableCell className="text-muted-foreground">
-									{new Date(a.createdAt).toLocaleDateString()}
-								</TableCell>
-								<TableCell>
-									{a.status === "active" ? (
-										<Button
-											variant="destructive"
-											size="sm"
-											disabled={togglingId === a.id}
-											onClick={() =>
-												toggleMutation.mutate({
-													id: a.id,
-													status: "revoked",
-												})
-											}
-										>
-											Revoke
-										</Button>
-									) : (
-										<Button
-											size="sm"
-											disabled={togglingId === a.id}
-											onClick={() =>
-												toggleMutation.mutate({
-													id: a.id,
-													status: "active",
-												})
-											}
-										>
-											Activate
-										</Button>
-									)}
-								</TableCell>
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-			)}
+			<Card>
+				<CardHeader>
+					<CardTitle>Activations</CardTitle>
+				</CardHeader>
+				<CardContent>
+					{activations.length === 0 ? (
+						<Empty>
+							<EmptyHeader>
+								<EmptyDescription>No activations found.</EmptyDescription>
+							</EmptyHeader>
+						</Empty>
+					) : (
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>Hardware ID</TableHead>
+									<TableHead>Status</TableHead>
+									<TableHead>Activated At</TableHead>
+									<TableHead>Created At</TableHead>
+									<TableHead>Actions</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{activations.map((a) => (
+									<TableRow key={a.id}>
+										<TableCell className="font-mono">{a.hardwareId}</TableCell>
+										<TableCell>
+											<Badge variant={statusVariant[a.status]}>
+												{a.status}
+											</Badge>
+										</TableCell>
+										<TableCell className="text-muted-foreground">
+											{a.activatedAt
+												? new Date(a.activatedAt).toLocaleDateString()
+												: "-"}
+										</TableCell>
+										<TableCell className="text-muted-foreground">
+											{new Date(a.createdAt).toLocaleDateString()}
+										</TableCell>
+										<TableCell>
+											{a.status === "active" ? (
+												<Button
+													variant="destructive"
+													size="sm"
+													disabled={togglingId === a.id}
+													onClick={() =>
+														toggleMutation.mutate({
+															id: a.id,
+															status: "revoked",
+														})
+													}
+												>
+													Revoke
+												</Button>
+											) : (
+												<Button
+													size="sm"
+													disabled={togglingId === a.id}
+													onClick={() =>
+														toggleMutation.mutate({
+															id: a.id,
+															status: "active",
+														})
+													}
+												>
+													Activate
+												</Button>
+											)}
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					)}
+				</CardContent>
+			</Card>
 		</div>
 	);
 }

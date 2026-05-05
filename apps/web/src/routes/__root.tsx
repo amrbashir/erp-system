@@ -56,7 +56,7 @@ function ErrorBoundary({ error, reset }: ErrorComponentProps) {
 				<AlertDescription>
 					<p>{m.error_boundary_description()}</p>
 					{error.message ? (
-						<pre className="bg-muted mt-2 max-w-full overflow-auto p-3 text-left text-xs">
+						<pre className="bg-muted max-w-full overflow-auto p-3 text-left font-mono">
 							{error.message}
 						</pre>
 					) : null}

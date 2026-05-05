@@ -2,6 +2,14 @@ import { CheckIcon, XIcon } from "@phosphor-icons/react";
 import { m } from "@workspace/i18n";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@workspace/ui/components/card";
 import { Field, FieldLabel } from "@workspace/ui/components/field";
 import {
 	InputGroup,
@@ -62,46 +70,48 @@ export function ActivationScreen({
 
 	return (
 		<div className="flex min-h-svh items-center justify-center p-6">
-			<div className="flex w-full max-w-md flex-col items-center gap-6 text-center">
-				<h1 className="text-lg font-medium">{m.activation_heading()}</h1>
-				<p className="text-muted-foreground text-sm">{m.activation_description()}</p>
+			<Card className="w-full max-w-md">
+				<CardHeader>
+					<CardTitle>{m.activation_heading()}</CardTitle>
+					<CardDescription>{m.activation_description()}</CardDescription>
+				</CardHeader>
+				<CardContent className="flex flex-col gap-4">
+					<Field>
+						<FieldLabel>{m.activation_hardware_id()}</FieldLabel>
+						<InputGroup>
+							<InputGroupInput
+								readOnly
+								value={hardwareId}
+								className="font-mono select-all"
+							/>
+							<InputGroupAddon align="inline-end">
+								<InputGroupButton size="sm" onClick={handleCopy}>
+									{copyState === "success" ? (
+										<CheckIcon />
+									) : copyState === "error" ? (
+										<XIcon />
+									) : (
+										m.activation_copy()
+									)}
+								</InputGroupButton>
+							</InputGroupAddon>
+						</InputGroup>
+					</Field>
 
-				<Field className="w-full">
-					<FieldLabel className="text-muted-foreground">
-						{m.activation_hardware_id()}
-					</FieldLabel>
-					<InputGroup>
-						<InputGroupInput
-							readOnly
-							value={hardwareId}
-							className="font-mono select-all"
-						/>
-						<InputGroupAddon align="inline-end">
-							<InputGroupButton size="sm" onClick={handleCopy}>
-								{copyState === "success" ? (
-									<CheckIcon />
-								) : copyState === "error" ? (
-									<XIcon />
-								) : (
-									m.activation_copy()
-								)}
-							</InputGroupButton>
-						</InputGroupAddon>
-					</InputGroup>
-				</Field>
+					{error && (
+						<Alert variant="destructive">
+							<AlertDescription>{error}</AlertDescription>
+						</Alert>
+					)}
 
-				{error && (
-					<Alert variant="destructive">
-						<AlertDescription>{error}</AlertDescription>
-					</Alert>
-				)}
-
-				<Button onClick={handleCheck} disabled={status === "checking"} className="w-full">
-					{status === "checking" ? m.activation_checking() : m.activation_check()}
-				</Button>
-
-				<p className="text-muted-foreground text-xs">{m.activation_waiting()}</p>
-			</div>
+					<Button onClick={handleCheck} disabled={status === "checking"}>
+						{status === "checking" ? m.activation_checking() : m.activation_check()}
+					</Button>
+				</CardContent>
+				<CardFooter className="justify-center">
+					<CardDescription>{m.activation_waiting()}</CardDescription>
+				</CardFooter>
+			</Card>
 		</div>
 	);
 }

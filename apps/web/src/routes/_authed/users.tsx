@@ -3,6 +3,16 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@workspace/ui/components/alert-dialog";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { Empty, EmptyDescription, EmptyHeader } from "@workspace/ui/components/empty";
@@ -16,6 +26,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@workspace/ui/components/select";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 import {
 	Table,
 	TableBody,
@@ -74,8 +85,8 @@ function UsersPage() {
 	}, [members, invitations, pendingFirst]);
 
 	return (
-		<div className="p-6">
-			<div className="mb-6 flex items-center justify-between">
+		<div className="flex flex-col gap-6 p-6">
+			<div className="flex items-center justify-between">
 				<h1 className="text-lg font-medium">{m.users_heading()}</h1>
 				{canManage && (
 					<Button size="sm" onClick={() => setShowForm(!showForm)}>
@@ -85,7 +96,7 @@ function UsersPage() {
 			</div>
 
 			{error && (
-				<Alert variant="destructive" className="mb-4">
+				<Alert variant="destructive">
 					<AlertDescription>{error}</AlertDescription>
 				</Alert>
 			)}
@@ -99,7 +110,7 @@ function UsersPage() {
 			)}
 
 			{isLoading ? (
-				<p className="text-muted-foreground text-sm">{m.users_loading()}</p>
+				<MemberListSkeleton canManage={canManage} />
 			) : (
 				<MemberList
 					rows={rows}
@@ -148,7 +159,7 @@ function AddUserForm({
 	}
 
 	return (
-		<form onSubmit={handleSubmit} className="mb-6 flex flex-col gap-3">
+		<form onSubmit={handleSubmit} className="flex flex-col gap-3">
 			<FieldGroup>
 				<div className="flex gap-3">
 					<Field className="flex-1">
@@ -191,6 +202,34 @@ function AddUserForm({
 				</Button>
 			</div>
 		</form>
+	);
+}
+
+function MemberListSkeleton({ canManage }: { canManage: boolean }) {
+	const cols = canManage ? 5 : 4;
+	return (
+		<Table>
+			<TableHeader>
+				<TableRow>
+					<TableHead>{m.label_name()}</TableHead>
+					<TableHead>{m.label_email()}</TableHead>
+					<TableHead>{m.label_role()}</TableHead>
+					<TableHead>{m.users_status()}</TableHead>
+					{canManage && <TableHead>{m.users_actions()}</TableHead>}
+				</TableRow>
+			</TableHeader>
+			<TableBody>
+				{Array.from({ length: 3 }).map((_, i) => (
+					<TableRow key={i}>
+						{Array.from({ length: cols }).map((_, j) => (
+							<TableCell key={j}>
+								<Skeleton className="h-4 w-full" />
+							</TableCell>
+						))}
+					</TableRow>
+				))}
+			</TableBody>
+		</Table>
 	);
 }
 
@@ -307,50 +346,52 @@ function MemberList({
 
 	return (
 		<>
-			{transferTarget && (
-				<Alert className="mb-4">
-					<AlertDescription>
-						<p className="mb-3">
-							{m.users_transfer_confirm({ name: transferTarget.userName })}
-						</p>
-						<div className="mb-3 w-40">
-							<Select
-								value={transferRole}
-								onValueChange={(v) => v && setTransferRole(v as "admin" | "member")}
-							>
-								<SelectTrigger size="sm" className="w-full">
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectGroup>
-										<SelectItem value="admin">{m.role_admin()}</SelectItem>
-										<SelectItem value="member">{m.role_member()}</SelectItem>
-									</SelectGroup>
-								</SelectContent>
-							</Select>
-						</div>
-						<div className="flex gap-2">
-							<Button
-								size="sm"
-								onClick={handleTransfer}
-								disabled={transferMutation.isPending}
-							>
-								{transferMutation.isPending
-									? m.users_transferring()
-									: m.users_confirm_transfer()}
-							</Button>
-							<Button
-								variant="ghost"
-								size="sm"
-								onClick={() => setTransferTarget(null)}
-								disabled={transferMutation.isPending}
-							>
-								{m.cancel()}
-							</Button>
-						</div>
-					</AlertDescription>
-				</Alert>
-			)}
+			<AlertDialog
+				open={!!transferTarget}
+				onOpenChange={(open) => {
+					if (!open && !transferMutation.isPending) setTransferTarget(null);
+				}}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>{m.users_transfer()}</AlertDialogTitle>
+						<AlertDialogDescription>
+							{transferTarget &&
+								m.users_transfer_confirm({ name: transferTarget.userName })}
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<Field>
+						<FieldLabel htmlFor="transfer-role">{m.label_role()}</FieldLabel>
+						<Select
+							value={transferRole}
+							onValueChange={(v) => v && setTransferRole(v as "admin" | "member")}
+						>
+							<SelectTrigger id="transfer-role" className="w-full">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectGroup>
+									<SelectItem value="admin">{m.role_admin()}</SelectItem>
+									<SelectItem value="member">{m.role_member()}</SelectItem>
+								</SelectGroup>
+							</SelectContent>
+						</Select>
+					</Field>
+					<AlertDialogFooter>
+						<AlertDialogCancel disabled={transferMutation.isPending}>
+							{m.cancel()}
+						</AlertDialogCancel>
+						<AlertDialogAction
+							onClick={handleTransfer}
+							disabled={transferMutation.isPending}
+						>
+							{transferMutation.isPending
+								? m.users_transferring()
+								: m.users_confirm_transfer()}
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 			<Table>
 				<TableHeader>
 					<TableRow>

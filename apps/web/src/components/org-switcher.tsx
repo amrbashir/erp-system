@@ -67,7 +67,7 @@ export function OrgSwitcher({ orgs, currentOrgId }: { orgs: Org[]; currentOrgId:
 			/>
 			<DropdownMenuContent align="start" className="min-w-48">
 				{error && (
-					<Alert variant="destructive" className="m-1">
+					<Alert variant="destructive">
 						<AlertDescription>{error}</AlertDescription>
 					</Alert>
 				)}
