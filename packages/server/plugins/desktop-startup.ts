@@ -3,7 +3,6 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 import { applyMigrations } from "@workspace/server/lib/migrate";
-import { InvalidInputError } from "@workspace/server/shared/errors";
 import { definePlugin } from "nitro";
 import { useRuntimeConfig } from "nitro/runtime-config";
 import { useStorage } from "nitro/storage";
@@ -59,7 +58,7 @@ export default definePlugin(async () => {
 		const key = path.replace(/[\\/]/g, ":");
 		const item = await storage.getItem(key);
 		if (item === null || item === undefined) {
-			throw new InvalidInputError({ reason: `Migration file not found: ${path}` });
+			throw new Error(`Migration file not found: ${path}`);
 		}
 		return typeof item === "object" ? JSON.stringify(item) : String(item);
 	});

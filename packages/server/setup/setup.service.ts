@@ -1,10 +1,10 @@
 import { users } from "@workspace/db/schema";
+import { InvalidSlugError } from "@workspace/shared/errors";
 
 import type { CreateAuthOptions, createAuth as CreateAuthFn } from "../lib/auth.js";
 import { OrgsService } from "../orgs/orgs.service.js";
 import type { DB } from "../shared/db.js";
 import {
-	InvalidSlugError,
 	SetupAlreadyCompleteError,
 	SlugTakenError,
 	UnsupportedCurrencyError,
@@ -31,7 +31,7 @@ export type DesktopSetupOk = {
  *
  * `createAuth` is constructor-injected so tests can pass a transactional
  * auth instance with explicit `baseURL`/`secret`; production wires the
- * real factory via `handler.ts`.
+ * real factory via `orpc/context.ts`.
  */
 export class SetupService {
 	constructor(

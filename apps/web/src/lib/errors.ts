@@ -10,11 +10,6 @@ export class ApiError extends errore.createTaggedError({
 	message: "$message",
 }) {}
 
-export class JsonParseError extends errore.createTaggedError({
-	name: "JsonParseError",
-	message: "Failed to parse response body",
-}) {}
-
 export class ActivationMisconfiguredError extends errore.createTaggedError({
 	name: "ActivationMisconfiguredError",
 	message: "Activation API URL not configured",

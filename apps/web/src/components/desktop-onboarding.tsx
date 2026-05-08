@@ -1,4 +1,5 @@
 import { m } from "@workspace/i18n";
+import { toSlug } from "@workspace/shared/slug";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -13,7 +14,6 @@ import { Input } from "@workspace/ui/components/input";
 import { useState } from "react";
 
 import { desktopSetup } from "@/lib/desktop-auth";
-import { toSlug } from "@/lib/slug";
 
 export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 	const [error, setError] = useState("");

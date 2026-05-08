@@ -1,9 +1,8 @@
 import { createAuthClient } from "better-auth/react";
 
 import { isDesktop } from "./activation";
+import { getStoredToken, storeToken } from "./api-fetch";
 import { SIDECAR_URL } from "./sidecar";
-
-const TOKEN_KEY = "bearer_token";
 
 const desktop = isDesktop();
 
@@ -13,16 +12,11 @@ export const authClient = createAuthClient({
 		? {
 				auth: {
 					type: "Bearer",
-					token: () =>
-						(typeof localStorage !== "undefined"
-							? localStorage.getItem(TOKEN_KEY)
-							: null) ?? "",
+					token: () => getStoredToken() ?? "",
 				},
 				onSuccess: (ctx) => {
 					const token = ctx.response.headers.get("set-auth-token");
-					if (token && typeof localStorage !== "undefined") {
-						localStorage.setItem(TOKEN_KEY, token);
-					}
+					if (token) storeToken(token);
 				},
 			}
 		: undefined,

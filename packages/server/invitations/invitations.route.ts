@@ -1,12 +1,8 @@
-import * as z from "zod";
-
-import { orgScoped } from "../orpc/middleware.js";
+import { authed, orgResolver } from "../orpc/middleware.js";
 import { unwrap } from "../orpc/unwrap.js";
 import { InvitationNotFoundError, NoPermissionError } from "../shared/errors.js";
 
-const revokeInput = z.object({
-	invitationId: z.uuid(),
-});
+const inv = authed.invitations.use(orgResolver);
 
 /**
  * Invitation procedures. Listing lives under `members.list` (combined
@@ -14,7 +10,7 @@ const revokeInput = z.object({
  * branch flow. Only `revoke` is unique to this surface.
  */
 export const invitationsRouter = {
-	revoke: orgScoped.input(revokeInput).handler(async ({ context, input }) => {
+	revoke: inv.revoke.handler(async ({ context, input }) => {
 		const actorRole = context.membership.role as "owner" | "admin" | "member";
 		if (actorRole === "member") {
 			throw new NoPermissionError({ reason: "No permission to revoke invitations" });
@@ -36,6 +32,5 @@ export const invitationsRouter = {
 			targetId: input.invitationId,
 			metadata: { email: result.email, role: result.role },
 		});
-		return { ok: true as const };
 	}),
 };

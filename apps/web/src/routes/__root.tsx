@@ -9,9 +9,8 @@ import {
 import { getLocale, getTextDirection, m } from "@workspace/i18n";
 import { Alert, AlertDescription, AlertTitle } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
-import { LanguageSwitcher } from "@workspace/ui/components/language-switcher";
 import { ThemeProvider, themeScript } from "@workspace/ui/components/theme-provider";
-import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
+import { TooltipProvider } from "@workspace/ui/components/tooltip";
 
 import { DesktopBootstrap } from "@/components/desktop-bootstrap";
 import { isDesktop } from "@/lib/activation";
@@ -82,7 +81,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				<QueryClientProvider client={queryClient}>
-					<ThemeProvider>{children}</ThemeProvider>
+					<ThemeProvider>
+						<TooltipProvider>{children}</TooltipProvider>
+					</ThemeProvider>
 				</QueryClientProvider>
 				<Scripts />
 			</body>
@@ -90,25 +91,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 	);
 }
 
-function Shell() {
-	return (
-		<>
-			<header className="flex items-center justify-end gap-2 border-b px-4 py-2">
-				<ThemeSwitcher />
-				<LanguageSwitcher />
-			</header>
-			<Outlet />
-		</>
-	);
-}
-
 function RootLayout() {
 	if (isDesktop()) {
 		return (
 			<DesktopBootstrap>
-				<Shell />
+				<Outlet />
 			</DesktopBootstrap>
 		);
 	}
-	return <Shell />;
+	return <Outlet />;
 }

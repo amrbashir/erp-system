@@ -1,5 +1,4 @@
 import { ORPCError } from "@orpc/server";
-import * as errore from "errore";
 
 // ── Public errors (extend ORPCError) ─────────────────────────────────────────
 // Surface to clients. Code → HTTP status mapping is built into ORPCError.
@@ -8,12 +7,6 @@ import * as errore from "errore";
 export class UnauthorizedError extends ORPCError<"UNAUTHORIZED", undefined> {
 	constructor(message = "Unauthorized") {
 		super("UNAUTHORIZED", { message });
-	}
-}
-
-export class NoOrgSelectedError extends ORPCError<"BAD_REQUEST", { reason: "no_org_selected" }> {
-	constructor() {
-		super("BAD_REQUEST", { message: "No org selected", data: { reason: "no_org_selected" } });
 	}
 }
 
@@ -26,25 +19,7 @@ export class NotOrgMemberError extends ORPCError<"FORBIDDEN", { reason: "not_org
 	}
 }
 
-export class ForbiddenError extends ORPCError<"FORBIDDEN", undefined> {
-	constructor(opts: { reason: string }) {
-		super("FORBIDDEN", { message: opts.reason });
-	}
-}
-
 // Validation
-export class InvalidInputError extends ORPCError<"BAD_REQUEST", undefined> {
-	constructor(opts: { reason: string }) {
-		super("BAD_REQUEST", { message: opts.reason });
-	}
-}
-
-export class InvalidSlugError extends ORPCError<"BAD_REQUEST", undefined> {
-	constructor(opts: { reason: string }) {
-		super("BAD_REQUEST", { message: opts.reason });
-	}
-}
-
 export class UnsupportedCurrencyError extends ORPCError<"BAD_REQUEST", { code: string }> {
 	constructor(opts: { code: string }) {
 		super("BAD_REQUEST", {
@@ -163,19 +138,6 @@ export class InvalidTokenError extends ORPCError<"UNAUTHORIZED", undefined> {
 		super("UNAUTHORIZED", { message: opts.reason, cause: opts.cause });
 	}
 }
-
-// ── Internal errors (errore tagged, never cross transport) ──────────────────
-// Boot, infra, library wrappers. Discriminate via `instanceof`.
-
-// Add internal errors here as they arise. Example shape:
-//
-// export class MigrationFailedError extends errore.createTaggedError({
-// 	name: "MigrationFailedError",
-// 	message: "Migration $migration failed: $reason",
-// }) {}
-
-// Re-export errore for callers that build internal tagged errors elsewhere.
-export { errore };
 
 // ── Catch-block helpers ─────────────────────────────────────────────────────
 

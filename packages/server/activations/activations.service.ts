@@ -1,6 +1,6 @@
 import { activations } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
-import { SignJWT, importPKCS8, importSPKI, jwtVerify } from "jose";
+import { SignJWT, importPKCS8 } from "jose";
 
 import type { DB } from "../shared/db.js";
 import {
@@ -100,9 +100,7 @@ export class ActivationsService {
 	}
 }
 
-// ── Pure JWT helpers (no DB) — exported for tests + the legacy lib shim ─────
-
-export async function signActivationToken(
+async function signActivationToken(
 	hardwareId: string,
 	privateKeyPem: string,
 ): Promise<InvalidTokenError | string> {
@@ -121,17 +119,3 @@ export async function signActivationToken(
 	return signed;
 }
 
-export async function verifyActivationToken(
-	token: string,
-	publicKeyPem: string,
-): Promise<InvalidTokenError | { hardwareId: string; activated: boolean; iat: number }> {
-	const key = await importSPKI(publicKeyPem, "ES256").catch((e: Error) => e);
-	if (key instanceof Error) {
-		return new InvalidTokenError({ reason: key.message, cause: key });
-	}
-	const verified = await jwtVerify(token, key).catch((e: Error) => e);
-	if (verified instanceof Error) {
-		return new InvalidTokenError({ reason: verified.message, cause: verified });
-	}
-	return verified.payload as { hardwareId: string; activated: boolean; iat: number };
-}

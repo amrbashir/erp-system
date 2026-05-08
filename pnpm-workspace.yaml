@@ -28,9 +28,12 @@ catalogs:
         "@tanstack/react-start": ^1.132.0
         "@tanstack/router-plugin": ^1.132.0
     orpc:
-        "@orpc/client": ^1.10.1
-        "@orpc/server": ^1.10.1
-        "@orpc/tanstack-query": ^1.10.1
+        "@orpc/client": ^1.14.1
+        "@orpc/contract": ^1.14.1
+        "@orpc/openapi": ^1.14.1
+        "@orpc/openapi-client": ^1.14.1
+        "@orpc/server": ^1.14.1
+        "@orpc/tanstack-query": ^1.14.1
     drizzle:
         drizzle-orm: ^0.44.7
         drizzle-kit: ^0.31.0

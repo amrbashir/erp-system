@@ -1,10 +1,12 @@
 import { createORPCClient } from "@orpc/client";
-import { RPCLink } from "@orpc/client/fetch";
-import type { RouterClient } from "@orpc/server";
-import type { AppRouter } from "@workspace/server/orpc/router";
+import type { ContractRouterClient } from "@orpc/contract";
+import { OpenAPILink } from "@orpc/openapi-client/fetch";
+import { contract } from "@workspace/server/orpc/contract";
 
 import { verifyTokenOffline as verifyToken } from "./activation-verify";
 import { ActivationMisconfiguredError, ApiError, InvalidTokenError } from "./errors";
+
+type AppContract = typeof contract;
 
 const ACTIVATION_PUBLIC_KEY = import.meta.env.VITE_ACTIVATION_PUBLIC_KEY as string | undefined;
 const ACTIVATION_API_URL = import.meta.env.VITE_ACTIVATION_API_URL as string | undefined;
@@ -17,12 +19,12 @@ export function isDesktop(): boolean {
  * Cross-origin oRPC client for the activation server (separate deployment
  * from the sidecar). Built lazily so unconfigured envs don't crash on import.
  */
-let _activationClient: RouterClient<AppRouter> | null | undefined;
-function getActivationClient(): RouterClient<AppRouter> | null {
+let _activationClient: ContractRouterClient<AppContract> | null | undefined;
+function getActivationClient(): ContractRouterClient<AppContract> | null {
 	if (_activationClient !== undefined) return _activationClient;
 	if (!ACTIVATION_API_URL) return (_activationClient = null);
-	const link = new RPCLink({ url: `${ACTIVATION_API_URL}/rpc` });
-	return (_activationClient = createORPCClient<RouterClient<AppRouter>>(link));
+	const link = new OpenAPILink(contract, { url: `${ACTIVATION_API_URL}/api` });
+	return (_activationClient = createORPCClient<ContractRouterClient<AppContract>>(link));
 }
 
 async function tauriInvoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
@@ -55,19 +57,13 @@ export async function verifyTokenOffline(
 	return verifyToken(token, ACTIVATION_PUBLIC_KEY);
 }
 
-export type ActivationCheckResult =
-	| { token: string }
-	| { status: "pending" | "revoked" | "unknown" };
-
-export async function checkActivationApi(
-	hardwareId: string,
-): Promise<ActivationMisconfiguredError | ApiError | ActivationCheckResult> {
+export async function checkActivationApi(hardwareId: string) {
 	const client = getActivationClient();
 	if (!client) return new ActivationMisconfiguredError();
 
 	const result = await client.activations.check({ hardwareId }).catch((e: Error) => e);
 	if (result instanceof Error) return new ApiError({ message: result.message });
-	return result as ActivationCheckResult;
+	return result;
 }
 
 export type ActivationState =

@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
+import { toSlug } from "@workspace/shared/slug";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -15,11 +16,7 @@ import { Field, FieldDescription, FieldGroup, FieldLabel } from "@workspace/ui/c
 import { Input } from "@workspace/ui/components/input";
 import { useState } from "react";
 
-import { isDesktop } from "@/lib/activation";
 import { orpc } from "@/lib/orpc";
-import { toSlug } from "@/lib/slug";
-
-const CURRENT_ORG_KEY = "current_org_id";
 
 interface CreateOrgFormProps {
 	title: string;
@@ -34,8 +31,6 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 	const [slug, setSlug] = useState("");
 	const [slugEdited, setSlugEdited] = useState(false);
 	const createMutation = useMutation(orpc.orgs.create.mutationOptions());
-	const switchMutation = useMutation(orpc.orgs.switch.mutationOptions());
-	const submitting = createMutation.isPending || switchMutation.isPending;
 
 	function handleNameChange(value: string) {
 		setName(value);
@@ -62,18 +57,11 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 			return;
 		}
 
-		if (isDesktop()) {
-			localStorage.setItem(CURRENT_ORG_KEY, org.id);
-		} else {
-			try {
-				await switchMutation.mutateAsync({ orgId: org.id });
-			} catch (err) {
-				setError(err instanceof Error ? err.message : m.switch_org_failed());
-				return;
-			}
-		}
-
-		void navigate({ to: "/dashboard", reloadDocument: true });
+		void navigate({
+			to: "/org/$orgSlug",
+			params: { orgSlug: org.slug },
+			reloadDocument: true,
+		});
 	}
 
 	return (
@@ -131,8 +119,8 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 							</Field>
 						</FieldGroup>
 
-						<Button type="submit" disabled={submitting}>
-							{submitting ? m.create_org_submitting() : m.create_org_submit()}
+						<Button type="submit" disabled={createMutation.isPending}>
+							{createMutation.isPending ? m.create_org_submitting() : m.create_org_submit()}
 						</Button>
 					</CardContent>
 					{onCancel && (

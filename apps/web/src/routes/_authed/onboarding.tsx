@@ -6,7 +6,7 @@ import { CreateOrgForm } from "@/components/create-org-form";
 export const Route = createFileRoute("/_authed/onboarding")({
 	beforeLoad: async ({ context }) => {
 		if (context.orgs.length > 0) {
-			throw redirect({ to: "/dashboard" });
+			throw redirect({ to: "/" });
 		}
 	},
 	component: OnboardingPage,

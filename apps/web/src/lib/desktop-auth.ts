@@ -12,19 +12,10 @@ export async function desktopSetup(input: {
 	email: string;
 	password: string;
 	name: string;
-}): Promise<{
-	token: string;
-	user: { id: string; name: string; email: string };
-	org: { id: string; name: string; slug: string };
-}> {
+}): Promise<void> {
 	const data = await client.setup.run(input).catch((e: Error) => e);
 	if (data instanceof Error) throw new ApiError({ message: data.message });
 	if (data.token) storeToken(data.token);
-	return data as {
-		token: string;
-		user: { id: string; name: string; email: string };
-		org: { id: string; name: string; slug: string };
-	};
 }
 
 /** Lightweight probe: does any user exist? Used by the desktop bootstrap. */

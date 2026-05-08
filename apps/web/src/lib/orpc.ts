@@ -1,71 +1,45 @@
 import { createORPCClient } from "@orpc/client";
-import { RPCLink } from "@orpc/client/fetch";
-import type { RouterClient } from "@orpc/server";
+import type { ContractRouterClient } from "@orpc/contract";
+import { OpenAPILink } from "@orpc/openapi-client/fetch";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
-import type { AppRouter } from "@workspace/server/orpc/router";
+import { createIsomorphicFn } from "@tanstack/react-start";
+import { contract } from "@workspace/server/orpc/contract";
 
 import { isDesktop } from "./activation";
 import { getStoredToken } from "./api-fetch";
+import { createServerClient } from "./orpc.server";
 import { SIDECAR_URL } from "./sidecar";
+
+type AppContract = typeof contract;
 
 /**
  * Browser-side link.
- *  - web: same-origin `/rpc` (cookies travel for free)
- *  - desktop: sidecar URL + Bearer token + X-Org-Id from localStorage
+ *  - web: same-origin `/api` (cookies travel for free)
+ *  - desktop: sidecar URL + Bearer token (org scope is in the URL path)
+ *
+ * `OpenAPILink` needs the contract at runtime to look up each procedure's
+ * REST method + path — that's why we import the browser-safe contract
+ * module rather than the server router.
  */
-function createBrowserClient(): RouterClient<AppRouter> {
-	const link = new RPCLink({
-		url: () => (isDesktop() ? `${SIDECAR_URL}/rpc` : `${window.location.origin}/rpc`),
+function createBrowserClient(): ContractRouterClient<AppContract> {
+	const link = new OpenAPILink(contract, {
+		url: () => (isDesktop() ? `${SIDECAR_URL}/api` : `${window.location.origin}/api`),
 		headers: () => {
 			if (!isDesktop()) return {};
 			const token = getStoredToken();
-			const orgId =
-				typeof localStorage === "undefined" ? null : localStorage.getItem("current_org_id");
-			const h: Record<string, string> = {};
-			if (token) h.Authorization = `Bearer ${token}`;
-			if (orgId) h["X-Org-Id"] = orgId;
-			return h;
+			return token ? { Authorization: `Bearer ${token}` } : {};
 		},
 	});
-	return createORPCClient(link);
+	return createORPCClient<ContractRouterClient<AppContract>>(link);
 }
 
-/**
- * SSR-side client: dispatches procedures in-process via `createRouterClient`
- * — no HTTP round-trip. Reads the current Request from TanStack Start so
- * middleware can resolve session/cookies.
- *
- * The deep proxy defers the dynamic imports until the first procedure call
- * (any depth: `client.ping`, `client.orgs.list`, …) so server-only modules
- * never reach the browser bundle.
- */
-function createServerClient(): RouterClient<AppRouter> {
-	type AnyFn = (...args: unknown[]) => unknown;
-	type Nested = { [k: string]: AnyFn | Nested };
+// The Start compiler rewrites this whole chain to just the per-env impl, so
+// in the client bundle the `createServerClient` reference (and its `.server.ts`
+// module) are statically eliminated — passing import-protection cleanly.
+const getClient = createIsomorphicFn()
+	.server(() => createServerClient())
+	.client(() => createBrowserClient());
 
-	function deepProxy(path: string[]): unknown {
-		const fn = () => {};
-		return new Proxy(fn, {
-			get(_t, p) {
-				if (typeof p === "symbol") return undefined;
-				if (p === "then") return undefined;
-				return deepProxy([...path, p]);
-			},
-			apply: async (_t, _thisArg, args) => {
-				const [{ getRequest }, { createSSRClient }] = await Promise.all([
-					import("@tanstack/react-start/server"),
-					import("@workspace/server/orpc/server-client"),
-				]);
-				let target: Nested = createSSRClient(getRequest()) as unknown as Nested;
-				for (const seg of path.slice(0, -1)) target = target[seg] as Nested;
-				return (target[path[path.length - 1]] as AnyFn)(...args);
-			},
-		});
-	}
-	return deepProxy([]) as RouterClient<AppRouter>;
-}
-
-export const client: RouterClient<AppRouter> =
-	typeof window === "undefined" ? createServerClient() : createBrowserClient();
+export const client: ContractRouterClient<AppContract> = getClient();
 
 export const orpc = createTanstackQueryUtils(client);

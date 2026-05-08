@@ -18,29 +18,25 @@ export function clearToken() {
 	localStorage.removeItem(TOKEN_KEY);
 }
 
-function getCurrentOrgId(): string | null {
-	if (typeof localStorage === "undefined") return null;
-	return localStorage.getItem("current_org_id");
-}
-
 type HeaderRecord = Record<string, string>;
 
 /**
  * Unified fetch helper:
- *  - web: same-origin, cookies travel automatically (incl. current_org_id)
- *  - desktop: prepends sidecar URL, attaches Authorization: Bearer + X-Org-Id headers
+ *  - web: same-origin, cookies travel automatically
+ *  - desktop: prepends sidecar URL, attaches Authorization: Bearer
+ *
+ * Org scope rides in the URL path (`/orgs/{orgSlug}/…`), so no header is
+ * needed for it.
  */
 export async function apiFetch(path: string, init?: RequestInit) {
 	const extra = init?.headers as HeaderRecord | undefined;
 	if (isDesktop()) {
 		const token = getStoredToken();
-		const orgId = getCurrentOrgId();
 		return fetch(`${SIDECAR_URL}${path}`, {
 			...init,
 			headers: {
 				"Content-Type": "application/json",
 				...(token ? { Authorization: `Bearer ${token}` } : {}),
-				...(orgId ? { "X-Org-Id": orgId } : {}),
 				...extra,
 			},
 		});

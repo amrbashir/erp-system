@@ -1,19 +1,10 @@
+import { InvalidSlugError } from "@workspace/shared/errors";
+import { toSlug, validateSlug } from "@workspace/shared/slug";
 import emailValidator from "email-validator";
-import * as z from "zod";
 
-import { pub } from "../orpc/base.js";
-import { rateLimited } from "../orpc/middleware.js";
+import { pub, rateLimited } from "../orpc/middleware.js";
 import { unwrap } from "../orpc/unwrap.js";
-import { InvalidEmailError, InvalidSlugError } from "../shared/errors.js";
-import { toSlug, validateSlug } from "../shared/slug.js";
-
-const runInput = z.object({
-	email: z.string().min(1),
-	password: z.string().min(1),
-	name: z.string().min(1),
-	orgName: z.string().min(1),
-	slug: z.string().optional(),
-});
+import { InvalidEmailError } from "../shared/errors.js";
 
 // First-run-only: 5 per hour per IP is generous for legitimate use,
 // hostile to brute-force/spam.
@@ -24,16 +15,16 @@ const runLimit = rateLimited({ window: 60 * 60_000, max: 5 });
  * point of this surface is that no user/session exists yet.
  *
  * `run` validates email + uses the explicit slug if provided (the
- * onboarding form lets the user edit it for the future `/<slug>/...`
+ * onboarding form lets the user edit it for the eventual `/org/<slug>/...`
  * URL). Falls back to deriving from `orgName` for backwards compat.
  */
 export const setupRouter = {
-	isComplete: pub.handler(async ({ context }) => {
+	isComplete: pub.setup.isComplete.handler(async ({ context }) => {
 		const setupComplete = await context.setupService.isComplete();
 		return { setupComplete };
 	}),
 
-	run: runLimit.input(runInput).handler(async ({ context, input }) => {
+	run: pub.setup.run.use(runLimit).handler(async ({ context, input }) => {
 		if (!emailValidator.validate(input.email)) throw new InvalidEmailError();
 
 		const slug = input.slug ?? toSlug(input.orgName);

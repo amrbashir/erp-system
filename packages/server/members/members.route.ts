@@ -1,38 +1,19 @@
-import * as z from "zod";
-
-import { orgScoped } from "../orpc/middleware.js";
+import { authed, orgResolver } from "../orpc/middleware.js";
 import { unwrap } from "../orpc/unwrap.js";
 import { NoPermissionError, SelfRemovalError } from "../shared/errors.js";
 
-const roleEnum = z.enum(["owner", "admin", "member"]);
-
-const addInput = z.object({
-	email: z.email(),
-	role: roleEnum,
-});
-
-const updateRoleInput = z.object({
-	memberId: z.uuid(),
-	role: roleEnum,
-});
-
-const removeInput = z.object({
-	memberId: z.uuid(),
-});
-
-const transferInput = z.object({
-	targetMemberId: z.uuid(),
-	newActorRole: z.enum(["admin", "member"]),
-});
+// Every entry under `members` carries `{orgSlug}` in the contract input,
+// so applying `orgResolver` to the whole sub-router is safe and uniform.
+const m = authed.members.use(orgResolver);
 
 /**
- * Members procedures. All `orgScoped`, so context has `orgId`, `membership`,
- * `session`. Audit writes happen at the procedure boundary — the service
+ * Members procedures. Org-scoped — context has `orgId`, `membership`,
+ * `session`. Audit writes happen at the procedure boundary; the service
  * tier is single-table by design.
  */
 export const membersRouter = {
 	/** Combined snapshot the UI table renders in one pass. */
-	list: orgScoped.handler(async ({ context }) => {
+	list: m.list.handler(async ({ context }) => {
 		const [members, invitations] = await Promise.all([
 			context.membersService.list(context.orgId),
 			context.invitationsService.list(context.orgId),
@@ -48,7 +29,7 @@ export const membersRouter = {
 	 *  - existing user → membership row + clear stale invites
 	 *  - unknown email → pending invitation, consumed on signup
 	 */
-	add: orgScoped.input(addInput).handler(async ({ context, input }) => {
+	add: m.add.handler(async ({ context, input }) => {
 		const actorRole = context.membership.role as "owner" | "admin" | "member";
 		if (actorRole === "member") {
 			throw new NoPermissionError({ reason: "No permission to add members" });
@@ -78,7 +59,7 @@ export const membersRouter = {
 				targetId: member.id,
 				metadata: { role: input.role, email: input.email },
 			});
-			return { kind: "member" as const, member };
+			return;
 		}
 
 		const invitation = unwrap(
@@ -97,11 +78,10 @@ export const membersRouter = {
 			targetId: invitation.id,
 			metadata: { role: input.role, email: input.email },
 		});
-		return { kind: "invitation" as const, invitation };
 	}),
 
-	updateRole: orgScoped.input(updateRoleInput).handler(async ({ context, input }) => {
-		const updated = unwrap(
+	updateRole: m.updateRole.handler(async ({ context, input }) => {
+		unwrap(
 			await context.membersService.updateRole({
 				memberId: input.memberId,
 				orgId: context.orgId,
@@ -118,10 +98,9 @@ export const membersRouter = {
 			targetId: input.memberId,
 			metadata: { newRole: input.role },
 		});
-		return updated;
 	}),
 
-	remove: orgScoped.input(removeInput).handler(async ({ context, input }) => {
+	remove: m.remove.handler(async ({ context, input }) => {
 		// self-removal blocked at procedure level (uses session/membership)
 		if (input.memberId === context.membership.id) throw new SelfRemovalError();
 
@@ -139,15 +118,14 @@ export const membersRouter = {
 			targetType: "member",
 			targetId: input.memberId,
 		});
-		return { ok: true as const };
 	}),
 
-	transferOwnership: orgScoped.input(transferInput).handler(async ({ context, input }) => {
+	transferOwnership: m.transferOwnership.handler(async ({ context, input }) => {
 		if (context.membership.role !== "owner") {
 			throw new NoPermissionError({ reason: "Only owners can transfer ownership" });
 		}
 
-		const result = unwrap(
+		unwrap(
 			await context.membersService.transferOwnership({
 				orgId: context.orgId,
 				actorMemberId: context.membership.id,
@@ -163,6 +141,5 @@ export const membersRouter = {
 			targetId: input.targetMemberId,
 			metadata: { newActorRole: input.newActorRole },
 		});
-		return result;
 	}),
 };

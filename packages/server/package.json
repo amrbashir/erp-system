@@ -20,13 +20,14 @@
 		"build:desktop": "DEPLOY_TARGET=desktop nitro build"
 	},
 	"dependencies": {
+		"@orpc/contract": "catalog:orpc",
+		"@orpc/openapi": "catalog:orpc",
 		"@orpc/server": "catalog:orpc",
 		"@workspace/db": "workspace:*",
+		"@workspace/shared": "workspace:*",
 		"better-auth": "catalog:",
-		"cookie-es": "^2.0.0",
 		"drizzle-orm": "catalog:drizzle",
 		"email-validator": "^2.0.4",
-		"errore": "^0.14.1",
 		"h3": "latest",
 		"jose": "catalog:",
 		"nitro": "catalog:",

@@ -13,6 +13,7 @@ import { Field, FieldGroup, FieldLabel } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
 import { useState } from "react";
 
+import { AppHeader } from "@/components/app-header";
 import { signUp } from "@/lib/auth-client";
 import { orpc } from "@/lib/orpc";
 import { safeRedirect } from "@/lib/safe-redirect";
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/signup")({
 	}),
 	beforeLoad: async ({ context }) => {
 		const session = await context.queryClient.ensureQueryData(orpc.session.get.queryOptions());
-		if (session) throw redirect({ to: "/dashboard" });
+		if (session) throw redirect({ to: "/" });
 	},
 	component: SignupPage,
 });
@@ -56,80 +57,83 @@ function SignupPage() {
 		// invitations table is consumed in user.create.after; if the email had
 		// pending invites, the user already has org memberships. otherwise,
 		// _authed will bounce to /onboarding.
-		const dest = safeRedirect(redirectTo, "/dashboard");
+		const dest = safeRedirect(redirectTo);
 		void navigate({ to: dest, reloadDocument: true });
 	}
 
 	return (
-		<div className="flex min-h-svh items-center justify-center p-6">
-			<Card className="w-full max-w-sm">
-				<CardHeader>
-					<CardTitle>{m.signup_heading()}</CardTitle>
-				</CardHeader>
-				<form onSubmit={handleSubmit}>
-					<CardContent className="flex flex-col gap-4">
-						{error && (
-							<Alert variant="destructive">
-								<AlertDescription>{error}</AlertDescription>
-							</Alert>
-						)}
+		<div className="flex min-h-svh flex-col">
+			<AppHeader />
+			<div className="flex flex-1 items-center justify-center p-6">
+				<Card className="w-full max-w-sm">
+					<CardHeader>
+						<CardTitle>{m.signup_heading()}</CardTitle>
+					</CardHeader>
+					<form onSubmit={handleSubmit}>
+						<CardContent className="flex flex-col gap-4">
+							{error && (
+								<Alert variant="destructive">
+									<AlertDescription>{error}</AlertDescription>
+								</Alert>
+							)}
 
-						<FieldGroup>
-							<Field>
-								<FieldLabel htmlFor="name">{m.label_name()}</FieldLabel>
-								<Input
-									id="name"
-									name="name"
-									type="text"
-									placeholder={m.label_name()}
-									required
-								/>
-							</Field>
-							<Field>
-								<FieldLabel htmlFor="email">{m.label_email()}</FieldLabel>
-								<Input
-									id="email"
-									name="email"
-									type="email"
-									placeholder={m.label_email()}
-									required
-								/>
-							</Field>
-							<Field>
-								<FieldLabel htmlFor="password">{m.label_password()}</FieldLabel>
-								<Input
-									id="password"
-									name="password"
-									type="password"
-									placeholder={m.label_password()}
-									required
-									minLength={6}
-								/>
-							</Field>
-						</FieldGroup>
+							<FieldGroup>
+								<Field>
+									<FieldLabel htmlFor="name">{m.label_name()}</FieldLabel>
+									<Input
+										id="name"
+										name="name"
+										type="text"
+										placeholder={m.label_name()}
+										required
+									/>
+								</Field>
+								<Field>
+									<FieldLabel htmlFor="email">{m.label_email()}</FieldLabel>
+									<Input
+										id="email"
+										name="email"
+										type="email"
+										placeholder={m.label_email()}
+										required
+									/>
+								</Field>
+								<Field>
+									<FieldLabel htmlFor="password">{m.label_password()}</FieldLabel>
+									<Input
+										id="password"
+										name="password"
+										type="password"
+										placeholder={m.label_password()}
+										required
+										minLength={6}
+									/>
+								</Field>
+							</FieldGroup>
 
-						<Button type="submit" disabled={loading}>
-							{loading ? m.signup_submitting() : m.signup_submit()}
+							<Button type="submit" disabled={loading}>
+								{loading ? m.signup_submitting() : m.signup_submit()}
+							</Button>
+						</CardContent>
+					</form>
+					<CardFooter className="justify-center">
+						<span className="text-muted-foreground">{m.signup_has_account()}</span>
+						<Button
+							variant="link"
+							size="sm"
+							render={
+								<Link
+									to="/login"
+									search={redirectTo ? { redirect: redirectTo } : undefined}
+								/>
+							}
+							nativeButton={false}
+						>
+							{m.signup_login_link()}
 						</Button>
-					</CardContent>
-				</form>
-				<CardFooter className="justify-center">
-					<span className="text-muted-foreground">{m.signup_has_account()}</span>
-					<Button
-						variant="link"
-						size="sm"
-						render={
-							<Link
-								to="/login"
-								search={redirectTo ? { redirect: redirectTo } : undefined}
-							/>
-						}
-						nativeButton={false}
-					>
-						{m.signup_login_link()}
-					</Button>
-				</CardFooter>
-			</Card>
+					</CardFooter>
+				</Card>
+			</div>
 		</div>
 	);
 }

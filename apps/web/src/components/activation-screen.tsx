@@ -64,8 +64,7 @@ export function ActivationScreen({
 
 		setStatus("error");
 		if (result.status === "pending") setError(m.activation_pending());
-		else if (result.status === "revoked") setError(m.activation_revoked());
-		else setError(m.activation_unknown());
+		else setError(m.activation_revoked());
 	}
 
 	return (

@@ -12,11 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthedRouteImport } from './routes/_authed'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthedUsersRouteImport } from './routes/_authed/users'
+import { Route as AuthedIndexRouteImport } from './routes/_authed/index'
 import { Route as AuthedOnboardingRouteImport } from './routes/_authed/onboarding'
 import { Route as AuthedNewOrgRouteImport } from './routes/_authed/new-org'
-import { Route as AuthedDashboardRouteImport } from './routes/_authed/dashboard'
+import { Route as AuthedOrgOrgSlugRouteImport } from './routes/_authed/org/$orgSlug'
+import { Route as AuthedOrgOrgSlugIndexRouteImport } from './routes/_authed/org/$orgSlug/index'
+import { Route as AuthedOrgOrgSlugMembersRouteImport } from './routes/_authed/org/$orgSlug/members'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -32,14 +33,9 @@ const AuthedRoute = AuthedRouteImport.update({
   id: '/_authed',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const AuthedIndexRoute = AuthedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthedUsersRoute = AuthedUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
   getParentRoute: () => AuthedRoute,
 } as any)
 const AuthedOnboardingRoute = AuthedOnboardingRouteImport.update({
@@ -52,40 +48,52 @@ const AuthedNewOrgRoute = AuthedNewOrgRouteImport.update({
   path: '/new-org',
   getParentRoute: () => AuthedRoute,
 } as any)
-const AuthedDashboardRoute = AuthedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AuthedOrgOrgSlugRoute = AuthedOrgOrgSlugRouteImport.update({
+  id: '/org/$orgSlug',
+  path: '/org/$orgSlug',
   getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedOrgOrgSlugIndexRoute = AuthedOrgOrgSlugIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthedOrgOrgSlugRoute,
+} as any)
+const AuthedOrgOrgSlugMembersRoute = AuthedOrgOrgSlugMembersRouteImport.update({
+  id: '/members',
+  path: '/members',
+  getParentRoute: () => AuthedOrgOrgSlugRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AuthedIndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
-  '/dashboard': typeof AuthedDashboardRoute
   '/new-org': typeof AuthedNewOrgRoute
   '/onboarding': typeof AuthedOnboardingRoute
-  '/users': typeof AuthedUsersRoute
+  '/org/$orgSlug': typeof AuthedOrgOrgSlugRouteWithChildren
+  '/org/$orgSlug/members': typeof AuthedOrgOrgSlugMembersRoute
+  '/org/$orgSlug/': typeof AuthedOrgOrgSlugIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
-  '/dashboard': typeof AuthedDashboardRoute
   '/new-org': typeof AuthedNewOrgRoute
   '/onboarding': typeof AuthedOnboardingRoute
-  '/users': typeof AuthedUsersRoute
+  '/': typeof AuthedIndexRoute
+  '/org/$orgSlug/members': typeof AuthedOrgOrgSlugMembersRoute
+  '/org/$orgSlug': typeof AuthedOrgOrgSlugIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
   '/_authed': typeof AuthedRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
-  '/_authed/dashboard': typeof AuthedDashboardRoute
   '/_authed/new-org': typeof AuthedNewOrgRoute
   '/_authed/onboarding': typeof AuthedOnboardingRoute
-  '/_authed/users': typeof AuthedUsersRoute
+  '/_authed/': typeof AuthedIndexRoute
+  '/_authed/org/$orgSlug': typeof AuthedOrgOrgSlugRouteWithChildren
+  '/_authed/org/$orgSlug/members': typeof AuthedOrgOrgSlugMembersRoute
+  '/_authed/org/$orgSlug/': typeof AuthedOrgOrgSlugIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -93,33 +101,34 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
-    | '/dashboard'
     | '/new-org'
     | '/onboarding'
-    | '/users'
+    | '/org/$orgSlug'
+    | '/org/$orgSlug/members'
+    | '/org/$orgSlug/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/login'
     | '/signup'
-    | '/dashboard'
     | '/new-org'
     | '/onboarding'
-    | '/users'
+    | '/'
+    | '/org/$orgSlug/members'
+    | '/org/$orgSlug'
   id:
     | '__root__'
-    | '/'
     | '/_authed'
     | '/login'
     | '/signup'
-    | '/_authed/dashboard'
     | '/_authed/new-org'
     | '/_authed/onboarding'
-    | '/_authed/users'
+    | '/_authed/'
+    | '/_authed/org/$orgSlug'
+    | '/_authed/org/$orgSlug/members'
+    | '/_authed/org/$orgSlug/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   AuthedRoute: typeof AuthedRouteWithChildren
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
@@ -148,18 +157,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_authed/': {
+      id: '/_authed/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authed/users': {
-      id: '/_authed/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof AuthedUsersRouteImport
+      preLoaderRoute: typeof AuthedIndexRouteImport
       parentRoute: typeof AuthedRoute
     }
     '/_authed/onboarding': {
@@ -176,35 +178,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedNewOrgRouteImport
       parentRoute: typeof AuthedRoute
     }
-    '/_authed/dashboard': {
-      id: '/_authed/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthedDashboardRouteImport
+    '/_authed/org/$orgSlug': {
+      id: '/_authed/org/$orgSlug'
+      path: '/org/$orgSlug'
+      fullPath: '/org/$orgSlug'
+      preLoaderRoute: typeof AuthedOrgOrgSlugRouteImport
       parentRoute: typeof AuthedRoute
+    }
+    '/_authed/org/$orgSlug/': {
+      id: '/_authed/org/$orgSlug/'
+      path: '/'
+      fullPath: '/org/$orgSlug/'
+      preLoaderRoute: typeof AuthedOrgOrgSlugIndexRouteImport
+      parentRoute: typeof AuthedOrgOrgSlugRoute
+    }
+    '/_authed/org/$orgSlug/members': {
+      id: '/_authed/org/$orgSlug/members'
+      path: '/members'
+      fullPath: '/org/$orgSlug/members'
+      preLoaderRoute: typeof AuthedOrgOrgSlugMembersRouteImport
+      parentRoute: typeof AuthedOrgOrgSlugRoute
     }
   }
 }
 
+interface AuthedOrgOrgSlugRouteChildren {
+  AuthedOrgOrgSlugMembersRoute: typeof AuthedOrgOrgSlugMembersRoute
+  AuthedOrgOrgSlugIndexRoute: typeof AuthedOrgOrgSlugIndexRoute
+}
+
+const AuthedOrgOrgSlugRouteChildren: AuthedOrgOrgSlugRouteChildren = {
+  AuthedOrgOrgSlugMembersRoute: AuthedOrgOrgSlugMembersRoute,
+  AuthedOrgOrgSlugIndexRoute: AuthedOrgOrgSlugIndexRoute,
+}
+
+const AuthedOrgOrgSlugRouteWithChildren =
+  AuthedOrgOrgSlugRoute._addFileChildren(AuthedOrgOrgSlugRouteChildren)
+
 interface AuthedRouteChildren {
-  AuthedDashboardRoute: typeof AuthedDashboardRoute
   AuthedNewOrgRoute: typeof AuthedNewOrgRoute
   AuthedOnboardingRoute: typeof AuthedOnboardingRoute
-  AuthedUsersRoute: typeof AuthedUsersRoute
+  AuthedIndexRoute: typeof AuthedIndexRoute
+  AuthedOrgOrgSlugRoute: typeof AuthedOrgOrgSlugRouteWithChildren
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
-  AuthedDashboardRoute: AuthedDashboardRoute,
   AuthedNewOrgRoute: AuthedNewOrgRoute,
   AuthedOnboardingRoute: AuthedOnboardingRoute,
-  AuthedUsersRoute: AuthedUsersRoute,
+  AuthedIndexRoute: AuthedIndexRoute,
+  AuthedOrgOrgSlugRoute: AuthedOrgOrgSlugRouteWithChildren,
 }
 
 const AuthedRouteWithChildren =
   AuthedRoute._addFileChildren(AuthedRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   AuthedRoute: AuthedRouteWithChildren,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,

@@ -59,18 +59,22 @@ type Invitation = {
 
 type Row = Member | Invitation;
 
-export const Route = createFileRoute("/_authed/users")({
-	component: UsersPage,
+export const Route = createFileRoute("/_authed/org/$orgSlug/members")({
+	component: MembersPage,
 });
 
-function UsersPage() {
-	const { orgs, currentOrgId } = Route.useRouteContext();
-	const currentOrg = orgs.find((o) => o.id === currentOrgId) ?? orgs[0];
-	const actorRole = currentOrg?.role as "owner" | "admin" | "member";
+function MembersPage() {
+	const { orgSlug } = Route.useParams();
+	const { session } = Route.useRouteContext();
 
-	const { data, isLoading } = useQuery(orpc.members.list.queryOptions());
-	const members = (data?.members ?? []) as Member[];
-	const invitations = (data?.invitations ?? []) as Invitation[];
+	const { data, isLoading } = useQuery(orpc.members.list.queryOptions({ input: { orgSlug } }));
+	const members = data?.members ?? [];
+	const invitations = data?.invitations ?? [];
+
+	// Derived from members.list rather than the org list — to be replaced with
+	// a proper capabilities procedure later. Defaults to "member" while loading
+	// (zero manage perms) so the form/actions stay hidden until role is known.
+	const actorRole = members.find((m) => m.userId === session.user.id)?.role ?? "member";
 
 	const [error, setError] = useState("");
 	const [showForm, setShowForm] = useState(false);
@@ -87,10 +91,10 @@ function UsersPage() {
 	return (
 		<div className="flex flex-col gap-6 p-6">
 			<div className="flex items-center justify-between">
-				<h1 className="text-lg font-medium">{m.users_heading()}</h1>
+				<h1 className="text-lg font-medium">{m.members_heading()}</h1>
 				{canManage && (
 					<Button size="sm" onClick={() => setShowForm(!showForm)}>
-						{showForm ? m.cancel() : m.users_add()}
+						{showForm ? m.cancel() : m.members_add()}
 					</Button>
 				)}
 			</div>
@@ -102,7 +106,8 @@ function UsersPage() {
 			)}
 
 			{showForm && canManage && (
-				<AddUserForm
+				<AddMemberForm
+					orgSlug={orgSlug}
 					actorRole={actorRole}
 					onDone={() => setShowForm(false)}
 					onError={setError}
@@ -113,6 +118,7 @@ function UsersPage() {
 				<MemberListSkeleton canManage={canManage} />
 			) : (
 				<MemberList
+					orgSlug={orgSlug}
 					rows={rows}
 					actorRole={actorRole}
 					pendingFirst={pendingFirst}
@@ -124,11 +130,13 @@ function UsersPage() {
 	);
 }
 
-function AddUserForm({
+function AddMemberForm({
+	orgSlug,
 	actorRole,
 	onDone,
 	onError,
 }: {
+	orgSlug: string;
 	actorRole: "owner" | "admin";
 	onDone: () => void;
 	onError: (msg: string) => void;
@@ -138,7 +146,9 @@ function AddUserForm({
 	const addMutation = useMutation(
 		orpc.members.add.mutationOptions({
 			onSuccess: () => {
-				void queryClient.invalidateQueries({ queryKey: orpc.members.list.queryKey() });
+				void queryClient.invalidateQueries({
+					queryKey: orpc.members.list.queryKey({ input: { orgSlug } }),
+				});
 			},
 		}),
 	);
@@ -151,10 +161,10 @@ function AddUserForm({
 		const email = (form.get("email") as string).trim();
 
 		try {
-			await addMutation.mutateAsync({ email, role });
+			await addMutation.mutateAsync({ orgSlug, email, role });
 			onDone();
 		} catch (err) {
-			onError(err instanceof Error ? err.message : m.users_add_failed());
+			onError(err instanceof Error ? err.message : m.members_add_failed());
 		}
 	}
 
@@ -163,9 +173,9 @@ function AddUserForm({
 			<FieldGroup>
 				<div className="flex gap-3">
 					<Field className="flex-1">
-						<FieldLabel htmlFor="add-user-email">{m.label_email()}</FieldLabel>
+						<FieldLabel htmlFor="add-member-email">{m.label_email()}</FieldLabel>
 						<Input
-							id="add-user-email"
+							id="add-member-email"
 							name="email"
 							type="email"
 							placeholder={m.label_email()}
@@ -173,12 +183,12 @@ function AddUserForm({
 						/>
 					</Field>
 					<Field className="w-40">
-						<FieldLabel htmlFor="add-user-role">{m.label_role()}</FieldLabel>
+						<FieldLabel htmlFor="add-member-role">{m.label_role()}</FieldLabel>
 						<Select
 							value={role}
 							onValueChange={(v) => v && setRole(v as "owner" | "admin" | "member")}
 						>
-							<SelectTrigger id="add-user-role" className="w-full">
+							<SelectTrigger id="add-member-role" className="w-full">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -198,7 +208,7 @@ function AddUserForm({
 			</FieldGroup>
 			<div>
 				<Button type="submit" size="sm" disabled={addMutation.isPending}>
-					{addMutation.isPending ? m.users_adding() : m.users_add_submit()}
+					{addMutation.isPending ? m.members_adding() : m.members_add_submit()}
 				</Button>
 			</div>
 		</form>
@@ -214,8 +224,8 @@ function MemberListSkeleton({ canManage }: { canManage: boolean }) {
 					<TableHead>{m.label_name()}</TableHead>
 					<TableHead>{m.label_email()}</TableHead>
 					<TableHead>{m.label_role()}</TableHead>
-					<TableHead>{m.users_status()}</TableHead>
-					{canManage && <TableHead>{m.users_actions()}</TableHead>}
+					<TableHead>{m.members_status()}</TableHead>
+					{canManage && <TableHead>{m.members_actions()}</TableHead>}
 				</TableRow>
 			</TableHeader>
 			<TableBody>
@@ -234,12 +244,14 @@ function MemberListSkeleton({ canManage }: { canManage: boolean }) {
 }
 
 function MemberList({
+	orgSlug,
 	rows,
 	actorRole,
 	pendingFirst,
 	onTogglePending,
 	onError,
 }: {
+	orgSlug: string;
 	rows: Row[];
 	actorRole: "owner" | "admin" | "member";
 	pendingFirst: boolean;
@@ -254,7 +266,9 @@ function MemberList({
 	const [transferRole, setTransferRole] = useState<"admin" | "member">("admin");
 
 	const invalidateMembers = () =>
-		queryClient.invalidateQueries({ queryKey: orpc.members.list.queryKey() });
+		queryClient.invalidateQueries({
+			queryKey: orpc.members.list.queryKey({ input: { orgSlug } }),
+		});
 
 	const updateRoleMutation = useMutation(
 		orpc.members.updateRole.mutationOptions({ onSuccess: invalidateMembers }),
@@ -274,11 +288,12 @@ function MemberList({
 		setPendingRoleChanges((p) => new Set(p).add(memberId));
 		try {
 			await updateRoleMutation.mutateAsync({
+				orgSlug,
 				memberId,
 				role: newRole as "owner" | "admin" | "member",
 			});
 		} catch (err) {
-			onError(err instanceof Error ? err.message : m.users_role_update_failed());
+			onError(err instanceof Error ? err.message : m.members_role_update_failed());
 		} finally {
 			setPendingRoleChanges((p) => {
 				const n = new Set(p);
@@ -292,9 +307,9 @@ function MemberList({
 		onError("");
 		setPendingRemovals((p) => new Set(p).add(memberId));
 		try {
-			await removeMutation.mutateAsync({ memberId });
+			await removeMutation.mutateAsync({ orgSlug, memberId });
 		} catch (err) {
-			onError(err instanceof Error ? err.message : m.users_remove_failed());
+			onError(err instanceof Error ? err.message : m.members_remove_failed());
 		} finally {
 			setPendingRemovals((p) => {
 				const n = new Set(p);
@@ -308,9 +323,9 @@ function MemberList({
 		onError("");
 		setPendingRemovals((p) => new Set(p).add(invitationId));
 		try {
-			await revokeMutation.mutateAsync({ invitationId });
+			await revokeMutation.mutateAsync({ orgSlug, invitationId });
 		} catch (err) {
-			onError(err instanceof Error ? err.message : m.users_remove_failed());
+			onError(err instanceof Error ? err.message : m.members_remove_failed());
 		} finally {
 			setPendingRemovals((p) => {
 				const n = new Set(p);
@@ -325,12 +340,13 @@ function MemberList({
 		onError("");
 		try {
 			await transferMutation.mutateAsync({
+				orgSlug,
 				targetMemberId: transferTarget.id,
 				newActorRole: transferRole,
 			});
 			setTransferTarget(null);
 		} catch (err) {
-			onError(err instanceof Error ? err.message : m.users_transfer_failed());
+			onError(err instanceof Error ? err.message : m.members_transfer_failed());
 		}
 	}
 
@@ -338,7 +354,7 @@ function MemberList({
 		return (
 			<Empty>
 				<EmptyHeader>
-					<EmptyTitle>{m.users_no_members()}</EmptyTitle>
+					<EmptyTitle>{m.members_empty()}</EmptyTitle>
 				</EmptyHeader>
 			</Empty>
 		);
@@ -354,10 +370,10 @@ function MemberList({
 			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>{m.users_transfer()}</AlertDialogTitle>
+						<AlertDialogTitle>{m.members_transfer()}</AlertDialogTitle>
 						<AlertDialogDescription>
 							{transferTarget &&
-								m.users_transfer_confirm({ name: transferTarget.userName })}
+								m.members_transfer_confirm({ name: transferTarget.userName })}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<FieldGroup>
@@ -388,8 +404,8 @@ function MemberList({
 							disabled={transferMutation.isPending}
 						>
 							{transferMutation.isPending
-								? m.users_transferring()
-								: m.users_confirm_transfer()}
+								? m.members_transferring()
+								: m.members_confirm_transfer()}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>
@@ -405,9 +421,9 @@ function MemberList({
 								variant="ghost"
 								size="sm"
 								onClick={onTogglePending}
-								title={m.users_sort_pending()}
+								title={m.members_sort_pending()}
 							>
-								{m.users_status()}
+								{m.members_status()}
 								{pendingFirst ? (
 									<ArrowUpIcon data-icon="inline-end" />
 								) : (
@@ -415,7 +431,7 @@ function MemberList({
 								)}
 							</Button>
 						</TableHead>
-						{canManage && <TableHead>{m.users_actions()}</TableHead>}
+						{canManage && <TableHead>{m.members_actions()}</TableHead>}
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -472,7 +488,7 @@ function MemberRow({
 			<TableCell>{member.userName}</TableCell>
 			<TableCell>{member.userEmail}</TableCell>
 			<TableCell>
-				{canManage && (actorRole === "owner" || member.role === "member") ? (
+				{canManage && actorRole === "owner" ? (
 					<Select
 						value={member.role}
 						onValueChange={(v) => v && onRoleChange(member.id, v)}
@@ -484,12 +500,8 @@ function MemberRow({
 						<SelectContent>
 							<SelectGroup>
 								<SelectItem value="member">{m.role_member()}</SelectItem>
-								{actorRole === "owner" && (
-									<>
-										<SelectItem value="admin">{m.role_admin()}</SelectItem>
-										<SelectItem value="owner">{m.role_owner()}</SelectItem>
-									</>
-								)}
+								<SelectItem value="admin">{m.role_admin()}</SelectItem>
+								<SelectItem value="owner">{m.role_owner()}</SelectItem>
 							</SelectGroup>
 						</SelectContent>
 					</Select>
@@ -502,14 +514,14 @@ function MemberRow({
 				)}
 			</TableCell>
 			<TableCell>
-				<Badge variant="secondary">{m.users_status_active()}</Badge>
+				<Badge variant="secondary">{m.members_status_active()}</Badge>
 			</TableCell>
 			{canManage && (
 				<TableCell>
 					<div className="flex gap-1">
 						{actorRole === "owner" && member.role !== "owner" && (
 							<Button variant="ghost" size="sm" onClick={onTransfer}>
-								{m.users_transfer()}
+								{m.members_transfer()}
 							</Button>
 						)}
 						<Button
@@ -518,7 +530,7 @@ function MemberRow({
 							onClick={() => onRemove(member.id)}
 							disabled={removeSubmitting}
 						>
-							{removeSubmitting ? m.users_removing() : m.users_remove()}
+							{removeSubmitting ? m.members_removing() : m.members_remove()}
 						</Button>
 					</div>
 				</TableCell>
@@ -540,9 +552,7 @@ function InvitationRow({
 }) {
 	return (
 		<TableRow className="opacity-70">
-			<TableCell className="text-muted-foreground italic">
-				{m.users_status_pending()}
-			</TableCell>
+			<TableCell className="text-muted-foreground">—</TableCell>
 			<TableCell>{invitation.email}</TableCell>
 			<TableCell>
 				{
@@ -554,7 +564,7 @@ function InvitationRow({
 				}
 			</TableCell>
 			<TableCell>
-				<Badge variant="outline">{m.users_status_pending()}</Badge>
+				<Badge variant="outline">{m.members_status_pending()}</Badge>
 			</TableCell>
 			{canManage && (
 				<TableCell>
@@ -564,7 +574,7 @@ function InvitationRow({
 						onClick={() => onRevoke(invitation.id)}
 						disabled={removeSubmitting}
 					>
-						{removeSubmitting ? m.users_removing() : m.users_revoke()}
+						{removeSubmitting ? m.members_removing() : m.members_revoke()}
 					</Button>
 				</TableCell>
 			)}

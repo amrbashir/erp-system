@@ -1,15 +1,15 @@
 import { orgs, orgMembers } from "@workspace/db/schema";
+import { InvalidSlugError } from "@workspace/shared/errors";
+import { validateSlug } from "@workspace/shared/slug";
 import { eq, and } from "drizzle-orm";
 
 import { validateCurrency } from "../shared/currency.js";
 import type { DB } from "../shared/db.js";
 import {
-	InvalidSlugError,
 	SlugTakenError,
 	UnsupportedCurrencyError,
 	type PgErrorShape,
 } from "../shared/errors.js";
-import { validateSlug } from "../shared/slug.js";
 type Org = typeof orgs.$inferSelect;
 type OrgMember = typeof orgMembers.$inferSelect;
 
@@ -74,7 +74,6 @@ export class OrgsService {
 				name: orgs.name,
 				slug: orgs.slug,
 				defaultCurrency: orgs.defaultCurrency,
-				role: orgMembers.role,
 			})
 			.from(orgMembers)
 			.innerJoin(orgs, eq(orgMembers.orgId, orgs.id))
@@ -87,6 +86,12 @@ export class OrgsService {
 			.from(orgMembers)
 			.where(and(eq(orgMembers.userId, userId), eq(orgMembers.orgId, orgId)))
 			.limit(1);
+		return row ?? null;
+	}
+
+	/** Resolve an org by its URL slug. Source-of-truth lookup for path-scoped routes. */
+	async findBySlug(slug: string): Promise<Org | null> {
+		const [row] = await this.deps.db.select().from(orgs).where(eq(orgs.slug, slug)).limit(1);
 		return row ?? null;
 	}
 }

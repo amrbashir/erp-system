@@ -10,7 +10,8 @@
 	},
 	"dependencies": {
 		"@orpc/client": "catalog:orpc",
-		"@orpc/server": "catalog:orpc",
+		"@orpc/contract": "catalog:orpc",
+		"@orpc/openapi-client": "catalog:orpc",
 		"@orpc/tanstack-query": "catalog:orpc",
 		"@phosphor-icons/react": "catalog:",
 		"@tailwindcss/vite": "catalog:tailwind",
@@ -22,6 +23,7 @@
 		"@workspace/db": "workspace:*",
 		"@workspace/i18n": "workspace:*",
 		"@workspace/server": "workspace:*",
+		"@workspace/shared": "workspace:*",
 		"@workspace/ui": "workspace:*",
 		"better-auth": "catalog:",
 		"errore": "^0.14.1",
@@ -30,8 +32,7 @@
 		"react": "catalog:react",
 		"react-dom": "catalog:react",
 		"tailwindcss": "catalog:tailwind",
-		"vite-tsconfig-paths": "catalog:vite",
-		"zod": "catalog:"
+		"vite-tsconfig-paths": "catalog:vite"
 	},
 	"devDependencies": {
 		"@inlang/paraglide-js": "catalog:",

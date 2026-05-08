@@ -56,7 +56,7 @@ export function DesktopBootstrap({ children }: { children: React.ReactNode }) {
 			}
 
 			// activated → check whether anyone has signed up yet.
-			// login/dashboard/redirects beyond this are driven by better-auth + _authed.
+			// login/org redirects beyond this are driven by better-auth + _authed.
 			const probe = await getSetupComplete().catch((e: Error) => e);
 			if (probe instanceof Error) {
 				setState({ step: "error", message: probe.message });
@@ -92,6 +92,14 @@ export function DesktopBootstrap({ children }: { children: React.ReactNode }) {
 			<ActivationScreen
 				hardwareId={state.hardwareId}
 				onActivated={async () => {
+					// Same race as the initial path: activation-screen hits the
+					// activation server (not the sidecar), so the sidecar may
+					// still be booting when we land here.
+					const ready = await waitForSidecar();
+					if (!ready) {
+						setState({ step: "error", message: "Sidecar didn't become ready in time." });
+						return;
+					}
 					const probe = await getSetupComplete().catch((e: Error) => e);
 					if (probe instanceof Error) setState({ step: "error", message: probe.message });
 					else setState(probe.setupComplete ? { step: "ready" } : { step: "onboarding" });
