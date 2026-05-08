@@ -1,4 +1,4 @@
-import { type Middleware, implement } from "@orpc/server";
+import { implement, os } from "@orpc/server";
 
 import { auth } from "../lib/auth.js";
 import { NotOrgMemberError, RateLimitedError, UnauthorizedError } from "../shared/errors.js";
@@ -7,9 +7,6 @@ import { adminContract, contract } from "./contract.js";
 import type { AppContext } from "./context.js";
 
 type Session = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>;
-type Membership = NonNullable<
-	Awaited<ReturnType<import("../orgs/orgs.service.js").OrgsService["getMembership"]>>
->;
 
 /**
  * Contract-first oRPC builders. `implement(contract).$context<AppContext>()`
@@ -22,28 +19,24 @@ type Membership = NonNullable<
 export const pub = implement(contract).$context<AppContext>();
 export const adminPub = implement(adminContract).$context<AppContext>();
 
+// Contract-less builder used to define reusable middleware with proper
+// context typing — `os.$context<X>().middleware(...)` returns a
+// DecoratedMiddleware that any contract router with compatible context
+// can `.use()`.
+const baseMw = os.$context<AppContext>();
+const authedMw = os.$context<AppContext & { session: Session }>();
+
 /**
  * Per-IP token bucket as a middleware factory. Call once at module scope
  * (each call allocates its own bucket map) and pass to `.use()` on any
  * builder.
  */
-export function rateLimited(opts: { window: number; max: number }): Middleware<
-	AppContext,
-	Record<never, never>,
-	// biome-ignore lint/suspicious/noExplicitAny: pass-through middleware must accept any input/output
-	any,
-	// biome-ignore lint/suspicious/noExplicitAny: pass-through middleware must accept any input/output
-	any,
-	// biome-ignore lint/suspicious/noExplicitAny: error map / meta are sub-router specific
-	any,
-	// biome-ignore lint/suspicious/noExplicitAny: error map / meta are sub-router specific
-	any
-> {
+export function rateLimited(opts: { window: number; max: number }) {
 	const check = createRateLimiter(opts);
-	return async ({ context, next }) => {
+	return baseMw.middleware(async ({ context, next }) => {
 		if (!check(context.request)) throw new RateLimitedError();
 		return next();
-	};
+	});
 }
 
 /**
@@ -57,7 +50,7 @@ export const authed = pub.use(async ({ context, next }) => {
 		.getSession({ headers: context.request.headers })
 		.catch(() => null);
 	if (!session) throw new UnauthorizedError();
-	return next({ context: { ...context, session: session as Session } });
+	return next({ context: { ...context, session } });
 });
 
 export const adminAuthed = adminPub.use(async ({ context, next }) => {
@@ -65,7 +58,7 @@ export const adminAuthed = adminPub.use(async ({ context, next }) => {
 		.getSession({ headers: context.request.headers })
 		.catch(() => null);
 	if (!session) throw new UnauthorizedError();
-	return next({ context: { ...context, session: session as Session } });
+	return next({ context: { ...context, session } });
 });
 
 /**
@@ -75,23 +68,12 @@ export const adminAuthed = adminPub.use(async ({ context, next }) => {
  * merges path params into validated input before middleware runs, so
  * reading `orgSlug` from the runtime input object is safe.
  */
-export const orgResolver: Middleware<
-	AppContext & { session: Session },
-	{ orgId: string; membership: Membership },
-	// biome-ignore lint/suspicious/noExplicitAny: input shape is per-procedure; we read orgSlug at runtime
-	any,
-	// biome-ignore lint/suspicious/noExplicitAny: pass-through output
-	any,
-	// biome-ignore lint/suspicious/noExplicitAny: error map / meta are sub-router specific
-	any,
-	// biome-ignore lint/suspicious/noExplicitAny: error map / meta are sub-router specific
-	any
-> = async ({ context, next }, input) => {
+export const orgResolver = authedMw.middleware(async ({ context, next }, input) => {
 	const slug = (input as { orgSlug?: string }).orgSlug;
 	if (!slug) throw new NotOrgMemberError();
 	const org = await context.orgsService.findBySlug(slug);
 	if (!org) throw new NotOrgMemberError();
 	const membership = await context.orgsService.getMembership(context.session.user.id, org.id);
 	if (!membership) throw new NotOrgMemberError();
-	return next({ context: { orgId: org.id, membership: membership as Membership } });
-};
+	return next({ context: { orgId: org.id, membership } });
+});
