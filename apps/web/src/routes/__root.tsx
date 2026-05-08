@@ -9,9 +9,11 @@ import {
 import { getLocale, getTextDirection, m } from "@workspace/i18n";
 import { Alert, AlertDescription, AlertTitle } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
+import { NotFound } from "@workspace/ui/components/not-found";
 import { ThemeProvider, themeScript } from "@workspace/ui/components/theme-provider";
 import { TooltipProvider } from "@workspace/ui/components/tooltip";
 
+import { AppHeader } from "@/components/app-header";
 import { DesktopBootstrap } from "@/components/desktop-bootstrap";
 import { isDesktop } from "@/lib/activation";
 
@@ -45,7 +47,17 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 	shellComponent: RootDocument,
 	component: RootLayout,
 	errorComponent: ErrorBoundary,
+	notFoundComponent: NotFoundWithHeader,
 });
+
+function NotFoundWithHeader() {
+	return (
+		<>
+			<AppHeader />
+			<NotFound />
+		</>
+	);
+}
 
 function ErrorBoundary({ error, reset }: ErrorComponentProps) {
 	return (

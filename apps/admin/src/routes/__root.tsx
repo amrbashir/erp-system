@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HeadContent, Outlet, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { getLocale, getTextDirection } from "@workspace/i18n";
 import { LanguageSwitcher } from "@workspace/ui/components/language-switcher";
+import { NotFound } from "@workspace/ui/components/not-found";
 import { ThemeProvider, themeScript } from "@workspace/ui/components/theme-provider";
 import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
 
@@ -22,6 +23,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 	}),
 	shellComponent: RootDocument,
 	component: RootLayout,
+	notFoundComponent: NotFound,
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {

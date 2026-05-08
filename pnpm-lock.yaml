@@ -442,6 +442,9 @@ importers:
       '@phosphor-icons/react':
         specifier: 'catalog:'
         version: 2.1.10(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@tanstack/react-router':
+        specifier: catalog:tanstack
+        version: 1.166.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@workspace/i18n':
         specifier: workspace:*
         version: link:../i18n
