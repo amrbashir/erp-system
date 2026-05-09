@@ -11,7 +11,7 @@ const inv = authed.invitations.use(orgResolver);
  */
 export const invitationsRouter = {
 	revoke: inv.revoke.handler(async ({ context, input }) => {
-		const actorRole = context.membership.role as "owner" | "admin" | "member";
+		const actorRole = context.membership.role;
 		if (actorRole === "member") {
 			throw new NoPermissionError({ reason: "No permission to revoke invitations" });
 		}

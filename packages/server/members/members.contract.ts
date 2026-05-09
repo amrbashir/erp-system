@@ -4,6 +4,8 @@ import * as z from "zod";
 const roleEnum = z.enum(["owner", "admin", "member"]);
 const orgPathInput = z.object({ orgSlug: z.string() });
 
+export const memberAddBody = z.object({ email: z.email(), role: roleEnum });
+
 const memberOutput = z.object({
 	id: z.string(),
 	userId: z.string(),
@@ -36,7 +38,7 @@ export const membersContract = {
 		.output(membersListOutput),
 	add: oc
 		.route({ method: "POST", path: "/orgs/{orgSlug}/members" })
-		.input(orgPathInput.extend({ email: z.email(), role: roleEnum })),
+		.input(orgPathInput.extend(memberAddBody.shape)),
 	updateRole: oc
 		.route({ method: "PATCH", path: "/orgs/{orgSlug}/members/{memberId}" })
 		.input(orgPathInput.extend({ memberId: z.uuid(), role: roleEnum })),

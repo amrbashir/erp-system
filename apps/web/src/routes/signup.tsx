@@ -1,3 +1,4 @@
+import { useForm } from "@tanstack/react-form";
 import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
@@ -9,18 +10,25 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@workspace/ui/components/card";
-import { Field, FieldGroup, FieldLabel } from "@workspace/ui/components/field";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
 import { useState } from "react";
+import * as z from "zod";
 
 import { AppHeader } from "@/components/app-header";
 import { signUp } from "@/lib/auth-client";
 import { orpc } from "@/lib/orpc";
 import { safeRedirect } from "@/lib/safe-redirect";
 
+const signupSchema = z.object({
+	name: z.string().min(1),
+	email: z.email(),
+	password: z.string().min(6),
+});
+
 export const Route = createFileRoute("/signup")({
 	validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
-		redirect: (search.redirect as string) || undefined,
+		redirect: typeof search.redirect === "string" ? search.redirect : undefined,
 	}),
 	beforeLoad: async ({ context }) => {
 		const session = await context.queryClient.ensureQueryData(orpc.session.get.queryOptions());
@@ -33,33 +41,24 @@ function SignupPage() {
 	const navigate = useNavigate();
 	const { redirect: redirectTo } = Route.useSearch();
 	const [error, setError] = useState("");
-	const [loading, setLoading] = useState(false);
 
-	async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
-		e.preventDefault();
-		setError("");
-		setLoading(true);
-
-		const form = new FormData(e.currentTarget);
-		const name = form.get("name") as string;
-		const email = form.get("email") as string;
-		const password = form.get("password") as string;
-
-		const { error: err } = await signUp.email({ name, email, password });
-
-		setLoading(false);
-
-		if (err) {
-			setError(err.message ?? m.signup_failed());
-			return;
-		}
-
-		// invitations table is consumed in user.create.after; if the email had
-		// pending invites, the user already has org memberships. otherwise,
-		// _authed will bounce to /onboarding.
-		const dest = safeRedirect(redirectTo);
-		void navigate({ to: dest, reloadDocument: true });
-	}
+	const form = useForm({
+		defaultValues: { name: "", email: "", password: "" },
+		validators: { onSubmit: signupSchema },
+		onSubmit: async ({ value }) => {
+			setError("");
+			const { error: err } = await signUp.email(value);
+			if (err) {
+				setError(err.message ?? m.signup_failed());
+				return;
+			}
+			// invitations table is consumed in user.create.after; if the email had
+			// pending invites, the user already has org memberships. otherwise,
+			// _authed will bounce to /onboarding.
+			const dest = safeRedirect(redirectTo);
+			void navigate({ to: dest, reloadDocument: true });
+		},
+	});
 
 	return (
 		<div className="flex min-h-svh flex-col">
@@ -69,7 +68,12 @@ function SignupPage() {
 					<CardHeader>
 						<CardTitle>{m.signup_heading()}</CardTitle>
 					</CardHeader>
-					<form onSubmit={handleSubmit}>
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							void form.handleSubmit();
+						}}
+					>
 						<CardContent className="flex flex-col gap-4">
 							{error && (
 								<Alert variant="destructive">
@@ -78,42 +82,76 @@ function SignupPage() {
 							)}
 
 							<FieldGroup>
-								<Field>
-									<FieldLabel htmlFor="name">{m.label_name()}</FieldLabel>
-									<Input
-										id="name"
-										name="name"
-										type="text"
-										placeholder={m.label_name()}
-										required
-									/>
-								</Field>
-								<Field>
-									<FieldLabel htmlFor="email">{m.label_email()}</FieldLabel>
-									<Input
-										id="email"
-										name="email"
-										type="email"
-										placeholder={m.label_email()}
-										required
-									/>
-								</Field>
-								<Field>
-									<FieldLabel htmlFor="password">{m.label_password()}</FieldLabel>
-									<Input
-										id="password"
-										name="password"
-										type="password"
-										placeholder={m.label_password()}
-										required
-										minLength={6}
-									/>
-								</Field>
+								<form.Field name="name">
+									{(field) => (
+										<Field>
+											<FieldLabel htmlFor={field.name}>
+												{m.label_name()}
+											</FieldLabel>
+											<Input
+												id={field.name}
+												name={field.name}
+												type="text"
+												placeholder={m.label_name()}
+												required
+												value={field.state.value}
+												onChange={(e) => field.handleChange(e.currentTarget.value)}
+												onBlur={field.handleBlur}
+											/>
+											<FieldError errors={field.state.meta.errors} />
+										</Field>
+									)}
+								</form.Field>
+								<form.Field name="email">
+									{(field) => (
+										<Field>
+											<FieldLabel htmlFor={field.name}>
+												{m.label_email()}
+											</FieldLabel>
+											<Input
+												id={field.name}
+												name={field.name}
+												type="email"
+												placeholder={m.label_email()}
+												required
+												value={field.state.value}
+												onChange={(e) => field.handleChange(e.currentTarget.value)}
+												onBlur={field.handleBlur}
+											/>
+											<FieldError errors={field.state.meta.errors} />
+										</Field>
+									)}
+								</form.Field>
+								<form.Field name="password">
+									{(field) => (
+										<Field>
+											<FieldLabel htmlFor={field.name}>
+												{m.label_password()}
+											</FieldLabel>
+											<Input
+												id={field.name}
+												name={field.name}
+												type="password"
+												placeholder={m.label_password()}
+												required
+												minLength={6}
+												value={field.state.value}
+												onChange={(e) => field.handleChange(e.currentTarget.value)}
+												onBlur={field.handleBlur}
+											/>
+											<FieldError errors={field.state.meta.errors} />
+										</Field>
+									)}
+								</form.Field>
 							</FieldGroup>
 
-							<Button type="submit" disabled={loading}>
-								{loading ? m.signup_submitting() : m.signup_submit()}
-							</Button>
+							<form.Subscribe selector={(s) => s.isSubmitting}>
+								{(isSubmitting) => (
+									<Button type="submit" disabled={isSubmitting}>
+										{isSubmitting ? m.signup_submitting() : m.signup_submit()}
+									</Button>
+								)}
+							</form.Subscribe>
 						</CardContent>
 					</form>
 					<CardFooter className="justify-center">

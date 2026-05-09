@@ -30,7 +30,7 @@ export const membersRouter = {
 	 *  - unknown email → pending invitation, consumed on signup
 	 */
 	add: m.add.handler(async ({ context, input }) => {
-		const actorRole = context.membership.role as "owner" | "admin" | "member";
+		const actorRole = context.membership.role;
 		if (actorRole === "member") {
 			throw new NoPermissionError({ reason: "No permission to add members" });
 		}
@@ -85,7 +85,7 @@ export const membersRouter = {
 			await context.membersService.updateRole({
 				memberId: input.memberId,
 				orgId: context.orgId,
-				actorRole: context.membership.role as "owner" | "admin" | "member",
+				actorRole: context.membership.role,
 				newRole: input.role,
 				actorMemberId: context.membership.id,
 			}),
@@ -108,7 +108,7 @@ export const membersRouter = {
 			await context.membersService.remove({
 				memberId: input.memberId,
 				orgId: context.orgId,
-				actorRole: context.membership.role as "owner" | "admin" | "member",
+				actorRole: context.membership.role,
 			}),
 		);
 		await context.auditService.log({

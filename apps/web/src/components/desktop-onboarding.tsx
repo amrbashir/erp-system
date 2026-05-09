@@ -1,4 +1,6 @@
+import { useForm } from "@tanstack/react-form";
 import { m } from "@workspace/i18n";
+import { setupRunInput } from "@workspace/server/setup/setup.contract";
 import { toSlug } from "@workspace/shared/slug";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
@@ -9,51 +11,57 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@workspace/ui/components/card";
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "@workspace/ui/components/field";
+import {
+	Field,
+	FieldDescription,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+} from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
 import { useState } from "react";
+import * as z from "zod";
 
 import { desktopSetup } from "@/lib/desktop-auth";
 
+// Form always provides a string slug (auto-derived or user-edited); the
+// contract leaves it optional so the server can fall back to deriving from
+// orgName for non-form callers.
+const setupFormSchema = setupRunInput.extend({ slug: z.string() });
+
 export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 	const [error, setError] = useState("");
-	const [loading, setLoading] = useState(false);
-	const [orgName, setOrgName] = useState("");
-	const [slug, setSlug] = useState("");
 	const [slugEdited, setSlugEdited] = useState(false);
 
-	function handleOrgNameChange(value: string) {
-		setOrgName(value);
-		if (!slugEdited) setSlug(toSlug(value) ?? "");
-	}
+	const form = useForm({
+		defaultValues: { orgName: "", slug: "", name: "", email: "", password: "" },
+		validators: { onSubmit: setupFormSchema },
+		onSubmit: async ({ value }) => {
+			setError("");
+			const trimmedOrgName = value.orgName.trim();
+			const finalSlug = value.slug.trim() || toSlug(trimmedOrgName) || "";
+			const name = value.name.trim();
+			const email = value.email.trim();
 
-	async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
-		e.preventDefault();
-		setError("");
-		setLoading(true);
+			if (!trimmedOrgName || !finalSlug || !name || !email || !value.password) {
+				setError(m.desktop_onboarding_fields_required());
+				return;
+			}
 
-		const form = new FormData(e.currentTarget);
-		const trimmedOrgName = orgName.trim();
-		const finalSlug = slug.trim() || toSlug(trimmedOrgName) || "";
-		const name = (form.get("name") as string).trim();
-		const email = (form.get("email") as string).trim();
-		const password = form.get("password") as string;
-
-		if (!trimmedOrgName || !finalSlug || !name || !email || !password) {
-			setError(m.desktop_onboarding_fields_required());
-			setLoading(false);
-			return;
-		}
-
-		try {
-			await desktopSetup({ orgName: trimmedOrgName, slug: finalSlug, email, password, name });
-			onComplete();
-		} catch (err) {
-			setError(err instanceof Error ? err.message : m.desktop_onboarding_failed());
-		} finally {
-			setLoading(false);
-		}
-	}
+			try {
+				await desktopSetup({
+					orgName: trimmedOrgName,
+					slug: finalSlug,
+					email,
+					password: value.password,
+					name,
+				});
+				onComplete();
+			} catch (err) {
+				setError(err instanceof Error ? err.message : m.desktop_onboarding_failed());
+			}
+		},
+	});
 
 	return (
 		<div className="flex min-h-svh items-center justify-center p-6">
@@ -62,7 +70,12 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 					<CardTitle>{m.desktop_onboarding_heading()}</CardTitle>
 					<CardDescription>{m.desktop_onboarding_description()}</CardDescription>
 				</CardHeader>
-				<form onSubmit={handleSubmit}>
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+						void form.handleSubmit();
+					}}
+				>
 					<CardContent className="flex flex-col gap-4">
 						{error && (
 							<Alert variant="destructive">
@@ -71,82 +84,135 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 						)}
 
 						<FieldGroup>
-							<Field>
-								<FieldLabel htmlFor="org-name">{m.label_org_name()}</FieldLabel>
-								<Input
-									id="org-name"
-									name="orgName"
-									type="text"
-									value={orgName}
-									onChange={(e) => handleOrgNameChange(e.currentTarget.value)}
-									placeholder={m.label_org_name()}
-									required
-								/>
-							</Field>
-							<Field>
-								<FieldLabel htmlFor="org-slug">{m.label_org_slug()}</FieldLabel>
-								<Input
-									id="org-slug"
-									name="slug"
-									type="text"
-									value={slug}
-									onChange={(e) => {
-										setSlug(e.currentTarget.value);
-										setSlugEdited(true);
-									}}
-									placeholder="acme"
-									pattern="[a-z0-9][a-z0-9-]*[a-z0-9]"
-									minLength={2}
-									maxLength={48}
-									required
-									className="font-mono"
-								/>
-								{slug && (
-									<FieldDescription>
-										{m.org_slug_url_preview({ slug })}
-									</FieldDescription>
+							<form.Field name="orgName">
+								{(field) => (
+									<Field>
+										<FieldLabel htmlFor={field.name}>
+											{m.label_org_name()}
+										</FieldLabel>
+										<Input
+											id={field.name}
+											name={field.name}
+											type="text"
+											placeholder={m.label_org_name()}
+											required
+											value={field.state.value}
+											onChange={(e) => {
+												const v = e.currentTarget.value;
+												field.handleChange(v);
+												if (!slugEdited)
+													form.setFieldValue("slug", toSlug(v) ?? "");
+											}}
+											onBlur={field.handleBlur}
+										/>
+										<FieldError errors={field.state.meta.errors} />
+									</Field>
 								)}
-							</Field>
-							<Field>
-								<FieldLabel htmlFor="name">
-									{m.desktop_onboarding_your_name()}
-								</FieldLabel>
-								<Input
-									id="name"
-									name="name"
-									type="text"
-									placeholder={m.desktop_onboarding_your_name()}
-									required
-								/>
-							</Field>
-							<Field>
-								<FieldLabel htmlFor="email">{m.label_email()}</FieldLabel>
-								<Input
-									id="email"
-									name="email"
-									type="email"
-									placeholder={m.label_email()}
-									required
-								/>
-							</Field>
-							<Field>
-								<FieldLabel htmlFor="password">{m.label_password()}</FieldLabel>
-								<Input
-									id="password"
-									name="password"
-									type="password"
-									placeholder={m.label_password()}
-									required
-									minLength={6}
-								/>
-							</Field>
+							</form.Field>
+							<form.Field name="slug">
+								{(field) => (
+									<Field>
+										<FieldLabel htmlFor={field.name}>
+											{m.label_org_slug()}
+										</FieldLabel>
+										<Input
+											id={field.name}
+											name={field.name}
+											type="text"
+											placeholder="acme"
+											pattern="[a-z0-9][a-z0-9-]*[a-z0-9]"
+											minLength={2}
+											maxLength={48}
+											required
+											className="font-mono"
+											value={field.state.value}
+											onChange={(e) => {
+												field.handleChange(e.currentTarget.value);
+												setSlugEdited(true);
+											}}
+											onBlur={field.handleBlur}
+										/>
+										{field.state.value && (
+											<FieldDescription>
+												{m.org_slug_url_preview({ slug: field.state.value })}
+											</FieldDescription>
+										)}
+										<FieldError errors={field.state.meta.errors} />
+									</Field>
+								)}
+							</form.Field>
+							<form.Field name="name">
+								{(field) => (
+									<Field>
+										<FieldLabel htmlFor={field.name}>
+											{m.desktop_onboarding_your_name()}
+										</FieldLabel>
+										<Input
+											id={field.name}
+											name={field.name}
+											type="text"
+											placeholder={m.desktop_onboarding_your_name()}
+											required
+											value={field.state.value}
+											onChange={(e) => field.handleChange(e.currentTarget.value)}
+											onBlur={field.handleBlur}
+										/>
+										<FieldError errors={field.state.meta.errors} />
+									</Field>
+								)}
+							</form.Field>
+							<form.Field name="email">
+								{(field) => (
+									<Field>
+										<FieldLabel htmlFor={field.name}>
+											{m.label_email()}
+										</FieldLabel>
+										<Input
+											id={field.name}
+											name={field.name}
+											type="email"
+											placeholder={m.label_email()}
+											required
+											value={field.state.value}
+											onChange={(e) => field.handleChange(e.currentTarget.value)}
+											onBlur={field.handleBlur}
+										/>
+										<FieldError errors={field.state.meta.errors} />
+									</Field>
+								)}
+							</form.Field>
+							<form.Field name="password">
+								{(field) => (
+									<Field>
+										<FieldLabel htmlFor={field.name}>
+											{m.label_password()}
+										</FieldLabel>
+										<Input
+											id={field.name}
+											name={field.name}
+											type="password"
+											placeholder={m.label_password()}
+											required
+											minLength={6}
+											value={field.state.value}
+											onChange={(e) => field.handleChange(e.currentTarget.value)}
+											onBlur={field.handleBlur}
+										/>
+										<FieldError errors={field.state.meta.errors} />
+									</Field>
+								)}
+							</form.Field>
 						</FieldGroup>
 
-						<Button type="submit" disabled={loading}>
-							{loading
-								? m.desktop_onboarding_submitting()
-								: m.desktop_onboarding_submit()}
-						</Button>
+						<form.Subscribe selector={(s) => s.isSubmitting}>
+							{(isSubmitting) => (
+								<Button type="submit" disabled={isSubmitting}>
+									{isSubmitting
+										? m.desktop_onboarding_submitting()
+										: m.desktop_onboarding_submit()}
+								</Button>
+							)}
+						</form.Subscribe>
 					</CardContent>
 				</form>
 			</Card>

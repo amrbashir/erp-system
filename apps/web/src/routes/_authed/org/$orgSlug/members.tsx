@@ -1,7 +1,9 @@
 import { ArrowDownIcon, ArrowUpIcon } from "@phosphor-icons/react";
+import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
+import { memberAddBody } from "@workspace/server/members/members.contract";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import {
 	AlertDialog,
@@ -16,7 +18,7 @@ import {
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { Empty, EmptyHeader, EmptyTitle } from "@workspace/ui/components/empty";
-import { Field, FieldGroup, FieldLabel } from "@workspace/ui/components/field";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
 import {
 	Select,
@@ -36,14 +38,17 @@ import {
 	TableRow,
 } from "@workspace/ui/components/table";
 import { useMemo, useState } from "react";
+import type * as z from "zod";
 
 import { orpc } from "@/lib/orpc";
+
+type Role = "owner" | "admin" | "member";
 
 type Member = {
 	kind: "member";
 	id: string;
 	userId: string;
-	role: "owner" | "admin" | "member";
+	role: Role;
 	userName: string;
 	userEmail: string;
 	createdAt: string | Date;
@@ -53,7 +58,7 @@ type Invitation = {
 	kind: "invitation";
 	id: string;
 	email: string;
-	role: "owner" | "admin" | "member";
+	role: Role;
 	createdAt: string | Date;
 };
 
@@ -142,7 +147,6 @@ function AddMemberForm({
 	onError: (msg: string) => void;
 }) {
 	const queryClient = useQueryClient();
-	const [role, setRole] = useState<"owner" | "admin" | "member">("member");
 	const addMutation = useMutation(
 		orpc.members.add.mutationOptions({
 			onSuccess: () => {
@@ -153,63 +157,92 @@ function AddMemberForm({
 		}),
 	);
 
-	async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
-		e.preventDefault();
-		onError("");
-
-		const form = new FormData(e.currentTarget);
-		const email = (form.get("email") as string).trim();
-
-		try {
-			await addMutation.mutateAsync({ orgSlug, email, role });
-			onDone();
-		} catch (err) {
-			onError(err instanceof Error ? err.message : m.members_add_failed());
-		}
-	}
+	const defaultValues: z.infer<typeof memberAddBody> = { email: "", role: "member" };
+	const form = useForm({
+		defaultValues,
+		validators: { onSubmit: memberAddBody },
+		onSubmit: async ({ value }) => {
+			onError("");
+			try {
+				await addMutation.mutateAsync({ orgSlug, ...value });
+				onDone();
+			} catch (err) {
+				onError(err instanceof Error ? err.message : m.members_add_failed());
+			}
+		},
+	});
 
 	return (
-		<form onSubmit={handleSubmit} className="flex flex-col gap-3">
+		<form
+			onSubmit={(e) => {
+				e.preventDefault();
+				void form.handleSubmit();
+			}}
+			className="flex flex-col gap-3"
+		>
 			<FieldGroup>
 				<div className="flex gap-3">
-					<Field className="flex-1">
-						<FieldLabel htmlFor="add-member-email">{m.label_email()}</FieldLabel>
-						<Input
-							id="add-member-email"
-							name="email"
-							type="email"
-							placeholder={m.label_email()}
-							required
-						/>
-					</Field>
-					<Field className="w-40">
-						<FieldLabel htmlFor="add-member-role">{m.label_role()}</FieldLabel>
-						<Select
-							value={role}
-							onValueChange={(v) => v && setRole(v as "owner" | "admin" | "member")}
-						>
-							<SelectTrigger id="add-member-role" className="w-full">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectGroup>
-									<SelectItem value="member">{m.role_member()}</SelectItem>
-									{actorRole === "owner" && (
-										<>
-											<SelectItem value="admin">{m.role_admin()}</SelectItem>
-											<SelectItem value="owner">{m.role_owner()}</SelectItem>
-										</>
-									)}
-								</SelectGroup>
-							</SelectContent>
-						</Select>
-					</Field>
+					<form.Field name="email">
+						{(field) => (
+							<Field className="flex-1">
+								<FieldLabel htmlFor={field.name}>{m.label_email()}</FieldLabel>
+								<Input
+									id={field.name}
+									name={field.name}
+									type="email"
+									placeholder={m.label_email()}
+									required
+									value={field.state.value}
+									onChange={(e) => field.handleChange(e.currentTarget.value)}
+									onBlur={field.handleBlur}
+								/>
+								<FieldError errors={field.state.meta.errors} />
+							</Field>
+						)}
+					</form.Field>
+					<form.Field name="role">
+						{(field) => (
+							<Field className="w-40">
+								<FieldLabel htmlFor={field.name}>{m.label_role()}</FieldLabel>
+								<Select
+									value={field.state.value}
+									onValueChange={(v) => {
+										if (v === "owner" || v === "admin" || v === "member")
+											field.handleChange(v);
+									}}
+								>
+									<SelectTrigger id={field.name} className="w-full">
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectGroup>
+											<SelectItem value="member">{m.role_member()}</SelectItem>
+											{actorRole === "owner" && (
+												<>
+													<SelectItem value="admin">
+														{m.role_admin()}
+													</SelectItem>
+													<SelectItem value="owner">
+														{m.role_owner()}
+													</SelectItem>
+												</>
+											)}
+										</SelectGroup>
+									</SelectContent>
+								</Select>
+							</Field>
+						)}
+					</form.Field>
 				</div>
 			</FieldGroup>
 			<div>
-				<Button type="submit" size="sm" disabled={addMutation.isPending}>
-					{addMutation.isPending ? m.members_adding() : m.members_add_submit()}
-				</Button>
+				<form.Subscribe selector={(s) => s.isSubmitting}>
+					{(isSubmitting) => (
+						<Button type="submit" size="sm" disabled={isSubmitting}>
+							{isSubmitting ? m.members_adding() : m.members_add_submit()}
+						</Button>
+					)}
+				</form.Subscribe>
 			</div>
 		</form>
 	);
@@ -253,7 +286,7 @@ function MemberList({
 }: {
 	orgSlug: string;
 	rows: Row[];
-	actorRole: "owner" | "admin" | "member";
+	actorRole: Role;
 	pendingFirst: boolean;
 	onTogglePending: () => void;
 	onError: (msg: string) => void;
@@ -283,15 +316,11 @@ function MemberList({
 		orpc.members.transferOwnership.mutationOptions({ onSuccess: invalidateMembers }),
 	);
 
-	async function handleRoleChange(memberId: string, newRole: string) {
+	async function handleRoleChange(memberId: string, newRole: Role) {
 		onError("");
 		setPendingRoleChanges((p) => new Set(p).add(memberId));
 		try {
-			await updateRoleMutation.mutateAsync({
-				orgSlug,
-				memberId,
-				role: newRole as "owner" | "admin" | "member",
-			});
+			await updateRoleMutation.mutateAsync({ orgSlug, memberId, role: newRole });
 		} catch (err) {
 			onError(err instanceof Error ? err.message : m.members_role_update_failed());
 		} finally {
@@ -381,7 +410,9 @@ function MemberList({
 							<FieldLabel htmlFor="transfer-role">{m.label_role()}</FieldLabel>
 							<Select
 								value={transferRole}
-								onValueChange={(v) => v && setTransferRole(v as "admin" | "member")}
+								onValueChange={(v) => {
+									if (v === "admin" || v === "member") setTransferRole(v);
+								}}
 							>
 								<SelectTrigger id="transfer-role" className="w-full">
 									<SelectValue />
@@ -475,11 +506,11 @@ function MemberRow({
 	onTransfer,
 }: {
 	member: Member;
-	actorRole: "owner" | "admin" | "member";
+	actorRole: Role;
 	canManage: boolean;
 	roleSubmitting: boolean;
 	removeSubmitting: boolean;
-	onRoleChange: (id: string, role: string) => void;
+	onRoleChange: (id: string, role: Role) => void;
 	onRemove: (id: string) => void;
 	onTransfer: () => void;
 }) {
@@ -491,7 +522,10 @@ function MemberRow({
 				{canManage && actorRole === "owner" ? (
 					<Select
 						value={member.role}
-						onValueChange={(v) => v && onRoleChange(member.id, v)}
+						onValueChange={(v) => {
+							if (v === "owner" || v === "admin" || v === "member")
+								onRoleChange(member.id, v);
+						}}
 						disabled={roleSubmitting}
 					>
 						<SelectTrigger size="sm" className="w-32">
