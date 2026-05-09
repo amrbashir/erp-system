@@ -5,11 +5,7 @@ import { eq, and } from "drizzle-orm";
 
 import { validateCurrency } from "../shared/currency.js";
 import type { DB } from "../shared/db.js";
-import {
-	SlugTakenError,
-	UnsupportedCurrencyError,
-	type PgErrorShape,
-} from "../shared/errors.js";
+import { isPgUniqueViolationOn, SlugTakenError, UnsupportedCurrencyError } from "../shared/errors.js";
 type Org = typeof orgs.$inferSelect;
 type OrgMember = typeof orgMembers.$inferSelect;
 
@@ -57,11 +53,7 @@ export class OrgsService {
 				return org;
 			});
 		} catch (err) {
-			const e = err as PgErrorShape;
-			const cause = e.cause ?? e;
-			if (cause.code === "23505" && cause.constraint?.includes("slug")) {
-				return new SlugTakenError();
-			}
+			if (isPgUniqueViolationOn(err, "slug")) return new SlugTakenError();
 			if (err instanceof Error) return err;
 			throw err;
 		}

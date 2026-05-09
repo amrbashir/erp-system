@@ -4,13 +4,13 @@ import { and, count, eq } from "drizzle-orm";
 import type { DB } from "../shared/db.js";
 import {
 	DuplicateMemberError,
+	isPgUniqueViolation,
 	LastOwnerError,
 	MemberNotFoundError,
 	NoPermissionError,
 	SelfRoleChangeError,
 	SelfTransferError,
 	TargetMemberNotFoundError,
-	type PgErrorShape,
 } from "../shared/errors.js";
 type Role = "owner" | "admin" | "member";
 type OrgMember = typeof orgMembers.$inferSelect;
@@ -59,14 +59,7 @@ export class MembersService {
 				.returning();
 			return row;
 		} catch (e) {
-			const err = e as PgErrorShape;
-			if (
-				err.code === "23505" ||
-				err.cause?.code === "23505" ||
-				/unique/i.test(err.message ?? "")
-			) {
-				return new DuplicateMemberError();
-			}
+			if (isPgUniqueViolation(e)) return new DuplicateMemberError();
 			if (e instanceof Error) return e;
 			throw e;
 		}

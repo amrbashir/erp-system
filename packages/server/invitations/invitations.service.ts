@@ -3,7 +3,7 @@ import { auditLogs, invitations, orgMembers, users } from "@workspace/db/schema"
 import { and, eq, gt, sql } from "drizzle-orm";
 
 import type { DB } from "../shared/db.js";
-import { DuplicateMemberError, type PgErrorShape } from "../shared/errors.js";
+import { DuplicateMemberError, isPgUniqueViolation } from "../shared/errors.js";
 type Role = "owner" | "admin" | "member";
 type Invitation = typeof invitations.$inferSelect;
 type UserSummary = { id: string; name: string; email: string };
@@ -52,14 +52,7 @@ export class InvitationsService {
 				.returning();
 			return row;
 		} catch (e) {
-			const err = e as PgErrorShape;
-			if (
-				err.code === "23505" ||
-				err.cause?.code === "23505" ||
-				/unique/i.test(err.message ?? "")
-			) {
-				return new DuplicateMemberError();
-			}
+			if (isPgUniqueViolation(e)) return new DuplicateMemberError();
 			if (e instanceof Error) return e;
 			throw e;
 		}

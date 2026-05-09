@@ -58,9 +58,11 @@ export function createAuth(options: CreateAuthOptions = {}) {
 			// the handler a fully-typed `ctx` (with `.path`, `.body`, etc.).
 			before: createAuthMiddleware(async (ctx) => {
 				if (ctx.path !== "/sign-up/email") return;
-				const body = ctx.body as { password?: string } | undefined;
-				if (!body?.password) return;
-				const err = validatePassword(body.password);
+				const body = ctx.body;
+				if (typeof body !== "object" || body === null || !("password" in body)) return;
+				const password = body.password;
+				if (typeof password !== "string") return;
+				const err = validatePassword(password);
 				if (err) {
 					throw new APIError("BAD_REQUEST", { message: err.message });
 				}
