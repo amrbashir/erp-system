@@ -9,7 +9,6 @@ import { useStorage } from "nitro/storage";
 
 import { initDatabase } from "#db";
 
-/** Read existing BETTER_AUTH_SECRET file, or generate + persist a new one. */
 function ensureAuthSecret(dataDir: string | undefined) {
 	if (process.env.BETTER_AUTH_SECRET) return;
 

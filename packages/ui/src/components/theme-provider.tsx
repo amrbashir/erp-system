@@ -37,7 +37,6 @@ export function ThemeProvider({
 		return (localStorage.getItem(storageKey) as Theme) || defaultTheme;
 	});
 
-	// Apply class + listen for OS preference changes when "system".
 	useEffect(() => {
 		const root = document.documentElement;
 		const apply = () => {

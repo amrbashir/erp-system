@@ -92,9 +92,6 @@ export function DesktopBootstrap({ children }: { children: React.ReactNode }) {
 			<ActivationScreen
 				hardwareId={state.hardwareId}
 				onActivated={async () => {
-					// Same race as the initial path: activation-screen hits the
-					// activation server (not the sidecar), so the sidecar may
-					// still be booting when we land here.
 					const ready = await waitForSidecar();
 					if (!ready) {
 						setState({ step: "error", message: "Sidecar didn't become ready in time." });

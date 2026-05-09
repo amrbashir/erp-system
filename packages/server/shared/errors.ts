@@ -1,9 +1,5 @@
 import { ORPCError } from "@orpc/server";
 
-// ── Public errors (extend ORPCError) ─────────────────────────────────────────
-// Surface to clients. Code → HTTP status mapping is built into ORPCError.
-
-// Auth / scope
 export class UnauthorizedError extends ORPCError<"UNAUTHORIZED", undefined> {
 	constructor(message = "Unauthorized") {
 		super("UNAUTHORIZED", { message });
@@ -19,7 +15,6 @@ export class NotOrgMemberError extends ORPCError<"FORBIDDEN", { reason: "not_org
 	}
 }
 
-// Validation
 export class UnsupportedCurrencyError extends ORPCError<"BAD_REQUEST", { code: string }> {
 	constructor(opts: { code: string }) {
 		super("BAD_REQUEST", {
@@ -41,7 +36,6 @@ export class InvalidEmailError extends ORPCError<"BAD_REQUEST", { field: "email"
 	}
 }
 
-// Conflicts
 export class SlugTakenError extends ORPCError<"CONFLICT", undefined> {
 	constructor() {
 		super("CONFLICT", { message: "Slug already taken" });
@@ -60,7 +54,6 @@ export class SetupAlreadyCompleteError extends ORPCError<"CONFLICT", undefined> 
 	}
 }
 
-// Not found
 export class InvitationNotFoundError extends ORPCError<"NOT_FOUND", undefined> {
 	constructor() {
 		super("NOT_FOUND", { message: "Invitation not found" });
@@ -85,7 +78,6 @@ export class ActivationNotFoundError extends ORPCError<"NOT_FOUND", { id: string
 	}
 }
 
-// Org / member rules
 export class NoPermissionError extends ORPCError<"FORBIDDEN", undefined> {
 	constructor(opts: { reason: string }) {
 		super("FORBIDDEN", { message: opts.reason });
@@ -119,7 +111,6 @@ export class LastOwnerError extends ORPCError<"FORBIDDEN", { action: string }> {
 	}
 }
 
-// Rate / config
 export class RateLimitedError extends ORPCError<"TOO_MANY_REQUESTS", undefined> {
 	constructor() {
 		super("TOO_MANY_REQUESTS", { message: "Too many requests" });
@@ -132,14 +123,11 @@ export class ServerMisconfiguredError extends ORPCError<"INTERNAL_SERVER_ERROR",
 	}
 }
 
-// Token / verification
 export class InvalidTokenError extends ORPCError<"UNAUTHORIZED", undefined> {
 	constructor(opts: { reason: string; cause?: unknown }) {
 		super("UNAUTHORIZED", { message: opts.reason, cause: opts.cause });
 	}
 }
-
-// ── Catch-block helpers ─────────────────────────────────────────────────────
 
 /**
  * Structural shape of pg/drizzle errors thrown from a query. Postgres

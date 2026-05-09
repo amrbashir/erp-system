@@ -81,7 +81,6 @@ export class OrgsService {
 		return row ?? null;
 	}
 
-	/** Resolve an org by its URL slug. Source-of-truth lookup for path-scoped routes. */
 	async findBySlug(slug: string): Promise<Org | null> {
 		const [row] = await this.deps.db.select().from(orgs).where(eq(orgs.slug, slug)).limit(1);
 		return row ?? null;

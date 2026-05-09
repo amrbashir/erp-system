@@ -76,9 +76,7 @@ function MembersPage() {
 	const members = data?.members ?? [];
 	const invitations = data?.invitations ?? [];
 
-	// Derived from members.list rather than the org list — to be replaced with
-	// a proper capabilities procedure later. Defaults to "member" while loading
-	// (zero manage perms) so the form/actions stay hidden until role is known.
+	// Defaults to "member" while loading so manage actions stay hidden until role is known.
 	const actorRole = members.find((m) => m.userId === session.user.id)?.role ?? "member";
 
 	const [error, setError] = useState("");

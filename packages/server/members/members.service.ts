@@ -86,7 +86,6 @@ export class MembersService {
 			return new NoPermissionError({ reason: "No permission to assign this role" });
 		}
 
-		// block owner self-demotion (must use transfer flow)
 		if (input.actorMemberId && input.actorMemberId === input.memberId) {
 			return new SelfRoleChangeError();
 		}
@@ -110,7 +109,6 @@ export class MembersService {
 					}
 				}
 
-				// prevent demoting last owner
 				if (input.newRole !== "owner" && target?.role === "owner") {
 					const ownerCount = await countOwners(tx, input.orgId);
 					if (ownerCount <= 1) {
@@ -161,7 +159,6 @@ export class MembersService {
 					)
 					.limit(1);
 
-				// admin can only remove members, not owners/admins
 				if (input.actorRole === "admin") {
 					if (!target) throw new MemberNotFoundError();
 					if (target.role !== "member") {
@@ -171,7 +168,6 @@ export class MembersService {
 					}
 				}
 
-				// prevent removing last owner
 				if (target?.role === "owner") {
 					const ownerCount = await countOwners(tx, input.orgId);
 					if (ownerCount <= 1) {

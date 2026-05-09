@@ -1,7 +1,6 @@
 import { pub, rateLimited } from "../orpc/middleware.js";
 import { unwrap } from "../orpc/unwrap.js";
 
-// 10 hits per minute per IP (matches the legacy Nitro route).
 const checkLimit = rateLimited({ window: 60_000, max: 10 });
 
 /**
