@@ -18,8 +18,6 @@ export function clearToken() {
 	localStorage.removeItem(TOKEN_KEY);
 }
 
-type HeaderRecord = Record<string, string>;
-
 /**
  * Unified fetch helper:
  *  - web: same-origin, cookies travel automatically
@@ -29,23 +27,17 @@ type HeaderRecord = Record<string, string>;
  * needed for it.
  */
 export async function apiFetch(path: string, init?: RequestInit) {
-	const extra = init?.headers as HeaderRecord | undefined;
+	// Headers ctor handles all HeadersInit shapes (Headers/Record/[string,string][])
+	// without unsafe casts. Caller's headers win; we only fill in defaults.
+	const headers = new Headers(init?.headers);
+	if (!headers.has("Content-Type")) headers.set("Content-Type", "application/json");
+
 	if (isDesktop()) {
 		const token = getStoredToken();
-		return fetch(`${SIDECAR_URL}${path}`, {
-			...init,
-			headers: {
-				"Content-Type": "application/json",
-				...(token ? { Authorization: `Bearer ${token}` } : {}),
-				...extra,
-			},
-		});
+		if (token && !headers.has("Authorization")) {
+			headers.set("Authorization", `Bearer ${token}`);
+		}
+		return fetch(`${SIDECAR_URL}${path}`, { ...init, headers });
 	}
-	return fetch(path, {
-		...init,
-		headers: {
-			"Content-Type": "application/json",
-			...extra,
-		},
-	});
+	return fetch(path, { ...init, headers });
 }
