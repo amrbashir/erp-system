@@ -21,11 +21,7 @@ export default defineConfig({
 			strategy: ["localStorage", "preferredLanguage", "baseLocale"],
 			emitTsDeclarations: true,
 		}),
-		// nitroConfig comes from packages/server's nitro install; structurally
-		// identical to this app's nitro install but TS treats them as separate
-		// identities when the catalog's `nitro: latest` resolves to different
-		// betas. Cast to the local plugin's expected param type — not `any`.
-		nitro(nitroConfig as Parameters<typeof nitro>[0]),
+		nitro(nitroConfig),
 		viteTsConfigPaths(),
 		tailwindcss(),
 		tanstackStart(),
