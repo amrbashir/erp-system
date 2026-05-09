@@ -14,6 +14,7 @@ if (!process.env.VITE_PLATFORM) {
 }
 
 export default defineConfig({
+	server: { port: 1420 },
 	plugins: [
 		paraglideVitePlugin({
 			project: "../../packages/i18n/project.inlang",
