@@ -4,6 +4,7 @@
 	"type": "module",
 	"scripts": {
 		"docker:up": "docker compose up -d",
+		"dev": "pnpm run --parallel --filter \"./apps/**\" dev",
 		"dev:web": "pnpm --filter @workspace/web dev",
 		"dev:admin": "pnpm --filter @workspace/admin dev",
 		"dev:desktop": "pnpm --filter @workspace/desktop dev",
