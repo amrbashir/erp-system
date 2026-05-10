@@ -6,8 +6,24 @@ mod config;
 mod hardware_id;
 mod sidecar;
 
+fn install_shutdown_hooks(app: tauri::AppHandle) {
+    // Panic in any thread → kill sidecar before unwinding. Belt-and-suspenders
+    // on Windows (the Job Object would catch it anyway), primary defence on
+    // Unix.
+    let panic_app = app.clone();
+    let prev = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |info| {
+        sidecar::stop(&panic_app);
+        prev(info);
+    }));
+
+    // SIGINT/SIGTERM/SIGHUP (and Ctrl+C on Windows console) → ask Tauri to
+    // exit gracefully so RunEvent::Exit fires and stops the sidecar normally.
+    let _ = ctrlc::set_handler(move || app.exit(0));
+}
+
 fn main() {
-    let app = tauri::Builder::default()
+    tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
@@ -15,6 +31,7 @@ fn main() {
         .manage(sidecar::SidecarManager::new())
         .setup(|app| {
             sidecar::start(&app.handle())?;
+            install_shutdown_hooks(app.handle().clone());
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -27,11 +44,10 @@ fn main() {
             config::pick_db_directory,
         ])
         .build(tauri::generate_context!())
-        .expect("error while building tauri application");
-
-    app.run(|app_handle, event| {
-        if let tauri::RunEvent::Exit = event {
-            sidecar::stop(app_handle);
-        }
-    });
+        .expect("error while building tauri application")
+        .run(|app_handle, event| {
+            if let tauri::RunEvent::Exit = event {
+                sidecar::stop(app_handle);
+            }
+        });
 }

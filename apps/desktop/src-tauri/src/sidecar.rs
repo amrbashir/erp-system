@@ -12,12 +12,25 @@ const MAX_BACKOFF_MS: u64 = 30_000;
 
 pub struct SidecarManager {
     child: Mutex<Option<CommandChild>>,
+    // Windows safety net: assign every spawned sidecar to a Job Object
+    // with KILL_ON_JOB_CLOSE. When the parent process exits — gracefully,
+    // by panic, by Ctrl+C, by taskkill /F, by debugger detach, by OOM —
+    // the Job handle closes and the OS kills every assigned process.
+    // This is what catches the dev-cycle orphan that Rust-side hooks miss.
+    #[cfg(windows)]
+    job: win32job::Job,
 }
 
 impl SidecarManager {
     pub fn new() -> Self {
         Self {
             child: Mutex::new(None),
+            #[cfg(windows)]
+            job: {
+                let mut info = win32job::ExtendedLimitInfo::new();
+                info.limit_kill_on_job_close();
+                win32job::Job::create_with_limit_info(&mut info).expect("create job object")
+            },
         }
     }
 }
@@ -58,9 +71,20 @@ fn spawn_attempt(app: &tauri::AppHandle, attempt: u32) -> Result<(), String> {
         .spawn()
         .map_err(|e| format!("failed to spawn sidecar: {e}"))?;
 
+    #[cfg(windows)]
+    let pid = child.pid();
+
     with_child(app, |slot| {
         slot.replace(child);
     });
+
+    #[cfg(windows)]
+    {
+        let state = app.state::<SidecarManager>();
+        if let Err(e) = assign_pid_to_job(&state.job, pid) {
+            eprintln!("[sidecar] assign to job object failed: {e}");
+        }
+    }
 
     let handle = app.clone();
     tauri::async_runtime::spawn(async move {
@@ -110,5 +134,22 @@ fn spawn_attempt(app: &tauri::AppHandle, attempt: u32) -> Result<(), String> {
 pub fn stop(app: &tauri::AppHandle) {
     if let Some(child) = with_child(app, |slot| slot.take()) {
         let _ = child.kill();
+    }
+}
+
+/// Open the spawned PID with the rights AssignProcessToJobObject needs,
+/// hand the resulting HANDLE to win32job, and close it. The job retains
+/// the assignment by process ID after the handle closes.
+#[cfg(windows)]
+fn assign_pid_to_job(job: &win32job::Job, pid: u32) -> Result<(), String> {
+    use windows::Win32::Foundation::CloseHandle;
+    use windows::Win32::System::Threading::{OpenProcess, PROCESS_SET_QUOTA, PROCESS_TERMINATE};
+
+    unsafe {
+        let proc = OpenProcess(PROCESS_TERMINATE | PROCESS_SET_QUOTA, false, pid)
+            .map_err(|e| format!("OpenProcess({pid}): {e}"))?;
+        let res = job.assign_process(proc.0 as isize);
+        let _ = CloseHandle(proc);
+        res.map_err(|e| format!("assign_process: {e}"))
     }
 }
