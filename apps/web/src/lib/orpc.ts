@@ -17,18 +17,19 @@ type AppContract = typeof contract;
  *  - desktop: sidecar URL with `credentials: include` so the cross-origin
  *    session cookie travels (server sets SameSite=None+Secure+Partitioned)
  *
- * `OpenAPILink` needs the contract at runtime to look up each procedure's
- * REST method + path — that's why we import the browser-safe contract
- * module rather than the server router.
+ * `isDesktop()` reads `import.meta.env.DEPLOY_TARGET` — Vite statically
+ * substitutes it, so only one branch survives in each bundle. `OpenAPILink`
+ * needs the contract at runtime to look up each procedure's REST method +
+ * path — that's why we import the browser-safe contract module rather than
+ * the server router.
  */
 function createBrowserClient(): ContractRouterClient<AppContract> {
-	const desktop = isDesktop();
-	const link = new OpenAPILink(contract, {
-		url: () => (desktop ? `${SIDECAR_URL}/api` : `${window.location.origin}/api`),
-		fetch: desktop
-			? (request, init) => fetch(request, { ...init, credentials: "include" })
-			: undefined,
-	});
+	const link = isDesktop()
+		? new OpenAPILink(contract, {
+				url: `${SIDECAR_URL}/api`,
+				fetch: (request, init) => fetch(request, { ...init, credentials: "include" }),
+			})
+		: new OpenAPILink(contract, { url: `${window.location.origin}/api` });
 	return createORPCClient<ContractRouterClient<AppContract>>(link);
 }
 
