@@ -5,8 +5,8 @@
 	"identifier": "me.amrbashir.erp-system",
 	"build": {
 		"frontendDist": "../web/dist",
-		"devUrl": "http://localhost:1422",
-		"beforeDevCommand": "pnpm -w dev:web --port 1422 --clearScreen=false",
+		"devUrl": "http://localhost:1522",
+		"beforeDevCommand": "pnpm -w dev:web --port 1522 --clearScreen=false",
 		"beforeBuildCommand": "pnpm -w build:web"
 	},
 	"app": {

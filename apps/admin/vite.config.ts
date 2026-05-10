@@ -9,7 +9,7 @@ import viteTsConfigPaths from "vite-tsconfig-paths";
 import nitroConfig from "../../packages/server/nitro.config.ts";
 
 export default defineConfig({
-	server: { port: 1421 },
+	server: { port: 1521 },
 	plugins: [
 		paraglideVitePlugin({
 			project: "../../packages/i18n/project.inlang",

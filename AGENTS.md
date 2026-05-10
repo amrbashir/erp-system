@@ -6,9 +6,9 @@ This file provides guidance to Agents when working with code in this repository.
 
 ```bash
 # Development
-pnpm dev:web              # Start web app dev server (port 1420)
-pnpm dev:admin            # Start admin app dev server (port 1421)
-pnpm dev:desktop          # Start Tauri desktop app in dev mode (web on port 1422)
+pnpm dev:web              # Start web app dev server (port 1520)
+pnpm dev:admin            # Start admin app dev server (port 1521)
+pnpm dev:desktop          # Start Tauri desktop app in dev mode (web on port 1522)
 
 # Building
 pnpm build:web            # Build web app
