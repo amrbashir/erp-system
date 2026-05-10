@@ -1,5 +1,4 @@
-import { lower } from "@workspace/db";
-import { auditLogs, invitations, orgMembers, users } from "@workspace/db/schema";
+import { auditLogs, invitations, lower, orgMembers, users } from "@workspace/db/schema";
 import { and, eq, gt, sql } from "drizzle-orm";
 
 import type { DB } from "../shared/db.js";

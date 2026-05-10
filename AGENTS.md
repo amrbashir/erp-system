@@ -14,8 +14,7 @@ pnpm dev:desktop          # Start Tauri desktop app in dev mode (web on port 152
 pnpm build:web            # Build web app
 pnpm build:desktop        # Build desktop app (all platforms)
 
-# Testing & Quality
-pnpm test                 # Run Vitest tests
+# Quality
 pnpm typecheck            # TypeScript type checking across all packages
 pnpm lint                 # Lint with oxlint
 pnpm lint:fix             # Auto-fix lint issues

@@ -7,3 +7,4 @@ export { roleEnum, orgMembers } from "./org-members.js";
 export { activationStatusEnum, activations } from "./activations.js";
 export { auditLogs } from "./audit-logs.js";
 export { invitations } from "./invitations.js";
+export { lower } from "../utils.js";
