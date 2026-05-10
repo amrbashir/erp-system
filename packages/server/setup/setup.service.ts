@@ -1,4 +1,4 @@
-import { users } from "@workspace/db/schema";
+import { orgs, users } from "@workspace/db/schema";
 import { InvalidSlugError } from "@workspace/shared/errors";
 
 import type { CreateAuthOptions, createAuth as CreateAuthFn } from "../lib/auth.js";
@@ -20,8 +20,8 @@ export interface DesktopSetupInput {
 }
 
 export type DesktopSetupOk = {
-	user: { id: string; name: string; email: string };
-	org: { id: string; name: string; slug: string };
+	user: Pick<typeof users.$inferSelect, "id" | "name" | "email">;
+	org: Pick<typeof orgs.$inferSelect, "id" | "name" | "slug">;
 };
 
 /** Signup + org creation in one transaction - a slug-conflict can't strand a half-created user. `createAuth` is injected so tests can pass a transactional instance. */

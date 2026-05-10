@@ -1,12 +1,12 @@
-import { invitations, lower, orgMembers, users } from "@workspace/db/schema";
+import { invitations, lower, orgMembers, roleEnum, users } from "@workspace/db/schema";
 import { and, eq, gt, sql } from "drizzle-orm";
 
 import { logAudit } from "../lib/audit.js";
 import type { DB } from "../shared/db.js";
 import { DuplicateMemberError, isPgUniqueViolation } from "../shared/errors.js";
-type Role = "owner" | "admin" | "member";
+type Role = (typeof roleEnum.enumValues)[number];
 type Invitation = typeof invitations.$inferSelect;
-type UserSummary = { id: string; name: string; email: string };
+type UserSummary = Pick<typeof users.$inferSelect, "id" | "name" | "email">;
 
 /** `consume` writes to `org_members` directly and audits via the same tx - per-invite atomicity needs all three writes in one transaction. */
 export class InvitationsService {

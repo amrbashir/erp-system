@@ -1,4 +1,4 @@
-import { orgMembers, users } from "@workspace/db/schema";
+import { orgMembers, roleEnum, users } from "@workspace/db/schema";
 import { and, count, eq } from "drizzle-orm";
 
 import type { DB } from "../shared/db.js";
@@ -12,7 +12,7 @@ import {
 	SelfTransferError,
 	TargetMemberNotFoundError,
 } from "../shared/errors.js";
-type Role = "owner" | "admin" | "member";
+type Role = (typeof roleEnum.enumValues)[number];
 type OrgMember = typeof orgMembers.$inferSelect;
 
 /** "Add by email" coordination (user vs invite) lives in the route. Last-owner checks run inside transactions so concurrent demotions can't strand an org. */
