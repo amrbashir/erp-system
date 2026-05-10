@@ -8,7 +8,6 @@
 		"./shared/*": "./shared/*.ts",
 		"./orpc/*": "./orpc/*.ts",
 		"./activations/*": "./activations/*.ts",
-		"./audit/*": "./audit/*.ts",
 		"./invitations/*": "./invitations/*.ts",
 		"./members/*": "./members/*.ts",
 		"./orgs/*": "./orgs/*.ts",

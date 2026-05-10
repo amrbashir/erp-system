@@ -1,13 +1,14 @@
-import { auditLogs, invitations, lower, orgMembers, users } from "@workspace/db/schema";
+import { invitations, lower, orgMembers, users } from "@workspace/db/schema";
 import { and, eq, gt, sql } from "drizzle-orm";
 
+import { logAudit } from "../lib/audit.js";
 import type { DB } from "../shared/db.js";
 import { DuplicateMemberError, isPgUniqueViolation } from "../shared/errors.js";
 type Role = "owner" | "admin" | "member";
 type Invitation = typeof invitations.$inferSelect;
 type UserSummary = { id: string; name: string; email: string };
 
-/** `consume` writes to `org_members`/`audit_logs` directly - per-invite atomicity needs the same tx. */
+/** `consume` writes to `org_members` directly and audits via the same tx - per-invite atomicity needs all three writes in one transaction. */
 export class InvitationsService {
 	constructor(private readonly deps: { db: DB }) {}
 
@@ -104,7 +105,7 @@ export class InvitationsService {
 						.insert(orgMembers)
 						.values({ orgId: inv.orgId, userId: input.userId, role: inv.role })
 						.onConflictDoNothing();
-					await tx.insert(auditLogs).values({
+					await logAudit(tx, {
 						orgId: inv.orgId,
 						actorId: input.userId,
 						action: "invitation.consume",

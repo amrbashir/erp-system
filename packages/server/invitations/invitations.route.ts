@@ -1,3 +1,4 @@
+import { logAudit } from "../lib/audit.js";
 import { authed, orgResolver } from "../orpc/middleware.js";
 import { unwrap } from "../orpc/unwrap.js";
 import { InvitationNotFoundError, NoPermissionError } from "../shared/errors.js";
@@ -20,7 +21,7 @@ export const invitationsRouter = {
 		);
 		if (!result) throw new InvitationNotFoundError();
 
-		await context.auditService.log({
+		await logAudit(context.db, {
 			orgId: context.orgId,
 			actorId: context.session.user.id,
 			action: "invitation.revoke",

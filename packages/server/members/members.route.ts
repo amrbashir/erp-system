@@ -1,3 +1,4 @@
+import { logAudit } from "../lib/audit.js";
 import { authed, orgResolver } from "../orpc/middleware.js";
 import { unwrap } from "../orpc/unwrap.js";
 import { NoPermissionError, SelfRemovalError } from "../shared/errors.js";
@@ -42,7 +43,7 @@ export const membersRouter = {
 				orgId: context.orgId,
 				email: input.email,
 			});
-			await context.auditService.log({
+			await logAudit(context.db, {
 				orgId: context.orgId,
 				actorId: context.session.user.id,
 				action: "member.add",
@@ -61,7 +62,7 @@ export const membersRouter = {
 				invitedBy: context.session.user.id,
 			}),
 		);
-		await context.auditService.log({
+		await logAudit(context.db, {
 			orgId: context.orgId,
 			actorId: context.session.user.id,
 			action: "invitation.send",
@@ -81,7 +82,7 @@ export const membersRouter = {
 				actorMemberId: context.membership.id,
 			}),
 		);
-		await context.auditService.log({
+		await logAudit(context.db, {
 			orgId: context.orgId,
 			actorId: context.session.user.id,
 			action: "member.role_update",
@@ -101,7 +102,7 @@ export const membersRouter = {
 				actorRole: context.membership.role,
 			}),
 		);
-		await context.auditService.log({
+		await logAudit(context.db, {
 			orgId: context.orgId,
 			actorId: context.session.user.id,
 			action: "member.remove",
@@ -123,7 +124,7 @@ export const membersRouter = {
 				newActorRole: input.newActorRole,
 			}),
 		);
-		await context.auditService.log({
+		await logAudit(context.db, {
 			orgId: context.orgId,
 			actorId: context.session.user.id,
 			action: "member.transfer_ownership",
