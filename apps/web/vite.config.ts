@@ -13,6 +13,8 @@ if (!process.env.VITE_PLATFORM) {
 	process.env.VITE_PLATFORM = process.env.TAURI_ENV_PLATFORM ? "desktop" : "web";
 }
 
+const isDesktop = process.env.VITE_PLATFORM === "desktop";
+
 export default defineConfig({
 	server: { port: 1520 },
 	plugins: [
@@ -25,7 +27,7 @@ export default defineConfig({
 		nitro(nitroConfig),
 		viteTsConfigPaths(),
 		tailwindcss(),
-		tanstackStart(),
+		tanstackStart(isDesktop ? { spa: { enabled: true } } : undefined),
 		viteReact(),
 	],
 	resolve: {
