@@ -8,11 +8,11 @@ import { ActivationMisconfiguredError, ApiError, InvalidTokenError } from "./err
 
 type AppContract = typeof contract;
 
-const ACTIVATION_PUBLIC_KEY = import.meta.env.VITE_ACTIVATION_PUBLIC_KEY;
-const ACTIVATION_API_URL = import.meta.env.VITE_ACTIVATION_API_URL;
+const ACTIVATION_PUBLIC_KEY = import.meta.env.ACTIVATION_PUBLIC_KEY;
+const ACTIVATION_API_URL = import.meta.env.ACTIVATION_API_URL;
 
 export function isDesktop(): boolean {
-	return import.meta.env.VITE_PLATFORM === "desktop";
+	return import.meta.env.DEPLOY_TARGET === "desktop";
 }
 
 /**
