@@ -1,11 +1,7 @@
 import { adminAuthed } from "../orpc/middleware.js";
 import { unwrap } from "../orpc/unwrap.js";
 
-/**
- * Admin-only activations procedures. Mounted ONLY by the admin deployment
- * (DEPLOY_TARGET=admin) — never reachable from the public web `/api`.
- * Gated by `adminAuthed` so anonymous traffic is rejected.
- */
+/** Mounted only by DEPLOY_TARGET=admin - never reachable from public `/api`. */
 export const adminActivationsRouter = {
 	list: adminAuthed.activations.list.handler(({ context }) => {
 		return context.activationsService.list();

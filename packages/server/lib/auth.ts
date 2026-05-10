@@ -40,11 +40,7 @@ export function createAuth(options: CreateAuthOptions = {}) {
 			database: {
 				generateId: "uuid",
 			},
-			// Desktop webview ↔ sidecar is cross-site (different scheme/host),
-			// so cookies must be SameSite=None+Secure to be sent. localhost is
-			// "potentially trustworthy" so Secure on plain http is fine. Skip
-			// useSecureCookies (which adds __Secure- prefix and enforces HTTPS-
-			// only setting in some webviews) — just flip the attribute.
+			// Webview <-> sidecar is cross-site -> SameSite=None+Secure required. localhost is "potentially trustworthy" so Secure on http is fine.
 			...(isDesktop && {
 				defaultCookieAttributes: {
 					sameSite: "none" as const,
@@ -67,8 +63,6 @@ export function createAuth(options: CreateAuthOptions = {}) {
 			requireEmailVerification: false,
 		},
 		hooks: {
-			// `createAuthMiddleware` is the better-auth pattern that gives
-			// the handler a fully-typed `ctx` (with `.path`, `.body`, etc.).
 			before: createAuthMiddleware(async (ctx) => {
 				if (ctx.path !== "/sign-up/email") return;
 				const body = ctx.body;
@@ -85,8 +79,7 @@ export function createAuth(options: CreateAuthOptions = {}) {
 			user: {
 				create: {
 					after: async (user) => {
-						// best-effort: consume any pending invitations for this email.
-						// errors are logged but do not roll back signup.
+						// Best-effort: errors logged, signup not rolled back.
 						try {
 							await new InvitationsService({ db }).consume({
 								userId: user.id,
@@ -105,9 +98,7 @@ export function createAuth(options: CreateAuthOptions = {}) {
 
 export type Auth = ReturnType<typeof createAuth>;
 
-// Lazy singleton: defer createAuth() until first access so plugins (e.g.
-// desktop-startup) can populate process.env.BETTER_AUTH_SECRET / BETTER_AUTH_URL
-// before auth is constructed.
+// Lazy so env vars (BETTER_AUTH_SECRET/URL) can be populated before construction.
 let _instance: Auth | undefined;
 function getInstance(): Auth {
 	if (!_instance) {

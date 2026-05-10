@@ -11,10 +11,7 @@ interface Journal {
 	entries: JournalEntry[];
 }
 
-/**
- * Apply Drizzle migrations using a `readFile` callback.
- * In tests, `readFile` reads from disk; in production, from Nitro's server assets.
- */
+/** `readFile` is disk in tests, Nitro server assets in prod. */
 export async function applyMigrations(db: DB, readFile: (path: string) => Promise<string>) {
 	await db.execute(sql`
 		CREATE TABLE IF NOT EXISTS "__drizzle_migrations" (
@@ -41,9 +38,7 @@ export async function applyMigrations(db: DB, readFile: (path: string) => Promis
 		for (const stmt of statements) {
 			const trimmed = stmt.trim();
 			if (trimmed) {
-				// sql.raw is required for DDL — drizzle's parameterized SQL can't
-				// represent it. Input is trusted: migration files are committed
-				// to the repo and bundled at build time. No user input flows here.
+				// sql.raw needed for DDL. Input trusted (committed migration files, no user input).
 				await db.execute(sql.raw(trimmed));
 			}
 		}

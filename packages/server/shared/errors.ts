@@ -129,11 +129,7 @@ export class InvalidTokenError extends ORPCError<"UNAUTHORIZED", undefined> {
 	}
 }
 
-/**
- * Structural shape of pg/drizzle errors thrown from a query. Postgres
- * errors carry SQLSTATE codes (e.g. "23505" = unique_violation). drizzle
- * sometimes wraps them so the original sits on `cause`.
- */
+/** Drizzle sometimes wraps pg errors - original sits on `cause`. */
 type PgErrorShape = {
 	code?: string;
 	constraint?: string;
@@ -145,7 +141,7 @@ function isPgError(e: unknown): e is PgErrorShape {
 	return typeof e === "object" && e !== null;
 }
 
-/** Detect a Postgres unique-violation (SQLSTATE 23505) anywhere in the error chain. */
+/** SQLSTATE 23505 anywhere in the error chain. */
 export function isPgUniqueViolation(e: unknown): boolean {
 	if (!isPgError(e)) return false;
 	return (
@@ -155,7 +151,7 @@ export function isPgUniqueViolation(e: unknown): boolean {
 	);
 }
 
-/** Detect a Postgres unique-violation matching a specific constraint substring. */
+/** 23505 matching a specific constraint substring. */
 export function isPgUniqueViolationOn(e: unknown, constraint: string): boolean {
 	if (!isPgError(e)) return false;
 	const cause = e.cause ?? e;

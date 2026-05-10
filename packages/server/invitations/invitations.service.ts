@@ -8,14 +8,7 @@ type Role = "owner" | "admin" | "member";
 type Invitation = typeof invitations.$inferSelect;
 type UserSummary = { id: string; name: string; email: string };
 
-/**
- * Owns the `invitations` table + the post-signup consume hook.
- *
- * `consume` writes to `org_members` and `audit_logs` directly inside its
- * transaction — that's intentional: per-invite atomicity (membership +
- * audit + delete-invite or none) requires sharing the tx, and going
- * through MembersService/AuditService would force a parent-db write.
- */
+/** `consume` writes to `org_members`/`audit_logs` directly - per-invite atomicity needs the same tx. */
 export class InvitationsService {
 	constructor(private readonly deps: { db: DB }) {}
 
@@ -87,13 +80,7 @@ export class InvitationsService {
 			);
 	}
 
-	/**
-	 * Called from auth.hooks.after on user.create — converts pending
-	 * invitations for this email into memberships. Each invite runs in
-	 * its own transaction so a single bad row can't strand the rest.
-	 * Best-effort: errors are logged, never re-thrown (signup must
-	 * succeed even if invite consumption partially fails).
-	 */
+	/** Called from auth.hooks.after on user.create. Per-invite tx so one bad row doesn't strand the rest. Best-effort: signup must succeed even if consumption partially fails. */
 	async consume(input: { userId: string; email: string }): Promise<void> {
 		const pending = await this.deps.db
 			.select({

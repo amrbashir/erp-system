@@ -3,13 +3,7 @@ import { defineEventHandler } from "h3";
 
 import { useDatabase } from "#db";
 
-/**
- * Liveness + readiness probe. Returns 200 with `db: "ok"` when the database
- * is reachable, 503 with `db: "error"` otherwise. Used by:
- *  - desktop sidecar readiness gate (frontend polls before issuing API calls)
- *  - container orchestrators (k8s/docker healthchecks)
- *  - monitoring
- */
+/** 200 when DB reachable, 503 otherwise. */
 export default defineEventHandler(async (event) => {
 	const db = useDatabase();
 	try {

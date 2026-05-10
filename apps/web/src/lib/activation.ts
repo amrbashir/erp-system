@@ -15,10 +15,7 @@ export function isDesktop(): boolean {
 	return import.meta.env.DEPLOY_TARGET === "desktop";
 }
 
-/**
- * Cross-origin oRPC client for the activation server (separate deployment
- * from the sidecar). Built lazily so unconfigured envs don't crash on import.
- */
+/** Lazy so unconfigured envs don't crash on import. */
 let _activationClient: ContractRouterClient<AppContract> | null | undefined;
 function getActivationClient(): ContractRouterClient<AppContract> | null {
 	if (_activationClient !== undefined) return _activationClient;
@@ -29,8 +26,7 @@ function getActivationClient(): ContractRouterClient<AppContract> | null {
 
 async function tauriInvoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
 	const { invoke } = await import("@tauri-apps/api/core");
-	// Tauri commands reject with strings (Rust `Err(String)`) — normalize to Error
-	// so callers can rely on `instanceof Error` and `.catch((e: Error) => e)`.
+	// Tauri rejects with strings - normalize so callers can `instanceof Error`.
 	return invoke<T>(cmd, args).catch((e: unknown) => {
 		throw e instanceof Error ? e : new Error(typeof e === "string" ? e : JSON.stringify(e));
 	});

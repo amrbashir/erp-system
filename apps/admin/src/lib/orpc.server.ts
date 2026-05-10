@@ -7,11 +7,7 @@ import { adminRouter } from "@workspace/server/orpc/router";
 
 type AdminContract = typeof adminContract;
 
-/**
- * SSR-side admin client. `context` is a factory so each procedure call
- * binds the live Request via `getRequest()`. `.server.ts` filename is
- * stripped from the client bundle by the isomorphic chain in `orpc.ts`.
- */
+/** Context is a factory so each call binds the live Request via getRequest(). */
 export function createServerClient(): ContractRouterClient<AdminContract> {
 	return createRouterClient(adminRouter, {
 		context: () => buildContext(getRequest()),

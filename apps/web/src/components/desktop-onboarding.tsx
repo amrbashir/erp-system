@@ -24,9 +24,7 @@ import * as z from "zod";
 
 import { desktopSetup } from "@/lib/desktop-auth";
 
-// Form always provides a string slug (auto-derived or user-edited); the
-// contract leaves it optional so the server can fall back to deriving from
-// orgName for non-form callers.
+// Form always provides a slug; contract optional for non-form callers.
 const setupFormSchema = setupRunInput.extend({ slug: z.string() });
 
 export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {

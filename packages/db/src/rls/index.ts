@@ -1,13 +1,6 @@
 import { sql } from "drizzle-orm";
 
-/**
- * SQL statements to enable RLS and create org isolation policies.
- * Run these after migrations to set up row-level security.
- *
- * Expects a Postgres session variable `app.current_org_id` to be set
- * before queries (e.g., via `SET app.current_org_id = '<uuid>'`).
- */
-
+// Expects `app.current_org_id` set before queries (e.g. `SET app.current_org_id = '<uuid>'`).
 const tenantTables = ["org_members"] as const;
 
 export const enableRls = tenantTables.map((table) =>

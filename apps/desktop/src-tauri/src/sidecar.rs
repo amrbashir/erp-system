@@ -12,11 +12,8 @@ const MAX_BACKOFF_MS: u64 = 30_000;
 
 pub struct SidecarManager {
     child: Mutex<Option<CommandChild>>,
-    // Windows safety net: assign every spawned sidecar to a Job Object
-    // with KILL_ON_JOB_CLOSE. When the parent process exits — gracefully,
-    // by panic, by Ctrl+C, by taskkill /F, by debugger detach, by OOM —
-    // the Job handle closes and the OS kills every assigned process.
-    // This is what catches the dev-cycle orphan that Rust-side hooks miss.
+    // Windows: KILL_ON_JOB_CLOSE Job Object. Catches dev-cycle orphans Rust-side hooks miss
+    // (panic, Ctrl+C, taskkill /F, debugger detach, OOM).
     #[cfg(windows)]
     job: win32job::Job,
 }
@@ -35,16 +32,14 @@ impl SidecarManager {
     }
 }
 
-/// Operate on the child slot under the mutex. Recovers from poisoning —
-/// a sidecar-thread panic shouldn't kill the app.
+/// Recovers from mutex poisoning - sidecar-thread panic shouldn't kill the app.
 fn with_child<R>(app: &tauri::AppHandle, f: impl FnOnce(&mut Option<CommandChild>) -> R) -> R {
     let state = app.state::<SidecarManager>();
     let mut guard = state.child.lock().unwrap_or_else(PoisonError::into_inner);
     f(&mut guard)
 }
 
-/// Start the sidecar. On crash, restarts with exponential backoff up to
-/// `MAX_RESTART_ATTEMPTS` total spawns, then emits `sidecar-died`.
+/// On crash, exponential backoff up to MAX_RESTART_ATTEMPTS, then emits `sidecar-died`.
 pub fn start(app: &tauri::AppHandle) -> Result<(), String> {
     spawn_attempt(app, 0)
 }
@@ -66,9 +61,7 @@ fn spawn_attempt(app: &tauri::AppHandle, attempt: u32) -> Result<(), String> {
         .map_err(|e| format!("failed to create sidecar command: {e}"))?
         .env("NITRO_PGDATA_DIR", &cfg.db_path)
         .env("PORT", SIDECAR_PORT)
-        // Switches auth.ts to desktop mode: cross-origin cookie attributes +
-        // `trustedOrigins` populated from DESKTOP_TRUSTED_ORIGINS so the
-        // Tauri webview can sign in across origins.
+        // Switches auth.ts to desktop mode (cross-origin cookies + trustedOrigins).
         .env("DEPLOY_TARGET", "desktop");
 
     let (mut rx, child) = sidecar
@@ -141,9 +134,7 @@ pub fn stop(app: &tauri::AppHandle) {
     }
 }
 
-/// Open the spawned PID with the rights AssignProcessToJobObject needs,
-/// hand the resulting HANDLE to win32job, and close it. The job retains
-/// the assignment by process ID after the handle closes.
+/// Job retains the assignment by PID after the HANDLE closes.
 #[cfg(windows)]
 fn assign_pid_to_job(job: &win32job::Job, pid: u32) -> Result<(), String> {
     use windows::Win32::Foundation::CloseHandle;

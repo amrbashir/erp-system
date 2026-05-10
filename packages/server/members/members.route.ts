@@ -2,17 +2,12 @@ import { authed, orgResolver } from "../orpc/middleware.js";
 import { unwrap } from "../orpc/unwrap.js";
 import { NoPermissionError, SelfRemovalError } from "../shared/errors.js";
 
-// Every entry under `members` carries `{orgSlug}` in the contract input,
-// so applying `orgResolver` to the whole sub-router is safe and uniform.
+// Every entry under `members` carries `{orgSlug}` - safe to apply `orgResolver` to the whole sub-router.
 const m = authed.members.use(orgResolver);
 
-/**
- * Members procedures. Org-scoped — context has `orgId`, `membership`,
- * `session`. Audit writes happen at the procedure boundary; the service
- * tier is single-table by design.
- */
+/** Audit writes at procedure boundary; service tier is single-table by design. */
 export const membersRouter = {
-	/** Combined snapshot the UI table renders in one pass. */
+	/** Combined snapshot for the UI table in one pass. */
 	list: m.list.handler(async ({ context }) => {
 		const [members, invitations] = await Promise.all([
 			context.membersService.list(context.orgId),
@@ -24,11 +19,7 @@ export const membersRouter = {
 		};
 	}),
 
-	/**
-	 * "Add user by email" — branches on whether the email is registered:
-	 *  - existing user → membership row + clear stale invites
-	 *  - unknown email → pending invitation, consumed on signup
-	 */
+	/** Existing user -> membership + clear stale invites. Unknown email -> pending invitation, consumed on signup. */
 	add: m.add.handler(async ({ context, input }) => {
 		const actorRole = context.membership.role;
 		if (actorRole === "member") {
@@ -101,7 +92,6 @@ export const membersRouter = {
 	}),
 
 	remove: m.remove.handler(async ({ context, input }) => {
-		// self-removal blocked at procedure level (uses session/membership)
 		if (input.memberId === context.membership.id) throw new SelfRemovalError();
 
 		unwrap(

@@ -6,18 +6,10 @@ import { pub, rateLimited } from "../orpc/middleware.js";
 import { unwrap } from "../orpc/unwrap.js";
 import { InvalidEmailError } from "../shared/errors.js";
 
-// First-run-only: 5 per hour per IP is generous for legitimate use,
-// hostile to brute-force/spam.
+// First-run only: 5/hr/IP - generous for users, hostile to brute-force.
 const runLimit = rateLimited({ window: 60 * 60_000, max: 5 });
 
-/**
- * Desktop first-run setup. Both procedures are public (`pub`) — the very
- * point of this surface is that no user/session exists yet.
- *
- * `run` validates email + uses the explicit slug if provided (the
- * onboarding form lets the user edit it for the eventual `/org/<slug>/...`
- * URL). Falls back to deriving from `orgName` for backwards compat.
- */
+/** Public - no user/session exists yet. */
 export const setupRouter = {
 	isComplete: pub.setup.isComplete.handler(async ({ context }) => {
 		const setupComplete = await context.setupService.isComplete();

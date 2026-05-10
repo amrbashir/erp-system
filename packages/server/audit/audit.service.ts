@@ -11,11 +11,7 @@ export interface AuditEntry {
 	metadata?: Record<string, unknown>;
 }
 
-/**
- * Append-only audit log writer. Side-effect only — failures are surfaced
- * to the caller (the procedure layer) so transactional callers can decide
- * whether to swallow or propagate.
- */
+/** Failures surface to caller - transactional callers decide swallow vs propagate. */
 export class AuditService {
 	constructor(private readonly deps: { db: DB }) {}
 

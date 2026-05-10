@@ -53,14 +53,12 @@ pub fn write_config(app: &tauri::AppHandle, config: &AppConfig) -> Result<(), St
     Ok(())
 }
 
-/// Validate that a directory path is usable for the DB.
-/// Creates the directory if it doesn't exist, then checks writability.
+/// Creates the dir if needed, then checks writability.
 pub fn validate_db_path(path: &str) -> Result<(), String> {
     let p = PathBuf::from(path);
     fs::create_dir_all(&p).map_err(|e| format!("cannot create directory: {e}"))?;
 
-    // Unique probe filename + RAII cleanup. Concurrent callers (and a panic
-    // mid-write) can't collide on a fixed path or leave stale junk behind.
+    // Unique probe + RAII cleanup - concurrent callers and panics can't collide or leave junk.
     let nanos = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map(|d| d.as_nanos())
@@ -94,13 +92,7 @@ pub fn get_default_db_path(app: tauri::AppHandle) -> Result<String, String> {
     default_db_path(&app)
 }
 
-/// Persist a new DB path. Takes effect on next app launch — the running
-/// sidecar reads `db_path` once at startup. The frontend should warn the
-/// user a reboot is required after calling this.
-///
-/// Data is NOT migrated: the new path is used as-is. If pgdata already
-/// exists there it'll be reused; otherwise PGlite initializes a fresh
-/// cluster on first start.
+/// Takes effect on next launch - sidecar reads `db_path` once at startup. Data NOT migrated.
 #[tauri::command]
 pub fn update_db_path(app: tauri::AppHandle, path: String) -> Result<(), String> {
     validate_db_path(&path)?;

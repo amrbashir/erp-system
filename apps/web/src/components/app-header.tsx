@@ -21,8 +21,7 @@ export function AppHeader({
 
 	async function handleLogout() {
 		await signOut();
-		// Clear the query cache so the new login/onboarding pass through doesn't
-		// see the stale (logged-in) session via ensureQueryData.
+		// Clear cache - next login/onboarding shouldn't see stale session via ensureQueryData.
 		queryClient.clear();
 		if (isDesktop()) {
 			window.location.href = "/";

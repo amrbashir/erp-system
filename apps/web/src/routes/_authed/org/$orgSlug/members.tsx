@@ -584,7 +584,7 @@ function InvitationRow({
 }) {
 	return (
 		<TableRow className="opacity-70">
-			<TableCell className="text-muted-foreground">—</TableCell>
+			<TableCell className="text-muted-foreground">-</TableCell>
 			<TableCell>{invitation.email}</TableCell>
 			<TableCell>
 				{

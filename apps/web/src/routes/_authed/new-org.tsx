@@ -6,8 +6,7 @@ import { isDesktop } from "@/lib/activation";
 
 export const Route = createFileRoute("/_authed/new-org")({
 	beforeLoad: () => {
-		// Desktop is single-org per install (be-spoke default org). Multi-org
-		// creation is a web-only flow.
+		// Desktop is single-org per install - multi-org creation is web-only.
 		if (isDesktop()) throw redirect({ to: "/" });
 	},
 	component: NewOrgPage,

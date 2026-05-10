@@ -2,7 +2,6 @@ import { ORPCError } from "@orpc/server";
 import { APIError } from "better-auth";
 import { HTTPError } from "h3";
 
-/** Translate a thrown error into an h3 HTTPError for the better-auth nitro route. */
 export function toHTTPError(err: unknown): HTTPError {
 	if (!(err instanceof Error)) {
 		return new HTTPError(typeof err === "string" ? err : "Internal Server Error", {

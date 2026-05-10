@@ -15,15 +15,7 @@ import {
 type Role = "owner" | "admin" | "member";
 type OrgMember = typeof orgMembers.$inferSelect;
 
-/**
- * Owns the `org_members` table: list, add, role updates, removal, transfer.
- * The "add by email" coordination flow (existing user vs invite) lives in
- * the route layer — this service only handles the direct-add path.
- *
- * Result-style: methods return `T | Error`. Permission and last-owner
- * checks happen inside transactions so concurrent demotions can't strand
- * an org without an owner.
- */
+/** "Add by email" coordination (user vs invite) lives in the route. Last-owner checks run inside transactions so concurrent demotions can't strand an org. */
 export class MembersService {
 	constructor(private readonly deps: { db: DB }) {}
 

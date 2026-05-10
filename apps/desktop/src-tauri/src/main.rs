@@ -7,9 +7,7 @@ mod hardware_id;
 mod sidecar;
 
 fn install_shutdown_hooks(app: tauri::AppHandle) {
-    // Panic in any thread → kill sidecar before unwinding. Belt-and-suspenders
-    // on Windows (the Job Object would catch it anyway), primary defence on
-    // Unix.
+    // Kill sidecar on panic before unwinding. Primary defence on Unix; on Windows the Job Object backs it up.
     let panic_app = app.clone();
     let prev = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |info| {
@@ -17,8 +15,7 @@ fn install_shutdown_hooks(app: tauri::AppHandle) {
         prev(info);
     }));
 
-    // SIGINT/SIGTERM/SIGHUP (and Ctrl+C on Windows console) → ask Tauri to
-    // exit gracefully so RunEvent::Exit fires and stops the sidecar normally.
+    // SIGINT/SIGTERM/SIGHUP/Ctrl+C -> graceful exit so RunEvent::Exit fires.
     let _ = ctrlc::set_handler(move || app.exit(0));
 }
 

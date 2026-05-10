@@ -12,7 +12,7 @@ import { isDesktop } from "@/lib/activation";
 
 export const Route = createFileRoute("/_authed/")({
 	beforeLoad: ({ context }) => {
-		// desktop is single-tenant — skip the one-card list and go straight in
+		// desktop is single-tenant - skip the one-card list and go straight in
 		if (isDesktop() && context.orgs.length === 1) {
 			throw redirect({
 				to: "/org/$orgSlug",

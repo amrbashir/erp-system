@@ -12,9 +12,7 @@ import { initDatabase } from "#db";
 function ensureAuthSecret(dataDir: string | undefined) {
 	if (process.env.BETTER_AUTH_SECRET) return;
 
-	// Refuse to fall back to CWD: it's launch-dir dependent → secret rotates on
-	// every relocation and invalidates every session. Tauri always sets
-	// NITRO_PGDATA_DIR; if it's missing the host is misconfigured.
+	// No CWD fallback - it'd rotate the secret on every relocation. Tauri always sets NITRO_PGDATA_DIR.
 	if (!dataDir) {
 		throw new Error(
 			"[desktop-startup] pgdataDir is not configured; set NITRO_PGDATA_DIR " +

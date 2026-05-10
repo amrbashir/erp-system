@@ -10,18 +10,9 @@ import {
 } from "../shared/errors.js";
 type Activation = typeof activations.$inferSelect;
 
-/** Public-facing check result, mirroring the original HTTP route surface. */
 export type CheckResult = { token: string } | { status: "pending" | "revoked" };
 
-/**
- * Owns the `activations` table + ES256 JWT signing/verification used by
- * the desktop activation handshake.
- *
- * `privateKey` is constructor-injected so the procedure layer doesn't
- * read env directly. Pass `undefined` in tests / local dev where signing
- * is not configured — `checkAndIssue` returns `ServerMisconfiguredError`
- * if a token would otherwise be required.
- */
+/** ES256 JWT signing for desktop activation. `privateKey` undefined in tests/local dev - `checkAndIssue` returns `ServerMisconfiguredError` if a token is required. */
 export class ActivationsService {
 	constructor(private readonly deps: { db: DB; privateKey?: string }) {}
 
@@ -48,11 +39,7 @@ export class ActivationsService {
 		return updated;
 	}
 
-	/**
-	 * Combined check + auto-register + sign flow used by the desktop
-	 * client. Unknown hardware is registered as `pending` so the admin
-	 * dashboard can later approve it.
-	 */
+	/** Unknown hardware is auto-registered as `pending` for admin approval. */
 	async checkAndIssue(
 		hardwareId: string,
 	): Promise<ServerMisconfiguredError | InvalidTokenError | CheckResult> {

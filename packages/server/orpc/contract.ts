@@ -8,16 +8,7 @@ import { orgsContract } from "../orgs/orgs.contract.js";
 import { sessionContract } from "../session/session.contract.js";
 import { setupContract } from "../setup/setup.contract.js";
 
-/**
- * Composed source-of-truth contract for the public API. Per-domain pieces
- * live next to their `.route.ts` (e.g. `members/members.contract.ts`); this
- * file just stitches them into a single tree.
- *
- * Browser-safe — clients import this to drive `OpenAPILink`.
- *
- * The server router (orpc/router.ts) implements this via `implement(contract)`
- * — TypeScript enforces every contract entry has a matching handler.
- */
+/** Browser-safe public API contract. Domain pieces live next to their `.route.ts`. */
 export const contract = {
 	ping: oc.route({ method: "GET", path: "/ping" }),
 	session: sessionContract,

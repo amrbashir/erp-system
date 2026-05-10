@@ -3,15 +3,10 @@ interface RateLimitEntry {
 	resetAt: number;
 }
 
-/**
- * In-memory IP-based limiter. Accepts a `Request` so the same factory
- * works for h3 event-based handlers and oRPC procedures (which only
- * see the parsed `Request`).
- */
+/** In-memory IP-based limiter. Takes `Request` so it works for h3 handlers and oRPC procedures. */
 export function createRateLimiter(opts: { window: number; max: number }) {
 	const store = new Map<string, RateLimitEntry>();
 
-	// periodic cleanup to prevent memory leak
 	setInterval(() => {
 		const now = Date.now();
 		for (const [key, entry] of store) {

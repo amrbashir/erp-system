@@ -9,13 +9,7 @@ import { isPgUniqueViolationOn, SlugTakenError, UnsupportedCurrencyError } from 
 type Org = typeof orgs.$inferSelect;
 type OrgMember = typeof orgMembers.$inferSelect;
 
-/**
- * Owns org lifecycle: create + queries by user. Membership lookup lives
- * here too because it's the auth gatekeeper for any org-scoped op.
- *
- * Result-style: methods return `T | Error` rather than throw. Procedure
- * layer unwraps at the boundary.
- */
+/** Methods return `T | Error`; procedure layer unwraps at the boundary. */
 export class OrgsService {
 	constructor(private readonly deps: { db: DB }) {}
 

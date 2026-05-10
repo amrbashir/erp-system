@@ -2,9 +2,7 @@ import { definePlugin } from "nitro";
 
 import { DESKTOP_TRUSTED_ORIGINS } from "../lib/desktop-origins.js";
 
-// Headers set on `event.res.headers` from middleware are wiped when a route
-// handler returns a Response object (oRPC does this). The `response` hook
-// runs *after* the final Response is built, so headers added here survive.
+// Middleware-set headers are wiped when a route returns a Response (oRPC does). The `response` hook runs after the Response is built, so headers added here survive.
 export default definePlugin((nitroApp) => {
 	nitroApp.hooks.hook("response", (res, event) => {
 		const origin = event.req.headers.get("origin");

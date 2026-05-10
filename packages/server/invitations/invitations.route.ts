@@ -4,11 +4,7 @@ import { InvitationNotFoundError, NoPermissionError } from "../shared/errors.js"
 
 const inv = authed.invitations.use(orgResolver);
 
-/**
- * Invitation procedures. Listing lives under `members.list` (combined
- * snapshot for the UI). Sending invites is part of the `members.add`
- * branch flow. Only `revoke` is unique to this surface.
- */
+/** Listing lives under `members.list`; sending under `members.add`. Only `revoke` is unique here. */
 export const invitationsRouter = {
 	revoke: inv.revoke.handler(async ({ context, input }) => {
 		const actorRole = context.membership.role;

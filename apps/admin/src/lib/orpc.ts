@@ -9,11 +9,7 @@ import { createServerClient } from "./orpc.server";
 
 type AdminContract = typeof adminContract;
 
-/**
- * Browser-side link: same-origin `/api` (cookies travel for free). The
- * admin Nitro server mounts `AdminRouter` at `/api` (gated by
- * DEPLOY_TARGET=admin), so the same path serves admin procedures here.
- */
+/** Same-origin `/api` - admin Nitro server mounts AdminRouter there (gated by DEPLOY_TARGET=admin). */
 function createBrowserClient(): ContractRouterClient<AdminContract> {
 	const link = new OpenAPILink(adminContract, {
 		url: `${window.location.origin}/api`,
@@ -21,9 +17,7 @@ function createBrowserClient(): ContractRouterClient<AdminContract> {
 	return createORPCClient<ContractRouterClient<AdminContract>>(link);
 }
 
-// The Start compiler rewrites this chain to just the per-env impl, so the
-// `createServerClient` import vanishes from the client bundle before tree
-// shaking — keeps import-protection happy.
+// Start compiler eliminates `createServerClient` from the client bundle.
 const getClient = createIsomorphicFn()
 	.server(() => createServerClient())
 	.client(() => createBrowserClient());

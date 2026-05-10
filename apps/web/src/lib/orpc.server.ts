@@ -7,14 +7,7 @@ import { router } from "@workspace/server/orpc/router";
 
 type AppContract = typeof contract;
 
-/**
- * SSR-side client: dispatches procedures in-process — no HTTP round-trip.
- * `context` is a factory so each procedure call binds the live Request
- * (cookies/auth) via `getRequest()`.
- *
- * `.server.ts` filename: import-protection denies on the client; the
- * isomorphic chain in `orpc.ts` strips this import from the client bundle.
- */
+/** In-process dispatch - no HTTP round-trip. Context factory binds the live Request via getRequest(). */
 export function createServerClient(): ContractRouterClient<AppContract> {
 	return createRouterClient(router, {
 		context: () => buildContext(getRequest()),

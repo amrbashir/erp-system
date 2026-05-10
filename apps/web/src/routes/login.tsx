@@ -51,9 +51,7 @@ function LoginPage() {
 				setError(err.message ?? m.login_failed());
 				return;
 			}
-			// reloadDocument forces a fresh server fetch — the session query was
-			// cached as `null` while we were on /login, so without this, _authed's
-			// beforeLoad would see the stale null and bounce back here.
+			// reloadDocument refetches - without it, `_authed`'s beforeLoad sees the cached null session and bounces back.
 			const dest = safeRedirect(redirectTo);
 			void navigate({ to: dest, reloadDocument: true });
 		},

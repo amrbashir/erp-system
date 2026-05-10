@@ -11,18 +11,7 @@ import { SIDECAR_URL } from "./sidecar";
 
 type AppContract = typeof contract;
 
-/**
- * Browser-side link.
- *  - web: same-origin `/api` (cookies travel for free)
- *  - desktop: sidecar URL with `credentials: include` so the cross-origin
- *    session cookie travels (server sets SameSite=None+Secure+Partitioned)
- *
- * `isDesktop()` reads `import.meta.env.DEPLOY_TARGET` — Vite statically
- * substitutes it, so only one branch survives in each bundle. `OpenAPILink`
- * needs the contract at runtime to look up each procedure's REST method +
- * path — that's why we import the browser-safe contract module rather than
- * the server router.
- */
+/** Desktop: sidecar URL + `credentials: include` for cross-origin cookies (SameSite=None+Secure+Partitioned). Web: same-origin `/api`. */
 function createBrowserClient(): ContractRouterClient<AppContract> {
 	const link = isDesktop()
 		? new OpenAPILink(contract, {
@@ -33,9 +22,7 @@ function createBrowserClient(): ContractRouterClient<AppContract> {
 	return createORPCClient<ContractRouterClient<AppContract>>(link);
 }
 
-// The Start compiler rewrites this whole chain to just the per-env impl, so
-// in the client bundle the `createServerClient` reference (and its `.server.ts`
-// module) are statically eliminated — passing import-protection cleanly.
+// Start compiler eliminates `createServerClient` (and its `.server.ts`) from the client bundle.
 const getClient = createIsomorphicFn()
 	.server(() => createServerClient())
 	.client(() => createBrowserClient());

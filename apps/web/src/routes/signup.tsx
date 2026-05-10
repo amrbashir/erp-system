@@ -52,9 +52,7 @@ function SignupPage() {
 				setError(err.message ?? m.signup_failed());
 				return;
 			}
-			// invitations table is consumed in user.create.after; if the email had
-			// pending invites, the user already has org memberships. otherwise,
-			// _authed will bounce to /onboarding.
+			// Pending invites consumed in user.create.after - _authed bounces to /onboarding if no memberships.
 			const dest = safeRedirect(redirectTo);
 			void navigate({ to: dest, reloadDocument: true });
 		},

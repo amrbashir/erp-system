@@ -24,14 +24,7 @@ export type DesktopSetupOk = {
 	org: { id: string; name: string; slug: string };
 };
 
-/**
- * Owns the desktop first-run flow. Runs signup + org creation in one
- * transaction so a slug-conflict can't strand a half-created user.
- *
- * `createAuth` is constructor-injected so tests can pass a transactional
- * auth instance with explicit `baseURL`/`secret`; production wires the
- * real factory via `orpc/context.ts`.
- */
+/** Signup + org creation in one transaction - a slug-conflict can't strand a half-created user. `createAuth` is injected so tests can pass a transactional instance. */
 export class SetupService {
 	constructor(
 		private readonly deps: {
@@ -41,7 +34,6 @@ export class SetupService {
 		},
 	) {}
 
-	/** Probe used by the desktop bootstrap to choose between setup vs login. */
 	async isComplete(): Promise<boolean> {
 		const [existing] = await this.deps.db.select({ id: users.id }).from(users).limit(1);
 		return !!existing;
@@ -80,7 +72,7 @@ export class SetupService {
 					slug: input.slug,
 					userId: signup.user.id,
 				});
-				if (org instanceof Error) throw org; // rollback
+				if (org instanceof Error) throw org;
 
 				return {
 					user: {
