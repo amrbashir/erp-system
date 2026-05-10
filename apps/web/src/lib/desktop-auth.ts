@@ -1,10 +1,11 @@
-import { apiFetch, storeToken } from "./api-fetch";
 import { ApiError } from "./errors";
 import { client } from "./orpc";
 
 /**
- * Desktop-only first-run setup: creates the initial owner + org atomically.
- * Web signup uses better-auth's signUp.email instead.
+ * Desktop-only first-run setup: atomically creates the initial owner + org.
+ * Does NOT sign in — the next bootstrap pass sees `setupComplete: true` and
+ * the `_authed` guard then routes to `/login`, where the user authenticates
+ * normally with the credentials they just set.
  */
 export async function desktopSetup(input: {
 	orgName: string;
@@ -15,7 +16,6 @@ export async function desktopSetup(input: {
 }): Promise<void> {
 	const data = await client.setup.run(input).catch((e: Error) => e);
 	if (data instanceof Error) throw new ApiError({ message: data.message });
-	if (data.token) storeToken(data.token);
 }
 
 /** Lightweight probe: does any user exist? Used by the desktop bootstrap. */
@@ -26,10 +26,11 @@ export async function getSetupComplete(): Promise<{ setupComplete: boolean }> {
 }
 
 /**
- * Poll /api/health until the sidecar reports ok (or timeout). Tauri spawns the
- * sidecar in setup(), but the webview loads in parallel — without this,
- * early calls race the port binding + PGlite init + migrations and surface
- * confusing connection errors.
+ * Poll the sidecar until it responds (or timeout). Tauri spawns the sidecar
+ * in setup(), but the webview loads in parallel — without this, early calls
+ * race the port binding + PGlite init + migrations and surface confusing
+ * connection errors. Uses `setup.isComplete` because it's public and
+ * exercises the DB, so a successful call means both the API and DB are up.
  */
 export async function waitForSidecar(opts?: {
 	timeoutMs?: number;
@@ -40,11 +41,11 @@ export async function waitForSidecar(opts?: {
 	const deadline = Date.now() + timeoutMs;
 
 	while (Date.now() < deadline) {
-		const res = await apiFetch("/api/health").catch(() => null);
-		if (res?.ok) {
-			const body = await res.json().catch(() => null);
-			if (body?.db === "ok") return true;
-		}
+		const ok = await client.setup
+			.isComplete()
+			.then(() => true)
+			.catch(() => false);
+		if (ok) return true;
 		await new Promise((r) => setTimeout(r, intervalMs));
 	}
 	return false;

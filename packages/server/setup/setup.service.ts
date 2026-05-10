@@ -20,7 +20,6 @@ export interface DesktopSetupInput {
 }
 
 export type DesktopSetupOk = {
-	token: string | null;
 	user: { id: string; name: string; email: string };
 	org: { id: string; name: string; slug: string };
 };
@@ -84,7 +83,6 @@ export class SetupService {
 				if (org instanceof Error) throw org; // rollback
 
 				return {
-					token: signup.token,
 					user: {
 						id: signup.user.id,
 						name: signup.user.name,

@@ -3,13 +3,13 @@ import { APIError, betterAuth } from "better-auth";
 import type { BetterAuthOptions } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware } from "better-auth/api";
-import { bearer } from "better-auth/plugins/bearer";
 
 import { useDatabase } from "#db";
 
 import { InvitationsService } from "../invitations/invitations.service.js";
 import type { DB } from "../shared/db.js";
 import { validatePassword } from "../shared/validate-password.js";
+import { DESKTOP_TRUSTED_ORIGINS } from "./desktop-origins.js";
 
 export interface CreateAuthOptions {
 	plugins?: BetterAuthOptions["plugins"];
@@ -30,6 +30,7 @@ export function createAuth(options: CreateAuthOptions = {}) {
 			(isDesktop ? "http://localhost:11435" : undefined),
 		secret: options.secret ?? process.env.BETTER_AUTH_SECRET,
 		telemetry: { enabled: false },
+		trustedOrigins: isDesktop ? [...DESKTOP_TRUSTED_ORIGINS] : undefined,
 		database: drizzleAdapter(db, {
 			provider: "pg",
 			usePlural: true,
@@ -39,6 +40,18 @@ export function createAuth(options: CreateAuthOptions = {}) {
 			database: {
 				generateId: "uuid",
 			},
+			// Desktop webview ↔ sidecar is cross-site (different scheme/host),
+			// so cookies must be SameSite=None+Secure to be sent. localhost is
+			// "potentially trustworthy" so Secure on plain http is fine. Skip
+			// useSecureCookies (which adds __Secure- prefix and enforces HTTPS-
+			// only setting in some webviews) — just flip the attribute.
+			...(isDesktop && {
+				defaultCookieAttributes: {
+					sameSite: "none" as const,
+					secure: true,
+					partitioned: true,
+				},
+			}),
 		},
 		user: {
 			additionalFields: {
@@ -86,7 +99,7 @@ export function createAuth(options: CreateAuthOptions = {}) {
 				},
 			},
 		},
-		plugins: [...(isDesktop ? [bearer()] : []), ...(options.plugins ?? [])],
+		plugins: options.plugins ?? [],
 	});
 }
 

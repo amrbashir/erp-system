@@ -6,7 +6,6 @@ import { createIsomorphicFn } from "@tanstack/react-start";
 import { contract } from "@workspace/server/orpc/contract";
 
 import { isDesktop } from "./activation";
-import { getStoredToken } from "./api-fetch";
 import { createServerClient } from "./orpc.server";
 import { SIDECAR_URL } from "./sidecar";
 
@@ -15,20 +14,20 @@ type AppContract = typeof contract;
 /**
  * Browser-side link.
  *  - web: same-origin `/api` (cookies travel for free)
- *  - desktop: sidecar URL + Bearer token (org scope is in the URL path)
+ *  - desktop: sidecar URL with `credentials: include` so the cross-origin
+ *    session cookie travels (server sets SameSite=None+Secure+Partitioned)
  *
  * `OpenAPILink` needs the contract at runtime to look up each procedure's
  * REST method + path — that's why we import the browser-safe contract
  * module rather than the server router.
  */
 function createBrowserClient(): ContractRouterClient<AppContract> {
+	const desktop = isDesktop();
 	const link = new OpenAPILink(contract, {
-		url: () => (isDesktop() ? `${SIDECAR_URL}/api` : `${window.location.origin}/api`),
-		headers: () => {
-			if (!isDesktop()) return {};
-			const token = getStoredToken();
-			return token ? { Authorization: `Bearer ${token}` } : {};
-		},
+		url: () => (desktop ? `${SIDECAR_URL}/api` : `${window.location.origin}/api`),
+		fetch: desktop
+			? (request, init) => fetch(request, { ...init, credentials: "include" })
+			: undefined,
 	});
 	return createORPCClient<ContractRouterClient<AppContract>>(link);
 }

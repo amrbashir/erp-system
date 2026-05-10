@@ -15,7 +15,10 @@ const dir = import.meta.dirname;
 export default defineNitroConfig({
 	preset: isDesktop ? "deno-server" : undefined,
 	serverDir: dir,
-	plugins: isDesktop ? ["plugins/desktop-startup.ts"] : [],
+	plugins: [
+		resolve(dir, "plugins/cors.ts"),
+		...(isDesktop ? [resolve(dir, "plugins/desktop-startup.ts")] : []),
+	],
 	alias: {
 		"#db": databaseAdapter,
 	},

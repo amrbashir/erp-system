@@ -10,7 +10,6 @@ export const setupRunInput = z.object({
 });
 
 const setupRunOutput = z.object({
-	token: z.string().nullable(),
 	user: z.object({ id: z.string(), name: z.string(), email: z.string() }),
 	org: z.object({ id: z.string(), name: z.string(), slug: z.string() }),
 });

@@ -7,7 +7,6 @@ import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
 import type { ReactNode } from "react";
 
 import { isDesktop } from "@/lib/activation";
-import { clearToken } from "@/lib/api-fetch";
 import { signOut } from "@/lib/auth-client";
 
 export function AppHeader({
@@ -26,7 +25,6 @@ export function AppHeader({
 		// see the stale (logged-in) session via ensureQueryData.
 		queryClient.clear();
 		if (isDesktop()) {
-			clearToken();
 			window.location.href = "/";
 			return;
 		}

@@ -65,7 +65,11 @@ fn spawn_attempt(app: &tauri::AppHandle, attempt: u32) -> Result<(), String> {
         .sidecar("erp-sidecar")
         .map_err(|e| format!("failed to create sidecar command: {e}"))?
         .env("NITRO_PGDATA_DIR", &cfg.db_path)
-        .env("PORT", SIDECAR_PORT);
+        .env("PORT", SIDECAR_PORT)
+        // Switches auth.ts to desktop mode: cross-origin cookie attributes +
+        // `trustedOrigins` populated from DESKTOP_TRUSTED_ORIGINS so the
+        // Tauri webview can sign in across origins.
+        .env("DEPLOY_TARGET", "desktop");
 
     let (mut rx, child) = sidecar
         .spawn()
