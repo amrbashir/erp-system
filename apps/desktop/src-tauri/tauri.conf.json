@@ -6,7 +6,7 @@
 	"build": {
 		"frontendDist": "../web/dist",
 		"devUrl": "http://localhost:1522",
-		"beforeDevCommand": "pnpm -w dev:web --port 1522 --clearScreen=false",
+		"beforeDevCommand": "pnpm -w dev:web:desktop --port 1522 --clearScreen=false",
 		"beforeBuildCommand": "pnpm -w build:web"
 	},
 	"app": {

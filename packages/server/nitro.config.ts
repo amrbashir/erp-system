@@ -15,14 +15,6 @@ const dir = import.meta.dirname;
 export default defineNitroConfig({
 	preset: isDesktop ? "deno-server" : undefined,
 	serverDir: dir,
-	plugins: [
-		resolve(dir, "plugins/cors.ts"),
-		...(isDesktop ? [resolve(dir, "plugins/desktop-startup.ts")] : []),
-	],
-	alias: {
-		"#db": databaseAdapter,
-	},
-	runtimeConfig: isDesktop ? { pgdataDir: "" } : {},
+	alias: { "#db": databaseAdapter },
 	serverAssets: isDesktop ? [{ baseName: "migrations", dir: resolve(dir, "../db/drizzle") }] : [],
-	ignore: isDesktop ? [] : ["plugins/desktop-startup.ts"],
 });

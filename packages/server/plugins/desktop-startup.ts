@@ -4,21 +4,12 @@ import { dirname, resolve } from "node:path";
 
 import { applyMigrations } from "@workspace/server/lib/migrate";
 import { definePlugin } from "nitro";
-import { useRuntimeConfig } from "nitro/runtime-config";
 import { useStorage } from "nitro/storage";
 
 import { initDatabase } from "#db";
 
-function ensureAuthSecret(dataDir: string | undefined) {
+function ensureAuthSecret(dataDir: string) {
 	if (process.env.BETTER_AUTH_SECRET) return;
-
-	// No CWD fallback - it'd rotate the secret on every relocation. Tauri always sets NITRO_PGDATA_DIR.
-	if (!dataDir) {
-		throw new Error(
-			"[desktop-startup] pgdataDir is not configured; set NITRO_PGDATA_DIR " +
-				"(via the Tauri host) or BETTER_AUTH_SECRET directly.",
-		);
-	}
 
 	// Co-locate secret with pgdata so user-controlled storage survives upgrades.
 	const baseDir = dirname(resolve(dataDir));
@@ -35,15 +26,9 @@ function ensureAuthSecret(dataDir: string | undefined) {
 	process.env.BETTER_AUTH_SECRET = secret;
 }
 
-declare module "nitro/types" {
-	interface NitroRuntimeConfig {
-		pgdataDir?: string;
-	}
-}
-
 export default definePlugin(async () => {
-	const config = useRuntimeConfig();
-	const dataDir = config.pgdataDir || undefined;
+	const dataDir = process.env.NITRO_PGDATA_DIR;
+	if (!dataDir) return;
 
 	// must run before any auth.ts module evaluation triggered by route imports
 	ensureAuthSecret(dataDir);

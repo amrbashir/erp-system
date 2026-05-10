@@ -8,6 +8,7 @@
 		"dev:web": "pnpm --filter @workspace/web dev",
 		"dev:admin": "pnpm --filter @workspace/admin dev",
 		"dev:desktop": "pnpm --filter @workspace/desktop dev",
+		"dev:web:desktop": "DEPLOY_TARGET=desktop pnpm --filter @workspace/web dev",
 		"build:web": "pnpm --filter @workspace/web build",
 		"build:desktop": "pnpm --filter @workspace/desktop build",
 		"build:desktop:sidecar": "pnpm --filter @workspace/desktop build:sidecar",
