@@ -1,12 +1,12 @@
 import { implement, os } from "@orpc/server";
 
-import { auth } from "../lib/auth.js";
+import { useAuth } from "../lib/auth.js";
 import { NotOrgMemberError, RateLimitedError, UnauthorizedError } from "../shared/errors.js";
 import { createRateLimiter } from "../shared/rate-limit.js";
 import { adminContract, contract } from "./contract.js";
 import type { AppContext } from "./context.js";
 
-type Session = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>;
+type Session = NonNullable<Awaited<ReturnType<ReturnType<typeof useAuth>["api"]["getSession"]>>>;
 
 /** Contract-first builders. Domain routers chain off these to inherit AppContext. */
 export const pub = implement(contract).$context<AppContext>();
@@ -27,16 +27,16 @@ export function rateLimited(opts: { window: number; max: number }) {
 
 /** Reads `request` (not `event`) so SSR via createRouterClient works. Middleware throws (rest of code returns T|Error). */
 export const authed = pub.use(async ({ context, next }) => {
-	const session = await auth.api
-		.getSession({ headers: context.request.headers })
+	const session = await useAuth()
+		.api.getSession({ headers: context.request.headers })
 		.catch(() => null);
 	if (!session) throw new UnauthorizedError();
 	return next({ context: { ...context, session } });
 });
 
 export const adminAuthed = adminPub.use(async ({ context, next }) => {
-	const session = await auth.api
-		.getSession({ headers: context.request.headers })
+	const session = await useAuth()
+		.api.getSession({ headers: context.request.headers })
 		.catch(() => null);
 	if (!session) throw new UnauthorizedError();
 	return next({ context: { ...context, session } });

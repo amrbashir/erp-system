@@ -3,8 +3,7 @@ import { APIError, betterAuth } from "better-auth";
 import type { BetterAuthOptions } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { createAuthMiddleware } from "better-auth/api";
-
-import { useDatabase } from "#db";
+import { useNitroApp } from "nitro/app";
 
 import { InvitationsService } from "../invitations/invitations.service.js";
 import type { DB } from "../shared/db.js";
@@ -12,15 +11,15 @@ import { validatePassword } from "../shared/validate-password.js";
 import { DESKTOP_TRUSTED_ORIGINS } from "./desktop-origins.js";
 
 export interface CreateAuthOptions {
+	db: DB;
 	plugins?: BetterAuthOptions["plugins"];
 	desktop?: boolean;
 	baseURL?: string;
 	secret?: string;
-	db?: DB;
 }
 
-export function createAuth(options: CreateAuthOptions = {}) {
-	const db = options.db ?? useDatabase();
+export function createAuth(options: CreateAuthOptions) {
+	const { db } = options;
 	const isDesktop = options.desktop ?? false;
 
 	return betterAuth({
@@ -98,17 +97,14 @@ export function createAuth(options: CreateAuthOptions = {}) {
 
 export type Auth = ReturnType<typeof createAuth>;
 
-// Lazy so env vars (BETTER_AUTH_SECRET/URL) can be populated before construction.
-let _instance: Auth | undefined;
-function getInstance(): Auth {
-	if (!_instance) {
-		_instance = createAuth({
-			desktop: process.env.DEPLOY_TARGET === "desktop",
-		});
+declare module "nitro/types" {
+	interface NitroApp {
+		auth: Auth;
 	}
-	return _instance;
 }
 
-export const auth: Auth = new Proxy({} as Auth, {
-	get: (_, prop) => Reflect.get(getInstance(), prop),
-});
+export function useAuth(): Auth {
+	const app = useNitroApp();
+	if (!app.auth) throw new Error("Auth not initialized - init plugin missing or failed");
+	return app.auth;
+}

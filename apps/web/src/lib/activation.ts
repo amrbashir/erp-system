@@ -15,14 +15,11 @@ export function isDesktop(): boolean {
 	return import.meta.env.DEPLOY_TARGET === "desktop";
 }
 
-/** Lazy so unconfigured envs don't crash on import. */
-let _activationClient: ContractRouterClient<AppContract> | null | undefined;
-function getActivationClient(): ContractRouterClient<AppContract> | null {
-	if (_activationClient !== undefined) return _activationClient;
-	if (!ACTIVATION_API_URL) return (_activationClient = null);
-	const link = new OpenAPILink(contract, { url: `${ACTIVATION_API_URL}/api` });
-	return (_activationClient = createORPCClient<ContractRouterClient<AppContract>>(link));
-}
+const activationClient: ContractRouterClient<AppContract> | null = ACTIVATION_API_URL
+	? createORPCClient<ContractRouterClient<AppContract>>(
+			new OpenAPILink(contract, { url: `${ACTIVATION_API_URL}/api` }),
+		)
+	: null;
 
 async function tauriInvoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
 	const { invoke } = await import("@tauri-apps/api/core");
@@ -54,10 +51,9 @@ export async function verifyTokenOffline(
 }
 
 export async function checkActivationApi(hardwareId: string) {
-	const client = getActivationClient();
-	if (!client) return new ActivationMisconfiguredError();
+	if (!activationClient) return new ActivationMisconfiguredError();
 
-	const result = await client.activations.check({ hardwareId }).catch((e: Error) => e);
+	const result = await activationClient.activations.check({ hardwareId }).catch((e: Error) => e);
 	if (result instanceof Error) return new ApiError({ message: result.message });
 	return result;
 }

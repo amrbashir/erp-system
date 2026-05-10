@@ -1,9 +1,8 @@
-import { useDatabase } from "#db";
-
 import { ActivationsService } from "../activations/activations.service.js";
 import { AuditService } from "../audit/audit.service.js";
 import { InvitationsService } from "../invitations/invitations.service.js";
 import { createAuth } from "../lib/auth.js";
+import { useDatabase } from "../lib/db.js";
 import { MembersService } from "../members/members.service.js";
 import { OrgsService } from "../orgs/orgs.service.js";
 import { SetupService } from "../setup/setup.service.js";

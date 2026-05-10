@@ -8,6 +8,8 @@ import { useStorage } from "nitro/storage";
 
 import { initDatabase } from "#db";
 
+import { createAuth } from "../lib/auth.js";
+
 function ensureAuthSecret(dataDir: string) {
 	if (process.env.BETTER_AUTH_SECRET) return;
 
@@ -26,22 +28,29 @@ function ensureAuthSecret(dataDir: string) {
 	process.env.BETTER_AUTH_SECRET = secret;
 }
 
-export default definePlugin(async () => {
-	const dataDir = process.env.NITRO_PGDATA_DIR;
-	if (!dataDir) return;
+const isDesktop = process.env.DEPLOY_TARGET === "desktop";
 
-	// must run before any auth.ts module evaluation triggered by route imports
-	ensureAuthSecret(dataDir);
+export default definePlugin(async (nitroApp) => {
+	if (isDesktop) {
+		const dataDir = process.env.NITRO_PGDATA_DIR;
+		if (!dataDir) return;
 
-	const db = await initDatabase(dataDir);
+		ensureAuthSecret(dataDir);
+		nitroApp.db = await initDatabase(dataDir);
 
-	const storage = useStorage("assets:migrations");
-	await applyMigrations(db, async (path) => {
-		const key = path.replace(/[\\/]/g, ":");
-		const item = await storage.getItem(key);
-		if (item === null || item === undefined) {
-			throw new Error(`Migration file not found: ${path}`);
-		}
-		return typeof item === "object" ? JSON.stringify(item) : String(item);
-	});
+		const storage = useStorage("assets:migrations");
+		await applyMigrations(nitroApp.db, async (path) => {
+			const key = path.replace(/[\\/]/g, ":");
+			const item = await storage.getItem(key);
+			if (item === null || item === undefined) {
+				throw new Error(`Migration file not found: ${path}`);
+			}
+			return typeof item === "object" ? JSON.stringify(item) : String(item);
+		});
+	} else {
+		if (!process.env.DATABASE_URL) return;
+		nitroApp.db = await initDatabase();
+	}
+
+	nitroApp.auth = createAuth({ db: nitroApp.db, desktop: isDesktop });
 });
