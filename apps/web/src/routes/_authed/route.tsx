@@ -1,7 +1,6 @@
 import { ORPCError } from "@orpc/client";
-import { Outlet, createFileRoute, redirect, useLocation } from "@tanstack/react-router";
+import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
-import { AppHeader } from "@/components/app-header";
 import { orpc } from "@/lib/orpc";
 
 export const Route = createFileRoute("/_authed")({
@@ -27,18 +26,5 @@ export const Route = createFileRoute("/_authed")({
 
 		return { session, orgs };
 	},
-	component: AuthedLayout,
+	component: Outlet,
 });
-
-function AuthedLayout() {
-	const { pathname } = useLocation();
-	// /org/<slug>/* renders its own AppHeader inside SidebarInset
-	const ownsHeader = pathname.startsWith("/org/");
-
-	return (
-		<>
-			{!ownsHeader && <AppHeader showLogout />}
-			<Outlet />
-		</>
-	);
-}

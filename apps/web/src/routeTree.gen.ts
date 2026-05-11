@@ -9,98 +9,110 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SignupRouteImport } from './routes/signup'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as AuthedRouteImport } from './routes/_authed'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthedOnboardingRouteImport } from './routes/_authed/onboarding'
-import { Route as AuthedNewOrgRouteImport } from './routes/_authed/new-org'
-import { Route as AuthedHomeRouteImport } from './routes/_authed/home'
-import { Route as AuthedOrgOrgSlugRouteImport } from './routes/_authed/org/$orgSlug'
-import { Route as AuthedOrgOrgSlugIndexRouteImport } from './routes/_authed/org/$orgSlug/index'
-import { Route as AuthedOrgOrgSlugMembersRouteImport } from './routes/_authed/org/$orgSlug/members'
+import { Route as PubRouteRouteImport } from './routes/_pub/route'
+import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
+import { Route as PubIndexRouteImport } from './routes/_pub/index'
+import { Route as PubSignupRouteImport } from './routes/_pub/signup'
+import { Route as PubLoginRouteImport } from './routes/_pub/login'
+import { Route as AuthedAppRouteRouteImport } from './routes/_authed/_app/route'
+import { Route as AuthedAppOnboardingRouteImport } from './routes/_authed/_app/onboarding'
+import { Route as AuthedAppNewOrgRouteImport } from './routes/_authed/_app/new-org'
+import { Route as AuthedAppHomeRouteImport } from './routes/_authed/_app/home'
+import { Route as AuthedOrgOrgSlugRouteRouteImport } from './routes/_authed/org.$orgSlug/route'
+import { Route as AuthedOrgOrgSlugIndexRouteImport } from './routes/_authed/org.$orgSlug/index'
+import { Route as AuthedOrgOrgSlugMembersRouteImport } from './routes/_authed/org.$orgSlug/members'
 
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
+const PubRouteRoute = PubRouteRouteImport.update({
+  id: '/_pub',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthedRoute = AuthedRouteImport.update({
+const AuthedRouteRoute = AuthedRouteRouteImport.update({
   id: '/_authed',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const PubIndexRoute = PubIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => PubRouteRoute,
 } as any)
-const AuthedOnboardingRoute = AuthedOnboardingRouteImport.update({
+const PubSignupRoute = PubSignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => PubRouteRoute,
+} as any)
+const PubLoginRoute = PubLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => PubRouteRoute,
+} as any)
+const AuthedAppRouteRoute = AuthedAppRouteRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedAppOnboardingRoute = AuthedAppOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
-  getParentRoute: () => AuthedRoute,
+  getParentRoute: () => AuthedAppRouteRoute,
 } as any)
-const AuthedNewOrgRoute = AuthedNewOrgRouteImport.update({
+const AuthedAppNewOrgRoute = AuthedAppNewOrgRouteImport.update({
   id: '/new-org',
   path: '/new-org',
-  getParentRoute: () => AuthedRoute,
+  getParentRoute: () => AuthedAppRouteRoute,
 } as any)
-const AuthedHomeRoute = AuthedHomeRouteImport.update({
+const AuthedAppHomeRoute = AuthedAppHomeRouteImport.update({
   id: '/home',
   path: '/home',
-  getParentRoute: () => AuthedRoute,
+  getParentRoute: () => AuthedAppRouteRoute,
 } as any)
-const AuthedOrgOrgSlugRoute = AuthedOrgOrgSlugRouteImport.update({
+const AuthedOrgOrgSlugRouteRoute = AuthedOrgOrgSlugRouteRouteImport.update({
   id: '/org/$orgSlug',
   path: '/org/$orgSlug',
-  getParentRoute: () => AuthedRoute,
+  getParentRoute: () => AuthedRouteRoute,
 } as any)
 const AuthedOrgOrgSlugIndexRoute = AuthedOrgOrgSlugIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AuthedOrgOrgSlugRoute,
+  getParentRoute: () => AuthedOrgOrgSlugRouteRoute,
 } as any)
 const AuthedOrgOrgSlugMembersRoute = AuthedOrgOrgSlugMembersRouteImport.update({
   id: '/members',
   path: '/members',
-  getParentRoute: () => AuthedOrgOrgSlugRoute,
+  getParentRoute: () => AuthedOrgOrgSlugRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/signup': typeof SignupRoute
-  '/home': typeof AuthedHomeRoute
-  '/new-org': typeof AuthedNewOrgRoute
-  '/onboarding': typeof AuthedOnboardingRoute
-  '/org/$orgSlug': typeof AuthedOrgOrgSlugRouteWithChildren
+  '/': typeof PubIndexRoute
+  '/login': typeof PubLoginRoute
+  '/signup': typeof PubSignupRoute
+  '/org/$orgSlug': typeof AuthedOrgOrgSlugRouteRouteWithChildren
+  '/home': typeof AuthedAppHomeRoute
+  '/new-org': typeof AuthedAppNewOrgRoute
+  '/onboarding': typeof AuthedAppOnboardingRoute
   '/org/$orgSlug/members': typeof AuthedOrgOrgSlugMembersRoute
   '/org/$orgSlug/': typeof AuthedOrgOrgSlugIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/signup': typeof SignupRoute
-  '/home': typeof AuthedHomeRoute
-  '/new-org': typeof AuthedNewOrgRoute
-  '/onboarding': typeof AuthedOnboardingRoute
+  '/': typeof PubIndexRoute
+  '/login': typeof PubLoginRoute
+  '/signup': typeof PubSignupRoute
+  '/home': typeof AuthedAppHomeRoute
+  '/new-org': typeof AuthedAppNewOrgRoute
+  '/onboarding': typeof AuthedAppOnboardingRoute
   '/org/$orgSlug/members': typeof AuthedOrgOrgSlugMembersRoute
   '/org/$orgSlug': typeof AuthedOrgOrgSlugIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/_authed': typeof AuthedRouteWithChildren
-  '/login': typeof LoginRoute
-  '/signup': typeof SignupRoute
-  '/_authed/home': typeof AuthedHomeRoute
-  '/_authed/new-org': typeof AuthedNewOrgRoute
-  '/_authed/onboarding': typeof AuthedOnboardingRoute
-  '/_authed/org/$orgSlug': typeof AuthedOrgOrgSlugRouteWithChildren
+  '/_authed': typeof AuthedRouteRouteWithChildren
+  '/_pub': typeof PubRouteRouteWithChildren
+  '/_authed/_app': typeof AuthedAppRouteRouteWithChildren
+  '/_pub/login': typeof PubLoginRoute
+  '/_pub/signup': typeof PubSignupRoute
+  '/_pub/': typeof PubIndexRoute
+  '/_authed/org/$orgSlug': typeof AuthedOrgOrgSlugRouteRouteWithChildren
+  '/_authed/_app/home': typeof AuthedAppHomeRoute
+  '/_authed/_app/new-org': typeof AuthedAppNewOrgRoute
+  '/_authed/_app/onboarding': typeof AuthedAppOnboardingRoute
   '/_authed/org/$orgSlug/members': typeof AuthedOrgOrgSlugMembersRoute
   '/_authed/org/$orgSlug/': typeof AuthedOrgOrgSlugIndexRoute
 }
@@ -110,10 +122,10 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
+    | '/org/$orgSlug'
     | '/home'
     | '/new-org'
     | '/onboarding'
-    | '/org/$orgSlug'
     | '/org/$orgSlug/members'
     | '/org/$orgSlug/'
   fileRoutesByTo: FileRoutesByTo
@@ -128,135 +140,178 @@ export interface FileRouteTypes {
     | '/org/$orgSlug'
   id:
     | '__root__'
-    | '/'
     | '/_authed'
-    | '/login'
-    | '/signup'
-    | '/_authed/home'
-    | '/_authed/new-org'
-    | '/_authed/onboarding'
+    | '/_pub'
+    | '/_authed/_app'
+    | '/_pub/login'
+    | '/_pub/signup'
+    | '/_pub/'
     | '/_authed/org/$orgSlug'
+    | '/_authed/_app/home'
+    | '/_authed/_app/new-org'
+    | '/_authed/_app/onboarding'
     | '/_authed/org/$orgSlug/members'
     | '/_authed/org/$orgSlug/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AuthedRoute: typeof AuthedRouteWithChildren
-  LoginRoute: typeof LoginRoute
-  SignupRoute: typeof SignupRoute
+  AuthedRouteRoute: typeof AuthedRouteRouteWithChildren
+  PubRouteRoute: typeof PubRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/_pub': {
+      id: '/_pub'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PubRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed': {
       id: '/_authed'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof AuthedRouteImport
+      preLoaderRoute: typeof AuthedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_pub/': {
+      id: '/_pub/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof PubIndexRouteImport
+      parentRoute: typeof PubRouteRoute
     }
-    '/_authed/onboarding': {
-      id: '/_authed/onboarding'
+    '/_pub/signup': {
+      id: '/_pub/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof PubSignupRouteImport
+      parentRoute: typeof PubRouteRoute
+    }
+    '/_pub/login': {
+      id: '/_pub/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof PubLoginRouteImport
+      parentRoute: typeof PubRouteRoute
+    }
+    '/_authed/_app': {
+      id: '/_authed/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthedAppRouteRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/_app/onboarding': {
+      id: '/_authed/_app/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
-      preLoaderRoute: typeof AuthedOnboardingRouteImport
-      parentRoute: typeof AuthedRoute
+      preLoaderRoute: typeof AuthedAppOnboardingRouteImport
+      parentRoute: typeof AuthedAppRouteRoute
     }
-    '/_authed/new-org': {
-      id: '/_authed/new-org'
+    '/_authed/_app/new-org': {
+      id: '/_authed/_app/new-org'
       path: '/new-org'
       fullPath: '/new-org'
-      preLoaderRoute: typeof AuthedNewOrgRouteImport
-      parentRoute: typeof AuthedRoute
+      preLoaderRoute: typeof AuthedAppNewOrgRouteImport
+      parentRoute: typeof AuthedAppRouteRoute
     }
-    '/_authed/home': {
-      id: '/_authed/home'
+    '/_authed/_app/home': {
+      id: '/_authed/_app/home'
       path: '/home'
       fullPath: '/home'
-      preLoaderRoute: typeof AuthedHomeRouteImport
-      parentRoute: typeof AuthedRoute
+      preLoaderRoute: typeof AuthedAppHomeRouteImport
+      parentRoute: typeof AuthedAppRouteRoute
     }
     '/_authed/org/$orgSlug': {
       id: '/_authed/org/$orgSlug'
       path: '/org/$orgSlug'
       fullPath: '/org/$orgSlug'
-      preLoaderRoute: typeof AuthedOrgOrgSlugRouteImport
-      parentRoute: typeof AuthedRoute
+      preLoaderRoute: typeof AuthedOrgOrgSlugRouteRouteImport
+      parentRoute: typeof AuthedRouteRoute
     }
     '/_authed/org/$orgSlug/': {
       id: '/_authed/org/$orgSlug/'
       path: '/'
       fullPath: '/org/$orgSlug/'
       preLoaderRoute: typeof AuthedOrgOrgSlugIndexRouteImport
-      parentRoute: typeof AuthedOrgOrgSlugRoute
+      parentRoute: typeof AuthedOrgOrgSlugRouteRoute
     }
     '/_authed/org/$orgSlug/members': {
       id: '/_authed/org/$orgSlug/members'
       path: '/members'
       fullPath: '/org/$orgSlug/members'
       preLoaderRoute: typeof AuthedOrgOrgSlugMembersRouteImport
-      parentRoute: typeof AuthedOrgOrgSlugRoute
+      parentRoute: typeof AuthedOrgOrgSlugRouteRoute
     }
   }
 }
 
-interface AuthedOrgOrgSlugRouteChildren {
+interface AuthedAppRouteRouteChildren {
+  AuthedAppHomeRoute: typeof AuthedAppHomeRoute
+  AuthedAppNewOrgRoute: typeof AuthedAppNewOrgRoute
+  AuthedAppOnboardingRoute: typeof AuthedAppOnboardingRoute
+}
+
+const AuthedAppRouteRouteChildren: AuthedAppRouteRouteChildren = {
+  AuthedAppHomeRoute: AuthedAppHomeRoute,
+  AuthedAppNewOrgRoute: AuthedAppNewOrgRoute,
+  AuthedAppOnboardingRoute: AuthedAppOnboardingRoute,
+}
+
+const AuthedAppRouteRouteWithChildren = AuthedAppRouteRoute._addFileChildren(
+  AuthedAppRouteRouteChildren,
+)
+
+interface AuthedOrgOrgSlugRouteRouteChildren {
   AuthedOrgOrgSlugMembersRoute: typeof AuthedOrgOrgSlugMembersRoute
   AuthedOrgOrgSlugIndexRoute: typeof AuthedOrgOrgSlugIndexRoute
 }
 
-const AuthedOrgOrgSlugRouteChildren: AuthedOrgOrgSlugRouteChildren = {
+const AuthedOrgOrgSlugRouteRouteChildren: AuthedOrgOrgSlugRouteRouteChildren = {
   AuthedOrgOrgSlugMembersRoute: AuthedOrgOrgSlugMembersRoute,
   AuthedOrgOrgSlugIndexRoute: AuthedOrgOrgSlugIndexRoute,
 }
 
-const AuthedOrgOrgSlugRouteWithChildren =
-  AuthedOrgOrgSlugRoute._addFileChildren(AuthedOrgOrgSlugRouteChildren)
+const AuthedOrgOrgSlugRouteRouteWithChildren =
+  AuthedOrgOrgSlugRouteRoute._addFileChildren(
+    AuthedOrgOrgSlugRouteRouteChildren,
+  )
 
-interface AuthedRouteChildren {
-  AuthedHomeRoute: typeof AuthedHomeRoute
-  AuthedNewOrgRoute: typeof AuthedNewOrgRoute
-  AuthedOnboardingRoute: typeof AuthedOnboardingRoute
-  AuthedOrgOrgSlugRoute: typeof AuthedOrgOrgSlugRouteWithChildren
+interface AuthedRouteRouteChildren {
+  AuthedAppRouteRoute: typeof AuthedAppRouteRouteWithChildren
+  AuthedOrgOrgSlugRouteRoute: typeof AuthedOrgOrgSlugRouteRouteWithChildren
 }
 
-const AuthedRouteChildren: AuthedRouteChildren = {
-  AuthedHomeRoute: AuthedHomeRoute,
-  AuthedNewOrgRoute: AuthedNewOrgRoute,
-  AuthedOnboardingRoute: AuthedOnboardingRoute,
-  AuthedOrgOrgSlugRoute: AuthedOrgOrgSlugRouteWithChildren,
+const AuthedRouteRouteChildren: AuthedRouteRouteChildren = {
+  AuthedAppRouteRoute: AuthedAppRouteRouteWithChildren,
+  AuthedOrgOrgSlugRouteRoute: AuthedOrgOrgSlugRouteRouteWithChildren,
 }
 
-const AuthedRouteWithChildren =
-  AuthedRoute._addFileChildren(AuthedRouteChildren)
+const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(
+  AuthedRouteRouteChildren,
+)
+
+interface PubRouteRouteChildren {
+  PubLoginRoute: typeof PubLoginRoute
+  PubSignupRoute: typeof PubSignupRoute
+  PubIndexRoute: typeof PubIndexRoute
+}
+
+const PubRouteRouteChildren: PubRouteRouteChildren = {
+  PubLoginRoute: PubLoginRoute,
+  PubSignupRoute: PubSignupRoute,
+  PubIndexRoute: PubIndexRoute,
+}
+
+const PubRouteRouteWithChildren = PubRouteRoute._addFileChildren(
+  PubRouteRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AuthedRoute: AuthedRouteWithChildren,
-  LoginRoute: LoginRoute,
-  SignupRoute: SignupRoute,
+  AuthedRouteRoute: AuthedRouteRouteWithChildren,
+  PubRouteRoute: PubRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

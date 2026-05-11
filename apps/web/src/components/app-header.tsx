@@ -1,4 +1,4 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
@@ -8,20 +8,15 @@ import type { ReactNode } from "react";
 
 import { isDesktop } from "@/lib/activation";
 import { signOut } from "@/lib/auth-client";
+import { orpc } from "@/lib/orpc";
 
-export function AppHeader({
-	leadingSlot,
-	showLogout = false,
-}: {
-	leadingSlot?: ReactNode;
-	showLogout?: boolean;
-}) {
+export function AppHeader({ leadingSlot }: { leadingSlot?: ReactNode }) {
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
+	const { data: session } = useQuery(orpc.session.get.queryOptions());
 
 	async function handleLogout() {
 		await signOut();
-		// Clear cache - next login/onboarding shouldn't see stale session via ensureQueryData.
 		queryClient.clear();
 		if (isDesktop()) {
 			window.location.href = "/";
@@ -36,7 +31,7 @@ export function AppHeader({
 			<div className="ms-auto flex items-center gap-2">
 				<ThemeSwitcher />
 				<LanguageSwitcher />
-				{showLogout && (
+				{session && (
 					<Button variant="ghost" size="sm" onClick={handleLogout}>
 						{m.nav_logout()}
 					</Button>

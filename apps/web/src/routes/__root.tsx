@@ -13,7 +13,7 @@ import { NotFound } from "@workspace/ui/components/not-found";
 import { ThemeProvider, themeScript } from "@workspace/ui/components/theme-provider";
 import { TooltipProvider } from "@workspace/ui/components/tooltip";
 
-import { AppHeader } from "@/components/app-header";
+import { AppLayout } from "@/components/app-layout";
 import { DesktopBootstrap } from "@/components/desktop-bootstrap";
 import { isDesktop } from "@/lib/activation";
 
@@ -52,10 +52,9 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function NotFoundWithHeader() {
 	return (
-		<>
-			<AppHeader />
+		<AppLayout>
 			<NotFound />
-		</>
+		</AppLayout>
 	);
 }
 
@@ -92,7 +91,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<script dangerouslySetInnerHTML={{ __html: themeScript }} />
 				<script dangerouslySetInnerHTML={{ __html: localeScript }} />
 			</head>
-			<body>
+			<body className="flex min-h-svh flex-col">
 				<QueryClientProvider client={queryClient}>
 					<ThemeProvider>
 						<TooltipProvider>{children}</TooltipProvider>

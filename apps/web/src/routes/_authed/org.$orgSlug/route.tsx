@@ -16,7 +16,7 @@ import {
 	SidebarTrigger,
 } from "@workspace/ui/components/sidebar";
 
-import { AppHeader } from "@/components/app-header";
+import { AppLayout } from "@/components/app-layout";
 import { isDesktop } from "@/lib/activation";
 
 export const Route = createFileRoute("/_authed/org/$orgSlug")({
@@ -95,8 +95,9 @@ function OrgLayout() {
 				)}
 			</Sidebar>
 			<SidebarInset>
-				<AppHeader leadingSlot={<SidebarTrigger />} showLogout />
-				<Outlet />
+				<AppLayout leadingSlot={<SidebarTrigger />}>
+					<Outlet />
+				</AppLayout>
 			</SidebarInset>
 		</SidebarProvider>
 	);
