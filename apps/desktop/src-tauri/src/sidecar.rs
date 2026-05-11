@@ -57,7 +57,7 @@ fn spawn_attempt(app: &tauri::AppHandle, attempt: u32) -> Result<(), String> {
 
     let sidecar = app
         .shell()
-        .sidecar("erp-sidecar")
+        .sidecar("kaname-sidecar")
         .map_err(|e| format!("failed to create sidecar command: {e}"))?
         .env("NITRO_PGDATA_DIR", &cfg.db_path)
         .env("PORT", SIDECAR_PORT)
