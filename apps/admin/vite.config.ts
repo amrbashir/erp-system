@@ -10,6 +10,8 @@ import nitroConfig from "../../packages/server/nitro.config.ts";
 
 export default defineConfig({
 	server: { port: 1521 },
+	// Workaround for nitro upstream bug (no tracking issue yet): createServiceEnvironment doesn't set noExternal for the node runner in dev, so Vite externalizes `nitro/*` before nitroServiceProxy.resolveId can intercept. SSR env then native-imports the stub `#nitro/virtual/plugins` and gets its own empty NitroApp (no init plugin, no db).
+	ssr: { noExternal: ["nitro"] },
 	plugins: [
 		paraglideVitePlugin({
 			project: "../../packages/i18n/project.inlang",
