@@ -7,12 +7,16 @@ interface RateLimitEntry {
 export function createRateLimiter(opts: { window: number; max: number }) {
 	const store = new Map<string, RateLimitEntry>();
 
-	setInterval(() => {
+	const timerId = setInterval(() => {
 		const now = Date.now();
 		for (const [key, entry] of store) {
 			if (now >= entry.resetAt) store.delete(key);
 		}
-	}, opts.window * 2).unref();
+	}, opts.window * 2);
+	// Deno's setInterval returns a number (use Deno.unrefTimer); Node's returns Timeout (has .unref()).
+	const deno = (globalThis as { Deno?: { unrefTimer(id: number): void } }).Deno;
+	if (deno) deno.unrefTimer(timerId as unknown as number);
+	else (timerId as unknown as { unref(): void }).unref();
 
 	return function check(request: Request): boolean {
 		const ip = clientIp(request);
