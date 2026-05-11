@@ -12,9 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthedRouteImport } from './routes/_authed'
-import { Route as AuthedIndexRouteImport } from './routes/_authed/index'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthedOnboardingRouteImport } from './routes/_authed/onboarding'
 import { Route as AuthedNewOrgRouteImport } from './routes/_authed/new-org'
+import { Route as AuthedHomeRouteImport } from './routes/_authed/home'
 import { Route as AuthedOrgOrgSlugRouteImport } from './routes/_authed/org/$orgSlug'
 import { Route as AuthedOrgOrgSlugIndexRouteImport } from './routes/_authed/org/$orgSlug/index'
 import { Route as AuthedOrgOrgSlugMembersRouteImport } from './routes/_authed/org/$orgSlug/members'
@@ -33,10 +34,10 @@ const AuthedRoute = AuthedRouteImport.update({
   id: '/_authed',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthedIndexRoute = AuthedIndexRouteImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AuthedRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedOnboardingRoute = AuthedOnboardingRouteImport.update({
   id: '/onboarding',
@@ -46,6 +47,11 @@ const AuthedOnboardingRoute = AuthedOnboardingRouteImport.update({
 const AuthedNewOrgRoute = AuthedNewOrgRouteImport.update({
   id: '/new-org',
   path: '/new-org',
+  getParentRoute: () => AuthedRoute,
+} as any)
+const AuthedHomeRoute = AuthedHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => AuthedRoute,
 } as any)
 const AuthedOrgOrgSlugRoute = AuthedOrgOrgSlugRouteImport.update({
@@ -65,9 +71,10 @@ const AuthedOrgOrgSlugMembersRoute = AuthedOrgOrgSlugMembersRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AuthedIndexRoute
+  '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/home': typeof AuthedHomeRoute
   '/new-org': typeof AuthedNewOrgRoute
   '/onboarding': typeof AuthedOnboardingRoute
   '/org/$orgSlug': typeof AuthedOrgOrgSlugRouteWithChildren
@@ -75,22 +82,24 @@ export interface FileRoutesByFullPath {
   '/org/$orgSlug/': typeof AuthedOrgOrgSlugIndexRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/home': typeof AuthedHomeRoute
   '/new-org': typeof AuthedNewOrgRoute
   '/onboarding': typeof AuthedOnboardingRoute
-  '/': typeof AuthedIndexRoute
   '/org/$orgSlug/members': typeof AuthedOrgOrgSlugMembersRoute
   '/org/$orgSlug': typeof AuthedOrgOrgSlugIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_authed': typeof AuthedRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/_authed/home': typeof AuthedHomeRoute
   '/_authed/new-org': typeof AuthedNewOrgRoute
   '/_authed/onboarding': typeof AuthedOnboardingRoute
-  '/_authed/': typeof AuthedIndexRoute
   '/_authed/org/$orgSlug': typeof AuthedOrgOrgSlugRouteWithChildren
   '/_authed/org/$orgSlug/members': typeof AuthedOrgOrgSlugMembersRoute
   '/_authed/org/$orgSlug/': typeof AuthedOrgOrgSlugIndexRoute
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
+    | '/home'
     | '/new-org'
     | '/onboarding'
     | '/org/$orgSlug'
@@ -108,27 +118,30 @@ export interface FileRouteTypes {
     | '/org/$orgSlug/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/login'
     | '/signup'
+    | '/home'
     | '/new-org'
     | '/onboarding'
-    | '/'
     | '/org/$orgSlug/members'
     | '/org/$orgSlug'
   id:
     | '__root__'
+    | '/'
     | '/_authed'
     | '/login'
     | '/signup'
+    | '/_authed/home'
     | '/_authed/new-org'
     | '/_authed/onboarding'
-    | '/_authed/'
     | '/_authed/org/$orgSlug'
     | '/_authed/org/$orgSlug/members'
     | '/_authed/org/$orgSlug/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AuthedRoute: typeof AuthedRouteWithChildren
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
@@ -157,12 +170,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authed/': {
-      id: '/_authed/'
+    '/': {
+      id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof AuthedIndexRouteImport
-      parentRoute: typeof AuthedRoute
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authed/onboarding': {
       id: '/_authed/onboarding'
@@ -176,6 +189,13 @@ declare module '@tanstack/react-router' {
       path: '/new-org'
       fullPath: '/new-org'
       preLoaderRoute: typeof AuthedNewOrgRouteImport
+      parentRoute: typeof AuthedRoute
+    }
+    '/_authed/home': {
+      id: '/_authed/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthedHomeRouteImport
       parentRoute: typeof AuthedRoute
     }
     '/_authed/org/$orgSlug': {
@@ -216,16 +236,16 @@ const AuthedOrgOrgSlugRouteWithChildren =
   AuthedOrgOrgSlugRoute._addFileChildren(AuthedOrgOrgSlugRouteChildren)
 
 interface AuthedRouteChildren {
+  AuthedHomeRoute: typeof AuthedHomeRoute
   AuthedNewOrgRoute: typeof AuthedNewOrgRoute
   AuthedOnboardingRoute: typeof AuthedOnboardingRoute
-  AuthedIndexRoute: typeof AuthedIndexRoute
   AuthedOrgOrgSlugRoute: typeof AuthedOrgOrgSlugRouteWithChildren
 }
 
 const AuthedRouteChildren: AuthedRouteChildren = {
+  AuthedHomeRoute: AuthedHomeRoute,
   AuthedNewOrgRoute: AuthedNewOrgRoute,
   AuthedOnboardingRoute: AuthedOnboardingRoute,
-  AuthedIndexRoute: AuthedIndexRoute,
   AuthedOrgOrgSlugRoute: AuthedOrgOrgSlugRouteWithChildren,
 }
 
@@ -233,6 +253,7 @@ const AuthedRouteWithChildren =
   AuthedRoute._addFileChildren(AuthedRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AuthedRoute: AuthedRouteWithChildren,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,

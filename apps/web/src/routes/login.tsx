@@ -31,7 +31,7 @@ export const Route = createFileRoute("/login")({
 	}),
 	beforeLoad: async ({ context }) => {
 		const session = await context.queryClient.ensureQueryData(orpc.session.get.queryOptions());
-		if (session) throw redirect({ to: "/" });
+		if (session) throw redirect({ to: "/home" });
 	},
 	component: LoginPage,
 });
@@ -48,7 +48,7 @@ function LoginPage() {
 			setError("");
 			const { error: err } = await signIn.email(value);
 			if (err) {
-				setError(err.message ?? m.login_failed());
+				setError(err.message ?? m.signin_failed());
 				return;
 			}
 			// reloadDocument refetches - without it, `_authed`'s beforeLoad sees the cached null session and bounces back.
@@ -63,7 +63,7 @@ function LoginPage() {
 			<div className="flex flex-1 items-center justify-center p-6">
 				<Card className="w-full max-w-sm">
 					<CardHeader>
-						<CardTitle>{m.login_heading()}</CardTitle>
+						<CardTitle>{m.signin_heading()}</CardTitle>
 					</CardHeader>
 					<form
 						onSubmit={(e) => {
@@ -124,14 +124,14 @@ function LoginPage() {
 							<form.Subscribe selector={(s) => s.isSubmitting}>
 								{(isSubmitting) => (
 									<Button type="submit" disabled={isSubmitting}>
-										{isSubmitting ? m.login_submitting() : m.login_submit()}
+										{isSubmitting ? m.signin_submitting() : m.signin_submit()}
 									</Button>
 								)}
 							</form.Subscribe>
 						</CardContent>
 					</form>
 					<CardFooter className="justify-center">
-						<span className="text-muted-foreground">{m.login_no_account()}</span>
+						<span className="text-muted-foreground">{m.signin_no_account()}</span>
 						<Button
 							variant="link"
 							size="sm"
@@ -143,7 +143,7 @@ function LoginPage() {
 							}
 							nativeButton={false}
 						>
-							{m.login_signup_link()}
+							{m.signin_signup_link()}
 						</Button>
 					</CardFooter>
 				</Card>

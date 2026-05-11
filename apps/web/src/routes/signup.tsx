@@ -32,7 +32,7 @@ export const Route = createFileRoute("/signup")({
 	}),
 	beforeLoad: async ({ context }) => {
 		const session = await context.queryClient.ensureQueryData(orpc.session.get.queryOptions());
-		if (session) throw redirect({ to: "/" });
+		if (session) throw redirect({ to: "/home" });
 	},
 	component: SignupPage,
 });
@@ -165,7 +165,7 @@ function SignupPage() {
 							}
 							nativeButton={false}
 						>
-							{m.signup_login_link()}
+							{m.signup_signin_link()}
 						</Button>
 					</CardFooter>
 				</Card>

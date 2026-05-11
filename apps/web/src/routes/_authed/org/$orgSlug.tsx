@@ -22,7 +22,7 @@ import { isDesktop } from "@/lib/activation";
 export const Route = createFileRoute("/_authed/org/$orgSlug")({
 	beforeLoad: ({ context, params }) => {
 		const org = context.orgs.find((o) => o.slug === params.orgSlug);
-		if (!org) throw redirect({ to: "/" });
+		if (!org) throw redirect({ to: "/home" });
 		return { org };
 	},
 	component: OrgLayout,
@@ -83,7 +83,7 @@ function OrgLayout() {
 						<SidebarMenu>
 							<SidebarMenuItem>
 								<SidebarMenuButton
-									render={<Link to="/" />}
+									render={<Link to="/home" />}
 									tooltip={m.nav_back_to_orgs()}
 								>
 									<ArrowLeftIcon />

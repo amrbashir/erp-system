@@ -10,7 +10,7 @@ import {
 
 import { isDesktop } from "@/lib/activation";
 
-export const Route = createFileRoute("/_authed/")({
+export const Route = createFileRoute("/_authed/home")({
 	beforeLoad: ({ context }) => {
 		// desktop is single-tenant - skip the one-card list and go straight in
 		if (isDesktop() && context.orgs.length === 1) {
