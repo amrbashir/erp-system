@@ -27,7 +27,13 @@ export async function runDesktopGate({
 	queryClient: QueryClient;
 	pathname: string;
 }): Promise<void> {
-	if (!IS_DESKTOP) return;
+	if (
+		!IS_DESKTOP ||
+		// Gate probes tauri APIs (hardware id, sidecar, setup) - all unavailable in Node SSR.
+		typeof window === "undefined"
+	) {
+		return;
+	}
 
 	const onActivation = pathname === "/activation";
 	const onSetup = pathname === "/setup";
