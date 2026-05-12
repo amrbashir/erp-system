@@ -10,6 +10,7 @@
 		"dev:desktop": "pnpm --filter @workspace/desktop dev",
 		"dev:web:desktop": "DEPLOY_TARGET=desktop pnpm --filter @workspace/web dev",
 		"build:web": "pnpm --filter @workspace/web build",
+		"build:web:desktop": "DEPLOY_TARGET=desktop pnpm --filter @workspace/web build",
 		"build:desktop": "pnpm --filter @workspace/desktop build",
 		"build:desktop:sidecar": "pnpm --filter @workspace/desktop build:sidecar",
 		"typecheck": "pnpm -r typecheck",
