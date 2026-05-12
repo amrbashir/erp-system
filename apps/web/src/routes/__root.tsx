@@ -6,16 +6,16 @@ import {
 	Scripts,
 	createRootRouteWithContext,
 } from "@tanstack/react-router";
+import { runDesktopGate } from "@workspace/desktop/gate";
 import { getLocale, getTextDirection, localeScript, m } from "@workspace/i18n";
 import { Alert, AlertDescription, AlertTitle } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
 import { NotFound } from "@workspace/ui/components/not-found";
+import { Spinner } from "@workspace/ui/components/spinner";
 import { ThemeProvider, themeScript } from "@workspace/ui/components/theme-provider";
 import { TooltipProvider } from "@workspace/ui/components/tooltip";
 
 import { AppLayout } from "@/components/app-layout";
-import { DesktopBootstrap } from "@/components/desktop-bootstrap";
-import { isDesktop } from "@/lib/activation";
 
 import appCss from "@workspace/ui/globals.css?url";
 
@@ -44,10 +44,14 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 			},
 		],
 	}),
+	beforeLoad: ({ context, location }) =>
+		runDesktopGate({ queryClient: context.queryClient, pathname: location.pathname }),
 	shellComponent: RootDocument,
-	component: RootLayout,
+	component: Outlet,
 	errorComponent: ErrorBoundary,
 	notFoundComponent: NotFoundWithHeader,
+	pendingMs: 0,
+	pendingComponent: BootPending,
 });
 
 function NotFoundWithHeader() {
@@ -103,13 +107,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 	);
 }
 
-function RootLayout() {
-	if (isDesktop()) {
-		return (
-			<DesktopBootstrap>
-				<Outlet />
-			</DesktopBootstrap>
-		);
-	}
-	return <Outlet />;
+function BootPending() {
+	return (
+		<div className="flex min-h-svh flex-col items-center justify-center gap-3">
+			<Spinner className="size-6" />
+			<p className="text-muted-foreground text-sm">{m.desktop_starting()}</p>
+		</div>
+	);
 }

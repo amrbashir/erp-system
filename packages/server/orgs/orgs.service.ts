@@ -5,7 +5,11 @@ import { eq, and } from "drizzle-orm";
 
 import { validateCurrency } from "../shared/currency.js";
 import type { DB } from "../shared/db.js";
-import { isPgUniqueViolationOn, SlugTakenError, UnsupportedCurrencyError } from "../shared/errors.js";
+import {
+	isPgUniqueViolationOn,
+	SlugTakenError,
+	UnsupportedCurrencyError,
+} from "../shared/errors.js";
 type Org = typeof orgs.$inferSelect;
 type OrgMember = typeof orgMembers.$inferSelect;
 

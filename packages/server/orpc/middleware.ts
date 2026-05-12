@@ -3,8 +3,8 @@ import { implement, os } from "@orpc/server";
 import { useAuth } from "../lib/auth.js";
 import { NotOrgMemberError, RateLimitedError, UnauthorizedError } from "../shared/errors.js";
 import { createRateLimiter } from "../shared/rate-limit.js";
-import { adminContract, contract } from "./contract.js";
 import type { AppContext } from "./context.js";
+import { adminContract, contract } from "./contract.js";
 
 type Session = NonNullable<Awaited<ReturnType<ReturnType<typeof useAuth>["api"]["getSession"]>>>;
 

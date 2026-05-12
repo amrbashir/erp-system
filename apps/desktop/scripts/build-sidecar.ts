@@ -31,7 +31,7 @@ function patchPgliteBundle() {
 	//    like GOT.mem fail wasm validation otherwise).
 	const fixed = original
 		.replace(importPattern, "$1node:$2$3")
-		.replace(/(["'])\.\/postgres\.wasm\1/g, '$1./postgres.wasm.bin$1');
+		.replace(/(["'])\.\/postgres\.wasm\1/g, "$1./postgres.wasm.bin$1");
 	if (fixed !== original) {
 		writeFileSync(full, fixed);
 		console.log(`✔ Patched ${full}`);

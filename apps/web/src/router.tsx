@@ -1,7 +1,12 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
+import { createDesktopRoutes } from "@workspace/desktop/routes";
 
-import { routeTree } from "./routeTree.gen";
+import { Route as rootRoute } from "./routes/__root";
+import { routeTree as fileRouteTree } from "./routeTree.gen";
+
+// Desktop-only routes (/activation, /setup) injected at runtime - source lives in @workspace/desktop.
+const routeTree = fileRouteTree.addChildren(createDesktopRoutes(rootRoute));
 
 export function getRouter() {
 	const queryClient = new QueryClient({

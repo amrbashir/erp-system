@@ -48,7 +48,7 @@ function LoginPage() {
 			const { error: err } = await signIn.email(value);
 			if (err) {
 				setError(err.message ?? m.signin_failed());
-				return
+				return;
 			}
 			// reloadDocument refetches - without it, `_authed`'s beforeLoad sees the cached null session and bounces back.
 			const dest = safeRedirect(redirectTo);
@@ -79,7 +79,9 @@ function LoginPage() {
 							<form.Field name="email">
 								{(field) => (
 									<Field>
-										<FieldLabel htmlFor={field.name}>{m.label_email()}</FieldLabel>
+										<FieldLabel htmlFor={field.name}>
+											{m.label_email()}
+										</FieldLabel>
 										<Input
 											id={field.name}
 											name={field.name}
@@ -87,7 +89,9 @@ function LoginPage() {
 											placeholder={m.label_email()}
 											required
 											value={field.state.value}
-											onChange={(e) => field.handleChange(e.currentTarget.value)}
+											onChange={(e) =>
+												field.handleChange(e.currentTarget.value)
+											}
 											onBlur={field.handleBlur}
 										/>
 										<FieldError errors={field.state.meta.errors} />
@@ -97,7 +101,9 @@ function LoginPage() {
 							<form.Field name="password">
 								{(field) => (
 									<Field>
-										<FieldLabel htmlFor={field.name}>{m.label_password()}</FieldLabel>
+										<FieldLabel htmlFor={field.name}>
+											{m.label_password()}
+										</FieldLabel>
 										<Input
 											id={field.name}
 											name={field.name}
@@ -105,7 +111,9 @@ function LoginPage() {
 											placeholder={m.label_password()}
 											required
 											value={field.state.value}
-											onChange={(e) => field.handleChange(e.currentTarget.value)}
+											onChange={(e) =>
+												field.handleChange(e.currentTarget.value)
+											}
 											onBlur={field.handleBlur}
 										/>
 										<FieldError errors={field.state.meta.errors} />
@@ -141,5 +149,5 @@ function LoginPage() {
 				</CardFooter>
 			</Card>
 		</div>
-	)
+	);
 }

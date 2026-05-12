@@ -120,7 +120,9 @@ export function CreateOrgForm({ title, description, onCancel }: CreateOrgFormPro
 						</FieldGroup>
 
 						<Button type="submit" disabled={createMutation.isPending}>
-							{createMutation.isPending ? m.create_org_submitting() : m.create_org_submit()}
+							{createMutation.isPending
+								? m.create_org_submitting()
+								: m.create_org_submit()}
 						</Button>
 					</CardContent>
 					{onCancel && (

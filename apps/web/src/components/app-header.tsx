@@ -1,12 +1,12 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { IS_DESKTOP } from "@workspace/desktop";
 import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { LanguageSwitcher } from "@workspace/ui/components/language-switcher";
 import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
 import type { ReactNode } from "react";
 
-import { isDesktop } from "@/lib/activation";
 import { signOut } from "@/lib/auth-client";
 import { orpc } from "@/lib/orpc";
 
@@ -18,7 +18,7 @@ export function AppHeader({ leadingSlot }: { leadingSlot?: ReactNode }) {
 	async function handleLogout() {
 		await signOut();
 		queryClient.clear();
-		if (isDesktop()) {
+		if (IS_DESKTOP) {
 			window.location.href = "/";
 			return;
 		}

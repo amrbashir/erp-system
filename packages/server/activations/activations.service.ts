@@ -8,6 +8,7 @@ import {
 	InvalidTokenError,
 	ServerMisconfiguredError,
 } from "../shared/errors.js";
+import type { ActivationTokenPayload } from "./activations.token.js";
 type Activation = typeof activations.$inferSelect;
 
 export type CheckResult = { token: string } | { status: "pending" | "revoked" };
@@ -95,7 +96,8 @@ async function signActivationToken(
 	if (key instanceof Error) {
 		return new InvalidTokenError({ reason: key.message, cause: key });
 	}
-	const signed = await new SignJWT({ hardwareId, activated: true })
+	const payload: ActivationTokenPayload = { hardwareId, activated: true };
+	const signed = await new SignJWT(payload)
 		.setProtectedHeader({ alg: "ES256" })
 		.setIssuedAt()
 		.sign(key)
@@ -105,4 +107,3 @@ async function signActivationToken(
 	}
 	return signed;
 }
-

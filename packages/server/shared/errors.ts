@@ -144,11 +144,7 @@ function isPgError(e: unknown): e is PgErrorShape {
 /** SQLSTATE 23505 anywhere in the error chain. */
 export function isPgUniqueViolation(e: unknown): boolean {
 	if (!isPgError(e)) return false;
-	return (
-		e.code === "23505" ||
-		e.cause?.code === "23505" ||
-		/unique/i.test(e.message ?? "")
-	);
+	return e.code === "23505" || e.cause?.code === "23505" || /unique/i.test(e.message ?? "");
 }
 
 /** 23505 matching a specific constraint substring. */

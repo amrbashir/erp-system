@@ -1,7 +1,6 @@
+import { useDatabase } from "@workspace/server/lib/db";
 import { sql } from "drizzle-orm";
 import { defineEventHandler } from "h3";
-
-import { useDatabase } from "@workspace/server/lib/db";
 
 /** 200 when DB reachable, 503 otherwise. */
 export default defineEventHandler(async (event) => {

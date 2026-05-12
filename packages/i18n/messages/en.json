@@ -85,6 +85,9 @@
 	"activation_revoked": "Activation revoked. Contact your administrator.",
 	"activation_network_error": "Could not reach activation server. Check your internet connection.",
 
+	"desktop_starting": "Starting…",
+	"desktop_sidecar_timeout": "Local server didn't become ready in time.",
+
 	"nav_home": "Home",
 	"nav_members": "Members",
 	"nav_logout": "Sign out",

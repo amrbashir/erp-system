@@ -3,6 +3,11 @@
 	"version": "0.0.1",
 	"private": true,
 	"type": "module",
+	"exports": {
+		".": "./src/index.ts",
+		"./gate": "./src/gate.ts",
+		"./routes": "./src/routes/index.tsx"
+	},
 	"scripts": {
 		"dev": "tauri dev",
 		"build:sidecar": "node scripts/build-sidecar.ts",
@@ -10,11 +15,31 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@tauri-apps/api": "catalog:tauri"
+		"@orpc/client": "catalog:orpc",
+		"@orpc/contract": "catalog:orpc",
+		"@orpc/openapi-client": "catalog:orpc",
+		"@phosphor-icons/react": "catalog:",
+		"@tanstack/react-form": "catalog:tanstack",
+		"@tanstack/react-query": "catalog:tanstack",
+		"@tanstack/react-router": "catalog:tanstack",
+		"@tauri-apps/api": "catalog:tauri",
+		"@workspace/i18n": "workspace:*",
+		"@workspace/server": "workspace:*",
+		"@workspace/shared": "workspace:*",
+		"@workspace/ui": "workspace:*",
+		"errore": "^0.14.1",
+		"jose": "catalog:",
+		"zod": "catalog:"
 	},
 	"devDependencies": {
 		"@tauri-apps/cli": "catalog:tauri",
 		"@types/node": "catalog:",
+		"@types/react": "catalog:react",
+		"@types/react-dom": "catalog:react",
 		"typescript": "catalog:"
+	},
+	"peerDependencies": {
+		"react": "catalog:react",
+		"react-dom": "catalog:react"
 	}
 }

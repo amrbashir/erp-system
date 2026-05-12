@@ -1,15 +1,15 @@
 import { Link, createFileRoute, redirect } from "@tanstack/react-router";
+import { IS_DESKTOP } from "@workspace/desktop";
 import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 
-import { isDesktop } from "@/lib/activation";
 import { orpc } from "@/lib/orpc";
 
 export const Route = createFileRoute("/_pub/")({
 	beforeLoad: async ({ context }) => {
 		const session = await context.queryClient.ensureQueryData(orpc.session.get.queryOptions());
 		// Desktop is single-tenant - no marketing page makes sense; route through the auth gate.
-		if (session || isDesktop()) throw redirect({ to: "/home" });
+		if (session || IS_DESKTOP) throw redirect({ to: "/home" });
 	},
 	component: LandingPage,
 });
@@ -27,10 +27,15 @@ function LandingPage() {
 				<Button size="lg" render={<Link to="/login" />} nativeButton={false}>
 					{m.signin_submit()}
 				</Button>
-				<Button variant="ghost" size="lg" render={<Link to="/signup" />} nativeButton={false}>
+				<Button
+					variant="ghost"
+					size="lg"
+					render={<Link to="/signup" />}
+					nativeButton={false}
+				>
 					{m.signup_submit()}
 				</Button>
 			</div>
 		</main>
-	)
+	);
 }

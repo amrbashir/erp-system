@@ -85,6 +85,9 @@
 	"activation_revoked": "تم إلغاء التفعيل. تواصل مع المسؤول.",
 	"activation_network_error": "تعذر الوصول إلى خادم التفعيل. تحقق من اتصالك بالإنترنت.",
 
+	"desktop_starting": "جارٍ التشغيل…",
+	"desktop_sidecar_timeout": "لم يصبح الخادم المحلي جاهزاً في الوقت المتوقع.",
+
 	"nav_home": "الرئيسية",
 	"nav_members": "الأعضاء",
 	"nav_logout": "تسجيل الخروج",

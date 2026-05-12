@@ -49,7 +49,7 @@ function SignupPage() {
 			const { error: err } = await signUp.email(value);
 			if (err) {
 				setError(err.message ?? m.signup_failed());
-				return
+				return;
 			}
 			// Pending invites consumed in user.create.after - _authed bounces to /onboarding if no memberships.
 			const dest = safeRedirect(redirectTo);
@@ -80,7 +80,9 @@ function SignupPage() {
 							<form.Field name="name">
 								{(field) => (
 									<Field>
-										<FieldLabel htmlFor={field.name}>{m.label_name()}</FieldLabel>
+										<FieldLabel htmlFor={field.name}>
+											{m.label_name()}
+										</FieldLabel>
 										<Input
 											id={field.name}
 											name={field.name}
@@ -88,7 +90,9 @@ function SignupPage() {
 											placeholder={m.label_name()}
 											required
 											value={field.state.value}
-											onChange={(e) => field.handleChange(e.currentTarget.value)}
+											onChange={(e) =>
+												field.handleChange(e.currentTarget.value)
+											}
 											onBlur={field.handleBlur}
 										/>
 										<FieldError errors={field.state.meta.errors} />
@@ -98,7 +102,9 @@ function SignupPage() {
 							<form.Field name="email">
 								{(field) => (
 									<Field>
-										<FieldLabel htmlFor={field.name}>{m.label_email()}</FieldLabel>
+										<FieldLabel htmlFor={field.name}>
+											{m.label_email()}
+										</FieldLabel>
 										<Input
 											id={field.name}
 											name={field.name}
@@ -106,7 +112,9 @@ function SignupPage() {
 											placeholder={m.label_email()}
 											required
 											value={field.state.value}
-											onChange={(e) => field.handleChange(e.currentTarget.value)}
+											onChange={(e) =>
+												field.handleChange(e.currentTarget.value)
+											}
 											onBlur={field.handleBlur}
 										/>
 										<FieldError errors={field.state.meta.errors} />
@@ -116,7 +124,9 @@ function SignupPage() {
 							<form.Field name="password">
 								{(field) => (
 									<Field>
-										<FieldLabel htmlFor={field.name}>{m.label_password()}</FieldLabel>
+										<FieldLabel htmlFor={field.name}>
+											{m.label_password()}
+										</FieldLabel>
 										<Input
 											id={field.name}
 											name={field.name}
@@ -125,7 +135,9 @@ function SignupPage() {
 											required
 											minLength={6}
 											value={field.state.value}
-											onChange={(e) => field.handleChange(e.currentTarget.value)}
+											onChange={(e) =>
+												field.handleChange(e.currentTarget.value)
+											}
 											onBlur={field.handleBlur}
 										/>
 										<FieldError errors={field.state.meta.errors} />
@@ -161,5 +173,5 @@ function SignupPage() {
 				</CardFooter>
 			</Card>
 		</div>
-	)
+	);
 }

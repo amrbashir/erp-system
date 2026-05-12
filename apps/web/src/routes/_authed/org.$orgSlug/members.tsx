@@ -214,7 +214,9 @@ function AddMemberForm({
 									</SelectTrigger>
 									<SelectContent>
 										<SelectGroup>
-											<SelectItem value="member">{m.role_member()}</SelectItem>
+											<SelectItem value="member">
+												{m.role_member()}
+											</SelectItem>
 											{actorRole === "owner" && (
 												<>
 													<SelectItem value="admin">

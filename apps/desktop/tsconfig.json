@@ -1,8 +1,9 @@
 {
 	"extends": "../../tsconfig.json",
-	"include": ["scripts/**/*.ts"],
+	"include": ["src/**/*.ts", "src/**/*.tsx", "scripts/**/*.ts"],
 	"compilerOptions": {
-		"lib": ["ES2022"],
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"jsx": "react-jsx",
 		"types": ["node"],
 		"allowImportingTsExtensions": true,
 		"verbatimModuleSyntax": true,

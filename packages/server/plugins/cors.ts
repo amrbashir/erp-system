@@ -14,10 +14,7 @@ export default definePlugin((nitroApp) => {
 
 		if (event.req.method !== "OPTIONS") return;
 
-		res.headers.set(
-			"Access-Control-Allow-Methods",
-			"GET, POST, PUT, PATCH, DELETE, OPTIONS",
-		);
+		res.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
 		res.headers.set(
 			"Access-Control-Allow-Headers",
 			event.req.headers.get("access-control-request-headers") ?? "*",

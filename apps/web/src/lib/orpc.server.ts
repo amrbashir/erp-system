@@ -1,8 +1,8 @@
 import type { ContractRouterClient } from "@orpc/contract";
 import { createRouterClient } from "@orpc/server";
 import { getRequest } from "@tanstack/react-start/server";
-import type { contract } from "@workspace/server/orpc/contract";
 import { buildContext } from "@workspace/server/orpc/context";
+import type { contract } from "@workspace/server/orpc/contract";
 import { router } from "@workspace/server/orpc/router";
 
 type AppContract = typeof contract;

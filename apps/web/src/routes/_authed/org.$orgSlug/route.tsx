@@ -1,5 +1,6 @@
 import { ArrowLeftIcon, HouseIcon, UsersIcon } from "@phosphor-icons/react";
 import { Link, Outlet, createFileRoute, redirect, useLocation } from "@tanstack/react-router";
+import { IS_DESKTOP } from "@workspace/desktop";
 import { m } from "@workspace/i18n";
 import {
 	Sidebar,
@@ -17,7 +18,6 @@ import {
 } from "@workspace/ui/components/sidebar";
 
 import { AppLayout } from "@/components/app-layout";
-import { isDesktop } from "@/lib/activation";
 
 export const Route = createFileRoute("/_authed/org/$orgSlug")({
 	beforeLoad: ({ context, params }) => {
@@ -32,7 +32,6 @@ function OrgLayout() {
 	const { orgSlug } = Route.useParams();
 	const { org } = Route.useRouteContext();
 	const { pathname } = useLocation();
-	const desktop = isDesktop();
 
 	const homeHref = `/org/${orgSlug}`;
 	const membersHref = `/org/${orgSlug}/members`;
@@ -78,7 +77,7 @@ function OrgLayout() {
 						</SidebarGroupContent>
 					</SidebarGroup>
 				</SidebarContent>
-				{!desktop && (
+				{!IS_DESKTOP && (
 					<SidebarFooter>
 						<SidebarMenu>
 							<SidebarMenuItem>

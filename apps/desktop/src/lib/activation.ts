@@ -1,19 +1,18 @@
 import { createORPCClient } from "@orpc/client";
 import type { ContractRouterClient } from "@orpc/contract";
 import { OpenAPILink } from "@orpc/openapi-client/fetch";
+import { activationTokenPayload } from "@workspace/server/activations/activations.token";
 import { contract } from "@workspace/server/orpc/contract";
+import { jwtVerify, importSPKI } from "jose";
+import type * as z from "zod";
 
-import { verifyTokenOffline as verifyToken } from "./activation-verify";
+import { IS_DESKTOP } from "../index";
 import { ActivationMisconfiguredError, ApiError, InvalidTokenError } from "./errors";
 
 type AppContract = typeof contract;
 
 const ACTIVATION_PUBLIC_KEY = import.meta.env.ACTIVATION_PUBLIC_KEY;
 const ACTIVATION_API_URL = import.meta.env.ACTIVATION_API_URL;
-
-export function isDesktop(): boolean {
-	return import.meta.env.DEPLOY_TARGET === "desktop";
-}
 
 const activationClient: ContractRouterClient<AppContract> | null = ACTIVATION_API_URL
 	? createORPCClient<ContractRouterClient<AppContract>>(
@@ -43,11 +42,26 @@ export async function writeCachedToken(token: string): Promise<void> {
 
 export async function verifyTokenOffline(
 	token: string,
-): Promise<InvalidTokenError | { hardwareId: string; activated: boolean }> {
+): Promise<InvalidTokenError | z.infer<typeof activationTokenPayload>> {
 	if (!ACTIVATION_PUBLIC_KEY) {
 		return new InvalidTokenError({ reason: "Activation public key not configured" });
 	}
-	return verifyToken(token, ACTIVATION_PUBLIC_KEY);
+	const key = await importSPKI(ACTIVATION_PUBLIC_KEY, "ES256").catch((e: Error) => e);
+	if (key instanceof Error) {
+		return new InvalidTokenError({ reason: key.message, cause: key });
+	}
+	const verified = await jwtVerify(token, key).catch((e: Error) => e);
+	if (verified instanceof Error) {
+		return new InvalidTokenError({ reason: verified.message, cause: verified });
+	}
+	const parsed = activationTokenPayload.safeParse(verified.payload);
+	if (!parsed.success) {
+		return new InvalidTokenError({ reason: "Malformed token payload" });
+	}
+	if (!parsed.data.activated) {
+		return new InvalidTokenError({ reason: "Token not activated" });
+	}
+	return parsed.data;
 }
 
 export async function checkActivationApi(hardwareId: string) {
@@ -66,7 +80,7 @@ export type ActivationState =
 	| { status: "error"; error: Error };
 
 export async function checkActivationState(): Promise<ActivationState> {
-	if (!isDesktop()) return { status: "not_desktop" };
+	if (!IS_DESKTOP) return { status: "not_desktop" };
 
 	const hardwareId = await getHardwareId().catch((e: Error) => e);
 	if (hardwareId instanceof Error) return { status: "error", error: hardwareId };

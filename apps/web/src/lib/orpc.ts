@@ -3,17 +3,16 @@ import type { ContractRouterClient } from "@orpc/contract";
 import { OpenAPILink } from "@orpc/openapi-client/fetch";
 import { createTanstackQueryUtils } from "@orpc/tanstack-query";
 import { createIsomorphicFn } from "@tanstack/react-start";
+import { IS_DESKTOP, SIDECAR_URL } from "@workspace/desktop";
 import { contract } from "@workspace/server/orpc/contract";
 
-import { isDesktop } from "./activation";
 import { createServerClient } from "./orpc.server";
-import { SIDECAR_URL } from "./sidecar";
 
 type AppContract = typeof contract;
 
 /** Desktop: sidecar URL + `credentials: include` for cross-origin cookies (SameSite=None+Secure+Partitioned). Web: same-origin `/api`. */
 function createBrowserClient(): ContractRouterClient<AppContract> {
-	const link = isDesktop()
+	const link = IS_DESKTOP
 		? new OpenAPILink(contract, {
 				url: `${SIDECAR_URL}/api`,
 				fetch: (request, init) => fetch(request, { ...init, credentials: "include" }),

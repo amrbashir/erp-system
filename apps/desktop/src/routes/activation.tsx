@@ -1,4 +1,6 @@
 import { CheckIcon, XIcon } from "@phosphor-icons/react";
+import { useQueryClient } from "@tanstack/react-query";
+import { type AnyRoute, createRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
@@ -19,19 +21,21 @@ import {
 } from "@workspace/ui/components/input-group";
 import { useState } from "react";
 
-import { checkActivationApi, writeCachedToken } from "@/lib/activation";
-import { ActivationMisconfiguredError } from "@/lib/errors";
+import { type ActivationState, desktopQueryKeys } from "../gate";
+import { IS_DESKTOP } from "../index";
+import { checkActivationApi, writeCachedToken } from "../lib/activation";
+import { ActivationMisconfiguredError } from "../lib/errors";
 
-export function ActivationScreen({
-	hardwareId,
-	onActivated,
-}: {
-	hardwareId: string;
-	onActivated: () => void;
-}) {
+function ActivationPage() {
+	const qc = useQueryClient();
+	const navigate = useNavigate();
 	const [status, setStatus] = useState<"idle" | "checking" | "error">("idle");
 	const [error, setError] = useState("");
 	const [copyState, setCopyState] = useState<"idle" | "success" | "error">("idle");
+
+	const activation = qc.getQueryData<ActivationState>(desktopQueryKeys.activation);
+	if (activation?.status !== "not_activated") return null;
+	const hardwareId = activation.hardwareId;
 
 	async function handleCopy() {
 		const r = await navigator.clipboard.writeText(hardwareId).catch((e: Error) => e);
@@ -58,7 +62,8 @@ export function ActivationScreen({
 				setError(writeRes.message);
 				return;
 			}
-			onActivated();
+			await qc.invalidateQueries({ queryKey: desktopQueryKeys.all });
+			await navigate({ to: "/" });
 			return;
 		}
 
@@ -113,4 +118,15 @@ export function ActivationScreen({
 			</Card>
 		</div>
 	);
+}
+
+export function createActivationRoute(rootRoute: AnyRoute) {
+	return createRoute({
+		getParentRoute: () => rootRoute,
+		path: "/activation",
+		beforeLoad: () => {
+			if (!IS_DESKTOP) throw redirect({ to: "/" });
+		},
+		component: ActivationPage,
+	});
 }

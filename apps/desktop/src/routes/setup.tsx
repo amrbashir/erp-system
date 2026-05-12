@@ -1,4 +1,6 @@
 import { useForm } from "@tanstack/react-form";
+import { useQueryClient } from "@tanstack/react-query";
+import { type AnyRoute, createRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
 import { setupRunInput } from "@workspace/server/setup/setup.contract";
 import { toSlug } from "@workspace/shared/slug";
@@ -22,12 +24,16 @@ import { Input } from "@workspace/ui/components/input";
 import { useState } from "react";
 import * as z from "zod";
 
-import { desktopSetup } from "@/lib/desktop-auth";
+import { desktopQueryKeys } from "../gate";
+import { IS_DESKTOP } from "../index";
+import { desktopSetup } from "../lib/sidecar";
 
 // Form always provides a slug; contract optional for non-form callers.
 const setupFormSchema = setupRunInput.extend({ slug: z.string() });
 
-export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
+function SetupPage() {
+	const qc = useQueryClient();
+	const navigate = useNavigate();
 	const [error, setError] = useState("");
 	const [slugEdited, setSlugEdited] = useState(false);
 
@@ -54,7 +60,8 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 					password: value.password,
 					name,
 				});
-				onComplete();
+				await qc.invalidateQueries({ queryKey: desktopQueryKeys.all });
+				await navigate({ to: "/" });
 			} catch (err) {
 				setError(err instanceof Error ? err.message : m.desktop_onboarding_failed());
 			}
@@ -132,7 +139,9 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 										/>
 										{field.state.value && (
 											<FieldDescription>
-												{m.org_slug_url_preview({ slug: field.state.value })}
+												{m.org_slug_url_preview({
+													slug: field.state.value,
+												})}
 											</FieldDescription>
 										)}
 										<FieldError errors={field.state.meta.errors} />
@@ -152,7 +161,9 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 											placeholder={m.desktop_onboarding_your_name()}
 											required
 											value={field.state.value}
-											onChange={(e) => field.handleChange(e.currentTarget.value)}
+											onChange={(e) =>
+												field.handleChange(e.currentTarget.value)
+											}
 											onBlur={field.handleBlur}
 										/>
 										<FieldError errors={field.state.meta.errors} />
@@ -172,7 +183,9 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 											placeholder={m.label_email()}
 											required
 											value={field.state.value}
-											onChange={(e) => field.handleChange(e.currentTarget.value)}
+											onChange={(e) =>
+												field.handleChange(e.currentTarget.value)
+											}
 											onBlur={field.handleBlur}
 										/>
 										<FieldError errors={field.state.meta.errors} />
@@ -193,7 +206,9 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 											required
 											minLength={6}
 											value={field.state.value}
-											onChange={(e) => field.handleChange(e.currentTarget.value)}
+											onChange={(e) =>
+												field.handleChange(e.currentTarget.value)
+											}
 											onBlur={field.handleBlur}
 										/>
 										<FieldError errors={field.state.meta.errors} />
@@ -216,4 +231,15 @@ export function DesktopOnboarding({ onComplete }: { onComplete: () => void }) {
 			</Card>
 		</div>
 	);
+}
+
+export function createSetupRoute(rootRoute: AnyRoute) {
+	return createRoute({
+		getParentRoute: () => rootRoute,
+		path: "/setup",
+		beforeLoad: () => {
+			if (!IS_DESKTOP) throw redirect({ to: "/" });
+		},
+		component: SetupPage,
+	});
 }
