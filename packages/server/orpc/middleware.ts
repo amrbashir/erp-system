@@ -34,14 +34,6 @@ export const authed = pub.use(async ({ context, next }) => {
 	return next({ context: { ...context, session } });
 });
 
-export const adminAuthed = adminPub.use(async ({ context, next }) => {
-	const session = await useAuth()
-		.api.getSession({ headers: context.request.headers })
-		.catch(() => null);
-	if (!session) throw new UnauthorizedError();
-	return next({ context: { ...context, session } });
-});
-
 /** Adds `orgId` + `membership` to context. OpenAPI merges path params into input before middleware runs, so `orgSlug` is on the runtime input object. */
 export const orgResolver = authedMw.middleware(async ({ context, next }, input) => {
 	const slug = (input as { orgSlug?: string }).orgSlug;
