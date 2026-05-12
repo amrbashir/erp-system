@@ -6,7 +6,10 @@ import { Route as rootRoute } from "./routes/__root";
 import { routeTree as fileRouteTree } from "./routeTree.gen";
 
 // Desktop-only routes (/activation, /setup) injected at runtime - source lives in @workspace/desktop.
-const routeTree = fileRouteTree.addChildren(createDesktopRoutes(rootRoute));
+const routeTree = fileRouteTree.addChildren([
+	...((fileRouteTree.children ?? []) as never[]),
+	...createDesktopRoutes(rootRoute),
+]);
 
 export function getRouter() {
 	const queryClient = new QueryClient({
