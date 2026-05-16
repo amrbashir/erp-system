@@ -14,7 +14,7 @@
 		"dev:sidecar": "DEPLOY_TARGET=desktop NITRO_PGDATA_DIR=.data/pglitedata pnpm --filter @workspace/server dev --port 11435",
 		"build": "pnpm build:sidecar && pnpm build:frontend && tauri build",
 		"build:sidecar": "node scripts/build-sidecar.ts",
-		"build:frontend": "DEPLOY_TARGET=desktop pnpm --filter @workspace/web build --outDir ./dist",
+		"build:frontend": "DEPLOY_TARGET=desktop pnpm --filter @workspace/web build",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {

@@ -22,10 +22,13 @@ export default defineConfig({
 			strategy: ["cookie", "preferredLanguage", "baseLocale"],
 			emitTsDeclarations: true,
 		}),
-		nitro(nitroConfig),
+		// Desktop is a SPA and doesn't need Nitro's features.
+		...(isDesktop ? [] : [nitro(nitroConfig)]),
 		viteTsConfigPaths(),
 		tailwindcss(),
-		tanstackStart(isDesktop ? { spa: { enabled: true } } : undefined),
+		tanstackStart(
+			isDesktop ? { spa: { enabled: true, prerender: { outputPath: "/index" } } } : undefined,
+		),
 		viteReact(),
 	],
 	resolve: {

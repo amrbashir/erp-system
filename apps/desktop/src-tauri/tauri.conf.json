@@ -4,7 +4,7 @@
 	"version": "0.1.0",
 	"identifier": "me.amrbashir.kaname",
 	"build": {
-		"frontendDist": "../dist",
+		"frontendDist": "../../web/dist/client",
 		"devUrl": "http://localhost:1522",
 		"beforeDevCommand": "pnpm --parallel --filter @workspace/desktop dev:frontend dev:sidecar"
 	},
