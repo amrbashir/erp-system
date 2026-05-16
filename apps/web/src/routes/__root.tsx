@@ -7,7 +7,7 @@ import {
 	createRootRouteWithContext,
 } from "@tanstack/react-router";
 import { runDesktopGate } from "@workspace/desktop/gate";
-import { getLocale, getTextDirection, localeScript, m } from "@workspace/i18n";
+import { getLocale, getTextDirection, m } from "@workspace/i18n";
 import { Alert, AlertDescription, AlertTitle } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
 import { NotFound } from "@workspace/ui/components/not-found";
@@ -97,7 +97,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<head>
 				<HeadContent />
 				<script dangerouslySetInnerHTML={{ __html: themeScript }} />
-				<script dangerouslySetInnerHTML={{ __html: localeScript }} />
 			</head>
 			<body className="flex min-h-svh flex-col">
 				<QueryClientProvider client={queryClient}>

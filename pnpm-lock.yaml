@@ -449,6 +449,9 @@ importers:
       '@workspace/db':
         specifier: workspace:*
         version: link:../db
+      '@workspace/i18n':
+        specifier: workspace:*
+        version: link:../i18n
       '@workspace/shared':
         specifier: workspace:*
         version: link:../shared

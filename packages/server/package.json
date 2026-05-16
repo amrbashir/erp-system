@@ -24,6 +24,7 @@
 		"@orpc/openapi": "catalog:orpc",
 		"@orpc/server": "catalog:orpc",
 		"@workspace/db": "workspace:*",
+		"@workspace/i18n": "workspace:*",
 		"@workspace/shared": "workspace:*",
 		"better-auth": "catalog:",
 		"drizzle-orm": "catalog:drizzle",
