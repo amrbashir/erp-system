@@ -7,10 +7,15 @@ mod hardware_id;
 mod sidecar;
 
 fn install_shutdown_hooks(app: tauri::AppHandle) {
-    // Kill sidecar on panic before unwinding. Primary defence on Unix; on Windows the Job Object backs it up.
+    #[cfg(not(debug_assertions))]
     let panic_app = app.clone();
     let prev = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |info| {
+        // Kill sidecar on panic before unwinding.
+        // Primary defence on Unix; on Windows the Job Object backs it up.
+        //
+        // On development builds, we are not managing the sidecar process.
+        #[cfg(not(debug_assertions))]
         sidecar::stop(&panic_app);
         prev(info);
     }));
@@ -27,7 +32,14 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .manage(sidecar::SidecarManager::new())
         .setup(|app| {
+            #[cfg(debug_assertions)]
+            eprintln!(
+                "[sidecar] debug build: using external desktop backend on http://localhost:11435"
+            );
+
+            #[cfg(not(debug_assertions))]
             sidecar::start(&app.handle())?;
+
             install_shutdown_hooks(app.handle().clone());
             Ok(())
         })

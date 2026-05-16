@@ -15,8 +15,9 @@
 		"./setup/*": "./setup/*.ts"
 	},
 	"scripts": {
-		"typecheck": "tsc --noEmit",
-		"build:desktop": "DEPLOY_TARGET=desktop nitro build"
+		"dev": "nitro dev",
+		"build": "nitro build",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@orpc/contract": "catalog:orpc",

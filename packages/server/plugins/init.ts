@@ -8,6 +8,7 @@ import { useStorage } from "nitro/storage";
 
 import { initDatabase } from "#db";
 
+import journal from "../../db/drizzle/meta/_journal.json" with { type: "json" };
 import { createAuth } from "../lib/auth.js";
 
 function ensureAuthSecret(dataDir: string) {
@@ -39,13 +40,12 @@ export default definePlugin(async (nitroApp) => {
 		nitroApp.db = await initDatabase(dataDir);
 
 		const storage = useStorage("assets:migrations");
-		await applyMigrations(nitroApp.db, async (path) => {
-			const key = path.replace(/[\\/]/g, ":");
-			const item = await storage.getItem(key);
+		await applyMigrations(nitroApp.db, journal, async (tag) => {
+			const item = await storage.getItem(`${tag}.sql`);
 			if (item === null || item === undefined) {
-				throw new Error(`Migration file not found: ${path}`);
+				throw new Error(`Migration file not found: ${tag}.sql`);
 			}
-			return typeof item === "object" ? JSON.stringify(item) : String(item);
+			return String(item);
 		});
 	} else {
 		if (!process.env.DATABASE_URL) return;

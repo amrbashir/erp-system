@@ -10,8 +10,11 @@
 	},
 	"scripts": {
 		"dev": "tauri dev",
+		"dev:frontend": "DEPLOY_TARGET=desktop pnpm --filter @workspace/web dev --port 1522 --clearScreen=false",
+		"dev:sidecar": "DEPLOY_TARGET=desktop NITRO_PGDATA_DIR=.data/pglitedata pnpm --filter @workspace/server dev --port 11435",
+		"build": "pnpm build:sidecar && pnpm build:frontend && tauri build",
 		"build:sidecar": "node scripts/build-sidecar.ts",
-		"build": "pnpm run build:sidecar && tauri build",
+		"build:frontend": "DEPLOY_TARGET=desktop pnpm --filter @workspace/web build --outDir ./dist",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {

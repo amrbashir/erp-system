@@ -1,7 +1,9 @@
+#![cfg_attr(debug_assertions, allow(dead_code))]
+
 use std::sync::{Mutex, PoisonError};
 use std::time::Duration;
 use tauri::{Emitter, Manager};
-use tauri_plugin_shell::{process::CommandChild, ShellExt};
+use tauri_plugin_shell::{ShellExt, process::CommandChild};
 
 use crate::config;
 

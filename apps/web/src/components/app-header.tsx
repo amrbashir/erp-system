@@ -5,12 +5,21 @@ import { m } from "@workspace/i18n";
 import { Button } from "@workspace/ui/components/button";
 import { LanguageSwitcher } from "@workspace/ui/components/language-switcher";
 import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
+import { cn } from "@workspace/ui/lib/utils";
 import type { ReactNode } from "react";
 
 import { signOut } from "@/lib/auth-client";
 import { orpc } from "@/lib/orpc";
 
-export function AppHeader({ leadingSlot }: { leadingSlot?: ReactNode }) {
+export function AppHeader({
+	leadingSlot,
+	trailingSlot,
+	borderless = false,
+}: {
+	leadingSlot?: ReactNode;
+	trailingSlot?: ReactNode;
+	borderless?: boolean;
+}) {
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 	const { data: session } = useQuery(orpc.session.get.queryOptions());
@@ -26,7 +35,7 @@ export function AppHeader({ leadingSlot }: { leadingSlot?: ReactNode }) {
 	}
 
 	return (
-		<header className="flex items-center gap-2 border-b px-4 py-2">
+		<header className={cn("flex items-center gap-2 px-4 py-2", !borderless && "border-b")}>
 			{leadingSlot}
 			<div className="ms-auto flex items-center gap-2">
 				<ThemeSwitcher />
@@ -36,6 +45,7 @@ export function AppHeader({ leadingSlot }: { leadingSlot?: ReactNode }) {
 						{m.nav_logout()}
 					</Button>
 				)}
+				{trailingSlot}
 			</div>
 		</header>
 	);

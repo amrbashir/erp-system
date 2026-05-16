@@ -4,10 +4,9 @@
 	"version": "0.1.0",
 	"identifier": "me.amrbashir.kaname",
 	"build": {
-		"frontendDist": "../web/dist",
+		"frontendDist": "../dist",
 		"devUrl": "http://localhost:1522",
-		"beforeDevCommand": "pnpm -w dev:web:desktop --port 1522 --clearScreen=false",
-		"beforeBuildCommand": "pnpm -w build:web:desktop"
+		"beforeDevCommand": "pnpm --parallel --filter @workspace/desktop dev:frontend dev:sidecar"
 	},
 	"app": {
 		"windows": [

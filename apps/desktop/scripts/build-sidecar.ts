@@ -11,7 +11,13 @@ function buildNitro() {
 	// Clean .output first so deleted routes/files don't linger in the bundled
 	// sidecar. Nitro overwrites in place but never prunes stale artifacts.
 	rmSync(resolve(serverDir, ".output"), { recursive: true, force: true });
-	execSync("pnpm run build:desktop", { cwd: serverDir, stdio: "inherit" });
+	execSync("pnpm run build", {
+		env: {
+			DEPLOY_TARGET: "desktop",
+		},
+		cwd: serverDir,
+		stdio: "inherit",
+	});
 }
 
 const PGLITE_BUNDLE = "_libs/electric-sql__pglite.mjs";

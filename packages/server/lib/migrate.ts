@@ -7,12 +7,16 @@ interface JournalEntry {
 	tag: string;
 }
 
-interface Journal {
+export interface Journal {
 	entries: JournalEntry[];
 }
 
-/** `readFile` is disk in tests, Nitro server assets in prod. */
-export async function applyMigrations(db: DB, readFile: (path: string) => Promise<string>) {
+/** `readSql(tag)` returns the SQL for a migration (Nitro server assets in prod, disk in tests). */
+export async function applyMigrations(
+	db: DB,
+	journal: Journal,
+	readSql: (tag: string) => Promise<string>,
+) {
 	await db.execute(sql`
 		CREATE TABLE IF NOT EXISTS "__drizzle_migrations" (
 			id SERIAL PRIMARY KEY,
@@ -20,9 +24,6 @@ export async function applyMigrations(db: DB, readFile: (path: string) => Promis
 			created_at BIGINT
 		)
 	`);
-
-	const journalStr = await readFile("meta/_journal.json");
-	const journal: Journal = JSON.parse(journalStr);
 
 	const applied = await db.execute<{ hash: string }>(
 		sql`SELECT hash FROM "__drizzle_migrations"`,
@@ -32,7 +33,7 @@ export async function applyMigrations(db: DB, readFile: (path: string) => Promis
 	for (const entry of journal.entries.sort((a, b) => a.idx - b.idx)) {
 		if (appliedSet.has(entry.tag)) continue;
 
-		const migrationSql = await readFile(`${entry.tag}.sql`);
+		const migrationSql = await readSql(entry.tag);
 		const statements = migrationSql.split("--> statement-breakpoint");
 
 		for (const stmt of statements) {

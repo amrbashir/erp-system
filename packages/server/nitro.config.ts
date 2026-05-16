@@ -16,5 +16,14 @@ export default defineNitroConfig({
 	preset: isDesktop ? "deno-server" : undefined,
 	serverDir: dir,
 	alias: { "#db": databaseAdapter },
-	serverAssets: isDesktop ? [{ baseName: "migrations", dir: resolve(dir, "../db/drizzle") }] : [],
+	serverAssets: isDesktop
+		? [
+				{
+					baseName: "migrations",
+					dir: resolve(dir, "../db/drizzle"),
+					// we are importing the migration files in the server code, so we need to ignore them in the server assets to avoid them being bundled and causing issues with the dynamic imports
+					ignore: ["meta/**"],
+				},
+			]
+		: [],
 });
