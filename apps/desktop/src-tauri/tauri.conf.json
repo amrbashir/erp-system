@@ -6,7 +6,7 @@
 	"build": {
 		"frontendDist": "../../web/dist/client",
 		"devUrl": "http://localhost:1522",
-		"beforeDevCommand": "pnpm --parallel --filter @workspace/desktop dev:frontend dev:sidecar"
+		"beforeDevCommand": "pnpm --filter @workspace/desktop run --parallel /dev:/"
 	},
 	"app": {
 		"windows": [
