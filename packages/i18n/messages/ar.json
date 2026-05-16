@@ -5,12 +5,17 @@
 
 	"label_email": "البريد الإلكتروني",
 	"label_password": "كلمة المرور",
+	"label_password_confirm": "تأكيد كلمة المرور",
 	"label_name": "الاسم",
 
 	"placeholder_email": "you@example.com",
 	"placeholder_password_signin": "أدخل كلمة المرور",
 	"placeholder_password_signup": "٦ أحرف على الأقل",
+	"placeholder_password_confirm": "أعد إدخال كلمة المرور",
 	"placeholder_name": "اسمك بالكامل",
+
+	"password_match": "كلمتا المرور متطابقتان",
+	"password_mismatch": "كلمتا المرور غير متطابقتين",
 	"label_role": "الدور",
 	"label_org_name": "اسم المنظمة",
 	"label_org_slug": "معرف الرابط",

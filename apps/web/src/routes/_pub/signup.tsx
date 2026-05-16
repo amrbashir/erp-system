@@ -1,3 +1,4 @@
+import { CheckIcon, XIcon } from "@phosphor-icons/react";
 import { useForm } from "@tanstack/react-form";
 import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { m } from "@workspace/i18n";
@@ -12,18 +13,13 @@ import {
 } from "@workspace/ui/components/card";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
+import { cn } from "@workspace/ui/lib/utils";
 import { useState } from "react";
 import * as z from "zod";
 
 import { signUp } from "@/lib/auth-client";
 import { orpc } from "@/lib/orpc";
 import { safeRedirect } from "@/lib/safe-redirect";
-
-const signupSchema = z.object({
-	name: z.string().min(1),
-	email: z.email(),
-	password: z.string().min(6),
-});
 
 export const Route = createFileRoute("/_pub/signup")({
 	validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
@@ -41,12 +37,24 @@ function SignupPage() {
 	const { redirect: redirectTo } = Route.useSearch();
 	const [error, setError] = useState("");
 
+	const signupSchema = z
+		.object({
+			name: z.string().min(1),
+			email: z.email(),
+			password: z.string().min(6),
+			confirmPassword: z.string(),
+		})
+		.refine((data) => data.password === data.confirmPassword, {
+			message: m.password_mismatch(),
+			path: ["confirmPassword"],
+		});
+
 	const form = useForm({
-		defaultValues: { name: "", email: "", password: "" },
+		defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
 		validators: { onSubmit: signupSchema },
-		onSubmit: async ({ value }) => {
+		onSubmit: async ({ value: { confirmPassword: _, ...credentials } }) => {
 			setError("");
-			const { error: err } = await signUp.email(value);
+			const { error: err } = await signUp.email(credentials);
 			if (err) {
 				setError(err.message ?? m.signup_failed());
 				return;
@@ -141,6 +149,63 @@ function SignupPage() {
 											onBlur={field.handleBlur}
 										/>
 										<FieldError errors={field.state.meta.errors} />
+									</Field>
+								)}
+							</form.Field>
+							<form.Field name="confirmPassword">
+								{(field) => (
+									<Field>
+										<FieldLabel htmlFor={field.name}>
+											{m.label_password_confirm()}
+										</FieldLabel>
+										<Input
+											id={field.name}
+											name={field.name}
+											type="password"
+											placeholder={m.placeholder_password_confirm()}
+											required
+											value={field.state.value}
+											onChange={(e) =>
+												field.handleChange(e.currentTarget.value)
+											}
+											onBlur={field.handleBlur}
+										/>
+										<form.Subscribe
+											selector={(s) => ({
+												password: s.values.password,
+												attempted: s.submissionAttempts > 0,
+											})}
+										>
+											{({ password, attempted }) => {
+												if (!attempted) return null;
+												const matches =
+													field.state.value.length > 0 &&
+													field.state.value === password;
+												const mismatches =
+													field.state.value.length > 0 &&
+													field.state.value !== password;
+												if (!matches && !mismatches) return null;
+												return (
+													<p
+														className={cn(
+															"flex items-center gap-1 text-xs",
+															matches
+																? "text-primary"
+																: "text-destructive",
+														)}
+													>
+														{matches ? (
+															<CheckIcon weight="bold" />
+														) : (
+															<XIcon weight="bold" />
+														)}
+														{matches
+															? m.password_match()
+															: m.password_mismatch()}
+													</p>
+												);
+											}}
+										</form.Subscribe>
 									</Field>
 								)}
 							</form.Field>

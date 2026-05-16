@@ -1,3 +1,4 @@
+import { CheckIcon, XIcon } from "@phosphor-icons/react";
 import { useForm } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { type AnyRoute, createRoute, redirect, useNavigate } from "@tanstack/react-router";
@@ -21,6 +22,7 @@ import {
 	FieldLabel,
 } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
+import { cn } from "@workspace/ui/lib/utils";
 import { useState } from "react";
 import * as z from "zod";
 
@@ -28,19 +30,31 @@ import { desktopQueryKeys } from "../gate";
 import { IS_DESKTOP } from "../index";
 import { desktopSetup } from "../lib/sidecar";
 
-// Form always provides a slug; contract optional for non-form callers.
-const setupFormSchema = setupRunInput.extend({ slug: z.string() });
-
 function SetupPage() {
 	const qc = useQueryClient();
 	const navigate = useNavigate();
 	const [error, setError] = useState("");
 	const [slugEdited, setSlugEdited] = useState(false);
 
+	// Form always provides a slug; contract optional for non-form callers.
+	const setupFormSchema = setupRunInput
+		.extend({ slug: z.string(), confirmPassword: z.string() })
+		.refine((data) => data.password === data.confirmPassword, {
+			message: m.password_mismatch(),
+			path: ["confirmPassword"],
+		});
+
 	const form = useForm({
-		defaultValues: { orgName: "", slug: "", name: "", email: "", password: "" },
+		defaultValues: {
+			orgName: "",
+			slug: "",
+			name: "",
+			email: "",
+			password: "",
+			confirmPassword: "",
+		},
 		validators: { onSubmit: setupFormSchema },
-		onSubmit: async ({ value }) => {
+		onSubmit: async ({ value: { confirmPassword: _, ...value } }) => {
 			setError("");
 			const trimmedOrgName = value.orgName.trim();
 			const finalSlug = value.slug.trim() || toSlug(trimmedOrgName) || "";
@@ -202,7 +216,7 @@ function SetupPage() {
 											id={field.name}
 											name={field.name}
 											type="password"
-											placeholder={m.label_password()}
+											placeholder={m.placeholder_password_signup()}
 											required
 											minLength={6}
 											value={field.state.value}
@@ -212,6 +226,63 @@ function SetupPage() {
 											onBlur={field.handleBlur}
 										/>
 										<FieldError errors={field.state.meta.errors} />
+									</Field>
+								)}
+							</form.Field>
+							<form.Field name="confirmPassword">
+								{(field) => (
+									<Field>
+										<FieldLabel htmlFor={field.name}>
+											{m.label_password_confirm()}
+										</FieldLabel>
+										<Input
+											id={field.name}
+											name={field.name}
+											type="password"
+											placeholder={m.placeholder_password_confirm()}
+											required
+											value={field.state.value}
+											onChange={(e) =>
+												field.handleChange(e.currentTarget.value)
+											}
+											onBlur={field.handleBlur}
+										/>
+										<form.Subscribe
+											selector={(s) => ({
+												password: s.values.password,
+												attempted: s.submissionAttempts > 0,
+											})}
+										>
+											{({ password, attempted }) => {
+												if (!attempted) return null;
+												const matches =
+													field.state.value.length > 0 &&
+													field.state.value === password;
+												const mismatches =
+													field.state.value.length > 0 &&
+													field.state.value !== password;
+												if (!matches && !mismatches) return null;
+												return (
+													<p
+														className={cn(
+															"flex items-center gap-1 text-xs",
+															matches
+																? "text-primary"
+																: "text-destructive",
+														)}
+													>
+														{matches ? (
+															<CheckIcon weight="bold" />
+														) : (
+															<XIcon weight="bold" />
+														)}
+														{matches
+															? m.password_match()
+															: m.password_mismatch()}
+													</p>
+												);
+											}}
+										</form.Subscribe>
 									</Field>
 								)}
 							</form.Field>
