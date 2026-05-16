@@ -87,7 +87,7 @@ function SignupPage() {
 											id={field.name}
 											name={field.name}
 											type="text"
-											placeholder={m.label_name()}
+											placeholder={m.placeholder_name()}
 											required
 											value={field.state.value}
 											onChange={(e) =>
@@ -109,7 +109,7 @@ function SignupPage() {
 											id={field.name}
 											name={field.name}
 											type="email"
-											placeholder={m.label_email()}
+											placeholder={m.placeholder_email()}
 											required
 											value={field.state.value}
 											onChange={(e) =>
@@ -131,7 +131,7 @@ function SignupPage() {
 											id={field.name}
 											name={field.name}
 											type="password"
-											placeholder={m.label_password()}
+											placeholder={m.placeholder_password_signup()}
 											required
 											minLength={6}
 											value={field.state.value}

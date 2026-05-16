@@ -15,7 +15,7 @@ import { Spinner } from "@workspace/ui/components/spinner";
 import { ThemeProvider, themeScript } from "@workspace/ui/components/theme-provider";
 import { TooltipProvider } from "@workspace/ui/components/tooltip";
 
-import { AppLayout } from "@/components/app-layout";
+import { PublicLayout } from "@/layouts/public";
 
 import appCss from "@workspace/ui/globals.css?url";
 
@@ -56,33 +56,37 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function NotFoundWithHeader() {
 	return (
-		<AppLayout>
-			<NotFound />
-		</AppLayout>
+		<PublicLayout>
+			<div className="flex flex-1 items-center justify-center">
+				<NotFound />
+			</div>
+		</PublicLayout>
 	);
 }
 
 function ErrorBoundary({ error, reset }: ErrorComponentProps) {
 	return (
-		<div className="flex min-h-screen flex-col items-center justify-center gap-4 p-6">
-			<Alert variant="destructive" className="max-w-md">
-				<AlertTitle>{m.error_boundary_heading()}</AlertTitle>
-				<AlertDescription>
-					<p>{m.error_boundary_description()}</p>
-					{error.message ? (
-						<pre className="bg-muted max-w-full overflow-auto p-3 text-left font-mono">
-							{error.message}
-						</pre>
-					) : null}
-				</AlertDescription>
-			</Alert>
-			<div className="flex gap-2">
-				<Button onClick={reset}>{m.retry()}</Button>
-				<Button variant="outline" onClick={() => window.location.reload()}>
-					{m.reload()}
-				</Button>
+		<PublicLayout>
+			<div className="flex flex-1 flex-col items-center justify-center gap-4 p-6">
+				<Alert variant="destructive" className="max-w-md">
+					<AlertTitle>{m.error_boundary_heading()}</AlertTitle>
+					<AlertDescription>
+						<p>{m.error_boundary_description()}</p>
+						{error.message ? (
+							<pre className="bg-muted max-w-full overflow-auto p-3 text-left font-mono">
+								{error.message}
+							</pre>
+						) : null}
+					</AlertDescription>
+				</Alert>
+				<div className="flex gap-2">
+					<Button onClick={reset}>{m.retry()}</Button>
+					<Button variant="outline" onClick={() => window.location.reload()}>
+						{m.reload()}
+					</Button>
+				</div>
 			</div>
-		</div>
+		</PublicLayout>
 	);
 }
 

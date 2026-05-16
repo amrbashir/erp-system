@@ -6,6 +6,11 @@
 	"label_email": "Email",
 	"label_password": "Password",
 	"label_name": "Name",
+
+	"placeholder_email": "you@example.com",
+	"placeholder_password_signin": "Enter your password",
+	"placeholder_password_signup": "At least 6 characters",
+	"placeholder_name": "Your full name",
 	"label_role": "Role",
 	"label_org_name": "Organization name",
 	"label_org_slug": "URL slug",

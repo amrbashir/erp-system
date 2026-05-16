@@ -86,7 +86,7 @@ function LoginPage() {
 											id={field.name}
 											name={field.name}
 											type="email"
-											placeholder={m.label_email()}
+											placeholder={m.placeholder_email()}
 											required
 											value={field.state.value}
 											onChange={(e) =>
@@ -108,7 +108,7 @@ function LoginPage() {
 											id={field.name}
 											name={field.name}
 											type="password"
-											placeholder={m.label_password()}
+											placeholder={m.placeholder_password_signin()}
 											required
 											value={field.state.value}
 											onChange={(e) =>

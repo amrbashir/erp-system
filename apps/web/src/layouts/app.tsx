@@ -1,7 +1,7 @@
-import { Link, Outlet } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
-import { AppHeader } from "./app-header";
+import { AppHeader } from "@/components/app-header";
 
 export function AppLayout({
 	children,
@@ -18,15 +18,7 @@ export function AppLayout({
 	);
 }
 
-export function AppLayoutOutlet() {
-	return (
-		<AppLayout>
-			<Outlet />
-		</AppLayout>
-	);
-}
-
-function BrandMark() {
+export function BrandMark() {
 	return (
 		<Link to="/" className="flex items-center gap-2">
 			<span className="bg-primary size-7 rounded-md" aria-hidden />

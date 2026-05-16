@@ -17,7 +17,7 @@ import {
 	SidebarTrigger,
 } from "@workspace/ui/components/sidebar";
 
-import { AppLayout } from "@/components/app-layout";
+import { AppLayout } from "@/layouts/app";
 
 export const Route = createFileRoute("/_authed/org/$orgSlug")({
 	beforeLoad: ({ context, params }) => {
