@@ -10,6 +10,7 @@ import { runDesktopGate } from "@workspace/desktop/gate";
 import { getLocale, getTextDirection, m } from "@workspace/i18n";
 import { Alert, AlertDescription, AlertTitle } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@workspace/ui/components/empty";
 import { NotFound } from "@workspace/ui/components/not-found";
 import { Spinner } from "@workspace/ui/components/spinner";
 import { ThemeProvider, themeScript } from "@workspace/ui/components/theme-provider";
@@ -112,9 +113,15 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
 function BootPending() {
 	return (
-		<div className="flex min-h-svh flex-col items-center justify-center gap-3">
-			<Spinner className="size-6" />
-			<p className="text-muted-foreground text-sm">{m.desktop_starting()}</p>
-		</div>
+		<Empty className="min-h-svh">
+			<EmptyHeader>
+				<EmptyMedia>
+					<Spinner className="size-6" />
+				</EmptyMedia>
+				<EmptyTitle className="text-muted-foreground font-normal">
+					{m.desktop_starting()}
+				</EmptyTitle>
+			</EmptyHeader>
+		</Empty>
 	);
 }

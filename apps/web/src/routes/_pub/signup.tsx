@@ -11,9 +11,14 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@workspace/ui/components/card";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@workspace/ui/components/field";
+import {
+	Field,
+	FieldDescription,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+} from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
-import { cn } from "@workspace/ui/lib/utils";
 import { useState } from "react";
 import * as z from "zod";
 
@@ -178,31 +183,22 @@ function SignupPage() {
 										>
 											{({ password, attempted }) => {
 												if (!attempted) return null;
-												const matches =
-													field.state.value.length > 0 &&
-													field.state.value === password;
-												const mismatches =
-													field.state.value.length > 0 &&
-													field.state.value !== password;
-												if (!matches && !mismatches) return null;
-												return (
-													<p
-														className={cn(
-															"flex items-center gap-1 text-xs",
-															matches
-																? "text-primary"
-																: "text-destructive",
-														)}
-													>
-														{matches ? (
+												if (field.state.value.length === 0) return null;
+												if (field.state.value === password) {
+													return (
+														<FieldDescription className="text-primary flex items-center gap-1">
 															<CheckIcon weight="bold" />
-														) : (
+															{m.password_match()}
+														</FieldDescription>
+													);
+												}
+												return (
+													<FieldError>
+														<span className="inline-flex items-center gap-1">
 															<XIcon weight="bold" />
-														)}
-														{matches
-															? m.password_match()
-															: m.password_mismatch()}
-													</p>
+															{m.password_mismatch()}
+														</span>
+													</FieldError>
 												);
 											}}
 										</form.Subscribe>

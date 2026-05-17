@@ -21,15 +21,15 @@ function OrgsListPage() {
 	const { orgs } = Route.useRouteContext();
 
 	return (
-		<div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
-			<div className="flex items-center justify-between">
+		<main className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
+			<header className="flex items-center justify-between">
 				<h1 className="text-2xl font-semibold">{m.orgs_list_heading()}</h1>
 				{!IS_DESKTOP && (
 					<Button render={<Link to="/new-org" />} size="sm">
 						{m.orgs_list_create()}
 					</Button>
 				)}
-			</div>
+			</header>
 
 			<div className="grid gap-3 sm:grid-cols-2">
 				{orgs.map((org) => (
@@ -48,6 +48,6 @@ function OrgsListPage() {
 					</Link>
 				))}
 			</div>
-		</div>
+		</main>
 	);
 }

@@ -1,7 +1,11 @@
 import { Link, createFileRoute, redirect } from "@tanstack/react-router";
 import { IS_DESKTOP } from "@workspace/desktop";
 import { m } from "@workspace/i18n";
+import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar";
+import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
+import { Card } from "@workspace/ui/components/card";
+import { Separator } from "@workspace/ui/components/separator";
 import { cn } from "@workspace/ui/lib/utils";
 
 import { orpc } from "@/lib/orpc";
@@ -62,22 +66,12 @@ function DecorativeCards() {
 	);
 }
 
-function FloatingCard({ className, children }: { className?: string; children: React.ReactNode }) {
-	return (
-		<div
-			className={cn(
-				"border-border/60 bg-card/70 rounded-xl border p-5 shadow-2xl shadow-black/40 backdrop-blur-sm",
-				className,
-			)}
-		>
-			{children}
-		</div>
-	);
-}
+const floatingCardClass =
+	"gap-0 border border-border/60 bg-card/70 p-5 shadow-2xl shadow-black/40 ring-0 backdrop-blur-sm";
 
 function CashFlowCard({ className }: { className?: string }) {
 	return (
-		<FloatingCard className={cn("w-[240px]", className)}>
+		<Card className={cn(floatingCardClass, "w-[240px]", className)}>
 			<div className="flex items-baseline justify-between text-xs">
 				<span className="text-muted-foreground tracking-[0.18em] uppercase">Cash flow</span>
 				<span className="text-primary font-medium">+24%</span>
@@ -101,25 +95,29 @@ function CashFlowCard({ className }: { className?: string }) {
 				/>
 			</svg>
 			<p className="text-muted-foreground mt-1 text-xs">Last 30 days</p>
-		</FloatingCard>
+		</Card>
 	);
 }
 
 function InvoiceCard({ className }: { className?: string }) {
 	return (
-		<FloatingCard className={cn("w-[240px]", className)}>
+		<Card className={cn(floatingCardClass, "w-[240px]", className)}>
 			<div className="flex items-center justify-between text-xs">
 				<span className="text-muted-foreground font-mono">INV-2026-0418</span>
-				<span className="text-primary border-primary/30 bg-primary/10 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium">
+				<Badge
+					variant="outline"
+					className="border-primary/30 bg-primary/10 text-primary text-[10px]"
+				>
 					<span className="bg-primary size-1.5 rounded-full" aria-hidden />
 					Paid
-				</span>
+				</Badge>
 			</div>
 			<div className="mt-3">
 				<p className="text-sm font-semibold">North Roastery</p>
 				<p className="text-muted-foreground mt-0.5 text-xs">Yirgacheffe Light 1kg × 6</p>
 			</div>
-			<div className="border-border/60 mt-4 flex items-baseline justify-between border-t pt-3">
+			<Separator className="bg-border/60 mt-4" />
+			<div className="mt-3 flex items-baseline justify-between">
 				<span className="text-muted-foreground text-xs tracking-widest uppercase">
 					Total
 				</span>
@@ -127,16 +125,24 @@ function InvoiceCard({ className }: { className?: string }) {
 					<span className="text-muted-foreground me-1">$</span>432.00
 				</span>
 			</div>
-		</FloatingCard>
+		</Card>
 	);
 }
 
 function CustomerCard({ className }: { className?: string }) {
 	return (
-		<FloatingCard className={cn("flex w-[280px] items-center gap-3", className)}>
-			<div className="bg-primary/15 text-primary border-primary/20 flex size-10 shrink-0 items-center justify-center rounded-full border text-xs font-semibold tracking-wide">
-				CS
-			</div>
+		<Card
+			className={cn(
+				floatingCardClass,
+				"flex w-[280px] flex-row items-center gap-3",
+				className,
+			)}
+		>
+			<Avatar size="lg" className="shrink-0">
+				<AvatarFallback className="bg-primary/15 text-primary text-xs font-semibold tracking-wide">
+					CS
+				</AvatarFallback>
+			</Avatar>
 			<div className="min-w-0 flex-1">
 				<p className="truncate text-sm font-semibold">Shape Studio</p>
 				<p className="text-muted-foreground truncate text-xs">Dubai · Pro plan</p>
@@ -149,6 +155,6 @@ function CustomerCard({ className }: { className?: string }) {
 					Balance
 				</p>
 			</div>
-		</FloatingCard>
+		</Card>
 	);
 }

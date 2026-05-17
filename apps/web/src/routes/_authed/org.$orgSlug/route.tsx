@@ -42,10 +42,8 @@ function OrgLayout() {
 		<SidebarProvider>
 			<Sidebar collapsible="icon">
 				<SidebarHeader>
-					<div className="px-2 py-1">
-						<div className="truncate text-sm font-medium">{org.name}</div>
-						<div className="text-muted-foreground truncate text-xs">/{org.slug}</div>
-					</div>
+					<p className="truncate text-sm font-medium">{org.name}</p>
+					<p className="text-muted-foreground truncate text-xs">/{org.slug}</p>
 				</SidebarHeader>
 				<SidebarContent>
 					<SidebarGroup>

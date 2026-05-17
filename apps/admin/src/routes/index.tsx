@@ -41,7 +41,7 @@ function ActivationDashboard() {
 	};
 
 	return (
-		<div className="p-8">
+		<section className="p-8">
 			<Card>
 				<CardHeader>
 					<CardTitle>Activations</CardTitle>
@@ -118,6 +118,6 @@ function ActivationDashboard() {
 					)}
 				</CardContent>
 			</Card>
-		</div>
+		</section>
 	);
 }

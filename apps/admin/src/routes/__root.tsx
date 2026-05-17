@@ -49,12 +49,14 @@ function RootLayout() {
 		<div className="min-h-screen">
 			<header className="flex items-center justify-between border-b px-6 py-3">
 				<h1 className="text-lg font-bold">Admin Dashboard</h1>
-				<div className="flex items-center gap-2">
+				<nav className="flex items-center gap-2">
 					<ThemeSwitcher />
 					<LanguageSwitcher />
-				</div>
+				</nav>
 			</header>
-			<Outlet />
+			<main>
+				<Outlet />
+			</main>
 		</div>
 	);
 }

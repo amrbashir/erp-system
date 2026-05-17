@@ -92,15 +92,15 @@ function MembersPage() {
 	}, [members, invitations, pendingFirst]);
 
 	return (
-		<div className="flex flex-col gap-6 p-6">
-			<div className="flex items-center justify-between">
+		<section className="flex flex-col gap-6 p-6">
+			<header className="flex items-center justify-between">
 				<h1 className="text-lg font-medium">{m.members_heading()}</h1>
 				{canManage && (
 					<Button size="sm" onClick={() => setShowForm(!showForm)}>
 						{showForm ? m.cancel() : m.members_add()}
 					</Button>
 				)}
-			</div>
+			</header>
 
 			{error && (
 				<Alert variant="destructive">
@@ -129,7 +129,7 @@ function MembersPage() {
 					onError={setError}
 				/>
 			)}
-		</div>
+		</section>
 	);
 }
 
@@ -178,72 +178,66 @@ function AddMemberForm({
 			}}
 			className="flex flex-col gap-3"
 		>
-			<FieldGroup>
-				<div className="flex gap-3">
-					<form.Field name="email">
-						{(field) => (
-							<Field className="flex-1">
-								<FieldLabel htmlFor={field.name}>{m.label_email()}</FieldLabel>
-								<Input
-									id={field.name}
-									name={field.name}
-									type="email"
-									placeholder={m.label_email()}
-									required
-									value={field.state.value}
-									onChange={(e) => field.handleChange(e.currentTarget.value)}
-									onBlur={field.handleBlur}
-								/>
-								<FieldError errors={field.state.meta.errors} />
-							</Field>
-						)}
-					</form.Field>
-					<form.Field name="role">
-						{(field) => (
-							<Field className="w-40">
-								<FieldLabel htmlFor={field.name}>{m.label_role()}</FieldLabel>
-								<Select
-									value={field.state.value}
-									onValueChange={(v) => {
-										if (v === "owner" || v === "admin" || v === "member")
-											field.handleChange(v);
-									}}
-								>
-									<SelectTrigger id={field.name} className="w-full">
-										<SelectValue />
-									</SelectTrigger>
-									<SelectContent>
-										<SelectGroup>
-											<SelectItem value="member">
-												{m.role_member()}
-											</SelectItem>
-											{actorRole === "owner" && (
-												<>
-													<SelectItem value="admin">
-														{m.role_admin()}
-													</SelectItem>
-													<SelectItem value="owner">
-														{m.role_owner()}
-													</SelectItem>
-												</>
-											)}
-										</SelectGroup>
-									</SelectContent>
-								</Select>
-							</Field>
-						)}
-					</form.Field>
-				</div>
-			</FieldGroup>
-			<div>
-				<form.Subscribe selector={(s) => s.isSubmitting}>
-					{(isSubmitting) => (
-						<Button type="submit" size="sm" disabled={isSubmitting}>
-							{isSubmitting ? m.members_adding() : m.members_add_submit()}
-						</Button>
+			<FieldGroup className="flex-row gap-3">
+				<form.Field name="email">
+					{(field) => (
+						<Field className="flex-1">
+							<FieldLabel htmlFor={field.name}>{m.label_email()}</FieldLabel>
+							<Input
+								id={field.name}
+								name={field.name}
+								type="email"
+								placeholder={m.label_email()}
+								required
+								value={field.state.value}
+								onChange={(e) => field.handleChange(e.currentTarget.value)}
+								onBlur={field.handleBlur}
+							/>
+							<FieldError errors={field.state.meta.errors} />
+						</Field>
 					)}
-				</form.Subscribe>
-			</div>
+				</form.Field>
+				<form.Field name="role">
+					{(field) => (
+						<Field className="w-40">
+							<FieldLabel htmlFor={field.name}>{m.label_role()}</FieldLabel>
+							<Select
+								value={field.state.value}
+								onValueChange={(v) => {
+									if (v === "owner" || v === "admin" || v === "member")
+										field.handleChange(v);
+								}}
+							>
+								<SelectTrigger id={field.name} className="w-full">
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectGroup>
+										<SelectItem value="member">{m.role_member()}</SelectItem>
+										{actorRole === "owner" && (
+											<>
+												<SelectItem value="admin">
+													{m.role_admin()}
+												</SelectItem>
+												<SelectItem value="owner">
+													{m.role_owner()}
+												</SelectItem>
+											</>
+										)}
+									</SelectGroup>
+								</SelectContent>
+							</Select>
+						</Field>
+					)}
+				</form.Field>
+			</FieldGroup>
+			<form.Subscribe selector={(s) => s.isSubmitting}>
+				{(isSubmitting) => (
+					<Button type="submit" size="sm" disabled={isSubmitting} className="self-start">
+						{isSubmitting ? m.members_adding() : m.members_add_submit()}
+					</Button>
+				)}
+			</form.Subscribe>
 		</form>
 	);
 }
