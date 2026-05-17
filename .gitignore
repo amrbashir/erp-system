@@ -3,7 +3,6 @@ dist/
 .output/
 .env
 *.tsbuildinfo
-.data/
 
 target/
 .todo
