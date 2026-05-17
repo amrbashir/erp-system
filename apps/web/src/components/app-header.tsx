@@ -37,7 +37,7 @@ export function AppHeader({
 	return (
 		<header className={cn("flex items-center gap-2 px-4 py-2", !borderless && "border-b")}>
 			{leadingSlot}
-			<div className="ms-auto flex items-center gap-2">
+			<nav className="ms-auto flex items-center gap-2">
 				<ThemeSwitcher />
 				<LanguageSwitcher />
 				{session && (
@@ -46,7 +46,7 @@ export function AppHeader({
 					</Button>
 				)}
 				{trailingSlot}
-			</div>
+			</nav>
 		</header>
 	);
 }
