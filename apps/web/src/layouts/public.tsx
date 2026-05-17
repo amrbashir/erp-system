@@ -4,24 +4,14 @@ import { AppHeader } from "@/components/app-header";
 
 import { BrandMark } from "./app";
 
-export function PublicLayout({
-	children,
-	headerTrailingSlot,
-}: {
-	children: ReactNode;
-	headerTrailingSlot?: ReactNode;
-}) {
+export function PublicLayout({ children }: { children: ReactNode }) {
 	return (
 		<div className="bg-background text-foreground relative isolate flex min-h-svh flex-col">
 			<GridBackdrop />
 
 			<div className="sticky top-4 z-20 px-4 sm:top-6 sm:px-6">
 				<div className="border-border/40 bg-background/60 mx-auto max-w-5xl rounded-2xl border shadow-lg shadow-black/20 backdrop-blur-md">
-					<AppHeader
-						borderless
-						leadingSlot={<BrandMark />}
-						trailingSlot={headerTrailingSlot}
-					/>
+					<AppHeader borderless leadingSlot={<BrandMark />} />
 				</div>
 			</div>
 
