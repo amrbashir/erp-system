@@ -1,8 +1,8 @@
+import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
 import { AppHeader } from "@/components/app-header";
-
-import { BrandMark } from "./app";
+import { LogoWordmark } from "@/components/logo";
 
 export function PublicLayout({ children }: { children: ReactNode }) {
 	return (
@@ -11,7 +11,14 @@ export function PublicLayout({ children }: { children: ReactNode }) {
 
 			<div className="sticky top-4 z-20 px-4 sm:top-6 sm:px-6">
 				<div className="border-border/40 bg-background/60 mx-auto max-w-5xl rounded-2xl border shadow-lg shadow-black/20 backdrop-blur-md">
-					<AppHeader borderless leadingSlot={<BrandMark />} />
+					<AppHeader
+						borderless
+						leadingSlot={
+							<Link to="/" aria-label="Kaname ERP">
+								<LogoWordmark className="h-7" />
+							</Link>
+						}
+					/>
 				</div>
 			</div>
 

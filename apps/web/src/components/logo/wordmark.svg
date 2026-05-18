@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 90" width="320" height="90">
+  <title>kaname ERP wordmark</title>
+  <desc>kaname wordmark with ERP descriptor in Space Mono, no mark</desc>
+  <style>
+    @import url('https://cdn.jsdelivr.net/npm/@fontsource/inter@5/400.css');
+    @import url('https://cdn.jsdelivr.net/npm/@fontsource/fraunces@5/700.css');
+    @import url('https://cdn.jsdelivr.net/npm/@fontsource/space-mono@5/700.css');
+    .k    { font-family: 'Fraunces', Georgia, serif; font-weight: 700; font-size: 74.67px; }
+    .rest { font-family: 'Inter', system-ui, sans-serif; font-weight: 400; font-size: 64px; letter-spacing: -0.02em; }
+    .erp  { font-family: 'Space Mono', 'SF Mono', Menlo, monospace; font-weight: 700; font-size: 22px; letter-spacing: 0.02em; fill: #6b6661; }
+  </style>
+  <text y="68" fill="#1a1a1a">
+    <tspan x="5" class="k">k</tspan><tspan dx="-4" class="rest">aname</tspan><tspan dx="2" class="erp">ERP</tspan>
+  </text>
+</svg>
