@@ -83,213 +83,217 @@ function SetupPage() {
 
 	return (
 		<div className="flex min-h-svh items-center justify-center p-6">
-			<Card className="w-full max-w-sm">
-				<CardHeader>
-					<CardTitle>{m.desktop_onboarding_heading()}</CardTitle>
-					<CardDescription>{m.desktop_onboarding_description()}</CardDescription>
-				</CardHeader>
-				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-						void form.handleSubmit();
-					}}
-				>
-					<CardContent className="flex flex-col gap-4">
-						{error && (
-							<Alert variant="destructive">
-								<AlertDescription>{error}</AlertDescription>
-							</Alert>
-						)}
-
-						<FieldGroup>
-							<form.Field name="orgName">
-								{(field) => (
-									<Field>
-										<FieldLabel htmlFor={field.name}>
-											{m.label_org_name()}
-										</FieldLabel>
-										<Input
-											id={field.name}
-											name={field.name}
-											type="text"
-											placeholder={m.label_org_name()}
-											required
-											value={field.state.value}
-											onChange={(e) => {
-												const v = e.currentTarget.value;
-												field.handleChange(v);
-												if (!slugEdited)
-													form.setFieldValue("slug", toSlug(v) ?? "");
-											}}
-											onBlur={field.handleBlur}
-										/>
-										<FieldError errors={field.state.meta.errors} />
-									</Field>
+			<div className="flex w-full max-w-sm flex-col gap-6">
+				<Card>
+					<CardHeader className="text-center">
+						<CardTitle className="text-xl">
+							{m.desktop_onboarding_heading()}
+						</CardTitle>
+						<CardDescription>{m.desktop_onboarding_description()}</CardDescription>
+					</CardHeader>
+					<CardContent>
+						<form
+							onSubmit={(e) => {
+								e.preventDefault();
+								void form.handleSubmit();
+							}}
+						>
+							<FieldGroup>
+								{error && (
+									<Alert variant="destructive">
+										<AlertDescription>{error}</AlertDescription>
+									</Alert>
 								)}
-							</form.Field>
-							<form.Field name="slug">
-								{(field) => (
-									<Field>
-										<FieldLabel htmlFor={field.name}>
-											{m.label_org_slug()}
-										</FieldLabel>
-										<Input
-											id={field.name}
-											name={field.name}
-											type="text"
-											placeholder="acme"
-											pattern="[a-z0-9][a-z0-9-]*[a-z0-9]"
-											minLength={2}
-											maxLength={48}
-											required
-											className="font-mono"
-											value={field.state.value}
-											onChange={(e) => {
-												field.handleChange(e.currentTarget.value);
-												setSlugEdited(true);
-											}}
-											onBlur={field.handleBlur}
-										/>
-										{field.state.value && (
-											<FieldDescription>
-												{m.org_slug_url_preview({
-													slug: field.state.value,
-												})}
-											</FieldDescription>
-										)}
-										<FieldError errors={field.state.meta.errors} />
-									</Field>
-								)}
-							</form.Field>
-							<form.Field name="name">
-								{(field) => (
-									<Field>
-										<FieldLabel htmlFor={field.name}>
-											{m.desktop_onboarding_your_name()}
-										</FieldLabel>
-										<Input
-											id={field.name}
-											name={field.name}
-											type="text"
-											placeholder={m.desktop_onboarding_your_name()}
-											required
-											value={field.state.value}
-											onChange={(e) =>
-												field.handleChange(e.currentTarget.value)
-											}
-											onBlur={field.handleBlur}
-										/>
-										<FieldError errors={field.state.meta.errors} />
-									</Field>
-								)}
-							</form.Field>
-							<form.Field name="email">
-								{(field) => (
-									<Field>
-										<FieldLabel htmlFor={field.name}>
-											{m.label_email()}
-										</FieldLabel>
-										<Input
-											id={field.name}
-											name={field.name}
-											type="email"
-											placeholder={m.label_email()}
-											required
-											value={field.state.value}
-											onChange={(e) =>
-												field.handleChange(e.currentTarget.value)
-											}
-											onBlur={field.handleBlur}
-										/>
-										<FieldError errors={field.state.meta.errors} />
-									</Field>
-								)}
-							</form.Field>
-							<form.Field name="password">
-								{(field) => (
-									<Field>
-										<FieldLabel htmlFor={field.name}>
-											{m.label_password()}
-										</FieldLabel>
-										<Input
-											id={field.name}
-											name={field.name}
-											type="password"
-											placeholder={m.placeholder_password_signup()}
-											required
-											minLength={6}
-											value={field.state.value}
-											onChange={(e) =>
-												field.handleChange(e.currentTarget.value)
-											}
-											onBlur={field.handleBlur}
-										/>
-										<FieldError errors={field.state.meta.errors} />
-									</Field>
-								)}
-							</form.Field>
-							<form.Field name="confirmPassword">
-								{(field) => (
-									<Field>
-										<FieldLabel htmlFor={field.name}>
-											{m.label_password_confirm()}
-										</FieldLabel>
-										<Input
-											id={field.name}
-											name={field.name}
-											type="password"
-											placeholder={m.placeholder_password_confirm()}
-											required
-											value={field.state.value}
-											onChange={(e) =>
-												field.handleChange(e.currentTarget.value)
-											}
-											onBlur={field.handleBlur}
-										/>
-										<form.Subscribe
-											selector={(s) => ({
-												password: s.values.password,
-												attempted: s.submissionAttempts > 0,
-											})}
-										>
-											{({ password, attempted }) => {
-												if (!attempted) return null;
-												if (field.state.value.length === 0) return null;
-												if (field.state.value === password) {
-													return (
-														<FieldDescription className="text-primary flex items-center gap-1">
-															<CheckIcon weight="bold" />
-															{m.password_match()}
-														</FieldDescription>
-													);
+								<form.Field name="orgName">
+									{(field) => (
+										<Field>
+											<FieldLabel htmlFor={field.name}>
+												{m.label_org_name()}
+											</FieldLabel>
+											<Input
+												id={field.name}
+												name={field.name}
+												type="text"
+												placeholder={m.label_org_name()}
+												required
+												value={field.state.value}
+												onChange={(e) => {
+													const v = e.currentTarget.value;
+													field.handleChange(v);
+													if (!slugEdited)
+														form.setFieldValue("slug", toSlug(v) ?? "");
+												}}
+												onBlur={field.handleBlur}
+											/>
+											<FieldError errors={field.state.meta.errors} />
+										</Field>
+									)}
+								</form.Field>
+								<form.Field name="slug">
+									{(field) => (
+										<Field>
+											<FieldLabel htmlFor={field.name}>
+												{m.label_org_slug()}
+											</FieldLabel>
+											<Input
+												id={field.name}
+												name={field.name}
+												type="text"
+												placeholder="acme"
+												pattern="[a-z0-9][a-z0-9-]*[a-z0-9]"
+												minLength={2}
+												maxLength={48}
+												required
+												className="font-mono"
+												value={field.state.value}
+												onChange={(e) => {
+													field.handleChange(e.currentTarget.value);
+													setSlugEdited(true);
+												}}
+												onBlur={field.handleBlur}
+											/>
+											{field.state.value && (
+												<FieldDescription>
+													{m.org_slug_url_preview({
+														slug: field.state.value,
+													})}
+												</FieldDescription>
+											)}
+											<FieldError errors={field.state.meta.errors} />
+										</Field>
+									)}
+								</form.Field>
+								<form.Field name="name">
+									{(field) => (
+										<Field>
+											<FieldLabel htmlFor={field.name}>
+												{m.desktop_onboarding_your_name()}
+											</FieldLabel>
+											<Input
+												id={field.name}
+												name={field.name}
+												type="text"
+												placeholder={m.desktop_onboarding_your_name()}
+												required
+												value={field.state.value}
+												onChange={(e) =>
+													field.handleChange(e.currentTarget.value)
 												}
-												return (
-													<FieldError>
-														<span className="inline-flex items-center gap-1">
-															<XIcon weight="bold" />
-															{m.password_mismatch()}
-														</span>
-													</FieldError>
-												);
-											}}
-										</form.Subscribe>
-									</Field>
-								)}
-							</form.Field>
-						</FieldGroup>
-
-						<form.Subscribe selector={(s) => s.isSubmitting}>
-							{(isSubmitting) => (
-								<Button type="submit" disabled={isSubmitting}>
-									{isSubmitting
-										? m.desktop_onboarding_submitting()
-										: m.desktop_onboarding_submit()}
-								</Button>
-							)}
-						</form.Subscribe>
+												onBlur={field.handleBlur}
+											/>
+											<FieldError errors={field.state.meta.errors} />
+										</Field>
+									)}
+								</form.Field>
+								<form.Field name="email">
+									{(field) => (
+										<Field>
+											<FieldLabel htmlFor={field.name}>
+												{m.label_email()}
+											</FieldLabel>
+											<Input
+												id={field.name}
+												name={field.name}
+												type="email"
+												placeholder={m.label_email()}
+												required
+												value={field.state.value}
+												onChange={(e) =>
+													field.handleChange(e.currentTarget.value)
+												}
+												onBlur={field.handleBlur}
+											/>
+											<FieldError errors={field.state.meta.errors} />
+										</Field>
+									)}
+								</form.Field>
+								<form.Field name="password">
+									{(field) => (
+										<Field>
+											<FieldLabel htmlFor={field.name}>
+												{m.label_password()}
+											</FieldLabel>
+											<Input
+												id={field.name}
+												name={field.name}
+												type="password"
+												placeholder={m.placeholder_password_signup()}
+												required
+												minLength={6}
+												value={field.state.value}
+												onChange={(e) =>
+													field.handleChange(e.currentTarget.value)
+												}
+												onBlur={field.handleBlur}
+											/>
+											<FieldError errors={field.state.meta.errors} />
+										</Field>
+									)}
+								</form.Field>
+								<form.Field name="confirmPassword">
+									{(field) => (
+										<Field>
+											<FieldLabel htmlFor={field.name}>
+												{m.label_password_confirm()}
+											</FieldLabel>
+											<Input
+												id={field.name}
+												name={field.name}
+												type="password"
+												placeholder={m.placeholder_password_confirm()}
+												required
+												value={field.state.value}
+												onChange={(e) =>
+													field.handleChange(e.currentTarget.value)
+												}
+												onBlur={field.handleBlur}
+											/>
+											<form.Subscribe
+												selector={(s) => ({
+													password: s.values.password,
+													attempted: s.submissionAttempts > 0,
+												})}
+											>
+												{({ password, attempted }) => {
+													if (!attempted) return null;
+													if (field.state.value.length === 0) return null;
+													if (field.state.value === password) {
+														return (
+															<FieldDescription className="text-primary flex items-center gap-1">
+																<CheckIcon weight="bold" />
+																{m.password_match()}
+															</FieldDescription>
+														);
+													}
+													return (
+														<FieldError>
+															<span className="inline-flex items-center gap-1">
+																<XIcon weight="bold" />
+																{m.password_mismatch()}
+															</span>
+														</FieldError>
+													);
+												}}
+											</form.Subscribe>
+										</Field>
+									)}
+								</form.Field>
+								<Field>
+									<form.Subscribe selector={(s) => s.isSubmitting}>
+										{(isSubmitting) => (
+											<Button type="submit" disabled={isSubmitting}>
+												{isSubmitting
+													? m.desktop_onboarding_submitting()
+													: m.desktop_onboarding_submit()}
+											</Button>
+										)}
+									</form.Subscribe>
+								</Field>
+							</FieldGroup>
+						</form>
 					</CardContent>
-				</form>
-			</Card>
+				</Card>
+			</div>
 		</div>
 	);
 }

@@ -26,6 +26,10 @@
 	"role_owner": "مالك",
 
 	"signin_heading": "تسجيل الدخول",
+	"signin_welcome": "أهلاً بعودتك",
+	"signin_google_description": "سجّل الدخول باستخدام حساب Google",
+	"signin_with_google": "تسجيل الدخول باستخدام Google",
+	"signin_forgot_password": "نسيت كلمة المرور؟",
 	"signin_submitting": "جارٍ تسجيل الدخول…",
 	"signin_submit": "تسجيل الدخول",
 	"signin_failed": "فشل تسجيل الدخول",
@@ -33,11 +37,20 @@
 	"signin_signup_link": "إنشاء حساب",
 
 	"signup_heading": "إنشاء حساب",
+	"signup_welcome": "أنشئ حسابك",
+	"signup_google_description": "أنشئ حسابك باستخدام Google",
+	"signup_with_google": "إنشاء حساب باستخدام Google",
 	"signup_submitting": "جارٍ إنشاء الحساب…",
 	"signup_submit": "إنشاء حساب",
 	"signup_failed": "فشل إنشاء الحساب",
 	"signup_has_account": "لديك حساب بالفعل؟",
 	"signup_signin_link": "تسجيل الدخول",
+
+	"auth_or_continue": "أو تابع باستخدام",
+	"auth_terms_prefix": "بالنقر على المتابعة، فإنك توافق على",
+	"auth_terms_link": "شروط الخدمة",
+	"auth_terms_and": "و",
+	"auth_privacy_link": "سياسة الخصوصية",
 
 	"landing_hero_title": "أدر أعمالك من مكان واحد.",
 	"landing_hero_subtitle": "الفواتير، المصروفات، العملاء، الموردون. مصمم للشركات الصغيرة سريعة الحركة.",
