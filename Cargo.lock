@@ -1980,7 +1980,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "kaname"
+name = "kaname-erp"
 version = "0.0.0"
 dependencies = [
  "ctrlc",

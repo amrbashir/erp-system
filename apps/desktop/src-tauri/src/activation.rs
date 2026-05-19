@@ -1,6 +1,6 @@
 use keyring::{Entry, Error};
 
-const KEYRING_SERVICE: &str = "kaname";
+const KEYRING_SERVICE: &str = "kaname-erp";
 const KEYRING_USER: &str = "activation_token";
 
 fn entry() -> Result<Entry, String> {

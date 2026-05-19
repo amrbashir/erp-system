@@ -25,7 +25,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
 			{children}
 
 			<footer className="text-muted-foreground px-6 py-6 text-xs sm:px-10">
-				© {new Date().getFullYear()} Kaname
+				© {new Date().getFullYear()} Kaname ERP
 			</footer>
 		</div>
 	);

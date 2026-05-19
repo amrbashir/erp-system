@@ -80,7 +80,7 @@ function denoCompile() {
 		.trim();
 
 	const entry = resolve(serverDir, ".output/server/index.mjs");
-	const outPath = resolve(binDir, `kaname-sidecar-${targetTriple}`);
+	const outPath = resolve(binDir, `kaname-erp-sidecar-${targetTriple}`);
 
 	// Explicit permission set instead of --allow-all. Drops --allow-run
 	// (sidecar must never spawn subprocesses) and --allow-import (everything

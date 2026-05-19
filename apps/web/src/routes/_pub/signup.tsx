@@ -28,6 +28,21 @@ import { signUp } from "@/lib/auth-client";
 import { orpc } from "@/lib/orpc";
 import { safeRedirect } from "@/lib/safe-redirect";
 
+// Module-scoped so the validator reference is stable across renders.
+// The live UI renders the mismatch message inline (see confirmPassword field)
+// — this string is only surfaced if the field-level UI is bypassed.
+const signupSchema = z
+	.object({
+		name: z.string().min(1),
+		email: z.email(),
+		password: z.string().min(6),
+		confirmPassword: z.string(),
+	})
+	.refine((data) => data.password === data.confirmPassword, {
+		message: "passwords do not match",
+		path: ["confirmPassword"],
+	});
+
 export const Route = createFileRoute("/_pub/signup")({
 	validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
 		redirect: typeof search.redirect === "string" ? search.redirect : undefined,
@@ -43,18 +58,6 @@ function SignupPage() {
 	const navigate = useNavigate();
 	const { redirect: redirectTo } = Route.useSearch();
 	const [error, setError] = useState("");
-
-	const signupSchema = z
-		.object({
-			name: z.string().min(1),
-			email: z.email(),
-			password: z.string().min(6),
-			confirmPassword: z.string(),
-		})
-		.refine((data) => data.password === data.confirmPassword, {
-			message: m.password_mismatch(),
-			path: ["confirmPassword"],
-		});
 
 	const form = useForm({
 		defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
@@ -194,30 +197,31 @@ function SignupPage() {
 												}
 												onBlur={field.handleBlur}
 											/>
-											<form.Subscribe
-												selector={(s) => ({
-													password: s.values.password,
-													attempted: s.submissionAttempts > 0,
-												})}
-											>
-												{({ password, attempted }) => {
+											{/* Two nested Subscribes with primitive selectors. An object-returning
+											    selector here would create a fresh `{}` per store tick and re-subscribe
+											    inside the Field render prop, locking the event loop under concurrent rendering. */}
+											<form.Subscribe selector={(s) => s.submissionAttempts > 0}>
+												{(attempted) => {
 													if (!attempted) return null;
 													if (field.state.value.length === 0) return null;
-													if (field.state.value === password) {
-														return (
-															<FieldDescription className="text-primary flex items-center gap-1">
-																<CheckIcon weight="bold" />
-																{m.password_match()}
-															</FieldDescription>
-														);
-													}
 													return (
-														<FieldError>
-															<span className="inline-flex items-center gap-1">
-																<XIcon weight="bold" />
-																{m.password_mismatch()}
-															</span>
-														</FieldError>
+														<form.Subscribe selector={(s) => s.values.password}>
+															{(password) =>
+																field.state.value === password ? (
+																	<FieldDescription className="text-primary flex items-center gap-1">
+																		<CheckIcon weight="bold" />
+																		{m.password_match()}
+																	</FieldDescription>
+																) : (
+																	<FieldError>
+																		<span className="inline-flex items-center gap-1">
+																			<XIcon weight="bold" />
+																			{m.password_mismatch()}
+																		</span>
+																	</FieldError>
+																)
+															}
+														</form.Subscribe>
 													);
 												}}
 											</form.Subscribe>

@@ -16,7 +16,7 @@
 	--popover: oklch(1 0 0);
 	--popover-foreground: oklch(0.205 0.012 260);
 
-	/* teal accent — Kaname primary */
+	/* teal accent — Kaname ERP primary */
 	--primary: oklch(0.66 0.105 188); /* rgb(15 165 162)  */
 	--primary-foreground: oklch(0.99 0.005 188);
 
@@ -41,7 +41,7 @@
 	--chart-4: oklch(0.56 0.095 188);
 	--chart-5: oklch(0.46 0.08 188);
 
-	--radius: 0.5rem; /* 8px — Kaname uses md radii */
+	--radius: 0.5rem; /* 8px — Kaname ERP uses md radii */
 
 	/* sidebar mirrors the app shell */
 	--sidebar: oklch(0.985 0.002 260);

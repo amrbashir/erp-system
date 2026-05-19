@@ -63,7 +63,10 @@ pub fn validate_db_path(path: &str) -> Result<(), String> {
         .duration_since(UNIX_EPOCH)
         .map(|d| d.as_nanos())
         .unwrap_or(0);
-    let probe = p.join(format!(".kaname-write-test-{}-{nanos}", std::process::id()));
+    let probe = p.join(format!(
+        ".kaname-erp-write-test-{}-{nanos}",
+        std::process::id()
+    ));
 
     struct Cleanup(PathBuf);
     impl Drop for Cleanup {
